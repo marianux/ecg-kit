@@ -310,7 +310,7 @@ classdef ECGtask_QRS_detection < ECGtask
                                         if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header.recname, ECG_header.desc(jj,:) ) ); end
                                     
                                     elseif( any(strcmpi( {'epltdqrs1' 'epltdqrs2'}, this_detector ) ) )
-                                        [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' ' ECG_header.recname ' ' num2str(jj)]);
+                                        [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' ' ECG_header.recname ' ' num2str(jj-1)]);
                                         if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header.recname, ECG_header.desc(jj,:) ) ); end
                                         
                                     elseif( any(strcmpi( 'ecgpuwave', this_detector ) ) )
