@@ -18,7 +18,8 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
         lead_names = num2str((1:ECG_header.nsig)');
     end
     
-    cAnnotationFieldNames = { 'Pon' 'P' 'Poff' 'QRSon' 'qrs' 'QRSoff' 'Ton' 'T' 'Tprima' 'Toff' };
+    cAnnotationOutputFields = { 'Pon' 'P' 'Poff' 'Ptipo' 'QRSon' 'qrs' 'QRSoff' 'Ton' 'T' 'Tprima' 'Toff' 'Ttipo' };
+    cAnnotationSLRfields = { 'Pon' 'P' 'Poff' 'QRSon' 'qrs' 'QRSoff' 'Ton' 'T' 'Tprima' 'Toff' };
 
     rhythm_parameters = [];
     multilead_positions = [];
@@ -71,7 +72,7 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
         aux_marks = nan(aux_maxlength,10);
         
         count = 1;
-        for fn = cAnnotationFieldNames
+        for fn = cAnnotationSLRfields
             fn = fn{1};
             if( isfield( aux_struct, fn) )
                 aux_marks(1:length(aux_struct.(fn)),count) = colvec(aux_struct.(fn));
@@ -79,7 +80,7 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
             count = count + 1;
         end
 
-        for fn = cAnnotationFieldNames
+        for fn = cAnnotationOutputFields
             if( isfield(aux_struct, fn{1}) ) 
                 aux_struct2.(fn{1}) = aux_struct.(fn{1});
             else
