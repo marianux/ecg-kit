@@ -1,0 +1,1 @@
+%ISFINITE Datafile overload

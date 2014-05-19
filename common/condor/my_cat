@@ -1,0 +1,32 @@
+#!/bin/bash
+
+all_err_files=( $(find $1 -name "*.err" -print) )
+
+jj=0
+
+for filename in "${all_err_files[@]}" 
+do
+  if [ -s $filename ]
+  then
+	echo
+	echo
+	echo
+	echo "$filename"
+	cat "$filename"
+#	cat "$filename" | head -n 30
+	
+#	xbase=${filename##*/}
+#	filename_only=${xbase%.*}
+#	full_path="${filename:0:${#filename} - ${#xbase}}" # Substring from 0 thru pos of filename
+#
+#	echo
+#	echo "$full_path$filename_only.log"
+#	cat "$full_path$filename_only.log" 2>/dev/null 1> head -n 30 
+	
+	let "jj += 1"   
+  fi
+done
+
+echo "Encontramos ${#all_err_files[@]} archivos ..."
+echo "de los cuales ${jj} con errores a reportar ..."
+

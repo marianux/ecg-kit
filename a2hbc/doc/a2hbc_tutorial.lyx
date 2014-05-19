@@ -1,0 +1,4354 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{color}
+ 
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\definecolor{softyellow}{rgb}{1,1,0.7}
+\definecolor{softgray}{rgb}{0.9,0.9,0.9}
+\end_preamble
+\options a4paper,12pt
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans default
+\font_typewriter default
+\font_default_family rmdefault
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref true
+\pdf_title "A2HBC Tutorial"
+\pdf_author "Mariano Llamedo Soria"
+\pdf_subject "Argentino-Aragonés heartbeat classifier"
+\pdf_keywords "heartbeat classifier"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered true
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder true
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\topmargin 3cm
+\rightmargin 2cm
+\bottommargin 2cm
+\secnumdepth 2
+\tocdepth 2
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+A2HBC Tutorial
+\end_layout
+
+\begin_layout Author
+Mariano Llamedo Soria
+\end_layout
+
+\begin_layout Date
+Version 0.1 beta
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename Flag.svg
+	lyxscale 10
+	width 20text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+What is it ?
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+\lang spanish
+Argentino-Aragonés
+\lang english
+ heartbeat classifier
+\emph default
+ (A2HBC) is a Matlab script developed for research purposes during my PhD
+ studies 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "LlamedoPhDthesis"
+
+\end_inset
+
+.
+ As you can guess, it is just a heartbeat classifier.
+ The main objective of this software is to ease the performance comparison
+ against other (hope better) heartbeat classifiers.
+ You can also use it for classifying unlabeled ECG recordings.
+\end_layout
+
+\begin_layout Section
+Features
+\end_layout
+
+\begin_layout Standard
+The main features are:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Validated performance
+\emph default
+.
+ The performance was thoroughly evaluated in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Llamedo12Semiauto"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Several formats
+\emph default
+ 
+\emph on
+accepted 
+\emph default
+(MIT, ISHNE, AHA and HES)
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Open source
+\emph default
+.
+ Documented and easily customizable.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Multiprocessing ready
+\emph default
+.
+ It is ready to run in both a desktop PC or a high performance cluster.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+user interface
+\emph default
+.
+ The algorithm have a simple graphical user interface (GUI) to ease the
+ labeling of heartbeat clusters.
+\end_layout
+
+\begin_layout Section
+Usage
+\end_layout
+
+\begin_layout Standard
+Several examples are included in the 
+\emph on
+examples.m
+\emph default
+ script.
+ In this tutorial we will show some examples that any user can run to understand
+ how to use A2HBC, with some ECG recordings included.
+ It can be executed simply by its name:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "backgroundcolor={\color{softgray}},language=Matlab"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+>>a2hbc
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this case the 
+\emph on
+control panel
+\emph default
+ is displayed to gather some information from the user:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename control_panel.PNG
+	lyxscale 30
+	width 40text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You must enter the recording file name and its format, the other controls
+ you can leave with its default values by the moment.
+ You can select the 
+\emph on
+208.dat
+\emph default
+ recording, included in the 
+\emph on
+example recordings 
+\emph default
+folder, and set the 
+\emph on
+MIT
+\emph default
+ format.
+ Then press 
+\emph on
+Run!, 
+\emph default
+the script will start working.
+ You can follow the evolution in the progress bar, and after a while, it
+ ends and display the classification results
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "backgroundcolor={\color{softgray}},basicstyle={\footnotesize\ttfamily}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Configuration
+\end_layout
+
+\begin_layout Plain Layout
+
+-------------
+\end_layout
+
+\begin_layout Plain Layout
+
++ Recording: ...
+ 
+\backslash
+example recordings
+\backslash
+208.dat (MIT)
+\end_layout
+
+\begin_layout Plain Layout
+
++ Mode: auto (12 clusters, 1 iterations, 75% cluster-presence)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  True            | Estimated Labels
+\end_layout
+
+\begin_layout Plain Layout
+
+  Labels          | Normal Suprav Ventri Unknow| Totals
+\end_layout
+
+\begin_layout Plain Layout
+
+ -----------------|----------------------------|-------
+\end_layout
+
+\begin_layout Plain Layout
+
+  Normal          | 1567      6     13      0  | 1586
+\end_layout
+
+\begin_layout Plain Layout
+
+  Supraventricular|    2      0      0      0  |    2
+\end_layout
+
+\begin_layout Plain Layout
+
+  Ventricular     |  255      8   1102      0  | 1365
+\end_layout
+
+\begin_layout Plain Layout
+
+  Unknown         |    2      0      0      0  |    2
+\end_layout
+
+\begin_layout Plain Layout
+
+ -----------------|----------------------------|-------
+\end_layout
+
+\begin_layout Plain Layout
+
+  Totals          | 1826     14   1115      0  | 2955
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Balanced Results for 
+\end_layout
+
+\begin_layout Plain Layout
+
+---------------------
+\end_layout
+
+\begin_layout Plain Layout
+
+| Normal    || Supravent || Ventricul ||           TOTALS            |
+\end_layout
+
+\begin_layout Plain Layout
+
+|  Se   +P  ||  Se   +P  ||  Se   +P  ||   Acc   |   Se    |   +P    |
+\end_layout
+
+\begin_layout Plain Layout
+
+|  99%  45% ||   0%   0% ||  81%  99% ||   60%   |   60%   |   48%   |
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Unbalanced Results for 
+\end_layout
+
+\begin_layout Plain Layout
+
+-----------------------
+\end_layout
+
+\begin_layout Plain Layout
+
+| Normal    || Supravent || Ventricul ||           TOTALS            |
+\end_layout
+
+\begin_layout Plain Layout
+
+|  Se   +P  ||  Se   +P  ||  Se   +P  ||   Acc   |   Se    |   +P    |
+\end_layout
+
+\begin_layout Plain Layout
+
+|  99%  86% ||   0%   0% ||  81%  99% ||   90%   |   60%   |   62%   |
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is possible because this recording include the expert annotations,
+ or 
+\emph on
+ground truth
+\emph default
+, for each heartbeat.
+ The manual annotations in MIT format are typically included in 
+\emph on
+.atr
+\emph default
+ files (in this case 
+\emph on
+208.atr
+\emph default
+).
+ Now you can check other operation modes, as the 
+\emph on
+slightly-assisted
+\emph default
+.
+ Click on 
+\emph on
+Run!
+\emph default
+ and then, eventually, the algorithm may ask you for help.
+
+\emph on
+ 
+\emph default
+In case of needing help, a window like this will appear:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename expert_user_interface.png
+	lyxscale 50
+	width 100text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this window the algorithm is asking you to label the centroid of the
+ cluster, that is showed in the left panel.
+ In the top of each panel some information is showed, as the amount of heartbeat
+s in the current cluster.
+ In the middle panel, you have some examples of heartbeats close to the
+ centroid in a likelihood sense.
+ The same is repeated in the right panel, but with examples far from the
+ centroid.
+ This manner you can have an idea of the dispersion of heartbeats within
+ a cluster.
+ Large differences across the panels indicates large cluster dispersion.
+ If you decide to label the cluster, you can use one of the 4 buttons on
+ your right.
+ The unknown class is reserved for the cases where you can not make a confident
+ decision.
+ At the same time, in the command window, a suggestion appears:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "backgroundcolor={\color{softgray}},basicstyle={\footnotesize\ttfamily}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Configuration
+\end_layout
+
+\begin_layout Plain Layout
+
+-------------
+\end_layout
+
+\begin_layout Plain Layout
+
++ Recording: .
+\backslash
+example recordings
+\backslash
+208.dat (MIT)
+\end_layout
+
+\begin_layout Plain Layout
+
++ Mode: assisted (3 clusters, 1 iterations, 75% cluster-presence)
+\end_layout
+
+\begin_layout Plain Layout
+
+Suggestion: Normal
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This means that the centroid heartbeat in the 
+\emph on
+.atr
+\emph default
+ file is labeled as 
+\emph on
+Normal
+\emph default
+.
+ You will see this suggestion for each cluster analyzed, if there are annotation
+s previously available.
+ You are informed about the percentage of heartbeats already labeled with
+ a progress bar, in the bottom of the control panel window.
+\end_layout
+
+\begin_layout Standard
+In case you believe that a cluster includes several classes of heartbeats,
+ you can decide to 
+\emph on
+skip
+\emph default
+ the classification, and try to re-cluster those heartbeats in the next
+ iteration.
+ You are free to perform as many iterations as you decide, by skipping clusters.
+ The refresh button resamples heartbeats close and far from the centroid,
+ and then redraw the middle and right panels.
+ This feature is useful for large clusters.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: GUI to save the labels generated.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There are two possible ways of using A2HBC, in a single desktop PC or in
+ a high performance cluster of computers.
+\end_layout
+
+\begin_layout Subsection
+The power of the command-line
+\end_layout
+
+\begin_layout Standard
+You can control all the features described up to the moment (and more) from
+ the command-line of Matlab.
+ This is particularly useful for integrating 
+\emph on
+a2hbc
+\emph default
+ in your scripts.
+ You can find several examples in the script 
+\emph on
+examples.m
+\emph default
+, this is probably the best way of getting familiar with it.
+ Here I reproduce some worked examples included in this script.
+ First let's start executing
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "backgroundcolor={\color{softyellow}},basicstyle={\scriptsize\ttfamily},commentstyle={\color{dkgreen}},keywordstyle={\color{blue}},language=Matlab,showstringspaces=false,stringstyle={\color{mauve}},tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+a2hbc( ...
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	'recording_name', [ '.' filesep 'example recordings' filesep '208.dat'],
+ ...
+\end_layout
+
+\begin_layout Plain Layout
+
+	'recording_format', 'MIT', ...
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	'op_mode', 'auto');
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As you can see, the parameter interface of 
+\emph on
+a2hbc
+\emph default
+ is by 
+\emph on
+name-value
+\emph default
+ parameters.
+ In the previous example, the name of the parameters are self-explanatory,
+ the only comment is for the third, which is the operating mode.
+ In Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:parameters"
+
+\end_inset
+
+ you can check the complete list of parameters.
+ As a result, you will get similar results to the obtained in the first
+ example using the GUI.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "backgroundcolor={\color{softgray}},basicstyle={\footnotesize\ttfamily}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Configuration
+\end_layout
+
+\begin_layout Plain Layout
+
+-------------
+\end_layout
+
+\begin_layout Plain Layout
+
++ Recording: .
+\backslash
+example recordings
+\backslash
+208.dat (MIT)
+\end_layout
+
+\begin_layout Plain Layout
+
++ Mode: auto (12 clusters, 1 iterations, 75% cluster-presence)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  True            | Estimated Labels
+\end_layout
+
+\begin_layout Plain Layout
+
+  Labels          | Normal Suprav Ventri Unknow| Totals
+\end_layout
+
+\begin_layout Plain Layout
+
+ -----------------|----------------------------|-------
+\end_layout
+
+\begin_layout Plain Layout
+
+  Normal          | 1575      3      8      0  | 1586
+\end_layout
+
+\begin_layout Plain Layout
+
+  Supraventricular|    2      0      0      0  |    2
+\end_layout
+
+\begin_layout Plain Layout
+
+  Ventricular     |  250      7   1108      0  | 1365
+\end_layout
+
+\begin_layout Plain Layout
+
+  Unknown         |    1      0      1      0  |    2
+\end_layout
+
+\begin_layout Plain Layout
+
+ -----------------|----------------------------|-------
+\end_layout
+
+\begin_layout Plain Layout
+
+  Totals          | 1828     10   1117      0  | 2955
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Balanced Results for 
+\end_layout
+
+\begin_layout Plain Layout
+
+---------------------
+\end_layout
+
+\begin_layout Plain Layout
+
+| Normal    || Supravent || Ventricul ||           TOTALS            |
+\end_layout
+
+\begin_layout Plain Layout
+
+|  Se   +P  ||  Se   +P  ||  Se   +P  ||   Acc   |   Se    |   +P    |
+\end_layout
+
+\begin_layout Plain Layout
+
+|  99%  46% ||   0%   0% ||  81%  99% ||   60%   |   60%   |   48%   |
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Unbalanced Results for 
+\end_layout
+
+\begin_layout Plain Layout
+
+-----------------------
+\end_layout
+
+\begin_layout Plain Layout
+
+| Normal    || Supravent || Ventricul ||           TOTALS            |
+\end_layout
+
+\begin_layout Plain Layout
+
+|  Se   +P  ||  Se   +P  ||  Se   +P  ||   Acc   |   Se    |   +P    |
+\end_layout
+
+\begin_layout Plain Layout
+
+|  99%  86% ||   0%   0% ||  81%  99% ||   91%   |   60%   |   62%   |
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the case that you would like to integrate a2hbc to your software, or
+ you have a proprietary ECG format not allowed by a2hbc, the best choice
+ is that you pass the ECG samples directly.
+ For doing this, you will have follow the requirements in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:parameters"
+
+\end_inset
+
+ indicated with a 
+\begin_inset Formula $^{2}$
+\end_inset
+
+, and 
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+ECG
+\emph default
+ is the ECG signal matrix of 
+\emph on
+nsamp
+\emph default
+
+\begin_inset Formula $\times$
+\end_inset
+
+ 
+\emph on
+nsig
+\emph default
+, in 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ADC samples
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+ECG_header
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ is a 
+\family default
+\series default
+\shape default
+\size default
+\emph on
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+struct
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ with the ECG properties, with fields:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\emph on
+freq
+\emph default
+ is the sampling rate of the ECG
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+nsamp
+\emph default
+ is the number of samples
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+nsig
+\emph default
+ is the amount of leads.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+gain
+\emph default
+ is a vector of 
+\emph on
+nsig
+\emph default
+
+\begin_inset Formula $\times$
+\end_inset
+
+1 with the gain of each lead (
+\begin_inset Formula $\nicefrac{\mathrm{ADC\, samples}}{\mu V}$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+adczero
+\emph default
+ is a vector of 
+\emph on
+nsig
+\emph default
+
+\begin_inset Formula $\times$
+\end_inset
+
+1 with the offset of each lead in 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ADC samples
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\emph on
+QRS_annotations
+\emph default
+ is a 
+\emph on
+struct
+\emph default
+ with the location of the QRS complexes, with fields:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\emph on
+time
+\emph default
+ is a vector of 
+\emph on
+QRS_amount
+\emph default
+
+\begin_inset Formula $\times$
+\end_inset
+
+1, with the sample value where the QRS complexes are.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+ann_type
+\emph default
+ [optional] is a 
+\emph on
+char
+\emph default
+ vector of QRS_amount
+\begin_inset Formula $\times$
+\end_inset
+
+1, with each heartbeat label.
+ This field is for evaluating the performance of a classifier, as a result
+ 
+\emph on
+a2hbc
+\emph default
+ generates the confusion matrix seen in the examples above.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+The parameters 'cant_pids' and 'this_pid' are explained in the next section,
+ since were designed for partitioning and multiprocessing of recordings.
+ The parameter 
+\emph on
+SimulateExpert
+\emph default
+ was designed to simulate the expert input by using the expert annotations
+ provided in the annotations files, or via the 
+\emph on
+QRS_annotations 
+\emph default
+parameter.
+ 
+\emph on
+ClusterPresence
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ is a threshold for evaluating the qualified majority in operating modes
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph on
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+auto
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ or 
+\family default
+\series default
+\shape default
+\size default
+\emph on
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+slightly-assisted
+\emph default
+.
+ The lower this threshold the more confident the algorithm in labeling all
+ heartbeats in a cluster as the centroid.
+ 
+\emph on
+Repetitions
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ was designed to evaluate multiple times the algorithm performance in a
+ particular recording.
+ As a result, the computed confusion matrix is a 3-D cube with the amount
+ of repetitions as the third coordinate.
+ With this kind of confusion matrix it is possible to estimate the dispersion
+ of the results presented in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "LlamedoPhDthesis,Llamedo12Semiauto"
+
+\end_inset
+
+.
+ Finally, the 
+\family default
+\series default
+\shape default
+\size default
+\emph on
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ClusteringRepetitions
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ parameter requires a special explanation, since it was not described in
+ the bibliography.
+ In few words, it is a trick for increasing the clustering resolution for
+ complex or long-term recordings.
+ The higher this parameter, the higher the amount of cluster found and,
+ at the end, the assistance required by the algorithm.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+From the user point of view, you should be satisfied with this clue, however
+ if you are interested in the trick, I will explain it with a toy example.
+ Consider the following clustering problem, where we are interested in finding
+ 3 clusters.
+\end_layout
+
+\begin_layout Standard
+\align center
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Graphics
+	filename clust_rep_ex1.svg
+	width 100text%
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Now if we repeat the same process two times, our clustering algorithm does
+ not guarantee to find the same partition.
+ However our intuition tells us that in case where the classes are well
+ separated, the partition is likely to remain very similar through the repetitio
+ns.
+ In the opposite case, the partition can change.
+ Then after 
+\begin_inset Formula $N$
+\end_inset
+
+ repetitions, the 
+\family default
+\series default
+\shape default
+\size default
+\emph on
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+QRS_amount 
+\emph default
+heartbeats were assigned 
+\begin_inset Formula $N$
+\end_inset
+
+ cluster labels.
+ 
+\end_layout
+
+\begin_layout Standard
+\align center
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Graphics
+	filename clust_rep_ex2.svg
+	width 100text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So the number of clusters increase according to 
+\emph on
+N
+\emph default
+.
+ In order to keep this number in the order of tens, it was used a merging
+ criterion for 
+\emph on
+similar cluster
+\emph default
+s.
+ The similarity is measure in terms of labeling differences across the repetitio
+ns.
+ For example:
+\end_layout
+
+\begin_layout Standard
+\align center
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Graphics
+	filename clust_rep_ex3.svg
+	width 100text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then we can group together some clusters based on this labeling distance.
+ The 
+\emph on
+a2hbc
+\emph default
+ group together clusters within a distance of 
+\begin_inset Formula $0.2\text{·}N$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:parameters"
+
+\end_inset
+
+List of parameters of 
+\emph on
+a2hbc
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="21" columns="4">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="30text%">
+<column alignment="left" valignment="top" width="30text%">
+<row>
+<cell multirow="3" alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Name
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="1" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+default
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+validation
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+'recording_name'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+--
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+char
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+The file name of the ECG recording
+\begin_inset Formula $^{1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+'recording_format'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+--
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+{MIT, 'ISHNE', 'AHA', 'HES', 'MAT'}
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+The format of the ECG recording
+\begin_inset Formula $^{1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+'ECG'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+--
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+numeric
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+The ECG samples
+\begin_inset Formula $^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+'ECG_header'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+--
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+struct
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Struct with ECG features
+\begin_inset Formula $^{2,3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+'QRS_annotations'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+--
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+numeric
+\emph default
+ && 
+\begin_inset Formula $x_{i}\geq1,\,\forall i$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Sample occurrence of QRS complexes
+\begin_inset Formula $^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+'op_mode'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+'auto'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+{'auto', 'slightly-assisted', 'assisted'} || 
+\begin_inset Formula $1\leq x\leq3$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+'cant_pids'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $x\geq1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+How many processes in total to compute this recording
+\begin_inset Formula $^{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+'this_pid'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $x\geq1$
+\end_inset
+
+ && 
+\begin_inset Formula $x\leq$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+'cant_pids'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Which of the processes is this.
+\begin_inset Formula $^{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+'CacheData'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+true
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+logical
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Save intermediate results to speed-up re-processing ?
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+'InteractiveMode'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+logical
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Show the control panel after processing the recording.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+'SimulateExpert'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+logical
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Use expert annotations to simulate expert interaction
+\begin_inset Formula $^{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+'tmp_path'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+char
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Path to store intermediate results.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+'NumOfClusters'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $x>1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Number of cluster to search.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+'ClusteringRepetitions'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1\leq x\leq10$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Repetitions of the clustering process.
+\begin_inset Formula $^{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+'ClusterPresence'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+75
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0\leq x\leq100$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Threshold for the qualified majority.
+\begin_inset Formula $^{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+'Repetitions'
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $x\geq1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Repetitions to evaluate this recordings.
+\begin_inset Formula $^{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="left" valignment="top" usebox="none" width="100text%">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $^{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $^{2}$
+\end_inset
+
+ indicates groups of parameters that can not be mixed.
+ You can specify file name and format, or pass the ECG samples, QRS annotations,
+ etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $^{3}$
+\end_inset
+
+ See a complete explanation in the text, or in the references 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "LlamedoPhDthesis,Llamedo12Semiauto"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+The power of a high performance computing cluster
+\end_layout
+
+\begin_layout Standard
+Maybe one of the most useful features of 
+\emph on
+a2hbc
+\emph default
+ is that was developed for being used in a high performance computing cluster.
+ The parameters 
+\emph on
+cant_pids
+\emph default
+ and 
+\emph on
+this_pid
+\emph default
+ controls the partitioning of the work for each recording.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "backgroundcolor={\color{softyellow}},basicstyle={\scriptsize\ttfamily},commentstyle={\color{dkgreen}},keywordstyle={\color{blue}},language=Matlab,showstringspaces=false,stringstyle={\color{mauve}},tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+% Computer 1
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lab1 = a2hbc( ...
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	'recording_name', [ '.' filesep 'example recordings' filesep '208.dat'],
+ ...
+\end_layout
+
+\begin_layout Plain Layout
+
+	'recording_format', 'MIT', ...
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	'this_pid', 1, ...
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	'cant_pid', 2, ...
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	'op_mode', 'auto');
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+% Computer 2
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lab2 = a2hbc( ...
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	'recording_name', [ '.' filesep 'example recordings' filesep '208.dat'],
+ ...
+\end_layout
+
+\begin_layout Plain Layout
+
+	'recording_format', 'MIT', ...
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	'this_pid', 2, ...
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	'cant_pid', 2, ...
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	'op_mode', 'auto');
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+% Somewhere: results collection and processing
+\end_layout
+
+\begin_layout Plain Layout
+
+lab = [lab1; lab2];
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is recommended to adapt this features to the batch manager available
+ in your computing facilities.
+ In the case of our University, the batch manager used is Condor 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Condor"
+
+\end_inset
+
+.
+ You can ask me for the condor implementation for multiprocessing, but the
+ details of this are outside of the scope of this tutorial.
+\end_layout
+
+\begin_layout Section
+If something unexpected happens ...
+\end_layout
+
+\begin_layout Standard
+Don't panic, 
+\emph on
+a2hbc
+\emph default
+ 
+\begin_inset Quotes eld
+\end_inset
+
+should handle
+\begin_inset Quotes erd
+\end_inset
+
+ nicely the exceptions.
+ In case something unexpected happens you will see a message like this:
+\end_layout
+
+\begin_layout Standard
+\align center
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Graphics
+	filename error.png
+	width 60text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can debug the problem by yourself or let 
+\emph on
+a2hbc
+\emph default
+ send a report to me by the Internet.
+ 
+\end_layout
+
+\begin_layout Section
+Acknowledgments
+\end_layout
+
+\begin_layout Standard
+This software was supported by the University of Zaragoza, Spain and the
+ National Technical University of Buenos Aires, Argentina.
+\end_layout
+
+\begin_layout Section
+\start_of_appendix
+Cluster scripts
+\end_layout
+
+\begin_layout Standard
+Master script: run_a2hbc.condor
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "backgroundcolor={\color{softgray}},basicstyle={\scriptsize\ttfamily},language=bash,tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#!/bin/bash
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#           0   1      2      3         4             5          6     
+    7         8      9                       
+\end_layout
+
+\begin_layout Plain Layout
+
+databases=( AHA ESTTDB LTSTDB MITBIH-AR MITBIH-AR-DS2 MITBIH-SUP MITBIH-ST
+ INCART Biosigna  MITBIH-LT)
+\end_layout
+
+\begin_layout Plain Layout
+
+db_fmt=(    AHA MIT    MIT    MIT       MIT           MIT        MIT   
+    MIT    HES       MIT)
+\end_layout
+
+\begin_layout Plain Layout
+
+pidsXrec=(  3   10      30     3         3             3          3    
+     3      3         30        )
+\end_layout
+
+\begin_layout Plain Layout
+
+db_sizes=(  154	 90     86     44        22            78         18   
+    75     56        7         )
+\end_layout
+
+\begin_layout Plain Layout
+
+db_ext=(    ecg dat    dat    dat       dat           dat        dat   
+    dat    hes       dat       )
+\end_layout
+
+\begin_layout Plain Layout
+
+db_paths=( 	"/extra/database/bio/ecg/thew/aha/" 
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+		"/extra/database/bio/ecg/thew/European ST-T Database/" 
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+		"/extra/database/bio/ecg/thew/Long-Term ST Database/"  
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+		"/extra/database/bio/ecg/thew/mitbih-ar/"  
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+		"/extra/database/bio/ecg/thew/ds2/"  
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+		"/extra/database/bio/ecg/thew/MIT-BIH Supraventricular Arrhythmia Database/"
+  
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+		"/extra/database/bio/ecg/thew/MIT-BIH ST Change Database/" 
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+		"/extra/database/bio/ecg/thew/St Petersburg Institute of Cardiological
+ Technics 12-lead Arrhythmia Database/"  
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+		"/extra/database/bio/ecg/thew/biosigna/"  
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+		"/extra/database/bio/ecg/thew/The MIT-BIH Long Term Database/"  
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+		)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Typical configuration
+\end_layout
+
+\begin_layout Plain Layout
+
+ op_modes=(		 auto slightly-assisted  assisted assisted  )
+\end_layout
+
+\begin_layout Plain Layout
+
+ NumOfClusters=(	 9    9 		 9	  12	    )
+\end_layout
+
+\begin_layout Plain Layout
+
+ ClusteringRepetitions=( 1    1 		 1	  1	    )
+\end_layout
+
+\begin_layout Plain Layout
+
+ ClusterPresence=(	 50   75		 50	  50	    )
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Long-term configuration
+\end_layout
+
+\begin_layout Plain Layout
+
+#op_modes=(		    assisted	 )
+\end_layout
+
+\begin_layout Plain Layout
+
+#NumOfClusters=(	    15  	   )
+\end_layout
+
+\begin_layout Plain Layout
+
+#ClusteringRepetitions=(    5		   )
+\end_layout
+
+\begin_layout Plain Layout
+
+#ClusterPresence=(	    50  	   )
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Esto sirve para que no haya dependencias de hacer algunos JOBS antes que
+ otros.
+\end_layout
+
+\begin_layout Plain Layout
+
+#finish_preproc_first=1
+\end_layout
+
+\begin_layout Plain Layout
+
+finish_preproc_first=0
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Esto sirve para limitar la cantidad de procesos que corren en CONDOR.
+\end_layout
+
+\begin_layout Plain Layout
+
+#limited=1
+\end_layout
+
+\begin_layout Plain Layout
+
+limited=0
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#numero de veces que reintenta un registro cuando ocurre un error.
+ Esto esta 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pensado para cuando falla al acceder a un archivo en el filesystem en red.
+\end_layout
+
+\begin_layout Plain Layout
+
+retries=1
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+submit_delay=0
+\end_layout
+
+\begin_layout Plain Layout
+
+processes_running_total=1200
+\end_layout
+
+\begin_layout Plain Layout
+
+processes_idle_total=700 #esto es para no encolar mucho trabajo en Condor
+\end_layout
+
+\begin_layout Plain Layout
+
+databases_running=4
+\end_layout
+
+\begin_layout Plain Layout
+
+iterations=60
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+if [ "$limited" -eq "0" ]
+\end_layout
+
+\begin_layout Plain Layout
+
+then
+\end_layout
+
+\begin_layout Plain Layout
+
+	databases_running=${#databases_idx[@]}
+\end_layout
+
+\begin_layout Plain Layout
+
+fi
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+aux_str="*."
+\end_layout
+
+\begin_layout Plain Layout
+
+tmp_path=/extra/scratch/bio/mllamedo/tmp/
+\end_layout
+
+\begin_layout Plain Layout
+
+condor_output_path=/home/bio/mllamedo/ecg_classification/tmp/condor_output/
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#do_cleanup=1 #SI limpia temporales anteriores
+\end_layout
+
+\begin_layout Plain Layout
+
+do_cleanup=0 #NO limpia temporales anteriores
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#echo "Cleaning previous $condor_output_path_this_work/global.dag files ..."
+\end_layout
+
+\begin_layout Plain Layout
+
+#rm ./global.*
+\end_layout
+
+\begin_layout Plain Layout
+
+#echo "done."
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+global_parent_string="PARENT" 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+aux=$(echo "scale=0; ${#databases[@]}-1" | bc)
+\end_layout
+
+\begin_layout Plain Layout
+
+#databases_idx=($(seq 0 $aux) )
+\end_layout
+
+\begin_layout Plain Layout
+
+#databases_idx=($(seq 0 8) )
+\end_layout
+
+\begin_layout Plain Layout
+
+databases_idx=(3 4)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ [...
+ lines omitted ...]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+if [ "$limited" -eq "1" ]
+\end_layout
+
+\begin_layout Plain Layout
+
+then
+\end_layout
+
+\begin_layout Plain Layout
+
+	condor_submit_dag -f -maxjobs $databases_running $condor_output_path_this_work/
+global.dag
+\end_layout
+
+\begin_layout Plain Layout
+
+else
+\end_layout
+
+\begin_layout Plain Layout
+
+	condor_submit_dag -f $condor_output_path_this_work/global.dag
+\end_layout
+
+\begin_layout Plain Layout
+
+fi
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+echo "Logs en $condor_output_path_this_work"
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Run the job
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "backgroundcolor={\color{softgray}},basicstyle={\scriptsize\ttfamily},tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+-bash-3.2$ .
+ run_a2hbc.condor
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+MITBIH-AR limitara a  registros idle.
+\end_layout
+
+\begin_layout Plain Layout
+
+Generating dag files MITBIH-AR work ...
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Renaming rescue DAGs newer than number 0
+\end_layout
+
+\begin_layout Plain Layout
+
+-----------------------------------------------------------------------
+\end_layout
+
+\begin_layout Plain Layout
+
+File for submitting this DAG to Condor           : /home/bio/mllamedo/ecg_classi
+fication/tmp/condor_output/2012_03_01-13_02_01/MITBIH-AR.dag.condor.sub
+\end_layout
+
+\begin_layout Plain Layout
+
+Log of DAGMan debugging messages                 : /home/bio/mllamedo/ecg_classi
+fication/tmp/condor_output/2012_03_01-13_02_01/MITBIH-AR.dag.dagman.out
+\end_layout
+
+\begin_layout Plain Layout
+
+Log of Condor library output                     : /home/bio/mllamedo/ecg_classi
+fication/tmp/condor_output/2012_03_01-13_02_01/MITBIH-AR.dag.lib.out
+\end_layout
+
+\begin_layout Plain Layout
+
+Log of Condor library error messages             : /home/bio/mllamedo/ecg_classi
+fication/tmp/condor_output/2012_03_01-13_02_01/MITBIH-AR.dag.lib.err
+\end_layout
+
+\begin_layout Plain Layout
+
+Log of the life of condor_dagman itself          : /home/bio/mllamedo/ecg_classi
+fication/tmp/condor_output/2012_03_01-13_02_01/MITBIH-AR.dag.dagman.log
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+-no_submit given, not submitting DAG to Condor.
+  You can do this with:
+\end_layout
+
+\begin_layout Plain Layout
+
+"condor_submit /home/bio/mllamedo/ecg_classification/tmp/condor_output/2012_03_0
+1-13_02_01/MITBIH-AR.dag.condor.sub"
+\end_layout
+
+\begin_layout Plain Layout
+
+-----------------------------------------------------------------------
+\end_layout
+
+\begin_layout Plain Layout
+
+Runtime error (func=(main), adr=12): Divide by zero
+\end_layout
+
+\begin_layout Plain Layout
+
+Runtime error (func=(main), adr=11): Divide by zero
+\end_layout
+
+\begin_layout Plain Layout
+
+MITBIH-AR-DS2 limitara a  registros idle.
+\end_layout
+
+\begin_layout Plain Layout
+
+Generating dag files MITBIH-AR-DS2 work ...
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Renaming rescue DAGs newer than number 0
+\end_layout
+
+\begin_layout Plain Layout
+
+-----------------------------------------------------------------------
+\end_layout
+
+\begin_layout Plain Layout
+
+File for submitting this DAG to Condor           : /home/bio/mllamedo/ecg_classi
+fication/tmp/condor_output/2012_03_01-13_02_01/MITBIH-AR-DS2.dag.condor.sub
+\end_layout
+
+\begin_layout Plain Layout
+
+Log of DAGMan debugging messages                 : /home/bio/mllamedo/ecg_classi
+fication/tmp/condor_output/2012_03_01-13_02_01/MITBIH-AR-DS2.dag.dagman.out
+\end_layout
+
+\begin_layout Plain Layout
+
+Log of Condor library output                     : /home/bio/mllamedo/ecg_classi
+fication/tmp/condor_output/2012_03_01-13_02_01/MITBIH-AR-DS2.dag.lib.out
+\end_layout
+
+\begin_layout Plain Layout
+
+Log of Condor library error messages             : /home/bio/mllamedo/ecg_classi
+fication/tmp/condor_output/2012_03_01-13_02_01/MITBIH-AR-DS2.dag.lib.err
+\end_layout
+
+\begin_layout Plain Layout
+
+Log of the life of condor_dagman itself          : /home/bio/mllamedo/ecg_classi
+fication/tmp/condor_output/2012_03_01-13_02_01/MITBIH-AR-DS2.dag.dagman.log
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+-no_submit given, not submitting DAG to Condor.
+  You can do this with:
+\end_layout
+
+\begin_layout Plain Layout
+
+"condor_submit /home/bio/mllamedo/ecg_classification/tmp/condor_output/2012_03_0
+1-13_02_01/MITBIH-AR-DS2.dag.condor.sub"
+\end_layout
+
+\begin_layout Plain Layout
+
+-----------------------------------------------------------------------
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Renaming rescue DAGs newer than number 0
+\end_layout
+
+\begin_layout Plain Layout
+
+-----------------------------------------------------------------------
+\end_layout
+
+\begin_layout Plain Layout
+
+File for submitting this DAG to Condor           : /home/bio/mllamedo/ecg_classi
+fication/tmp/condor_output/2012_03_01-13_02_01/global.dag.condor.sub
+\end_layout
+
+\begin_layout Plain Layout
+
+Log of DAGMan debugging messages                 : /home/bio/mllamedo/ecg_classi
+fication/tmp/condor_output/2012_03_01-13_02_01/global.dag.dagman.out
+\end_layout
+
+\begin_layout Plain Layout
+
+Log of Condor library output                     : /home/bio/mllamedo/ecg_classi
+fication/tmp/condor_output/2012_03_01-13_02_01/global.dag.lib.out
+\end_layout
+
+\begin_layout Plain Layout
+
+Log of Condor library error messages             : /home/bio/mllamedo/ecg_classi
+fication/tmp/condor_output/2012_03_01-13_02_01/global.dag.lib.err
+\end_layout
+
+\begin_layout Plain Layout
+
+Log of the life of condor_dagman itself          : /home/bio/mllamedo/ecg_classi
+fication/tmp/condor_output/2012_03_01-13_02_01/global.dag.dagman.log
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Submitting job(s).
+\end_layout
+
+\begin_layout Plain Layout
+
+1 job(s) submitted to cluster 3255737.
+\end_layout
+
+\begin_layout Plain Layout
+
+-----------------------------------------------------------------------
+\end_layout
+
+\begin_layout Plain Layout
+
+Logs en /home/bio/mllamedo/ecg_classification/tmp/condor_output/2012_03_01-13_02
+_01
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Query the job status
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "backgroundcolor={\color{softgray}},basicstyle={\scriptsize\ttfamily},tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+-bash-3.2$ condor_q -dag mllamedo
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+-- Submitter: hermes@ : <172.16.4.100:37992> : hermes.cps.unizar.es
+\end_layout
+
+\begin_layout Plain Layout
+
+ ID      OWNER/NODENAME   SUBMITTED     RUN_TIME ST PRI SIZE CMD
+\end_layout
+
+\begin_layout Plain Layout
+
+3255737.0   mllamedo        3/1  13:02   0+00:00:42 R  0   7.3  condor_dagman
+ -f -
+\end_layout
+
+\begin_layout Plain Layout
+
+3255738.0    |-MITBIH-AR    3/1  13:02   0+00:00:27 R  0   7.3  condor_dagman
+ -f -
+\end_layout
+
+\begin_layout Plain Layout
+
+3255739.0    |-MITBIH-AR-D  3/1  13:02   0+00:00:22 R  0   7.3  condor_dagman
+ -f -
+\end_layout
+
+\begin_layout Plain Layout
+
+3255740.0    |-100_auto0    3/1  13:02   0+00:00:00 I  0   0.0  condor_exec.sh
+ a2h
+\end_layout
+
+\begin_layout Plain Layout
+
+3255740.1    |-100_auto0    3/1  13:02   0+00:00:00 I  0   0.0  condor_exec.sh
+ a2h
+\end_layout
+
+\begin_layout Plain Layout
+
+3255740.2    |-100_auto0    3/1  13:02   0+00:00:00 I  0   0.0  condor_exec.sh
+ a2h
+\end_layout
+
+\begin_layout Plain Layout
+
+3255741.0    |-101_auto0    3/1  13:02   0+00:00:00 I  0   0.0  condor_exec.sh
+ a2h
+\end_layout
+
+\begin_layout Plain Layout
+
+3255741.1    |-101_auto0    3/1  13:02   0+00:00:00 I  0   0.0  condor_exec.sh
+ a2h
+\end_layout
+
+\begin_layout Plain Layout
+
+3255741.2    |-101_auto0    3/1  13:02   0+00:00:00 I  0   0.0  condor_exec.sh
+ a2h
+\end_layout
+
+\begin_layout Plain Layout
+
+3255742.0    |-103_auto0    3/1  13:02   0+00:00:00 I  0   0.0  condor_exec.sh
+ a2h
+\end_layout
+
+\begin_layout Plain Layout
+
+3255742.1    |-103_auto0    3/1  13:02   0+00:00:00 I  0   0.0  condor_exec.sh
+ a2h
+\end_layout
+
+\begin_layout Plain Layout
+
+3255742.2    |-103_auto0    3/1  13:02   0+00:00:00 I  0   0.0  condor_exec.sh
+ a2h
+\end_layout
+
+\begin_layout Plain Layout
+
+3255743.0    |-105_auto0    3/1  13:02   0+00:00:00 I  0   0.0  condor_exec.sh
+ a2h
+\end_layout
+
+\begin_layout Plain Layout
+
+3255743.1    |-105_auto0    3/1  13:02   0+00:00:00 I  0   0.0  condor_exec.sh
+ a2h
+\end_layout
+
+\begin_layout Plain Layout
+
+3255743.2    |-105_auto0    3/1  13:02   0+00:00:00 I  0   0.0  condor_exec.sh
+ a2h
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Check for errors
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "backgroundcolor={\color{softgray}},basicstyle={\scriptsize\ttfamily},tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+-bash-3.2$ ./my_cat /home/bio/mllamedo/ecg_classification/tmp/condor_output/2012_0
+2_29-18_10_55/
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/home/bio/mllamedo/ecg_classification/tmp/condor_output/2012_02_29-18_10_55/MITB
+IH-AR_slightly-assisted1.err
+\end_layout
+
+\begin_layout Plain Layout
+
+??? Undefined function or method 'CollectResutls' for input arguments of
+ type
+\end_layout
+
+\begin_layout Plain Layout
+
+'char'.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/home/bio/mllamedo/ecg_classification/tmp/condor_output/2012_02_29-18_10_55/MITB
+IH-AR_assisted2.err
+\end_layout
+
+\begin_layout Plain Layout
+
+??? Undefined function or method 'CollectResutls' for input arguments of
+ type
+\end_layout
+
+\begin_layout Plain Layout
+
+'char'.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/home/bio/mllamedo/ecg_classification/tmp/condor_output/2012_02_29-18_10_55/glob
+al.dag.lib.err
+\end_layout
+
+\begin_layout Plain Layout
+
+Renaming rescue DAGs newer than number 0
+\end_layout
+
+\begin_layout Plain Layout
+
+Renaming rescue DAGs newer than number 0
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/home/bio/mllamedo/ecg_classification/tmp/condor_output/2012_02_29-18_10_55/MITB
+IH-AR-DS2_assisted2.err
+\end_layout
+
+\begin_layout Plain Layout
+
+??? Undefined function or method 'CollectResutls' for input arguments of
+ type
+\end_layout
+
+\begin_layout Plain Layout
+
+'char'.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/home/bio/mllamedo/ecg_classification/tmp/condor_output/2012_02_29-18_10_55/MITB
+IH-AR_assisted3.err
+\end_layout
+
+\begin_layout Plain Layout
+
+??? Undefined function or method 'CollectResutls' for input arguments of
+ type
+\end_layout
+
+\begin_layout Plain Layout
+
+'char'.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/home/bio/mllamedo/ecg_classification/tmp/condor_output/2012_02_29-18_10_55/MITB
+IH-AR_auto0.err
+\end_layout
+
+\begin_layout Plain Layout
+
+??? Undefined function or method 'CollectResutls' for input arguments of
+ type
+\end_layout
+
+\begin_layout Plain Layout
+
+'char'.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/home/bio/mllamedo/ecg_classification/tmp/condor_output/2012_02_29-18_10_55/MITB
+IH-AR-DS2_slightly-assisted1.err
+\end_layout
+
+\begin_layout Plain Layout
+
+??? Undefined function or method 'CollectResutls' for input arguments of
+ type
+\end_layout
+
+\begin_layout Plain Layout
+
+'char'.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/home/bio/mllamedo/ecg_classification/tmp/condor_output/2012_02_29-18_10_55/MITB
+IH-AR-DS2_assisted3.err
+\end_layout
+
+\begin_layout Plain Layout
+
+??? Undefined function or method 'CollectResutls' for input arguments of
+ type
+\end_layout
+
+\begin_layout Plain Layout
+
+'char'.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Encontramos 804 archivos ...
+\end_layout
+
+\begin_layout Plain Layout
+
+de los cuales 10 con errores a reportar ...
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Process the results
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "backgroundcolor={\color{softyellow}},basicstyle={\scriptsize\ttfamily},commentstyle={\color{dkgreen}},keywordstyle={\color{blue}},language=Matlab,showstringspaces=false,stringstyle={\color{mauve}},tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+% Collect results for each operation mode
+\end_layout
+
+\begin_layout Plain Layout
+
+>> CollectResutls( '/extra/scratch/bio/mllamedo/tmp/MITBIH-AR', 'auto' )
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+>> CollectResutls( '/extra/scratch/bio/mllamedo/tmp/MITBIH-AR', 'slightly-assist
+ed' ) 
+\end_layout
+
+\begin_layout Plain Layout
+
+>> CollectResutls( '/extra/scratch/bio/mllamedo/tmp/MITBIH-AR', 'assisted'
+ ) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+>> ResultsForAllDatabases( '/extra/scratch/bio/mllamedo/tmp/', ...
+\end_layout
+
+\begin_layout Plain Layout
+
+						   {'auto' 'slightly-assisted' 'assisted'} )
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "backgroundcolor={\color{softgray}},basicstyle={\scriptsize\ttfamily}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#####################
+\end_layout
+
+\begin_layout Plain Layout
+
+## AHA auto_9_1_50 ##
+\end_layout
+
+\begin_layout Plain Layout
+
+#####################
+\end_layout
+
+\begin_layout Plain Layout
+
+Encontramos 60.00 iteraciones.
+\end_layout
+
+\begin_layout Plain Layout
+
+Warning: Assumnig equal priors.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+> In DisplayResults at 129
+\end_layout
+
+\begin_layout Plain Layout
+
+  In ResultsForAllDatabases at 83
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  True            | Estimated Labels
+\end_layout
+
+\begin_layout Plain Layout
+
+  Labels          | Normal Suprav Ventri Unknow| Totals
+\end_layout
+
+\begin_layout Plain Layout
+
+ -----------------|----------------------------|-------
+\end_layout
+
+\begin_layout Plain Layout
+
+  Normal          | 296739(736)  10589(363)  10406(647)  0(0) | 317735(0)
+\end_layout
+
+\begin_layout Plain Layout
+
+ Supraventricular| 0(0)  0(0)  0(0)  0(0) | 0(0)
+\end_layout
+
+\begin_layout Plain Layout
+
+ Ventricular     | 1660(131)  6653(231)  25674(250)  0(0) | 33987(0)
+\end_layout
+
+\begin_layout Plain Layout
+
+ Unknown         | 201(23)  65(11)  306(24)  0(0) | 572(0)
+\end_layout
+
+\begin_layout Plain Layout
+
+-----------------|----------------------------|-------
+\end_layout
+
+\begin_layout Plain Layout
+
+  Totals          | 298600(752)  17308(469)  36387(818)  0(0) | 352294(0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Balanced Results for AHA
+\end_layout
+
+\begin_layout Plain Layout
+
+------------------------
+\end_layout
+
+\begin_layout Plain Layout
+
+| Normal              || Supraventricular    || Ventricular         || Unknown
+             ||                   TOTALS                   |
+\end_layout
+
+\begin_layout Plain Layout
+
+|     Se       +P     ||     Se       +P     ||     Se       +P     || 
+    Se       +P     ||     Acc      |     Se       |      +P      |
+\end_layout
+
+\begin_layout Plain Layout
+
+|  93(  0)%  70(  2)% ||  --( --)%  --( --)% ||  75(  1)%  96(  0)% || 
+  0(  0)%   0(  0)% ||   56(  0)%   |   56(  0)%   |   32(  0)%   |
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Unbalanced Results for AHA
+\end_layout
+
+\begin_layout Plain Layout
+
+--------------------------
+\end_layout
+
+\begin_layout Plain Layout
+
+| Normal              || Supraventricular    || Ventricular         || Unknown
+             ||                   TOTALS                   |
+\end_layout
+
+\begin_layout Plain Layout
+
+|     Se       +P     ||     Se       +P     ||     Se       +P     || 
+    Se       +P     ||     Acc      |     Se       |      +P      |
+\end_layout
+
+\begin_layout Plain Layout
+
+|  93(  0)%  99(  0)% ||  --( --)%  --( --)% ||  75(  1)%  71(  1)% || 
+  0(  0)%   0(  0)% ||   92(  0)%   |   56(  0)%   |   42(  0)%   |
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+[...
+ lot of results ...]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Resumen de performances globales
+\end_layout
+
+\begin_layout Plain Layout
+
+--------------------------------
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+AHA	auto	9_1_50	93XX0	99XX0	NaNXXNaN	NaNXXNaN	75XX1	71XX1	0XX0	0XX0	92XX0	56XX0	
+42XX0
+\end_layout
+
+\begin_layout Plain Layout
+
+AHA	auto	9_1_100	91XX0	99XX0	NaNXXNaN	NaNXXNaN	75XX0	66XX0	0XX0	0XX0	89XX0	55XX0
+	41XX0
+\end_layout
+
+\begin_layout Plain Layout
+
+AHA	slightly-assisted	9_1_75	96XX0	99XX0	NaNXXNaN	NaNXXNaN	86XX1	82XX0	49XX2	85X
+X4	95XX0	77XX1	67XX1
+\end_layout
+
+\begin_layout Plain Layout
+
+AHA	assisted	12_1_50	100XX0	100XX0	NaNXXNaN	NaNXXNaN	97XX0	98XX0	63XX5	83XX4	99X
+X0	87XX2	94XX1
+\end_layout
+
+\begin_layout Plain Layout
+
+AHA	assisted	9_1_50	100XX0	100XX0	NaNXXNaN	NaNXXNaN	97XX0	98XX0	54XX3	81XX3	99XX
+0	84XX1	93XX1
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+[...
+ lot of results ...]
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+MITBIH-AR	auto	9_1_50	96XX0	98XX0	74XX4	42XX2	84XX1	88XX1	25XX4	30XX4	7XX7	1XX1	
+94XX0	57XX1	52XX1
+\end_layout
+
+\begin_layout Plain Layout
+
+MITBIH-AR	auto	9_1_100	95XX0	98XX0	76XX0	35XX0	76XX0	77XX0	0XX0	0XX0	93XX0	62XX0
+	52XX0
+\end_layout
+
+\begin_layout Plain Layout
+
+MITBIH-AR	slightly-assisted	9_1_75	98XX0	99XX0	78XX3	62XX3	86XX2	93XX1	47XX14	60
+XX6	0XX0	0XX0	96XX0	62XX3	63XX2
+\end_layout
+
+\begin_layout Plain Layout
+
+MITBIH-AR	assisted	12_1_50	100XX0	99XX0	89XX2	88XX3	91XX1	97XX1	54XX13	70XX5	0XX
+0	0XX0	98XX0	67XX2	72XX4
+\end_layout
+
+\begin_layout Plain Layout
+
+MITBIH-AR	assisted	9_1_50	99XX0	99XX0	86XX1	85XX2	89XX2	97XX1	49XX6	63XX4	0XX0	0
+XX0	98XX0	65XX2	68XX2
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Bibliography
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "D:/Mariano/research/ECG Classification/docs/database de referencias/refs"
+options "IEEEtran"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
