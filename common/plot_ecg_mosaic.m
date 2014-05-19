@@ -304,7 +304,11 @@ if( ~isempty(positions) )
                      { TwaveColor  } ]'}; 
     Twave(:,[x1_idx y1_idx x2_idx y2_idx]) = [ num2cell(min_vals_tw_x), num2cell(min_vals_tw_y), num2cell(max_vals_tw_x), num2cell(max_vals_tw_y)];
 
-    annotations = cat(3, Pwave, QRScplx, Twave);
+    if( isempty(annotations) )
+        annotations = cat(3, Pwave, QRScplx, Twave);
+    else
+        annotations = cat(3, annotations, Pwave, QRScplx, Twave);
+    end
     
 end
 
@@ -604,7 +608,11 @@ for ii = 1:cant_sig
                     
                     if( ~isnan(annotations{ii,x1_idx,jj}) )
 
-                        txthdl = [ txthdl text_arrow(annotations{ii,x1_idx,jj}, ECG(annotations{ii,x1_idx,jj}, ii), '', annotations{ii,plot_options_str_idx,jj}, axes_hdl(ii) )];
+                        aux_hdl = text_arrow(annotations{ii,x1_idx,jj}, ECG(annotations{ii,x1_idx,jj}, ii), '', annotations{ii,plot_options_str_idx,jj}, axes_hdl(ii) );
+                        
+                        txthdl = [ txthdl aux_hdl ];
+                       
+                        uistack(aux_hdl,'bottom');
                         
 %                         aux_hdl = eval( [ 'plot( annotations{' num2str(ii) ',' num2str(x1_idx) ',' num2str(jj) '}, ECG(annotations{' num2str(ii) ',' num2str(x1_idx) ',' num2str(jj) '},' num2str(ii) ',1)  ' annotations{ii,plot_options_str_idx,jj} ')']);
 %                         anns_hdl = [ anns_hdl; colvec(aux_hdl)];
@@ -638,7 +646,11 @@ for ii = 1:cant_sig
                     
                     if( ~isempty(cell2mat(annotations(ii,4:7,jj)))   )
                         
-                        txthdl = [ txthdl text_line(cell2mat(annotations(ii,[x1_idx x2_idx],jj)), cell2mat(annotations(ii,[y1_idx y2_idx],jj)), '', annotations{ii,plot_options_str_idx,jj}, axes_hdl(ii) )];
+                        aux_hdl = text_line(cell2mat(annotations(ii,[x1_idx x2_idx],jj)), cell2mat(annotations(ii,[y1_idx y2_idx],jj)), '', annotations{ii,plot_options_str_idx,jj}, axes_hdl(ii) );
+                        
+                        txthdl = [ txthdl aux_hdl ];
+                        
+                        uistack(aux_hdl,'bottom');
                         
 %                         aux_hdl = eval( [ 'plot( cell2mat(annotations(' num2str(ii) ', [' num2str(x1_idx) ' ' num2str(x2_idx) '],' num2str(jj) ')), cell2mat(annotations(' num2str(ii) ', [' num2str(y1_idx) ' ' num2str(y2_idx) '],' num2str(jj) '))'  annotations{ii,plot_options_str_idx,jj} ')']);
 %                         anns_hdl = [ anns_hdl; colvec(aux_hdl)];
@@ -680,7 +692,9 @@ for ii = 1:cant_sig
                         aux_prop_vals = annotations{ii,plot_options_str_idx,jj};
                         set( aux_hdl, aux_prop_vals(:,1)', aux_prop_vals(:,2)' );
                         
-                        txthdl = [ txthdl; aux_hdl];
+                        txthdl = [ txthdl ];
+
+                        uistack(aux_hdl,'bottom');
 
                     end                    
                     
@@ -690,7 +704,6 @@ for ii = 1:cant_sig
         
     end
    
-    uistack(txthdl,'bottom');
 
     patch([left_legend left_legend [left_legend left_legend]+width_legend left_legend ], [bottom_legend [bottom_legend bottom_legend]+height_legend bottom_legend bottom_legend], [1 1 1], 'EdgeColor', [0 0 0]);
     text( left_legend + width_legend/4, bottom_legend + height_legend/2, 'P', 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', PwaveColor);

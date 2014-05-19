@@ -1,1 +1,1 @@
-C:\Program Files (x86)\LyX 2.0\ghostscript\bin\gswin32c.exe
+gs

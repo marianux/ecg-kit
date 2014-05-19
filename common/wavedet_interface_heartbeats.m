@@ -1,5 +1,7 @@
 function template_positions = wavedet_interface_heartbeats( ecg_template, header, qrs_idx )
-        
+
+    cIgnoreAnnotation = { 'Ptipo' 'Ttipo' };
+
     template_size = size(ecg_template,1);
     my_win = ones(template_size,1);
     N_half_win = 64;
@@ -24,9 +26,13 @@ function template_positions = wavedet_interface_heartbeats( ecg_template, header
     for ii = 1:header.nsig
         for fname = rowvec(fieldnames(all_positions(ii)))
             aux_val = all_positions(ii).(fname{1});
-            aux_val = aux_val(end) - (template_location(end) - qrs_idx + 1) + 1;
-            if( aux_val < 1 || aux_val > template_size )
-                aux_val = nan;
+            if( any(strcmpi(cIgnoreAnnotation, fname{1})) )
+                aux_val = aux_val(end);
+            else
+                aux_val = aux_val(end) - (template_location(end) - qrs_idx + 1) + 1;
+                if( aux_val < 1 || aux_val > template_size )
+                    aux_val = nan;
+                end
             end
             template_positions(ii).(fname{1}) = aux_val;
         end
