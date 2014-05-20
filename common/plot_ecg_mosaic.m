@@ -650,8 +650,9 @@ for ii = 1:cant_sig
                         
                         txthdl = [ txthdl aux_hdl ];
                         
-                        uistack(aux_hdl,'bottom');
-                        
+                        for kk = aux_hdl
+                            uistack(kk,'bottom');
+                        end                        
 %                         aux_hdl = eval( [ 'plot( cell2mat(annotations(' num2str(ii) ', [' num2str(x1_idx) ' ' num2str(x2_idx) '],' num2str(jj) ')), cell2mat(annotations(' num2str(ii) ', [' num2str(y1_idx) ' ' num2str(y2_idx) '],' num2str(jj) '))'  annotations{ii,plot_options_str_idx,jj} ')']);
 %                         anns_hdl = [ anns_hdl; colvec(aux_hdl)];
 %                         if( ~strcmpi('', annotations{ii,text_idx,jj}) )
