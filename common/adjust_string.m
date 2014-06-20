@@ -34,5 +34,13 @@ function adjusted_str = adjust_string(str2trimm, target_width, where2trimm )
                 error('Dont understand "casewhere2trimm". "left" "right" "center" ')
         end
     else
-        adjusted_str = [str2trimm repmat(' ', 1, target_width - lstr2trimm)];
+        
+        switch(lower(where2trimm))
+            case 'pad'
+                adjusted_str = [str2trimm repmat(' ', 1, target_width - lstr2trimm)];
+                
+            otherwise
+                adjusted_str = str2trimm;
+        end
+        
     end

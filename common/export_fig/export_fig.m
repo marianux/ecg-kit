@@ -422,12 +422,8 @@ if isvector(options)
             eps_remove_background(tmp_nam);
         end
         % Add a bookmark to the PDF if desired
-        if options.bookmark
-            fig_nam = get(fig, 'Name');
-            if isempty(fig_nam)
-                warning('export_fig:EmptyBookmark', 'Bookmark requested for figure with no name. Bookmark will be empty.');
-            end
-            add_bookmark(tmp_nam, fig_nam);
+        if( ~isempty(options.bookmark) )
+            add_bookmark(tmp_nam, options.bookmark);
         end
         % Generate a pdf
         eps2pdf(tmp_nam, pdf_nam, 1, options.append, options.colourspace==2, options.quality);
@@ -489,12 +485,13 @@ options = struct('name', 'export_fig_out', ...
                  'aa_factor', 3, ...
                  'magnify', [], ...
                  'resolution', [], ...
-                 'bookmark', false, ...
+                 'bookmark', '', ...
                  'quality', []);
 native = false; % Set resolution to native of an image
 
 % Go through the other arguments
-for a = 1:nargin-1
+a = 1;
+while( a <= nargin-1 )
     if all(ishandle(varargin{a}))
         fig = varargin{a};
     elseif ischar(varargin{a}) && ~isempty(varargin{a})
@@ -533,7 +530,8 @@ for a = 1:nargin-1
                 case 'append'
                     options.append = true;
                 case 'bookmark'
-                    options.bookmark = true;
+                    a = a + 1;
+                    options.bookmark = varargin{a};
                 case 'native'
                     native = true;
                 otherwise
@@ -573,6 +571,7 @@ for a = 1:nargin-1
             end
         end
     end
+    a = a + 1;
 end
 
 % Compute the magnification and resolution

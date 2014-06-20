@@ -105,6 +105,9 @@ classdef progress_bar < handle
         obj_tic = [];
         Cleanup_hdl = [];
         bPBcreated = false;
+        childs
+        parent
+        
     end
 
     properties(SetAccess = private, GetAccess = public)
@@ -120,7 +123,7 @@ classdef progress_bar < handle
     
     methods 
 
-        function obj = progress_bar(Title, Message)
+        function obj = progress_bar(Title, Message, wb_handle)
 
             if( nargin > 0 && ischar(Title) )
                 obj.Title = Title;
@@ -132,11 +135,17 @@ classdef progress_bar < handle
             
             if( obj.bUIpresent )
                 % log to a waitbar
-                obj.wb_handle = waitbar(0, obj.Message, 'name', obj.Title );
+                
+                if( nargin < 3 || ~ishandle(wb_handle) )
+                    obj.wb_handle = waitbar(0, obj.Message, 'name', obj.Title );
+                else
+                    obj.wb_handle = wb_handle;
+                end
                 set(obj.wb_handle, 'Tag', 'progress_bar_class');
                 obj.wb_axes_hdl = findobj(obj.wb_handle,'Type','Axes');
                 set(obj.wb_axes_hdl, 'units','normalized' );
                 set(obj.wb_axes_hdl, 'position',  obj.bar_position);
+                
             else
                 % TODO:log to stdout
                 
@@ -147,6 +156,14 @@ classdef progress_bar < handle
             
             obj.bPBcreated = true;
             
+        end
+        
+        function hide(obj)
+            set(obj.wb_handle, 'Visible', 'off');
+        end
+        
+        function show(obj)
+            set(obj.wb_handle, 'Visible', 'on');
         end
         
         function checkpoint(obj, Message )
@@ -163,10 +180,20 @@ classdef progress_bar < handle
                 %estimate progress
                 currTime = toc(obj.obj_tic);
                 
-                if( obj.LoopMeanTime > obj.long_loop_in_sec )
-                    obj.counter = currTime/obj.LoopMeanTime;
+                if( isempty(obj.parent) )
+                    aux_mean_time = obj.LoopMeanTime;
+                    aux_LoopsDone = obj.LoopsDone;
+                    aux_Loop2do = obj.Loop2do;
                 else
-                    obj.counter = obj.LoopsDone/obj.Loop2do;
+                    aux_mean_time = obj.parent.LoopMeanTime + obj.LoopMeanTime;
+                    aux_LoopsDone = obj.parent.LoopsDone * obj.Loop2do + obj.LoopsDone;
+                    aux_Loop2do = obj.parent.Loop2do * obj.Loop2do ;
+                end
+                
+                if( aux_mean_time > obj.long_loop_in_sec )
+                    obj.counter = currTime/aux_mean_time;
+                else
+                    obj.counter = aux_LoopsDone/aux_Loop2do;
                 end
             end 
 
@@ -181,16 +208,29 @@ classdef progress_bar < handle
 
             waitbar( obj.counter - fix(obj.counter), obj.wb_handle, obj.Message );
             
-            if( isempty(obj.LoopMeanTime) )
+            if( isempty(obj.parent) )
+                aux_LoopMeanTime = obj.LoopMeanTime;
+            else
+                aux_LoopMeanTime = obj.parent.LoopMeanTime;
+            end
+            
+            if( isempty(aux_LoopMeanTime) )
                 if( ~isempty(obj.obj_tic) )
                     %Learning phase
                     set(obj.wb_handle, 'Name', [ obj.Title '. Learning loop time ...' ]);
                 end
             else
-                if( isempty(obj.Loop2do) )
-                    set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 30) '. [' Seconds2HMS( obj.LoopMeanTime ) ' s/loop]']);
+               
+                if( isempty(obj.parent) )
+                    aux_Time2Finish = (obj.Loop2do-obj.LoopsDone) * obj.LoopMeanTime - currTime;
                 else
-                    set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 30) '. Finishing in ' Seconds2HMS((obj.Loop2do-obj.LoopsDone) * obj.LoopMeanTime - currTime) ]);
+                    aux_Time2Finish = (obj.parent.Loop2do - obj.parent.LoopsDone) * obj.parent.LoopMeanTime + (obj.Loop2do-obj.LoopsDone) * obj.LoopMeanTime - currTime;
+                end                
+                
+                if( isempty(obj.Loop2do) )
+                    set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 30) '. [' Seconds2HMS( aux_LoopMeanTime ) ' s/loop]']);
+                else
+                    set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 30) '. Finishing in ' Seconds2HMS(aux_Time2Finish) ]);
                 end
             end
                 
@@ -201,7 +241,13 @@ classdef progress_bar < handle
             %start of loop. Reset timers
             obj.obj_tic = tic;
 
-            if( obj.LoopMeanTime > obj.long_loop_in_sec )
+            if( isempty(obj.parent) )
+                aux_mean_time = obj.LoopMeanTime;
+            else
+                aux_mean_time = obj.parent.LoopMeanTime + obj.LoopMeanTime;
+            end
+            
+            if( ~isempty(aux_mean_time) && aux_mean_time > obj.long_loop_in_sec )
                 % long process: progress within a loop.
                 waitbar( 0, obj.wb_handle, 'Start of loop.' );
 %             else
@@ -225,6 +271,14 @@ classdef progress_bar < handle
                 % short process: total progress                 
             end
             
+            
+        end
+        
+        function pb_inner = AddInerLoop(obj, strMessage)
+            
+            pb_inner = progress_bar(obj.Title, strMessage, obj.wb_handle);
+            pb_inner.parent = obj;
+            obj.childs = [ obj.childs; pb_inner ];
             
         end
         

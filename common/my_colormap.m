@@ -7,7 +7,9 @@ if( any(bAux) )
     colors( bAux,: ) = repmat([200 200 0]./255, sum(bAux),1 );
 end
 
-aux_idx = bitrevorder(1:64);
+ncol = size(colors,1);
+
+aux_idx = 1+rem(round(round(ncol/6)+linspace(0, (round(ncol/2)+1)*(ncol-1), ncol)), ncol);
 if( cant_colors > 4 )
     colors = colors( aux_idx(round(linspace(1,64, cant_colors))) , :);
 else

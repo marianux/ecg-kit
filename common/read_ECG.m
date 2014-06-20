@@ -1,10 +1,11 @@
-function [ECG heasig ann recording_format] = read_ECG(recording_name, recording_format, ECG_start_idx, ECG_end_idx)
+function [ECG heasig ann recording_format] = read_ECG(recording_name, ECG_start_idx, ECG_end_idx, recording_format)
 
 ECG = [];
 heasig = [];
 ann = [];
+cKnownFormats = {'MIT' 'ISHNE', 'HES', 'MAT', 'Mortara'};
 
-if( nargin < 2 || isempty(recording_format) )
+if( nargin < 4 || isempty(recording_format) || ~any(strcmpi( recording_format, cKnownFormats)) )
     %Try guessing the ECG format
     recording_format = ECGformat(recording_name);
     if( isempty(recording_format) )
@@ -12,11 +13,11 @@ if( nargin < 2 || isempty(recording_format) )
     end
 end
 
-if( nargin < 3 )
+if( nargin < 2 || ~isnumeric(ECG_start_idx) )
     ECG_start_idx = [];
 end
 
-if( nargin < 4 )
+if( nargin < 3 || ~isnumeric(ECG_end_idx))
     ECG_end_idx = [];
 end
 
@@ -42,6 +43,10 @@ elseif( strcmp(recording_format, 'MAT') )
         ECG = aux_load.ECG;
     end
     clear aux_load
+    
+elseif( strcmp(recording_format, 'Mortara') )
+    
+    [ECG heasig ] = read_Mortara(recording_name, ECG_start_idx, ECG_end_idx );
     
 elseif( strcmp(recording_format, 'AHA') )
     if( nargout > 1 )
@@ -86,6 +91,10 @@ elseif( strcmp(recording_format, 'MIT') )
     
     recording_files = unique(cellstr(heasig.fname));
 
+    % Sometime I filtered only ECG signals right here.
+%     ECG_idx = get_ECG_idx_from_header(heasig);
+    ECG_idx = 1:heasig.nsig;
+    
     if( isempty( ECG_start_idx ) )
         ECG_start_idx = 1;
     else
@@ -99,11 +108,18 @@ elseif( strcmp(recording_format, 'MIT') )
         ECG_end_idx = min(heasig.nsamp, ECG_end_idx);
     end
     
+    if( ECG_end_idx == 0 )
+        ECG_end_idx = realmax;
+    end
+    
     for ii = 1:length(recording_files)
         sig_idx = find(strcmpi(recording_files(ii), cellstr(heasig.fname)));
-        nsig = length(sig_idx);
-        fmt = heasig.fmt(sig_idx(1));
-        ECG(:,sig_idx) = read_MIT_ecg( [recording_path heasig.fname(sig_idx(1),:)], ECG_start_idx, ECG_end_idx, nsig, fmt, heasig);
+        % this should respect the stride of the data
+        nsig_present = length(sig_idx);
+        sig2_idx = intersect(sig_idx, ECG_idx);
+        nsig2read = length(sig2_idx);
+        fmt = heasig.fmt(sig2_idx(1));
+        ECG(:,sig2_idx) = read_MIT_ecg( [recording_path heasig.fname(sig2_idx(1),:)], ECG_start_idx, ECG_end_idx, nsig2read, nsig_present, fmt, heasig);
     end    
 %     ECG = int16(ECG);
     
@@ -111,11 +127,11 @@ end
 
 heasig.ECG_format = recording_format;
 
-function ECG = read_MIT_ecg(recording_name, ECG_start_idx, ECG_end_idx, nsig, fmt, heasig)
+function ECG = read_MIT_ecg(recording_name, ECG_start_idx, ECG_end_idx, nsig2read, nsig_present, fmt, heasig)
     
-    if( fmt == 16 || fmt == 61 )
+    if( fmt == 16 || fmt == 61 || isnan(fmt) )
 
-        if( fmt == 16 )
+        if( fmt == 16 || isnan(fmt) )
             byte_ordering = 'ieee-le';
         else
             byte_ordering = 'ieee-be';
@@ -125,8 +141,8 @@ function ECG = read_MIT_ecg(recording_name, ECG_start_idx, ECG_end_idx, nsig, fm
         
         fidECG = fopen(recording_name, 'r');
         try
-            fseek(fidECG, ((ECG_start_idx-1)*nsig)*2, 'bof');
-            ECG = fread(fidECG, [nsig ECG_size ], '*int16', 0 , byte_ordering)';
+            fseek(fidECG, ((ECG_start_idx-1)*nsig_present)*2, 'bof');
+            ECG = fread(fidECG, [nsig2read ECG_size ], '*int16', (nsig_present-nsig2read)*2 , byte_ordering)';
             fclose(fidECG);
         catch ME
             fclose(fidECG);
@@ -135,7 +151,7 @@ function ECG = read_MIT_ecg(recording_name, ECG_start_idx, ECG_end_idx, nsig, fm
 
     elseif(fmt == 212)
 
-        ECG = rdsign212(recording_name, nsig, ECG_start_idx, ECG_end_idx);
+        ECG = rdsign212(recording_name, heasig.nsig, ECG_start_idx, ECG_end_idx);
 
     elseif(fmt == 310)
 

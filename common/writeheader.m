@@ -35,7 +35,7 @@ try
         fprintf(fid,'%s ',header.btime);
     end
     if isfield(header,'bdate');
-        fprintf(fid,'%d ',header.bdate);
+        fprintf(fid,'%s ',header.bdate);
     end
 
     fmt = 16;

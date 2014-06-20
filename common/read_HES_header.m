@@ -51,7 +51,7 @@ if( fidECG > 0 )
         sample_interval_usec = aux(1);
         heasig.freq = 1/sample_interval_usec*1e6;
         heasig.gain = repmat(aux(3),1,heasig.nsig);
-        heasig.units = repmat('nV/adc_unit',heasig.nsig,1);
+        heasig.units = repmat('nV',heasig.nsig,1);
         heasig.adcres = repmat(aux(4),1,heasig.nsig);
         heasig.adczero = repmat(2^(aux(4)-1),1,heasig.nsig);
         heasig.nsamp = fread(fidECG, 1, 'uint32');

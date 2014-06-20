@@ -1,4 +1,4 @@
-function ECG_hdl = plot_ecg_heartbeat(ECG, QRS_locations, QRS_start_idx, cant_qrs, heasig, filtro, axes_hdl )
+function ECG_hdl = plot_ecg_heartbeat(ECG, lead_idx, QRS_locations, QRS_start_idx, cant_qrs, heasig, filtro, axes_hdl )
 
 % obsolete, use plot_ecg_strip.m
 
@@ -18,7 +18,8 @@ fig_hdl = gcf;
 
 set(fig_hdl, 'CurrentAxes', axes_hdl);
 
-[lECG cant_sig] = size(ECG);
+lECG = size(ECG);
+cant_sig = length(lead_idx);
 
 if( iscell(QRS_locations) )
     other_QRS_locations = QRS_locations(2:end);
@@ -79,22 +80,31 @@ aux_idx = start_idx:end_idx;
 
 
 if( ~isempty(filtro) && ~isempty(aux_idx) )
-    % zero phase filtering
-    aux_idx2 = max(1, aux_idx(1) - 1 * heasig.freq  ):min(lECG, aux_idx(end) + 1 * heasig.freq );
-    ECG(aux_idx2,:) = filter(filtro, flipud(ECG(aux_idx2,:)) );
-    ECG(aux_idx2,:) = filter(filtro, flipud(ECG(aux_idx2,:)) );
+    % zero phase filtering of the ECG signals only.
+    ECG_idx = get_ECG_idx_from_header(heasig);
+    
+    aux_lead_idx = intersect(lead_idx, ECG_idx);
+    
+    if( isempty(aux_lead_idx) )
+        warning('plot_ecg_heartbeat:NotFilter', disp_option_enumeration( 'No filter was applied since no ECG leads found:', cellstr(heasig.desc) ) )
+    else
+        aux_idx2 = max(1, aux_idx(1) - 1 * heasig.freq  ):min(lECG, aux_idx(end) + 1 * heasig.freq );
+        ECG(aux_idx2,aux_lead_idx) = filter(filtro, flipud(ECG(aux_idx2,aux_lead_idx)) );
+        ECG(aux_idx2,aux_lead_idx) = filter(filtro, flipud(ECG(aux_idx2,aux_lead_idx)) );
+    end
+    
 end
 
 if( cant_sig > 1 )
-    max_values = max(ECG(aux_idx,:));
-    min_values = min(ECG(aux_idx,:));
+    max_values = max(ECG(aux_idx,lead_idx));
+    min_values = min(ECG(aux_idx,lead_idx));
     aux_ranges = max_values - min_values;
-    aux_sig = bsxfun( @minus, ECG(aux_idx,:), mean(ECG(aux_idx,:)));
-    aux_sig = bsxfun( @times, aux_sig, max(aux_ranges)./aux_ranges );
+    aux_sig = bsxfun( @minus, double(ECG(aux_idx,lead_idx)), mean(ECG(aux_idx,lead_idx)));
+    aux_sig = bsxfun( @times, aux_sig, double(max(aux_ranges))./double(aux_ranges) );
     ecg_max = max(max(aux_sig));
     
 else
-    aux_sig = ECG(aux_idx,:);
+    aux_sig = ECG(aux_idx,lead_idx);
     ecg_max = max(aux_sig);
 end
 

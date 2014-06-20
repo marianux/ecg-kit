@@ -1,4 +1,4 @@
-function [multilead_positions single_lead_positions rhythm_parameters] = wavedet_interface(ECG_signal, ECG_header, beat_information, lead_to_delineate, wavedet_config)
+function [multilead_positions single_lead_positions rhythm_parameters] = wavedet_interface(ECG_signal, ECG_header, beat_information, lead_to_delineate, wavedet_config, start_end, start_offset, progress_bar_hdl)
 
     if( nargin < 3 )
         beat_information = [];
@@ -12,13 +12,27 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
         wavedet_config = [];
     end
     
+    if( nargin < 6 || isempty(start_end) )
+        start_end = [1 size(ECG_signal,1) ];
+    end
+    
+    if( nargin < 7 || isempty(start_offset) )
+        start_offset = 1;
+    end
+    
+    bProgress = true;
+    if( nargin < 8 || isempty(progress_bar_hdl) )
+        progress_bar_hdl = [];
+        bProgress = false;
+    end
+    
     if( isfield(ECG_header, 'desc') )
         lead_names = ECG_header.desc;
     else
         lead_names = num2str((1:ECG_header.nsig)');
     end
     
-    cAnnotationOutputFields = { 'Pon' 'P' 'Poff' 'Ptipo' 'QRSon' 'qrs' 'QRSoff' 'Ton' 'T' 'Tprima' 'Toff' 'Ttipo' };
+    cAnnotationOutputFields = { 'Pon' 'P' 'Poff' 'Ptipo' 'QRSon' 'qrs' 'Q' 'R' 'S' 'QRSoff' 'Ton' 'T' 'Tprima' 'Toff' 'Ttipo' };
     cAnnotationSLRfields = { 'Pon' 'P' 'Poff' 'QRSon' 'qrs' 'QRSoff' 'Ton' 'T' 'Tprima' 'Toff' };
 
     rhythm_parameters = [];
@@ -34,11 +48,17 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
     for ii = lead_to_delineate
 
 %         fprintf(1, [ 'Processing lead ' lead_names(ii,:) '\n'])
-        fprintf(1, '.');
+%         fprintf(1, '.');
         
         try
             
-            aux_struct = wavedet_3D(ECG_signal(:,ii), beat_information, ECG_header, wavedet_config);
+            if(bProgress)
+                progress_bar_hdl.checkpoint(['Lead ' lead_names(ii,:)])
+            else
+                fprintf(1, '.');
+            end
+            
+            aux_struct = wavedet_3D( double(ECG_signal(:,ii)), beat_information, ECG_header, wavedet_config);
         
         catch ME
             
@@ -62,27 +82,15 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
             aux_struct.Tprima = aux_struct.T;
         end
 
-        % get the field with max num of annotations
-        aux_maxlength = 0;
-        for fname = rowvec(fieldnames(aux_struct))
-            aux_maxlength = max(aux_maxlength, length(aux_struct.(fname{1})));
-        end
+        aux_marks = positions2matrix(aux_struct, cAnnotationSLRfields);
         
-        %store to use rules on all annotations at the end
-        aux_marks = nan(aux_maxlength,10);
+        % filter heartbeats within range
+        bAux = aux_struct.qrs >= start_end(1) & aux_struct.qrs <= start_end(2);
         
-        count = 1;
-        for fn = cAnnotationSLRfields
-            fn = fn{1};
-            if( isfield( aux_struct, fn) )
-                aux_marks(1:length(aux_struct.(fn)),count) = colvec(aux_struct.(fn));
-            end
-            count = count + 1;
-        end
-
         for fn = cAnnotationOutputFields
             if( isfield(aux_struct, fn{1}) ) 
-                aux_struct2.(fn{1}) = aux_struct.(fn{1});
+                aux_val = aux_struct.(fn{1});
+                aux_struct2.(fn{1}) = aux_val(bAux) - start_offset + 1;
             else
                 aux_struct2.(fn{1}) = [];
             end
@@ -109,8 +117,13 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
         
     if( lead_processed_ok >= 3 )
         
+        if(bProgress)
+            progress_bar_hdl.checkpoint(['Lead ' lead_names(ii,:)])
+        else
+            fprintf(1, '.\n');
+        end
+        
 %         fprintf(1, 'Processing multilead rules\n');
-        fprintf(1, '.\n');
         
         %Multilead rules.
 
@@ -131,9 +144,9 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
         
         % in case user want multilead, and not possible.
         if( length(lead_to_delineate) >= 3 )
-            fprintf(2, [ 'To few leads to use multilead rules. Using the delineation of lead ' lead_names(1,:) '. Consider reviewing the delineation.\n'])
+            fprintf(2, [ 'Delineation not possible in several leads. Using the delineation of lead ' lead_names(lead_processed_ok_idx(1),:) '. Consider reviewing the delineation.\n'])
         else
-            fprintf(1, [ 'Using the delineation of lead ' lead_names(lead_processed_ok_idx(1),:) '.\n'])
+            fprintf(1, [ 'No multilead strategy used, instead using the delineation of lead ' lead_names(lead_processed_ok_idx(1),:) '.\n'])
         end
 
         aux_marks = marks{1};

@@ -15,9 +15,6 @@ if( isfield( ann, 'anntyp'))
     QRS_locations = ann_filtered.time;
     
 else
-    if( bSimulateExpert )
-        error( 'a2hbc:ArgCheck:TrueLabelsNotFound', 'Can�t find true labels for file : %s', recording_name  );
-    end
     
     QRS_locations = ann.time;
     true_labels = [];

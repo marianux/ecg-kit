@@ -74,7 +74,7 @@ if(exist(gqrs_config_filename, 'file'))
     gqrs_config_filename = which(gqrs_config_filename);
 end
     
-[ rec_path rec_name ]= fileparts(rec_name_full_path);
+[ rec_path, rec_name ]= fileparts(rec_name_full_path);
 
 rec_name(rec_name == ' ') = '_';
 
@@ -89,7 +89,7 @@ if( exist([rec_path rec_name '.hea'], 'file') )
         aux_struct = load( file_output );
     else
         
-        [ ECG header] = read_ECG([rec_path rec_name '.hea']);
+        [ ECG, header] = read_ECG([rec_path rec_name '.hea']);
         
         aux_struct.signal = ECG;
         aux_struct.header = header;
@@ -100,7 +100,7 @@ if( exist([rec_path rec_name '.hea'], 'file') )
 
 else
 
-    [ ECG header ann rec_format ] = read_ECG(rec_name_full_path);
+    [ ECG, header, ann, rec_format ] = read_ECG(rec_name_full_path);
 
     if( ~isempty(ann) ) 
         ann = AnnotationFilterConvert(ann, rec_format, 'AAMI');
@@ -186,7 +186,7 @@ for ii = 1:cant_QRSdetectors
 
             try
                 
-                [position_multilead positions_single_lead] = wavedet_interface(aux_struct.signal, aux_struct.header, [], [], wavedet_config);
+                [position_multilead, positions_single_lead] = wavedet_interface(aux_struct.signal, aux_struct.header, [], [], wavedet_config);
 
                 for jj = 1:aux_struct.header.nsig
                     aux_struct.(['wavedet_' num2str(jj)]) = positions_single_lead(jj);
@@ -249,17 +249,18 @@ for ii = 1:cant_QRSdetectors
                         
                     elseif( strcmpi( 'gqrs' , this_detector  ) && exist(gqrs_config_filename, 'file') )
                         
-                        system(['cd ' tmp_path_local ';gqrs -c ' gqrs_config_filename ' -r ' rec_name ' -o ' this_detector ' -s ' num2str(jj)]);
-                        system(['cd ' tmp_path_local ';gqpost -c ' gqrs_config_filename ' -r ' rec_name ' -o ' this_detector ]);
-                    
+                        system(['cd ' tmp_path_local ';gqrs -c ' gqrs_config_filename ' -r ' rec_name ' -s ' num2str(jj)]);
+                        system(['cd ' tmp_path_local ';gqpost -c ' gqrs_config_filename ' -r ' rec_name ' -o ' this_detector num2str(jj) ]);
+                        delete([tmp_path_local rec_name '.qrs' ]);
+                        
                     else
-                        system(['cd ' tmp_path_local ';' this_detector ' -r ' rec_name ' -o ' this_detector ' -s ' num2str(jj)]);
+                        system(['cd ' tmp_path_local ';' this_detector ' -r ' rec_name ' -o ' this_detector num2str(jj) ' -s ' num2str(jj)]);
                     end
 
                     if( strcmpi( 'sqrs' , this_detector ) )
                         file_name_orig =  [tmp_path_local rec_name '.qrs' ];
                     else
-                        file_name_orig =  [tmp_path_local rec_name '.' this_detector ];
+                        file_name_orig =  [tmp_path_local rec_name '.' this_detector num2str(jj) ];
                     end
 
                 catch aux_ME
@@ -307,41 +308,11 @@ end
 
 % attemp to build a better detection from single-lead detections.
 
+aux_struct = calculate_artificial_QRS_detections(aux_struct);
+
 [AnnNames, all_annotations] = getAnnNames(aux_struct);
 
-cant_anns = size(AnnNames,1);
-
-if( cant_anns > min_annotations)
-    
-    [ ratios, estimated_labs ] = CalcRRserieRatio(all_annotations, aux_struct.header);
-
-    [~, best_detections_idx] = sort(ratios, 'descend');
-
-    % generate artificial annotations combining K best annotations
-    aux_idx = best_detections_idx(1:10);
-    artificial_annotations = combine_anns(all_annotations(aux_idx), estimated_labs(aux_idx), aux_struct.header );
-
-    for ii = 1:length(artificial_annotations)
-        aux_str = ['artificial_' num2str(ii)];
-        aux_struct.(aux_str) = artificial_annotations(ii);
-    end
-
-    [AnnNames, all_annotations] = getAnnNames(aux_struct);
-    
-    [ ratios, estimated_labs] = CalcRRserieRatio(all_annotations, aux_struct.header);
-
-    [ratios, best_detections_idx] = sort(ratios, 'descend');
-    
-    aux_struct.series_quality.ratios = ratios;
-    aux_struct.series_quality.estimated_labs = estimated_labs;
-    
-    aux_struct.series_quality.all_annotations = all_annotations(best_detections_idx);
-    
-    aux_struct.series_quality.AnnNames = AnnNames(best_detections_idx,:);
-    
-    save( file_output_local, '-struct', 'aux_struct');
-    
-end
+save( file_output_local, '-struct', 'aux_struct');
 
 % en caso de trabajar sobre el directorio temporal, no lo muevo. Se
 % encargarian de afuera.
@@ -353,23 +324,3 @@ if( ~isempty(added_paths) )
     cellfun( @rmpath, added_paths);
 end
 
-
-function [AnnNames, all_annotations] = getAnnNames(aux_struct)
-
-AnnNames = [];
-
-for fname = rowvec(fieldnames(aux_struct))
-    if( isfield(aux_struct.(fname{1}), 'time') )
-        AnnNames = [AnnNames; cellstr(fname{1}) cellstr('time')];
-    end
-    if( isfield(aux_struct.(fname{1}), 'qrs') )
-        AnnNames = [AnnNames; cellstr(fname{1}) cellstr('qrs')];
-    end
-end
-
-cant_anns = size(AnnNames,1);
-
-all_annotations = cell(cant_anns,1);
-for ii = 1:cant_anns
-    all_annotations{ii} = aux_struct.(AnnNames{ii,1}).(AnnNames{ii,2});
-end

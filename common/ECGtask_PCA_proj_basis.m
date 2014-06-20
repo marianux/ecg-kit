@@ -15,7 +15,7 @@ classdef ECGtask_PCA_proj_basis < ECGtask
        
     properties(GetAccess = public, Constant)
         name = 'PCA_proj_basis';
-        target_units = 'uV';
+        target_units = 'ADCu';
         doPayload = false;
     end
 
@@ -63,7 +63,7 @@ classdef ECGtask_PCA_proj_basis < ECGtask
             % calculation
             cant_QRS_sample = round(obj.time_sample / obj.time_heartbeat_window);
 
-            obj.QRS_sample_idx = sort(randsample(obj.cant_QRS_locations, cant_QRS_sample));
+            obj.QRS_sample_idx = sort(randsample(length(ECG_annotations.time), cant_QRS_sample));
             
             obj.halfwin_samples = round( obj.time_heartbeat_window/2*ECG_header.freq);
             
@@ -71,7 +71,7 @@ classdef ECGtask_PCA_proj_basis < ECGtask
             
         end
         
-        function payload = Process(obj, ECG, ECG_sample_start_end_idx, ECG_header, ECG_annotations, ECG_annotations_start_end_idx )
+        function payload = Process(obj, ECG, ECG_start_offset, ECG_sample_start_end_idx, ECG_header, ECG_annotations, ECG_annotations_start_end_idx, payload_in   )
             
             % this object doesn't generate any payload
             payload = [];
@@ -87,13 +87,20 @@ classdef ECGtask_PCA_proj_basis < ECGtask
 
                 this_iter_ECG_size = size(ECG,1);
 
-                ECG = BaselineWanderRemovalSplines( ECG, QRS_locations, ECG_header.freq);
+                ECG = int16(round(BaselineWanderRemovalSplines( double(ECG), QRS_locations, ECG_header.freq)));
 
                 aux_idx = arrayfun(@(a)( max(1, QRS_locations(a) - obj.halfwin_samples): ...
                                          min( this_iter_ECG_size, QRS_locations(a) + obj.halfwin_samples)) , ...
                                    colvec(this_iter_QRS_sample_idx), 'UniformOutput', false);
 
-                obj.ECG_slices = [obj.ECG_slices; cellfun(@(a)( bsxfun(@times, ECG(a,:), obj.some_window) ), aux_idx, 'UniformOutput', false)];
+                aux_idx3 = 1:(2*obj.halfwin_samples+1);
+                aux_idx2 = arrayfun(@(a)( aux_idx3( ...
+                                         (max(1, QRS_locations(a) - obj.halfwin_samples): ...
+                                         min( this_iter_ECG_size, QRS_locations(a) + obj.halfwin_samples)) ...
+                                         - max(1, QRS_locations(a) - obj.halfwin_samples) + 1 ) ), ...
+                                   colvec(this_iter_QRS_sample_idx), 'UniformOutput', false);
+
+                obj.ECG_slices = [obj.ECG_slices; cellfun(@(a,b)( int16(round(bsxfun(@times, double(ECG(a,:)), obj.some_window(b) ))) ), aux_idx, aux_idx2, 'UniformOutput', false)];
             
             end
             
@@ -104,11 +111,10 @@ classdef ECGtask_PCA_proj_basis < ECGtask
             ECG = cell2mat(obj.ECG_slices);
 
             % Wavelet transform calculation
-            wtECG = qs_wt(ECG, 4, ECG_header.freq, obj.wavelet_filters);
+            wtECG = int16(round(qs_wt(double(ECG), 4, ECG_header.freq, obj.wavelet_filters)));
 
             % calculate PCA in wt scale 4 of the ECG
-            result = mcdcov( wtECG, 'plots', 0);
-            WTecg_cov = result.cov;
+            WTecg_cov = obj.my_mcdcov( double(wtECG) );
             [obj.autovec autoval] = eig(WTecg_cov); 
             autoval = diag(autoval);
             [~, autoval_idx] = sort(autoval, 'descend');
@@ -124,5 +130,17 @@ classdef ECGtask_PCA_proj_basis < ECGtask
         end
 
     end
+    
+    methods ( Access = private )
+        
+        function cov_mat = my_mcdcov(obj, x)
+            
+            result = mcdcov(x, 'plots', 0);
+            cov_mat = result.cov;
+            
+        end
+        
+    end
+    
     
 end

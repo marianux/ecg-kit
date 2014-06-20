@@ -14,7 +14,6 @@ function ann = read_HES_ann(filename)
 % beat_type_AAMI_translation = [ 'Q';'N';'N';'S';'Q';'V';'S' ];
 
 fid = fopen(filename);
-wb_h = [];
 
 if( fid > 0 )
 
@@ -67,12 +66,20 @@ if( fid > 0 )
             ann.anntyp = nan(llines,1);
             
             if(bDesktop)            
-                wb_h = waitbar(0,'Parsing annotations...');
+                % Activate the progress_struct bar.
+                pb = progress_bar(filename);
             end
             ii = 0;
 
+            pb.Loop2do = length(lines);
+            
             for cell_line = lines'
 
+                if(bDesktop)
+                    %start of the progress_struct loop 0%
+                    pb.start_loop();
+                end
+                
                 strLine = cell_line{1};
                 
                 [dummy tokens]= regexp(strLine, '\s*(\d+)\s+(\d+):(\d+):(\d+):(\d+)\s+(\d+)\s+.*', 'match', 'tokens');
@@ -99,14 +106,19 @@ if( fid > 0 )
                 end
 
                 ii = ii + 1;
+                
                 if(bDesktop)
-                    waitbar(ii/llines, wb_h);
+                    pb.checkpoint('parsing annotations ...');
+                    
+                    pb.end_loop();
                 end
 
+                
             end
 
             if(bDesktop)            
-                close(wb_h)
+                % destroy the progress bar.
+                pb.delete;
             end
 
             ann.time = ann.time(1:iBeatCount-1);
@@ -120,7 +132,8 @@ if( fid > 0 )
         
         if(bDesktop)
             if( ~isempty(wb_h))
-                close(wb_h);
+                % destroy the progress bar.
+                pb.delete;
             end
         end
         

@@ -1,28 +1,44 @@
-function heasig = readheader(name)
+function heasig = readheader(hea_full_filename)
 % READHEADER function reads the header of DB signal files
-%	Input parameters: character string with name of header file
+%	Input parameters: character string with hea_full_filename of header file
 %	Output parameter: struct heasig with header information
 %	Syntaxis:
-% function heasig=readheader(name);
+% function heasig=readheader(hea_filename);
 
+% Authors:
 % Salvador Olmos
 % e-mail: olmos@posta.unizar.es
 % Opening header file
-% Last update Juan 07/10/2008
+% Last update Juan Bolea 07/10/2008
 % e-main: jbolea@unizar.es
+% Last update Mariano Llamedo Soria 12/6/2014
+% e-main: llamedom@unizar.es
+
 
 heasig = [];
 
-fid = fopen(name,'rt');
+fid = fopen(hea_full_filename,'rt');
 if (fid <= 0) % Rute 11/08/2010
-    fid = fopen([name '.hea'],'rt');%Rute 11/08/2010
+    fid = fopen([hea_full_filename '.hea'],'rt');%Rute 11/08/2010
 end
 if (fid <= 0)
     %     heasig = [];
     return;
-    %     disp(['error in opening file ' name]);
+    %     disp(['error in opening file ' hea_filename]);
 end
-[path name ext] = fileparts(name);
+[hea_path hea_filename hea_ext] = fileparts(hea_full_filename);
+
+files = dir([hea_path filesep hea_filename '.*'] );
+NotHea_idx = find(~strcmpi( [hea_filename hea_ext], {files(:).name}));
+[~, max_idx] = max(cell2mat({files(NotHea_idx).bytes}));
+
+if( isempty(max_idx) )
+    warning('readheader:NoECGfound', ['Could not found any ECG signal in the same path of ' hea_full_filename ])
+    ecg_filename = 'ECG_file_not_found';
+else
+    ecg_filename = files(NotHea_idx(max_idx)).name;
+end
+
 % Used symbols to distinguish some fields of the header file
 pp = ' /+:()x';
 
@@ -36,12 +52,12 @@ end
 
 %% Record line
 
-% Example:  name'/'number_of_segments[opt] number_of_signals
+% Example:  hea_filename'/'number_of_segments[opt] number_of_signals
 % sampling_frequency[opt]'/'counter_frequency[opt]'('base_counter_value')'[opt]
 % number_of_samples_per_signal[opt] base_time[opt] base_date[opt]
 
 %%
-% record name
+% record hea_filename
 [heasig.recname,s] = strtok(s,pp);
 % multi-segment record
 if strcmp(s(1),'/')
@@ -53,7 +69,13 @@ end
 heasig.nsig = str2double(s1);
 
 if(heasig.nsig < 1 || heasig.nsig > 20 )
-    warning(['Atypical number of signals ' num2str(heasig.nsig) ])
+    
+    warning('readheader:AtypicalNsig', ['Atypical number of signals ' num2str(heasig.nsig) ])
+    
+    if( heasig.nsig == 0 )
+        % NSRDB have nsig = 0
+        heasig.nsig = 1;
+    end
 end
 
 % sampling frequency (in samples per second per signal) [optional]
@@ -83,6 +105,12 @@ if isfield(heasig,'freq')  % if exists sampling frequency field
         else
             [s1 s] = strtok(s,pp);
             heasig.nsamp = str2double(s1); % number of samples per signal [optional]
+            
+            if( heasig.nsamp == 0 )
+                % NSRDB have nsamp = 0
+                warning('readheader:AtypicalNsig', ['Atypical number of samples ' num2str(heasig.nsamp) ])
+            end
+            
         end
     end
     if isfield(heasig,'nsamp')  % if exists number of samples per signal
@@ -128,7 +156,7 @@ if isfield(heasig,'nsegm')
         end
         heasig.sampsegm(i) = str2double(s);
         if ~strcmp(segname{i}(1),'~')
-            hsig{i} = readheader([path filesep segname{i}]);
+            hsig{i} = readheader([hea_path filesep segname{i}]);
             for k = 1:hsig{i}.nsig
                 desc{j} = deblank(strtrim(hsig{i}.desc(k,:)));
                 j = j+1;
@@ -147,7 +175,7 @@ else
     
     %% Signal Specification Lines
     
-    %Example:  file_name format'x'samples_per_frame[opt]':'skew[opt]'+'byte_offset[opt]
+    %Example:  file_hea_filename format'x'samples_per_frame[opt]':'skew[opt]'+'byte_offset[opt]
     % ADC_gain[opt]'('baseline_ADC_units')'[opt]'/'units[opt]
     % ADC_resolution[opt] ADC_zero[opt] initial_value[opt] checksum[opt]
     % block_size[opt] description[opt]
@@ -156,14 +184,40 @@ else
     heasig.spf = ones(1,heasig.nsig);
     heasig.baseline = zeros(1,heasig.nsig);
     heasig.units(1:heasig.nsig) = {''};
+    heasig.fname = repmat(ecg_filename, heasig.nsig,1);
+    heasig.group = nan(heasig.nsig,1);
+    heasig.fmt = nan(heasig.nsig,1);
+    heasig.gain = nan(heasig.nsig,1);
+    heasig.adcres = nan(heasig.nsig,1);
+    heasig.adczero = nan(heasig.nsig,1);
+    heasig.initval = nan(heasig.nsig,1);
+    heasig.baseline = nan(heasig.nsig,1);
+    heasig.adczero = nan(heasig.nsig,1);
+    heasig.cksum = nan(heasig.nsig,1);
+    heasig.bsize = nan(heasig.nsig,1);
+    heasig.spf = nan(heasig.nsig,1);
+    heasig.desc = num2str((1:heasig.nsig)');
+    
     % Reading nsig lines, corresponding one for every lead
     for i = 1:heasig.nsig
-        s = fgetl(fid);
-        % Remove blank or commented lines
-        while s(1)=='#'
+        if( feof(fid) )
+            break
+        else
             s = fgetl(fid);
         end
-        % file name
+        
+        % Remove blank or commented lines
+        while s(1)=='#'
+            if( feof(fid) )
+                break
+            else
+                s = fgetl(fid);
+            end
+        end
+        
+        if( s(1)=='#' && feof(fid) ); break; end;
+        
+        % file hea_filename
         [heasig.fname(i,:),s] = strtok(s);  %% Modificado 29/04/2008  old "[heasig.fname(i,:),s]=strtok(s,pp);"
         [s1,s] = strtok(s,pp);
         
@@ -204,8 +258,9 @@ else
             a=[strfind(s1,'(') strfind(s1,'/')];
             
             %%  Modificado 29/04/2008
-            if isempty(a) % ADC gain (ADC units per physical unit) [optional]
+            if isempty(a) % ADC gain (ADC units per physical unit) [optional] -> units assumed mV
                 heasig.gain(i) = str2double(s1);
+                heasig.units{i} = 'mV';
             else
                 [s2,s1] = strtok(s1,pp);
                 heasig.gain(i) = str2double(s2);

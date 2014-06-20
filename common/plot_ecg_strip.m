@@ -55,11 +55,11 @@ function ECG_hdl = plot_ecg_strip( ECG, varargin )
 %                 the QRS fiducial point. (empty)
 % 
 %     +QRS_start_index: [numeric] OPTIONAL. Default values enclosed in ()
-%                                 Start at the QRS_start_index th heartbeat
+%                                 Start at the i-th QRS_start_index heartbeat
 %                                 in QRS_locations, or QRS_locations(QRS_start_index). (empty) 
 %     
 %     +QRS_start_complexes: [numeric] OPTIONAL. Default values enclosed in () 
-%                                     Display QRS_start_complexes heartbeats from the start. (empty)
+%                                     Display the amount of QRS_start_complexes heartbeats from the QRS_start_index. (empty)
 %     
 %     +Lead_offset: [numeric] OPTIONAL. Default values enclosed in () 
 %                             A DC value [nsig 1] to be added to each lead. (0)
@@ -90,8 +90,8 @@ function ECG_hdl = plot_ecg_strip( ECG, varargin )
 %     +PrettyPrint: [bool] OPTIONAL. Default values enclosed in ()
 %                          Prepare the plot for printing as a PDF. (false)
 % 
-%     +Axes_handle: [axes handle] OPTIONAL. Choose the axes to display the
-%                                 plot. (handle produced by gca)
+%     +Figure_handle: [axes handle] OPTIONAL. Choose the figure to display the
+%                                 plot. (handle produced by figure)
 % 
 % Limits and Known bugs:
 %   Probably a lot :( ... but dont panic! send me feedback if you need help.
@@ -137,6 +137,8 @@ function ECG_hdl = plot_ecg_strip( ECG, varargin )
 %       'y'                         : If pressed and holding, zoom and drag works only for Y axis
 %       'm'                         : If pressed and holding, Magnifier mode on
 %       'p'                         : On/Off paper mode
+%       'r'                         : Export format (PDF/PNG)
+%       's'                         : Export current view
 % 
 % 
 % Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
@@ -147,51 +149,58 @@ function ECG_hdl = plot_ecg_strip( ECG, varargin )
 
 %% Constants
 
+%multilead
+color_Pwave_global =        [210 255 189]/255;
+color_QRScomplex_global =   [255 200 255]/255;
+color_Twave_global =        [255 240 170]/255;
+
+%single-lead
+PwaveColor =   [210 255 189]/255;
+QRScplxColor = [255 200 255]/255;
+TwaveColor =   [255 240 170]/255;
+
+cBeatLabels          = { 'N'             'S'             'V'            'F'             'U'         };
+cBeatLabelsColorCode = { [0 0 255]/255   [0 255 0]/255   [255 0 0]/255  [0 255 255]/255 [0 0 0]/255 };
+cAnnotationsFieldNamesRequired = {'time' 'anntyp'};
 cAnnotationFieldNames = { 'Pon' 'P' 'Poff' 'QRSon' 'qrs' 'QRSoff' 'Ton' 'T' 'Tprima' 'Toff' };
 cDetailLevels = {'all', 'single-lead', 'multilead', 'none' };
+cUnitsVoltages = {'NV' 'UV' 'MV' 'V' 'UV' 'VOLT'};
+cKnownReportFormats = {'pdf', 'png'};
 
-%argument definition
+% k for reports
+target_res = 300; % samples/inch
+target_res = target_res / 2.54; % samples/cm
+
+min_cant_samp_seconds = 0.1; % seconds
+
+%% argument definition
 p = inputParser;   % Create instance of inputParser class.
-addRequired(p,  'ECG', @(x)(~isempty(x) && isnumeric(x)) );
+addRequired(p,  'ECG', @(x)(~isempty(x) && (isnumeric(x) || isa(x, 'ECGwrapper') ) ) );
 p.addParamValue('ECG_header', [], @(x)(isstruct(x)) );
-p.addParamValue('QRS_locations', {[]}, @(x)( isnumeric(x) && all(x > 0) || iscell(x) ) );
+p.addParamValue('QRS_locations', {[]}, @(x)( isnumeric(x) && all(x > 0) || iscell(x) || isa(x, 'ECGwrapper') ));
 p.addParamValue('Start_time', [], @(x)( isnumeric(x) && x >= 0 ) );
 p.addParamValue('End_time', [], @(x)( isnumeric(x) && x > 0 ) );
 p.addParamValue('QRS_start_index', [], @(x)( isnumeric(x) && x > 0 ) );
 p.addParamValue('QRS_complexes', [], @(x)( isnumeric(x) && all(x > 0) ) );
-p.addParamValue('Axes_handle', [], @(x)(ishandle(x)) );
+p.addParamValue('Figure_handle', [], @(x)(ishandle(x)) );
 p.addParamValue('Lead_offset', [], @(x)( isnumeric(x) ) );
 p.addParamValue('Lead_gain', [], @(x)( isnumeric(x) ) );
-p.addParamValue('ECG_delineation_single_lead', [], @(x)(isstruct(x)) );
-p.addParamValue('ECG_delineation_multilead', [], @(x)(isstruct(x)) );
+p.addParamValue('Heartbeat_classification', [], @(x)(isstruct(x) || isa(x, 'ECGwrapper')) );
+p.addParamValue('ECG_delineation_single_lead', [], @(x)(isstruct(x) || isa(x, 'ECGwrapper')) );
+p.addParamValue('ECG_delineation_multilead', [], @(x)(isstruct(x) || isa(x, 'ECGwrapper')) );
 p.addParamValue('Title', [], @(x)(ischar(x)) );
 p.addParamValue('LinkedHandle', [], @(x)(ishandle(x)) );
 p.addParamValue('DetailLevel', 'dont_care', @(x)( ischar(x) && any(strcmpi(x,cDetailLevels))  ) );
 p.addParamValue('PrettyPrint', false, @(x)(islogical(x)) );
-
-% p.addParamValue('recording_name', [], @(x)( ischar(x)));
-% p.addParamValue('recording_format', [], @(x)( ischar(x) && any(strcmpi(x,cKnownFormats))) );
+p.addParamValue('OnlyECG', false, @(x)(islogical(x)) );
+p.addParamValue('FilterECG', false, @(x)(islogical(x)) );
+p.addParamValue('ReportFilename', [], @(x)( isempty(x) ) );
 
 try
     p.parse( ECG, varargin{:} );
 catch MyError
-    fprintf(2, 'Incorrect argval/argvalue, use:\n' );
-    fprintf(2, 'plot_ecg_strip( ECG, ''arg_name'', ''arg_value'');\n\n' );
-    fprintf(2, 'Valid arg_name are:\n' );
-    fprintf(2, '+ ECG_header\n' );
-    fprintf(2, '+ QRS_locations\n' );
-    fprintf(2, '+ Start_time\n' );
-    fprintf(2, '+ End_time\n' );
-    fprintf(2, '+ QRS_start_index\n' );
-    fprintf(2, '+ QRS_complexes\n' );
-    fprintf(2, '+ ECG_delineation_multilead\n' );
-    fprintf(2, '+ ECG_delineation_single_lead\n' );
-    fprintf(2, '+ Lead_gain\n' );
-    fprintf(2, '+ Lead_offset\n' );
-    fprintf(2, '+ Title\n' );
-    fprintf(2, '+ PrettyPrint\n' );
-    fprintf(2, '+ Axes_handle\n' );
-    fprintf(2, '\nOr run ''doc plot_ecg_strip'' for details.\n\n' );    
+    fprintf(2, disp_option_enumeration('Incorrect argval/argvalue, use:', p.Parameters ));
+    fprintf(2, '\nOr run ''doc plot_ecg_strip'' for details.\n\n' );
     rethrow(MyError);    
 end
 
@@ -202,16 +211,19 @@ start_time = p.Results.Start_time;
 end_time = p.Results.End_time;
 QRS_start_idx = p.Results.QRS_start_index;
 cant_qrs = p.Results.QRS_complexes;
-axes_hdl = p.Results.Axes_handle;
+fig_hdl = p.Results.Figure_handle;
 lead_offset = p.Results.Lead_offset;
-lead_gain = p.Results.Lead_gain;
+gains = p.Results.Lead_gain;
+hb_labels = p.Results.Heartbeat_classification;
 annotations = p.Results.ECG_delineation_single_lead; %multilead
 global_annotations = p.Results.ECG_delineation_multilead; %single-lead
 strTitle = p.Results.Title;
 linked_hdl = p.Results.LinkedHandle;
 strDetail = p.Results.DetailLevel;
 bPrettyPrint = p.Results.PrettyPrint;
-
+bOnlyECG = p.Results.OnlyECG;
+bFilterECG = p.Results.FilterECG;
+report_filename = p.Results.ReportFilename;
 
 clear p
 
@@ -221,21 +233,118 @@ cLinespecs = load([ this_path filesep 'clinespecs.mat']);
 cLinespecsNone = cLinespecs.cLinespecsNone;
 cLinespecs = cLinespecs.cLinespecs;
 
+ECG_w = [];
+
+if( isa(ECG, 'ECGwrapper') )
+    % parse ECGwrapper object
+    ECG_w = ECG;
+    
+    if( isempty(heasig) )
+        heasig = ECG_w.ECG_header;
+    end
+    
+    ECG = [];
+    
+end
+
+if( isa(QRS_locations, 'ECGwrapper') )
+    % parse ECGwrapper object
+    % get the annotations from the wrapper.
+    
+    QRS_locations.ECGtaskHandle = 'QRS_corrector';
+    
+    cached_filenames = QRS_locations.GetCahchedFileName();
+    if( isempty(cached_filenames) )
+        warning('plot_ecg_strip:QRScorrectionNotFound', 'Delineation not found for this wrapper object.')
+        QRS_locations = [];
+    else
+        aux_annotations = load(cached_filenames{1});
+        fnames = fieldnames(aux_annotations);
+        aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'corrected_'))), fnames, 'UniformOutput', false)));
+        if( isempty(aux_idx) )
+            QRS_locations = [];
+        else
+            aux_val = length(aux_idx);
+            QRS_locations = cell(aux_val,1);
+            for ii = 1:aux_val
+                QRS_locations{ii} = aux_annotations.(fnames{aux_idx(ii)}).time;
+            end
+        end
+    end
+end
+
+if( isa(annotations, 'ECGwrapper') )
+    % get the annotations from the wrapper.    
+    annotations.ECGtaskHandle = 'ECG_delineation';
+    
+    cached_filenames = annotations.GetCahchedFileName();
+    if( isempty(cached_filenames) )
+        warning('plot_ecg_strip:DelineationNotFound', 'Delineation not found for this wrapper object.')
+        annotations = [];
+    else
+        aux_annotations = load(cached_filenames{1});
+        if( isfield(aux_annotations, 'wavedet_single_lead') )
+            annotations = aux_annotations.wavedet_single_lead;
+        end
+    end
+end
+
+if( isa(global_annotations, 'ECGwrapper') )
+
+    % get the annotations from the wrapper.    
+    global_annotations.ECGtaskHandle = 'ECG_delineation';
+    
+    cached_filenames = global_annotations.GetCahchedFileName();
+    if( isempty(cached_filenames) )
+        warning('plot_ecg_strip:MultileadDelineationNotFound', 'Multilead delineation not found for this wrapper object.')
+        global_annotations = [];
+    else
+        global_annotations = load(cached_filenames{1});
+        if( isfield(aux_annotations, 'wavedet_multilead') )
+            global_annotations = global_annotations.wavedet_multilead;
+        end
+    end
+end
+
+if( isa(hb_labels, 'ECGwrapper') )
+    % get the heartbeat classification from the wrapper.    
+    hb_labels.ECGtaskHandle = 'ECG_heartbeat_classifier';
+    
+    cached_filenames = hb_labels.GetCahchedFileName();
+    if( isempty(cached_filenames) )
+        warning('plot_ecg_strip:HBclassificationNotFound', 'Heartbeat classification not found for this wrapper object.')
+        hb_labels = [];
+    else
+        hb_labels = load(cached_filenames{1});
+        
+        if( ~isempty(global_annotations) && length(global_annotations.qrs) == length(hb_labels.time) && length(hb_labels.time) == length(intersect(global_annotations.qrs, hb_labels.time)) )
+            % equal heartbeat locations.
+            hb_labels_idx = renumlab(hb_labels.anntyp, char(cBeatLabels) );
+        else
+            hb_labels_idx = [];
+        end
+        
+    end
+end
+
+if( ~all(isfield(hb_labels, cAnnotationsFieldNamesRequired )) )
+    hb_labels = [];
+    hb_labels_idx = [];
+    warning('plot_ecg_strip:HBclassificationStructProblem', disp_option_enumeration('Missing fields within structure:', cAnnotationsFieldNamesRequired ));
+end
+
+
 if( (isempty(QRS_locations) || (iscell(QRS_locations) && all(cellfun(@(a)(isempty(a)), QRS_locations)))) && isempty(annotations) && isempty(global_annotations))
     %no annotations at all
     QRS_start_idx = [];
     cant_qrs = [];
     
     if( isempty(start_time) )
-        if( isempty(end_time) )
-            start_time = 0;
-        else
-            start_time = end_time - 10;
-        end
+        start_time = 0;
     end
 
     if( isempty(end_time) )
-        end_time = start_time + 10;
+        end_time = realmax;
     end
     
 else
@@ -274,23 +383,20 @@ if( isempty(heasig) )
     heasig.freq = 1000;
 end
 
-fig_hdl = get(0,'CurrentFigure');
 if( isempty(fig_hdl) )
     fig_hdl = figure;
     maximize(fig_hdl)
+else
+    % preserve visible property, specially for report generation, when it
+    % is not important to show the figure.
+    visible_prev = get(fig_hdl, 'Visible');
+    clf('reset')
+    set(fig_hdl, 'Visible', visible_prev);
+    
 end
 set(fig_hdl, 'ToolBar','none');
 
-if( isempty(axes_hdl) )
-    axes_hdl = gca;
-    bAxesProvided = false;
-    cla(axes_hdl);
-    % axes(axes_hdl);
-else
-    bAxesProvided = true;
-    cla(axes_hdl);
-    % axes(axes_hdl);
-end
+axes_hdl = gca;
 
 
 if( ~isempty(linked_hdl) )
@@ -321,13 +427,41 @@ end
 
 % maximize(fig_hdl);
 
+if( isempty(ECG) )
+    % in case not all signals are ECG.
+    if( bOnlyECG )
+        [ECG_signals_idx, heasig] = get_ECG_idx_from_header(heasig);
+        cant_leads = length(ECG_signals_idx);
+    else
+        ECG_signals_idx = get_ECG_idx_from_header(heasig);
+    end
+    cant_samp = heasig.nsamp;
+    if(cant_samp == 0)
+        cant_samp = realmax;
+    end
+    cant_leads = heasig.nsig;
+else
 
-[cant_samp cant_leads ] = size(ECG);
-% assume more data than channels
-if( cant_leads > cant_samp )
-    ECG = ECG';
-    [cant_samp cant_leads] = size(ECG);
+    [cant_samp cant_leads ] = size(ECG);
+    % assume more data than channels
+    if( cant_leads > cant_samp )
+        ECG = ECG';
+        [cant_samp cant_leads] = size(ECG);
+    end
+    
+    if( bOnlyECG )
+        % retain only ECG signals
+        [ECG_signals_idx, heasig] = get_ECG_signals_idx_from_header(heasig);
+        cant_leads = length(ECG_signals_idx);
+        ECG = ECG(:,ECG_signals_idx);
+    else
+        cant_leads = heasig.nsig;
+        ECG_signals_idx = 1:cant_leads;
+    end
+    
 end
+
+ECG_signals_idx = rowvec(ECG_signals_idx);
 
 if( ~isfield( heasig, 'nsig' ) )
     heasig.nsig = cant_leads;
@@ -363,37 +497,52 @@ if( ~isfield( heasig, 'gain' ) )
     heasig.gain = repmat(1, cant_leads,1);
 end
 
-% everything to microvolts
+% voltages to microvolts
+
 if( isfield( heasig, 'units' ) )
-    switch( upper(deblank(heasig.units(1,:))) )
-        case {'NV', 'NANOVOLTS' , 'NANOVOLTIOS' }
-            heasig.gain = heasig.gain * 1e3;
+    
+    volt_idx = find(any(cell2mat(cellfun(@(b)(cell2mat(cellfun(@(a)(~isempty(strfind(a, b))), rowvec(upper(cellstr(heasig.units))), 'UniformOutput', false))), colvec(cUnitsVoltages), 'UniformOutput', false)),1));
+    
+%     volt_idx = intersect( ECG_signals_idx, volt_idx);
+    
+    for ii = volt_idx
+        switch( upper(strtrim(heasig.units(ii,:))) )
+            case {'NV', 'NANOVOLTS' , 'NANOVOLTIOS' }
+                heasig.gain(ii) = heasig.gain(ii) * 1e3;
+
+            case {'UV', 'MICROVOLTS' , 'MICROVOLTIOS' }
+
+                heasig.gain(ii) = heasig.gain(ii) * 1;
+
+            case {'MV', 'MILIVOLTS' , 'MILIVOLTIOS' }
+
+                heasig.gain(ii) = heasig.gain(ii) / 1e3;
+
+            case {'V', 'VOLTS' , 'VOLTIOS' }
+
+                heasig.gain(ii) = heasig.gain(ii) / 1e6;
+
+            otherwise
+                fprintf(2, 'Unknown units, assuming uV.\n')            
+
+        end
+    end
+    
+    if( length(volt_idx) ~= cant_leads )
         
-        case {'UV', 'MICROVOLTS' , 'MICROVOLTIOS' }
-            
-            heasig.gain = heasig.gain * 1;
-            
-        case {'MV', 'MILIVOLTS' , 'MILIVOLTIOS' }
-
-            heasig.gain = heasig.gain / 1e3;
-            
-        case {'V', 'VOLTS' , 'VOLTIOS' }
-
-            heasig.gain = heasig.gain / 1e6;
-
-        otherwise
-            
-%             warning('plot_ecg_strip:UnitsUnknown', [ 'Unknown units.\n'])
-            fprintf(2, 'Unknown units, assuming uV.\n')            
-            
+        
     end
     
 else
 %     warning('plot_ecg_strip:UnknownADCunits', 'Assuming uV.')
-    fprintf(2, 'Unknown units, assuming uV.\n')            
+    fprintf(2, 'Unknown units, assuming uV.\n')   
+    volt_idx = 1:cant_leads;
+    
 end
 
-heasig.units = repmat('uV', cant_leads,1);
+aux_val = cellstr(heasig.units);
+aux_val(volt_idx) = repmat({'uV'}, length(volt_idx),1);
+heasig.units = char(aux_val);
 
 if( ~isfield( heasig, 'btime' ) )
     heasig.btime = '00:00:00';
@@ -403,10 +552,20 @@ end
 %     heasig.bdate = '01/01/0001';
 % end
 
-base_time = (datenum( heasig.btime , 'HH:MM:SS') - datenum( '00:00:00' , 'HH:MM:SS')) * 60 * 60 * 24 * heasig.freq; % in samples
+if(sum(heasig.btime == ':') == 2 )
+    formatIn = 'HH:MM:SS';
+elseif(sum(heasig.btime == ':') == 3 )
+    formatIn = 'HH:MM:SS:FFF';
+end
+
+base_time = (datenum( heasig.btime , formatIn) - datenum( '00:00:00' , 'HH:MM:SS')) * 60 * 60 * 24 * heasig.freq; % in samples
 
 if( isempty(QRS_start_idx) )
     aux_idx = max(1,round(start_time * heasig.freq)):min(cant_samp, round(end_time * heasig.freq));
+    
+    if( length(aux_idx) < (min_cant_samp_seconds*heasig.freq) )
+        error('plot_ecg_strip:TimeFewSamples', 'Time range should be higher than %3.2f seconds', min_cant_samp_seconds )
+    end
     
     if(isempty(aux_idx))
         error('plot_ecg_strip:TimeOutOfBounds', 'Time should be between 0 and %u (%s) seconds', round(cant_samp / heasig.freq), Seconds2HMS(cant_samp / heasig.freq) )
@@ -462,16 +621,40 @@ switch(strDetail)
         eDetailLevel  = kCloseDetailAll;
 end
 
+if( isempty(ECG) )
+    ECG = ECG_w.read_signal(aux_idx(1), aux_idx(end));
+    
+    [cant_samp, cant_leads] = size(ECG);
+    
+    %transform to real units
+    ECG = bsxfun( @rdivide, bsxfun( @minus, double(ECG), rowvec(double(heasig.adczero)) ), rowvec(double(heasig.gain)) ) ;
+else
+    %transform to real units
+    ECG = bsxfun( @rdivide, bsxfun( @minus, double(ECG(aux_idx,:)), rowvec(double(heasig.adczero)) ), rowvec(double(heasig.gain)) ) ;
+end
 
-%transform to real units
-ECG = bsxfun( @rdivide, bsxfun( @minus, double(ECG(aux_idx,:)), rowvec(double(heasig.adczero)) ), rowvec(double(heasig.gain)) ) ;
+prev_units = get(fig_hdl, 'Units');
+set(fig_hdl, 'Units', 'centimeters');
 
 % Downsample version: For efficient marks visualization and printing only
-target_freq = 150;
-down_factor = ceil(heasig.freq / target_freq);
+paper_size = get(fig_hdl, 'Position');
+nsamp_target = paper_size(3) * target_res;
+set(fig_hdl, 'Units', prev_units);
+
+down_factor = max(1, ceil(cant_samp / nsamp_target));
 ECGd = resample(ECG, 1, down_factor);
 
-[cant_samp cant_leads] = size(ECG);
+if(bFilterECG)
+    if( isempty(ECG_signals_idx) )
+        warning('plot_ecg_strip:NotFilter', 'No filter was applied since no ECG leads found.')
+    else
+        ECG(:,ECG_signals_idx) = BaselineWanderRemovalMedian( ECG(:,ECG_signals_idx), heasig.freq);
+    end
+    
+%     filtro = bandpass_filter_design( heasig.freq );
+%     ECG(:,ECG_signals_idx) = filter(filtro, flipud() );
+%     ECG(:,ECG_signals_idx) = filter(filtro, flipud(ECG(:,ECG_signals_idx)) );
+end
 
 % ECG ranges
 if( all(cellfun(@(a)(isempty(a)), QRS_locations)) )
@@ -489,40 +672,45 @@ else
     end
 end
 
-[ecg_range ecg_min ecg_max] = CalcECG_range(ECG);
+[ecg_range, ecg_min, ecg_max, ecg_median] = CalcECG_range(ECG);
 
-% ensure good visibility
-if( isempty(lead_offset) )
-    lead_offset = 1.2*ecg_range;
-    offsets = colvec((0:cant_leads-1) * lead_offset);
-% else
-% by the moment one offset for all
-%     if(length(lead_offset) == 1 )
-%         lead_offset = repmat( lead_offset, cant_leads, 1);
-%     elseif(length(lead_offset) ~= cant_leads )
-%         error('plot_ecg_strip:BadLeadOffset', ['Lead offset must be a single numeric value or a ' num2str(cant_leads) ' x 1 vector'] )
-%     end
-end
-
-if( isempty(lead_gain) )
-    lead_gain = 1;
-    gains = ones( cant_leads, 1);
+if( isempty(gains) )
+    gains = max(ecg_range)./ecg_range;
+%     gains = ones( cant_leads, 1);
 else
     % by the moment one gain for all
-    if(length(lead_gain) == 1 )
-        gains = repmat( lead_gain, cant_leads, 1);
-    elseif(length(lead_gain) ~= cant_leads )
+    if(length(gains) == 1 )
+        gains = repmat( gains, cant_leads, 1);
+    elseif(length(gains) ~= cant_leads )
         error('plot_ecg_strip:BadLeadGain', ['Lead gain must be a single numeric value or a ' num2str(cant_leads) ' x 1 vector'] )
     end
 end
 
+% ensure good visibility
+if( isempty(lead_offset) )
+    
+    if( cant_leads > 1 )
+        lead_offset = 1.1*( (ecg_min(1:end-1) - ecg_median(1:end-1))  .* gains(1:end-1) - ( ecg_max(2:end) - ecg_median(2:end) ) .* gains(2:end) );
+        offsets = ecg_median .* gains + abs([0; cumsum(lead_offset)]) ;
+    else
+        lead_offset = 0;
+        offsets = 0;
+    end
+else
+    if(length(lead_offset) == 1 )
+        lead_offset = repmat( lead_offset, cant_leads, 1);
+    elseif(length(lead_offset) ~= cant_leads )
+        error('plot_ecg_strip:BadLeadOffset', ['Lead offset must be a single numeric value or a ' num2str(cant_leads) ' x 1 vector'] )
+    end
+end
+
 % signal margins, relative to the total height and width
-plot_left_margin_width = 0.025;
+plot_left_margin_width = 0.03;
 plot_rigth_margin_width = 0.035;
 plot_top_margin_width = 0.1;
 plot_bottom_margin_width = 0.1;
 
-[plotYrange plotYmin plotYmax] = CalcPlotYlimits(ecg_min, ecg_max, gains, offsets);
+[plotYrange, plotYmin, plotYmax] = CalcPlotYlimits(ecg_min, ecg_max, gains, offsets);
 
 plotXmin = aux_idx(1); 
 plotXmax = aux_idx(end);
@@ -550,9 +738,7 @@ set(axes_hdl, 'Ycolor', [1 1 1] );
 % set(axes_hdl, 'Visible', 'off' );
 % set(axes_hdl, 'Visible', 'off' );
 
-if( ~bAxesProvided)
-    set(axes_hdl, 'Position', [ 0.005 0.01 0.99 0.98 ] );
-end
+set(axes_hdl, 'Position', [ 0.005 0.01 0.99 0.98 ] );
 
 % legend(ECG_hdl, cellstr(heasig.desc) );
 
@@ -560,18 +746,14 @@ end
 user_data.linked_hdl = linked_hdl;
 
 % global variables
-%multilead
-color_Pwave_global =        [210 255 189]/255;
-color_QRScomplex_global =   [255 200 255]/255;
-color_Twave_global =        [255 240 170]/255;
-%single-lead
-PwaveColor =   [210 255 189]/255;
-QRScplxColor = [255 200 255]/255;
-TwaveColor =   [255 240 170]/255;
+report_format = 'pdf';
+report_format_idx = find(strcmpi(report_format,cKnownReportFormats),1);
 
+lead_selected_idx = 1:cant_leads;
 
-bPaperModeOn = bPrettyPrint;
-major_tick_values_time = round([0.5 1 2 5 10 30]*heasig.freq); % seconds
+bPaperModeOn = false;
+major_tick_values_time = round([0.5 1 2 5 10 30 60]*heasig.freq); % seconds
+major_tick_values_time = unique([major_tick_values_time major_tick_values_time*60 ]);
 major_tick_values_voltage = [ [1 2 5 ] [1 2 5 ] * 10^1 [1 2 5 ] * 10^1 [1 2 5 ] * 10^2 [1 2 5] * 10^3 [1 2 5] * 10^4 [1 2 5] * 10^5 [1 2 5] * 10^6  ]; % seconds
 paperModeHdl = [];
 topLevelHdl = [];
@@ -608,10 +790,11 @@ YlabelLeftPosition = nan;
 scroll_mode = 'zoom';
 gain_offset_mode = 'gain';
 % 1V maximum
-min_gain = 1e-3 / plotYrange;
+min_gain = 1e-10 / plotYrange;
 % 1 nV maximum
-max_gain = 1e6 / plotYrange;
-extraSpacingY = zeros(heasig.nsig,1);
+max_gain = 1e15 / plotYrange;
+
+my_timer = timer('TimerFcn',@timer_fcn, 'StopFcn', @timer_stop_fcn , 'StartDelay', 10);
 
 %% variables and flags from Dragzoom
 
@@ -681,17 +864,11 @@ bgColor = [251 248 230]/255;
 
 fIsSelectedCurrentAxes = true;
 fIsDragAllowed = false;
-fIsZoomExtendAllowed = false;
 fIsRubberBandOn = false;
 fIsPointerCross = false;
 fIsAxesGrid = false;
-fIsSmoothing = false;
-fIsEnableDragX = true;
-fIsEnableDragY = true;
-fIsEnableZoomX = true;
-fIsEnableZoomY = true;
-fIsAxes2D = false;
-fIsImage = false;
+fIsEnableZoomX = false;
+fIsEnableZoomY = false;
 fIsMagnifierOn = false;
 fIsEnableControl = true;
 fIsMouseOnLegend = false;
@@ -699,7 +876,8 @@ fIsMouseOnLegend = false;
 SetDefaultZoomGrid();
 mDragSaveShiftStep = mDragShiftStep;
 
-%% multilead annotations
+%% single lead annotations
+
 if( isempty(annotations) )
     annotations = [];
 else
@@ -727,7 +905,8 @@ else
     
 end
 
-% single lead annotations
+%% multilead annotations
+
 if( isempty(global_annotations) )
     global_annotations = [];
 else
@@ -768,7 +947,7 @@ else
 end
 
 if( isempty(strTitle))
-    strTitle = [ 'Recording ' recname ' - ' Seconds2HMS(aux_idx(1) / heasig.freq) ' : ' Seconds2HMS(aux_idx(end) / heasig.freq) ];
+    strTitle = [ 'Recording ' recname ' - ' Seconds2HMS( (aux_idx(1) + base_time ) / heasig.freq) ' : ' Seconds2HMS( (aux_idx(end) + base_time ) / heasig.freq) ];
 else
     strTitle = strTitle;
 end
@@ -803,7 +982,9 @@ set(fig_hdl, ...
     'WindowKeyPressFcn',        {@WindowKeyPressCallback2D}, ...
     'WindowKeyReleaseFcn',      {@WindowKeyReleaseCallback2D});
 
-disp('[plot_ecg_strip]: Press ''h'' for help.')
+if(~bPrettyPrint)
+    disp('[plot_ecg_strip]: Press ''h'' for help.')
+end
 
 %==========================================================================
 
@@ -817,22 +998,27 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
     yTextOffset = 0.01*plotYrange;
 
     if( bPaperModeOn )
+        
         startSignalX = (plotXmin + xTextOffset);
         endSignalX   = (plotXmax - xTextOffset);
         
         width_legend = 0.07*plotXrange;
         height_legend = 0.03*plotYrange;
         left_legend = plotXmax - width_legend - 4*xTextOffset;
-        bottom_legend = plotYmax - height_legend - 3*yTextOffset;;
+        bottom_legend = plotYmax - height_legend - 3*yTextOffset;
+
+        titleYposition = plotYmax - 4*yTextOffset;
         
     else
-        startSignalX = (plotXmin + 3*xTextOffset);
+        startSignalX = (plotXmin + 5*xTextOffset);
         endSignalX   = (plotXmax - 3*xTextOffset);
         
         width_legend = 0.07*plotXrange;
         height_legend = 0.03*plotYrange;
         left_legend = plotXmax - width_legend - 2*xTextOffset;
-        bottom_legend = plotYmax - height_legend - 1*yTextOffset;;
+        bottom_legend = plotYmax - height_legend - 1*yTextOffset;
+        
+        titleYposition = plotYmax - 2*yTextOffset;
         
     end
     
@@ -852,34 +1038,54 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
     % text label of each axis
     
     if( bPaperModeOn )
-        YlabelLeftPosition = startSignalX + 3*xTextOffset;
+        YlabelLeftPosition = startSignalX + 6*xTextOffset;
     else
-        YlabelLeftPosition = startSignalX - xTextOffset;
+        YlabelLeftPosition = startSignalX - 3*xTextOffset;
     end
     
     if( isfield(heasig, 'desc') )
-        str_aux =  cellstr(heasig.desc);
+        if( bPaperModeOn )
+            str_aux = cellstr(strtrim(heasig.desc));
+        else
+            str_aux = strcat(cellstr(strtrim(heasig.desc)), repmat({' ('},heasig.nsig,1), cellstr(heasig.units), repmat({')'},heasig.nsig,1) );
+        end
     else
         str_aux =  cellstr(num2str(colvec(1:cant_leads)));
     end
 
-    if( ~bPaperModeOn )
-        % white patch to cover the background
+    % signal labels
+    if( bPaperModeOn )
+        aux_hdl = cellfun( @(a,b,ii)( text( YlabelLeftPosition, b, a, 'FontSize', 8, 'HorizontalAlignment', 'left', 'Interpreter', 'none', 'BackgroundColor', [1 1 1], 'EdgeColor', ColorOrder(ii,:), 'Margin', 3 ) ), str_aux, num2cell(-offsets + ecg_max .* gains),num2cell((1:heasig.nsig)'));
+    else
+        % white patch to cover the background        
         UserChnageViewHdls = [UserChnageViewHdls; patch('Faces', [1 2 3 4], 'Vertices', [[0; 0; 3*xTextOffset; 3*xTextOffset ] + plotXmin [plotYmin; plotYmax - plotYmin; plotYmax - plotYmin;plotYmin ] ], 'FaceColor', [1 1 1], 'EdgeColor', [1 1 1] ) ];
+        aux_hdl = cellfun( @(a,b,ii)( text( YlabelLeftPosition, -b + (ecg_min(ii) + ecg_range(ii)/2) * gains(ii), a, 'FontSize', 8, 'HorizontalAlignment', 'center', 'Rotation', 90, 'Interpreter', 'none', 'BackgroundColor', [1 1 1], 'EdgeColor', ColorOrder(ii,:), 'Margin', 3 ) ), str_aux, num2cell(offsets),num2cell((1:heasig.nsig)'));
     end
     
-    %check labels overlapp
-    aux_size = size(char(str_aux),2);
-    aux_hdl = text( YlabelLeftPosition, -offsets(1) + (ecg_min + ecg_range/2) * lead_gain, repmat('a', 1, aux_size), 'FontSize', 8, 'HorizontalAlignment', 'center', 'Rotation', 90, 'Interpreter', 'none');
-    aux_extent = get(aux_hdl, 'Extent');
-    delete(aux_hdl);
-    aux_solap = [ (-offsets(1:end-1) - aux_extent(4)/2) (-offsets(2:end) + aux_extent(4)/2) ];
-    aux_solap = aux_solap(:,1) < aux_solap(:,2);
-    extraSpacingY = [ aux_solap(1); aux_solap] .* aux_extent(4) .* colvec(linspace(cant_leads/2,-cant_leads/2, cant_leads));
+    UserChnageViewHdls = [UserChnageViewHdls; colvec(aux_hdl)];
     
-    for jj = 1:cant_leads
-        UserChnageViewHdls = [ UserChnageViewHdls; text( YlabelLeftPosition, -offsets(jj) + extraSpacingY(jj) + (ecg_min + ecg_range/2) * lead_gain, str_aux{jj}, 'FontSize', 8, 'HorizontalAlignment', 'center', 'Rotation', 90, 'Interpreter', 'none', 'BackgroundColor', [1 1 1])];
+    aux_extent = cell2mat(get(aux_hdl, 'Extent'));
+    
+    if( size(aux_extent,1) > 1 && sum(aux_extent(:,4)) > plotYrange )
+        % not enough room for all descriptions -> overlap
+        % fix first and last, and share the rest of space
+        aux_val = cell2mat(get(aux_hdl, 'Position'));
+        set(aux_hdl(1),   'Position', [aux_val(1,1) aux_val(1,2) - ( aux_extent(1,2) - (plotYmax - aux_extent(1,4))) ] )
+        set(aux_hdl(end), 'Position', [aux_val(end,1) aux_val(end,2) - ( aux_extent(end,2) - (plotYmin + aux_extent(end,4))) ] )
+        
+        if( size(aux_extent,1) > 2 )
+            aux_val = cell2mat(get(aux_hdl, 'Position'));
+            aux_extent = cell2mat(get(aux_hdl, 'Extent'));
+            aux_space = aux_extent(1,2) - (aux_extent(end,2)+aux_extent(end,4));
+            each_weight = aux_extent(2:end-1,4);
+            each_weight = each_weight ./ sum(each_weight);
+            each_space = aux_space .* each_weight;
+            arrayfun( @(ii,a)( set(aux_hdl(ii), 'Position', [aux_val(ii,1) aux_val(ii,2) - ( aux_extent(ii,2) - (aux_extent(1,2) - a) ) ]) ), 1+(1:length(each_space))' , cumsum(each_space) )
+        end
+        
     end
+    
+    
     % save this handles to top them later
     topLevelHdl = [topLevelHdl; colvec(UserChnageViewHdls(end-cant_leads+1:end))];
 
@@ -889,15 +1095,19 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
         % vertical axes for each signal
 
         %check overlapp
-        aux_solap = [ (-offsets(1:end-1) - ecg_range/2) (-offsets(2:end) + ecg_range/2) ];
-        aux_solap = aux_solap(:,1) < aux_solap(:,2);
-        aux_solap = [ aux_solap(1); aux_solap];
-        aux_jitter = aux_solap .* colvec(linspace(0,2,cant_leads) * xTextOffset);
-
+        if( length(offsets) > 1 )
+            aux_solap = [ (-offsets(1:end-1) - colvec(ecg_range(1:end-1))/2) (-offsets(2:end) + colvec(ecg_range(2:end))/2) ];
+            aux_solap = aux_solap(:,1) < aux_solap(:,2);
+            aux_solap = [ aux_solap(1); aux_solap];
+            aux_jitter = aux_solap .* colvec(linspace(0,2,cant_leads) * xTextOffset);
+        else
+            aux_jitter = 0;
+        end
+        
         %build vertical axis
         aux_Xaxis = [ -xTextOffset 0 0 -xTextOffset] + startSignalX;
-        aux_Yaxis = [ ecg_max ecg_max ecg_min ecg_min ];
-        UserChnageViewHdls = [UserChnageViewHdls; plot(axes_hdl, bsxfun(@plus, repmat(colvec(aux_Xaxis),1,cant_leads), rowvec(aux_jitter)), bsxfun( @minus, bsxfun( @times, repmat(colvec(aux_Yaxis),1,cant_leads), rowvec(gains) ), rowvec(offsets)), 'LineWidth', 0.25 )];       
+        aux_Yaxis = [ ecg_max ecg_max ecg_min ecg_min ]';
+        UserChnageViewHdls = [UserChnageViewHdls; plot(axes_hdl, bsxfun(@plus, repmat(colvec(aux_Xaxis),1,cant_leads), rowvec(aux_jitter)), bsxfun( @minus, bsxfun( @times, aux_Yaxis, rowvec(gains) ), rowvec(offsets)), 'LineWidth', 0.25 )];       
 
     end
        
@@ -909,17 +1119,17 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
     
     if( plotXrange < mediumDetailSampSize )
 
-        sample_reference = ceil( (plotXmin + min( heasig.freq, plot_left_margin_width*plotXrange )) * 1/heasig.freq) * heasig.freq  + base_time;
+        sample_reference = ceil( (plotXmin + min( heasig.freq, plot_left_margin_width*plotXrange )) * 1/heasig.freq) * heasig.freq;
         
         bAux = any( colvec(cellfun( @(a)(isempty(a)), qrs2plot ) ));
         if( bAux )
             if( sample_reference < plotXmin || sample_reference > plotXmin + plot_left_margin_width*plotXrange )
-                sample_reference = ceil(plotXmin + min( heasig.freq, plot_left_margin_width*plotXrange)) + base_time;
+                sample_reference = ceil(plotXmin + min( heasig.freq, plot_left_margin_width*plotXrange));
             end
         else
             aux_val = min( cellfun( @(a,b)(a(b(1))), qrs_ploted, qrs2plot ) );
             if( sample_reference >= aux_val ) 
-                sample_reference = ceil(plotXmin + min( heasig.freq, plot_left_margin_width*plotXrange)) + base_time;
+                sample_reference = ceil(plotXmin + min( heasig.freq, plot_left_margin_width*plotXrange));
             end
         end
         
@@ -957,7 +1167,7 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
             % time reference
 
             % start - end of ECG excerpt
-            aux_hdl = text( sample_reference - xTextOffset, plotYtimeAxis, Seconds2HMS(sample_reference / heasig.freq, 3), 'FontName', 'Arial', 'FontSize', 8, 'HorizontalAlignment', 'right');
+            aux_hdl = text( sample_reference - xTextOffset, plotYtimeAxis, Seconds2HMS( (sample_reference + base_time ) / heasig.freq, 3), 'FontName', 'Arial', 'FontSize', 8, 'HorizontalAlignment', 'right');
             aux_extent = get(aux_hdl, 'Extent');
             if(aux_extent(1) < plotXmin )
                 aux_position = get(aux_hdl, 'Position');
@@ -965,7 +1175,7 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
             end
             UserChnageViewHdls = [UserChnageViewHdls; aux_hdl];
 
-            aux_hdl = text( sample_last_reference + xTextOffset, plotYtimeAxis, Seconds2HMS(sample_last_reference / heasig.freq, 3), 'FontName', 'Arial', 'FontSize', 8);
+            aux_hdl = text( sample_last_reference + xTextOffset, plotYtimeAxis, Seconds2HMS((sample_last_reference + base_time ) / heasig.freq, 3), 'FontName', 'Arial', 'FontSize', 8);
             aux_extent = get(aux_hdl, 'Extent');
             if( aux_extent(1)+aux_extent(3) > plotXmax )
                 aux_position = get(aux_hdl, 'Position');
@@ -1004,7 +1214,7 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
 
         % for far zoom views
 
-        sample_reference = ceil( (plotXmin + plot_left_margin_width*plotXrange ) * 1/heasig.freq) * heasig.freq + base_time;
+        sample_reference = ceil( (plotXmin + plot_left_margin_width*plotXrange ) * 1/heasig.freq) * heasig.freq;
         sample_last_reference = floor( (plotXmax - plot_rigth_margin_width*plotXrange) * 1/heasig.freq) * heasig.freq ;
 
         if( ~bPaperModeOn )
@@ -1015,11 +1225,11 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
 
             plotYtimeAxis = plotYmin + (0.02 * plotYrange);
 
-            UserChnageViewHdls = [ UserChnageViewHdls; text( aux_seq(1) - xTextOffset, plotYtimeAxis, Seconds2HMS( aux_seq(1)/heasig.freq ) , 'FontSize', 8, 'HorizontalAlignment', 'right')];
+            UserChnageViewHdls = [ UserChnageViewHdls; text( aux_seq(1) - xTextOffset, plotYtimeAxis, Seconds2HMS( (aux_seq(1) + base_time )/heasig.freq ) , 'FontSize', 8, 'HorizontalAlignment', 'right')];
             for jj = rowvec(aux_seq(2:end-1))
                 UserChnageViewHdls = [ UserChnageViewHdls; text( jj, plotYtimeAxis, Seconds2HMS( jj/heasig.freq ) , 'FontSize', 8, 'HorizontalAlignment', 'center')];
             end
-            UserChnageViewHdls = [ UserChnageViewHdls; text( aux_seq(end) + xTextOffset, plotYtimeAxis, Seconds2HMS( aux_seq(end)/heasig.freq ) , 'FontSize', 8, 'HorizontalAlignment', 'left')];
+            UserChnageViewHdls = [ UserChnageViewHdls; text( aux_seq(end) + xTextOffset, plotYtimeAxis, Seconds2HMS( (aux_seq(end) + base_time )/heasig.freq ) , 'FontSize', 8, 'HorizontalAlignment', 'left')];
 
             % black tips at the beginning/end
             UserChnageViewHdls = [UserChnageViewHdls; plot(axes_hdl, [sample_reference sample_last_reference; sample_reference sample_last_reference], [ repmat(plotYmin + (0.01 * plotYrange), 1, 2); repmat(plotYmin + (0.06 * plotYrange), 1,2) ] , 'k-', 'LineWidth', 0.25 )];       
@@ -1027,6 +1237,7 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
         end
     end
 
+    bWaveLegendPlotted = false;
     
     %% multilead or global annotations
     
@@ -1035,11 +1246,10 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
         aux_seq = cellfun( @(a)({1:length(a)}), qrs2plot );
         
         % for far zoom views
-        bAux = eDetailLevel ~= kNoDetail && ( ( eDetailLevel == kMediumDetailML || eDetailLevel == kMediumDetailAll  || eDetailLevel == kMediumDetailAll  ) && ( plotXrange > mediumDetailSampSize && plotXrange < farDetailSampSize ) );
+        bAux = eDetailLevel ~= kNoDetail && ( ( eDetailLevel == kMediumDetailML || eDetailLevel == kMediumDetailAll  ) && ( plotXrange > mediumDetailSampSize && plotXrange < farDetailSampSize ) );
         if( isempty(QRSfpFarHdls) )
             if( bAux )
-                QRSfpFarHdls = cellfun( @(a,b,c,d)( plot(axes_hdl, rowvec(a(b(c))), repmat(plotYmax - (d* 0.05 * plotYrange), 1,length(c)) )), qrs_ploted, qrs2plot, aux_seq, num2cell(linspace(0.9, 1.1, length(aux_seq))), 'UniformOutput', false );
-%                 set_rand_linespec(QRSfpFarHdls, 'v', 'none', [], 5 );
+                QRSfpFarHdls = cellfun( @(a,b,c,d)( plot(axes_hdl, rowvec(a(b(c))), repmat(titleYposition - (d* 0.1 * plotYrange), 1,length(c)) )), qrs_ploted, qrs2plot, aux_seq, num2cell(linspace(0.9, 1.1, length(aux_seq))), 'UniformOutput', false );
                 cellfun( @(a,b)(set_a_linespec(a, b)), QRSfpFarHdls, cLinespecsNone(1:length(QRSfpFarHdls)) );
             end
         else
@@ -1057,8 +1267,7 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
         if( isempty(QRSfpHdls) ) 
             bAux2 = any( colvec(cellfun( @(a,b,c)(~isempty(a(b(c)))), qrs_ploted, qrs2plot, aux_seq ) ));
             if( bAux && bAux2 )
-                QRSfpHdls = colvec(cellfun( @(a,b,c,d)( plot(axes_hdl, repmat(rowvec(a(b(c))), 2,1), [ repmat(plotYmin + d*(0.06 * plotYrange), 1,length(c)); repmat(plotYmax - d*(0.05 * plotYrange), 1,length(c)) ] ) ), qrs_ploted, qrs2plot, aux_seq, num2cell(linspace(0.9, 1.1, length(aux_seq))), 'UniformOutput', false));
-%                 aux_val = cellfun( @(a)(set_rand_linespec( protected_index(a,1), '^', ':', [], 5 )), QRSfpHdls, 'UniformOutput', false);
+                QRSfpHdls = colvec(cellfun( @(a,b,c,d)( plot(axes_hdl, repmat(rowvec(a(b(c))), 2,1), [ repmat(plotYmin + d*(0.06 * plotYrange), 1,length(c)); repmat(titleYposition - d*(0.1 * plotYrange), 1,length(c)) ] ) ), qrs_ploted, qrs2plot, aux_seq, num2cell(linspace(0.9, 1.1, length(aux_seq))), 'UniformOutput', false));
                 cellfun( @(a,b)(set_a_linespec(a, b)), QRSfpHdls, cLinespecs(1:length(QRSfpHdls)) );
                 set(cell2mat(QRSfpHdls), 'LineWidth', 0.25)
             end
@@ -1073,14 +1282,43 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
 
     else
         
-        if( eDetailLevel ~= kNoDetail && ( (eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) && plotXrange <= closeDetailSampSize ) )
-            % frame
+        bAux = eDetailLevel ~= kNoDetail && ( (eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) && plotXrange <= closeDetailSampSize );
+        
+        if( bAux )
+            
+            bWaveLegendPlotted = true;
+            % Waves frame
             legend_hdl = patch([left_legend left_legend [left_legend left_legend]+width_legend left_legend ], [bottom_legend [bottom_legend bottom_legend]+height_legend bottom_legend bottom_legend], [1 1 1], 'EdgeColor', [0 0 0]);
             legend_hdl = [legend_hdl; text( left_legend + width_legend/4, bottom_legend + height_legend/2, 'P', 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', color_Pwave_global)];
             legend_hdl = [legend_hdl; text( left_legend + width_legend/2, bottom_legend + height_legend/2, 'QRS', 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', color_QRScomplex_global )];
             legend_hdl = [legend_hdl; text( left_legend + width_legend*3/4, bottom_legend + height_legend/2, 'T', 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', color_Twave_global )];
             UserChnageViewHdls = [UserChnageViewHdls; legend_hdl];
+            
         end
+        
+        if( bAux && ~isempty(hb_labels) )
+            
+            if(bWaveLegendPlotted)
+                left_hb_legend = left_legend - 1.3*width_legend;
+                width_hb_legend = 1.1*width_legend;
+                height_hb_legend = 1.1*height_legend;
+                bottom_hb_legend = bottom_legend - 0.05*height_legend;
+            else
+                left_hb_legend = left_legend ;
+                width_hb_legend = width_legend;
+                height_hb_legend = height_legend;
+                bottom_hb_legend = bottom_legend;
+            end
+            
+            % Heartbeats class frame
+            legend_hdl = patch([left_hb_legend left_hb_legend [left_hb_legend left_hb_legend]+width_hb_legend left_hb_legend ], [bottom_hb_legend [bottom_hb_legend bottom_hb_legend]+height_hb_legend bottom_hb_legend bottom_hb_legend], [1 1 1], 'EdgeColor', [0 0 0]);
+            lcBeatLabels = length(cBeatLabels);
+            for jj = 1:lcBeatLabels
+                legend_hdl = [legend_hdl; text( left_hb_legend + jj*width_hb_legend/(lcBeatLabels+1), bottom_hb_legend + height_hb_legend/2, cBeatLabels{jj}, 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', QRScplxColor, 'EdgeColor', cBeatLabelsColorCode{jj} ) ];
+            end
+            UserChnageViewHdls = [UserChnageViewHdls; legend_hdl];
+        end
+        
         
         aux_seq = cellfun( @(a)({1:length(a)}), qrs2plot );
         
@@ -1089,7 +1327,10 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
         bAux = eDetailLevel ~= kNoDetail && ( ( eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) && plotXrange <= closeDetailSampSize );
         if( isempty(PwaveHdls) )
             if( bAux )
-                PwaveHdls = [ PwaveHdls; PlotGlobalWaveMarks({'Pon' 'P' 'Poff'}, [ plotYmin + (0.1*plotYrange)  plotYmax - (0.05 * plotYrange) ], color_Pwave_global )];
+%                 PwaveHdls = [ PwaveHdls; PlotGlobalWaveMarks({'Pon' 'P' 'Poff'}, [ plotYmin + (0.1*plotYrange)  plotYmax - (0.05 * plotYrange) ], color_Pwave_global )];
+                for jj = ECG_signals_idx
+                    PwaveHdls = [ PwaveHdls; PlotWaveMarks(global_annotations, {'Pon' 'P' 'Poff'}, jj, 0.5*yTextOffset, PwaveColor ) ];
+                end
             end
         else
             if( bAux )
@@ -1106,7 +1347,7 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
         bAux = eDetailLevel ~= kNoDetail && ( ( eDetailLevel == kMediumDetailML || eDetailLevel == kMediumDetailAll ) && plotXrange > mediumDetailSampSize && plotXrange < farDetailSampSize );
         if( isempty(QRSfpFarHdls) )
             if( bAux )
-                QRSfpFarHdls = colvec(cellfun( @(a,b,c)( plot(axes_hdl, rowvec(a(b(c))), repmat(plotYmax - (0.05 * plotYrange), 1,length(c)) )), qrs_ploted, qrs2plot, aux_seq, 'UniformOutput', false ));
+                QRSfpFarHdls = colvec(cellfun( @(a,b,c)( plot(axes_hdl, rowvec(a(b(c))), repmat(titleYposition - (0.1 * plotYrange), 1,length(c)) )), qrs_ploted, qrs2plot, aux_seq, 'UniformOutput', false ));
 %                 set_rand_linespec(QRSfpFarHdls, 'v', 'none', [], 6 );
                 cellfun( @(a,b)(set_a_linespec(a, b)), QRSfpFarHdls, cLinespecsNone(1:length(QRSfpHdls)) );
 
@@ -1124,7 +1365,7 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
         if( isempty(QRSfpHdls) ) 
             bAux2 = any( colvec(cellfun( @(a,b,c)(~isempty(a(b(c)))), qrs_ploted, qrs2plot, aux_seq )) );
             if( bAux && bAux2 )
-                QRSfpHdls = colvec(cellfun( @(a,b,c)( plot(axes_hdl, repmat(rowvec(a(b(c))), 2,1), [ repmat(plotYmin + (0.06 * plotYrange), 1,length(c)); repmat(plotYmax - (0.05 * plotYrange), 1,length(c)) ] ) ), qrs_ploted, qrs2plot, aux_seq , 'UniformOutput', false));
+                QRSfpHdls = colvec(cellfun( @(a,b,c)( plot(axes_hdl, repmat(rowvec(a(b(c))), 2,1), [ repmat(plotYmin + (0.06 * plotYrange), 1,length(c)); repmat(titleYposition - (0.1 * plotYrange), 1,length(c)) ] ) ), qrs_ploted, qrs2plot, aux_seq , 'UniformOutput', false));
 %                 aux_val = cellfun( @(a)(set_rand_linespec(a(1), '^', ':', [], 5 )), QRSfpHdls, 'UniformOutput', false);
                 cellfun( @(a,b)(set_a_linespec(a, b)), QRSfpHdls, cLinespecs(1:length(QRSfpHdls)) );
                 set(cell2mat(QRSfpHdls), 'LineWidth', 0.25)
@@ -1141,7 +1382,10 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
         bAux = eDetailLevel ~= kNoDetail && ( ( eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) && plotXrange <= closeDetailSampSize );
         if( isempty(QRScplxHdls) )
             if( bAux )
-                QRScplxHdls = [ QRScplxHdls; PlotGlobalWaveMarks({'QRSon' 'qrs' 'QRSoff'}, [ plotYmin + (0.08*plotYrange)  plotYmax - (0.05*plotYrange) ], color_QRScomplex_global)];
+%                 QRScplxHdls = [ QRScplxHdls; PlotGlobalWaveMarks({'QRSon' 'qrs' 'QRSoff'}, [ plotYmin + (0.08*plotYrange)  titleYposition - (0.1*plotYrange) ], color_QRScomplex_global)];
+                for jj = ECG_signals_idx
+                    QRScplxHdls = [ QRScplxHdls; PlotWaveMarks(global_annotations, {'QRSon' 'qrs' 'QRSoff'}, jj, 2*yTextOffset, QRScplxColor ) ];
+                end
             end
         else
             if( bAux )
@@ -1156,7 +1400,10 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
         bAux = eDetailLevel ~= kNoDetail && ( ( eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) && plotXrange <= closeDetailSampSize );
         if( isempty(TwaveHdls) )
             if( bAux )
-                TwaveHdls = [ TwaveHdls; PlotGlobalWaveMarks({'Ton' 'T' 'Toff'}, [ plotYmin + (0.09*plotYrange)  plotYmax - (0.07*plotYrange) ], color_Twave_global)];
+%                 TwaveHdls = [ TwaveHdls; PlotGlobalWaveMarks({'Ton' 'T' 'Toff'}, [ plotYmin + (0.09*plotYrange)  plotYmax - (0.07*plotYrange) ], color_Twave_global)];
+                for jj = ECG_signals_idx
+                    TwaveHdls = [ TwaveHdls; PlotWaveMarks(this_annotation, {'Ton' 'T' 'Toff'}, jj, yTextOffset, TwaveColor ) ];
+                end
             end
         else
             if( bAux )
@@ -1175,6 +1422,7 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
     if( ~isempty(annotations) )
 
         if( eDetailLevel ~= kNoDetail && ( (eDetailLevel == kCloseDetailSL || eDetailLevel == kCloseDetailAll ) && plotXrange <= closeDetailSampSize ) )
+            bWaveLegendPlotted = true;
             % frame
             legend_hdl = patch([left_legend left_legend [left_legend left_legend]+width_legend left_legend ], [bottom_legend [bottom_legend bottom_legend]+height_legend bottom_legend bottom_legend], [1 1 1], 'EdgeColor', [0 0 0]);
             legend_hdl = [legend_hdl; text( left_legend + width_legend/4, bottom_legend + height_legend/2, 'P', 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', PwaveColor)];
@@ -1183,12 +1431,12 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
             UserChnageViewHdls = [UserChnageViewHdls; legend_hdl];
         end
         
-        for jj = 1:length(annotations)
+        for jj = ECG_signals_idx
 
             this_annotation = annotations(jj);
             
             % P wave
-            bAux = ( eDetailLevel ~= kNoDetail && ( ( eDetailLevel == kCloseDetailSL || eDetailLevel == kCloseDetailAll ) &&  plotXrange <= closeDetailSampSize ) );
+            bAux = ( eDetailLevel ~= kNoDetail && ( ( eDetailLevel == kCloseDetailSL || eDetailLevel == kCloseDetailAll ) && plotXrange <= closeDetailSampSize ) );
             if( isempty(PwaveGlblHdls{jj}) )
                 if( bAux )
 %                     PwaveGlblHdls{jj} = [ PwaveGlblHdls{jj}; PlotWaveMarks(this_annotation, {'Pon' 'P' 'Poff'}, jj, 0.5*yTextOffset, ColorOrder(jj,:) )];
@@ -1209,7 +1457,6 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
             if( isempty(QRScplxGlblHdls{jj}) )
                 if( bAux )
                     QRScplxGlblHdls{jj} = [ QRScplxGlblHdls{jj}; PlotWaveMarks(this_annotation, {'QRSon' 'qrs' 'QRSoff'}, jj, 2*yTextOffset, QRScplxColor)];
-%                     QRScplxGlblHdls{jj} = [ QRScplxGlblHdls{jj}; PlotWaveMarks(this_annotation, {'QRSon' 'qrs' 'QRSoff'}, jj, 2*yTextOffset, ColorOrder(jj,:))];
                 end
             else
                 if( bAux )
@@ -1281,7 +1528,7 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
     
     if( bPaperModeOn )
         UserChnageViewHdls = [UserChnageViewHdls; ...
-                text( plotXmin + 0.5 * plotXrange, plotYmax - 4*yTextOffset, ... 
+                text( plotXmin + 0.5 * plotXrange, titleYposition, ... 
                         strTitle, ...
                         'BackGroundColor', [0.99 0.92 0.8], ...
                         'EdgeColor', [1 0 0], ...
@@ -1291,7 +1538,7 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
                         'HorizontalAlignment', 'center' ); ];
     else                
         UserChnageViewHdls = [UserChnageViewHdls; ...
-                text( plotXmin + 0.5 * plotXrange, plotYmax - 2*yTextOffset, ... 
+                text( plotXmin + 0.5 * plotXrange, titleYposition, ... 
                         strTitle, ...
                         'BackGroundColor', [0.702 0.78 1], ...
                         'EdgeColor', [0.078 0.169 0.549], ...
@@ -1356,7 +1603,7 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
 
         UserChnageViewHdls = [UserChnageViewHdls; rectangle('Position',[rect_scale_X, rect_scale_Y, rect_scale_width, rect_scale_height], 'FaceColor', [1 1 1])];
 
-        YscaleSize = rect_scale_height / lead_gain; 
+        YscaleSize = rect_scale_height / gains(volt_idx(1)); 
         if( YscaleSize < 1e-3 )
             % picovolts
             k = 1e-6;
@@ -1498,14 +1745,13 @@ disp('[plot_ecg_strip]: Press ''h'' for help.')
 
 %==========================================================================
 
-    function [ecg_range ecg_min ecg_max] = CalcECG_range(ECG)
+    function [ecg_range ecg_min ecg_max ecg_median] = CalcECG_range(ECG)
         
-    [cant_samp cant_leads] = size(ECG);
-
-    ecg_prctiles = prctile( randsample(colvec(ECG), max( 100, round(cant_samp * cant_leads / 100) ) ), [ 2.5 97.5 ] );
-    ecg_range = diff(ecg_prctiles);
-    ecg_max =  ecg_prctiles(2) + 0.7 * ecg_range;
-    ecg_min =  ecg_prctiles(1) - 0.4 * ecg_range;
+    ecg_prctiles = cell2mat(arrayfun( @(a)(prctile( randsample(ECG(:,a), max( 100, round(cant_samp * cant_leads / 100) ) ), [ 2.5 50 97.5 ] )), (1:cant_leads)', 'UniformOutput', false) )';
+    ecg_range = ecg_prctiles(3,:) - ecg_prctiles(1,:);
+    ecg_max =  colvec(ecg_prctiles(3,:) + 0.7 * ecg_range);
+    ecg_min =  colvec(ecg_prctiles(1,:) - 0.4 * ecg_range);
+    ecg_median =  colvec(ecg_prctiles(2,:));
     ecg_range = ecg_max - ecg_min;
 
 end
@@ -1518,8 +1764,8 @@ end
 
 %         plotYmax = max(ecg_max*(lead_gain) - lead_offset); 
 %         plotYmin = min(ecg_min*(lead_gain) - lead_offset);
-        plotYmax = max(ecg_max - lead_offset); 
-        plotYmin = min(ecg_min - lead_offset);
+        plotYmax = max(colvec(ecg_max).*lead_gain - colvec(lead_offset) ) ; 
+        plotYmin = min(colvec(ecg_min).*lead_gain - colvec(lead_offset) );
         plotYrange = plotYmax - plotYmin;
         % additional space for x axis
         
@@ -1555,6 +1801,23 @@ end
                 if fIsMagnifierOn
                     MagnifierReset();
                 else
+                    
+                position_mouse = get(axes_hdl, 'CurrentPoint');
+                prev_lead_idx = lead_selected_idx;
+                lead_selected_idx = max(1,heasig.nsig) * abs(ecg_max(1) * gains(1) - position_mouse(1,2)) / (ecg_max(1) * gains(1) - (-offsets(cant_leads) + ecg_min(cant_leads)*gains(cant_leads)) );
+%                 update_title_efimero( num2str(lead_selected_idx), 5 );
+                
+                lead_selected_idx = min(cant_leads, max(1, 1+floor( lead_selected_idx ) ) );
+                
+                if( length(prev_lead_idx) == length(lead_selected_idx) )
+                    % disable lead selection
+                    lead_selected_idx = 1:cant_leads;
+                    update_title_efimero( 'All leads', 5 );
+                else
+                    update_title_efimero( heasig.desc(lead_selected_idx,:), 5 );
+                end
+                
+                    
                     %just measure on graph
                     fNoZoom = true;
                     RubberBandBegin();
@@ -1641,32 +1904,44 @@ end
     function changeGainOffset(verScrollCount)
         
         prev_offset = lead_offset;
-        prev_gain = lead_gain;
+        prev_gain = gains;
 
+        bLeadMask = false(heasig.nsig,1);
+        bLeadMask(lead_selected_idx) = true;
+        
         if( strcmp(gain_offset_mode, 'offset' ) )
             % offset
-            k_offset = verScrollCount * ecg_range * 0.05;
+            k_offset = verScrollCount * ecg_range .* gains * 0.05;
 
             this_lead_offset = max( 0, lead_offset + k_offset);
 
-            if( prev_offset == this_lead_offset)
+            if( all(prev_offset == this_lead_offset) )
                 return
             else
                 lead_offset = this_lead_offset ;
             end
+            
+            % retain all not selected
+            lead_offset(~bLeadMask(2:end)) = prev_offset(~bLeadMask(2:end));
+            
+            offsets = abs(cumsum(lead_offset));
+            
         else
             % gain
-            this_lead_gain = 1.5^(-verScrollCount) * lead_gain;
+            this_lead_gain = 1.5^(-verScrollCount) * gains;
 
-            if( this_lead_gain < min_gain || this_lead_gain > max_gain )
-                return
-            else
-                lead_gain = this_lead_gain ;
-            end
+            bAux = this_lead_gain < min_gain | this_lead_gain > max_gain;
+                
+            gains = this_lead_gain;
+            gains(bAux) = prev_gain(bAux);
+
+            % retain all not selected
+            gains(~bLeadMask) = prev_gain(~bLeadMask);
+            
+            update_title_efimero( num2str(rowvec(gains)), 5 );
+            
         end
 
-        offsets = colvec((0:heasig.nsig-1) * lead_offset);
-        gains = colvec(max( [ repmat(realmin,  heasig.nsig, 1) repmat(lead_gain,  heasig.nsig, 1) ] , [], 2));
 
         [plotYrange plotYmin plotYmax] = CalcPlotYlimits(ecg_min, ecg_max, gains, offsets);
 
@@ -1696,6 +1971,11 @@ end
         QRSfpHdls = [];
         QRSfpFarHdls = [];
         
+        if( strcmp(gain_offset_mode, 'offset' ) )
+            update_title_efimero( num2str(rowvec(offsets)), 5 );
+        else
+            update_title_efimero( num2str(rowvec(gains)), 5 );
+        end
     end
 
 
@@ -1719,12 +1999,15 @@ end
 
                     case kBackColourAnns
                         ann_graph_mode = kLinesAnns;
+                        update_title_efimero( 'Annotations line mode', 5 );
                     
                     case kLinesAnns
                         ann_graph_mode = kBackColourAnns;
+                        update_title_efimero( 'Annotations colour mode', 5 );
                     
                     otherwise
                         ann_graph_mode = kBackColourAnns;
+                        update_title_efimero( 'Annotations colour mode', 5 );
                         
                 end
 
@@ -1748,33 +2031,37 @@ end
 
                     case kNoDetail
                         eDetailLevel = kCloseDetailSL;
-%                         disp('Close detail')
+                        update_title_efimero( 'Close SL', 5 );
                     
                     case kCloseDetailSL
                         eDetailLevel = kMediumDetailSL;
-%                         disp('Close medium')
+                        update_title_efimero( 'Medium SL', 5 );
                     
                     case kMediumDetailSL
                         eDetailLevel = kCloseDetailML;
-%                         disp('Close no detail')
+                        update_title_efimero( 'Close ML', 5 );
 
                     case kCloseDetailML
                         eDetailLevel = kMediumDetailML;
+                        update_title_efimero( 'Medium ML', 5 );
 
                     case kMediumDetailML
                         eDetailLevel = kCloseDetailAll;
+                        update_title_efimero( 'Close All', 5 );
                         
                     case kCloseDetailAll
                         eDetailLevel = kMediumDetailAll;
+                        update_title_efimero( 'Medium All', 5 );
 
                     case kMediumDetailAll
                         eDetailLevel = kNoDetail;
+                        update_title_efimero( 'No detail', 5 );
                         
                     otherwise
                         eDetailLevel = kNoDetail;
-%                         disp('Close no detail')
+                        update_title_efimero( 'No detail', 5 );
                 end
-
+                
                 UserChangeView( fig_hdl, [], 'pan');                
                 
             case 'p'
@@ -1788,23 +2075,94 @@ end
             case 'g'
                 scroll_mode = 'gain/offset';
                 gain_offset_mode = 'gain';
+%                 update_title_efimero( 'Gain', inf );
+                
             case 'o'
                 scroll_mode = 'gain/offset';
                 gain_offset_mode = 'offset';
+%                 update_title_efimero( 'Offset', inf );
+                
             case 'x'
-                DragEnable('y', 'off');
-                ZoomEnable('y', 'off');
+                fIsEnableZoomX = ~fIsEnableZoomX;
+                if( fIsEnableZoomX )
+                    fIsEnableZoomY = false;
+                    update_title_efimero( 'X mode', 10 );
+                else
+                    update_title_efimero( 'XY mode', 10 );
+                end
+                
+                
             case 'y'
-                DragEnable('x', 'off');
-                ZoomEnable('x', 'off');
+                fIsEnableZoomY = ~fIsEnableZoomY;
+                if( fIsEnableZoomY )
+                    fIsEnableZoomX = false;
+                    update_title_efimero( 'Y mode', 10 );
+                else
+                    update_title_efimero( 'XY mode', 10 );
+                end
+                
             case 'm'
                 if fIsEnableControl
                     MagnifierOn();
+                    update_title_efimero( 'Magnifier', 5 );
                 end
+                
+            case 'r'
+                
+                report_format_idx = report_format_idx + 1;
+                if(report_format_idx > length(cKnownReportFormats) || report_format_idx < 1 )
+                    report_format_idx = 1;
+                end
+                report_format = cKnownReportFormats{report_format_idx};
+                
+                update_title_efimero( report_format, 5 );
+                
+            case 's'
+                
+                SaveReport();
+                
         end
     end
 %--------------------------------------------------------------------------
 
+
+    function SaveReport()
+
+        if( isempty(report_filename) ) 
+
+            if( isempty(ECG_w) )
+                report_path = [pwd filesep];
+            else
+                report_path = fileparts(ECG_w.recording_name);
+                report_path = [report_path filesep];
+            end
+
+            if( isfield(heasig, 'recname') )
+                report_filename = [report_path heasig.recname '.' report_format];
+            else
+                report_filename = [report_path 'ECG_strip_capture_' datestr(now, 'dd_mm_yy-HH_MM_SS' ) '.' report_format];
+            end
+
+        else
+
+            report_path = fileparts(report_filename);
+            report_path = [report_path filesep];
+
+        end
+
+        if( exist(report_path, 'dir') )
+
+            init_ghostscript();
+
+            export_fig(report_filename, '-nocrop', ['-' report_format], fig_hdl);
+
+            update_title_efimero( ['Exported to ' report_filename], 5 );
+
+        else
+            fprintf(2, 'Could not create report file: folder %s does not exist\n', report_path );
+        end        
+        
+    end
 
 %==========================================================================
     function PaperModeOff()
@@ -1950,7 +2308,7 @@ end
         
         paperModeHdl = [ ... 
                             paperModeHdl; ...
-                            colvec(arrayfun( @(a)(text( a, bottom_frame + yTextOffset, Seconds2HMS( a/heasig.freq, precision ) , 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', [1 1 1])), major_tick_x)) ...
+                            colvec(arrayfun( @(a)(text( a, bottom_frame + yTextOffset, Seconds2HMS( (a + base_time )/heasig.freq, precision ) , 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', [1 1 1])), major_tick_x)) ...
                             ];
         
         % frame
@@ -1978,14 +2336,12 @@ end
                 mDragShiftStep = mDragSaveShiftStep;
             case 'o'
                 scroll_mode = 'zoom';
+%                 update_title_efimero( 'Zoom', 5 );
+                
             case 'g'
                 scroll_mode = 'zoom';
-            case 'x'
-                DragEnable('y', 'on');
-                ZoomEnable('y', 'on');
-            case 'y'
-                DragEnable('x', 'on');
-                ZoomEnable('x', 'on');
+%                 update_title_efimero( 'Zoom', 5 );
+                
             case 'm'
                 MagnifierOff();
         end
@@ -2123,7 +2479,7 @@ end
             arFactorY = 1;
         end
         
-        if fIsEnableDragX
+        if fIsEnableZoomX
             % For log plots, transform to linear scale
             if strcmp(get(axes_hdl, 'xscale'), 'log')
                 xLim = log10(xLim);
@@ -2141,7 +2497,7 @@ end
                 xLim = 10.^(xLim);
             end
         end
-        if fIsEnableDragY
+        if fIsEnableZoomY
             if strcmp(get(axes_hdl, 'yscale'), 'log')
                 yLim = log10(yLim);
                 yLim = FixInfLogLimits('y', yLim);
@@ -2152,11 +2508,7 @@ end
             
             dy = pdy * range(yLim) / (pos(4) / arFactorY);
             
-            if fIsImage
-                yLim = yLim - dy; 
-            else
-                yLim = yLim + dy; 
-            end
+            yLim = yLim + dy; 
             
             if isYLog
                 yLim = 10.^(yLim);
@@ -2167,46 +2519,6 @@ end
     end
 %--------------------------------------------------------------------------
 
-%==========================================================================
-    function DragEnable(ax, action)
-        %DragEnable
-        
-        switch lower(action)
-            case 'on'
-                tf = true;
-            case 'off'
-                tf = false;
-        end
-                
-        switch lower(ax)
-            case 'x'
-                fIsEnableDragX = tf;
-            case 'y'
-                fIsEnableDragY = tf;
-        end
-    end
-%--------------------------------------------------------------------------
-
-%==========================================================================
-    function ZoomEnable(ax, action)
-        %ZoomEnable
-        
-        switch lower(action)
-            case 'on'
-                tf = true;
-            case 'off'
-                tf = false;
-        end
-                
-        switch lower(ax)
-            case 'x'
-                fIsEnableZoomX = tf;
-            case 'y'
-                fIsEnableZoomY = tf;
-        end
-        
-    end
-%--------------------------------------------------------------------------
 
 %==========================================================================
     function ZoomMouse(direction)
@@ -2218,80 +2530,6 @@ end
         end
     end
 %--------------------------------------------------------------------------
-% 
-% %==========================================================================
-%     function ZoomMouseExtendBegin()
-%         %ZoomMouseExtendBegin
-%         
-%         if ~fIsZoomExtendAllowed
-%             UpdateCurrentZoomAxes();
-%             
-%             % set new zoom grid for extend zoom
-%             [mZoomGrid, mZoomSteps] = ZoomLogGrid(mZoomMinPow, mZoomMaxPow, mZoomExtendNum);
-%             UpdateCurrentZoomAxes();
-%             
-%             [wcx, wcy] = GetCursorCoordOnWindow('pixels');
-%             [acx, acy] = GetCursorCoordOnAxes();
-%             
-%             mZoom3DStartX = wcx;
-%             mZoom3DStartY = wcy;
-%             
-%             mZoom3DBindX = acx;
-%             mZoom3DBindY = acy;
-%             
-%             fIsZoomExtendAllowed = true;
-%         end
-%     end
-% %--------------------------------------------------------------------------
-% 
-% %==========================================================================
-%     function ZoomMouseExtendEnd()
-%         %ZoomMouseExtendEnd
-%         
-%         if fIsZoomExtendAllowed
-%             % set default zoom grid
-%             SetDefaultZoomGrid();
-%             fIsZoomExtendAllowed = false;
-%         end
-%     end
-% %--------------------------------------------------------------------------
-% 
-% %==========================================================================
-%     function ZoomMouseExtend()
-%         %ZoomMouseExtend
-%         
-%         if fIsZoomExtendAllowed
-%             directions = {'minus', 'plus'};
-%             
-%             switch mZoomScroll
-%                 case 'normal'
-%                 case 'reverse'
-%                     directions = fliplr(directions);
-%             end
-%         
-%             % Heuristic for pixel change to camera zoom factor 
-%             % (taken from function ZOOM)
-%             [wcx, wcy] = GetCursorCoordOnWindow('pixels');
-%             
-%             xy(1) = wcx - mZoom3DStartX;
-%             xy(2) = wcy - mZoom3DStartY;
-%             q = max(-0.9, min(0.9, sum(xy)/70)) + 1;
-%    
-%             if (q < 1)
-%                 direction = directions{1};
-%             elseif (q > 1)
-%                 direction = directions{2};
-%             else
-%                 return;
-%             end
-%             
-%             ZoomAxes(direction, mZoom3DBindX, mZoom3DBindY)
-%             
-%             mZoom3DStartX = wcx;
-%             mZoom3DStartY = wcy;            
-%         end
-%     end
-% %--------------------------------------------------------------------------
 
 %==========================================================================
     function ZoomKeys(direction)
@@ -2320,26 +2558,17 @@ end
         
         [xLim, yLim] = GetAxesLimits();
         
-        if fIsImage
+        if (fIsEnableZoomX || (~fIsEnableZoomX && ~fIsEnableZoomY ) )
             mZoomIndexX = ChangeZoomIndex(direction, mZoomIndexX);
-            mZoomIndexY = mZoomIndexX;
             zoomPct = GetZoomPercent(mZoomIndexX);
-            
+
             xLim = RecalcZoomAxesLimits('x', xLim, mDefaultXLim, cx, zoomPct);
-            yLim = RecalcZoomAxesLimits('y', yLim, mDefaultYLim, cy, zoomPct);            
-        else
-            if fIsEnableZoomX
-                mZoomIndexX = ChangeZoomIndex(direction, mZoomIndexX);
-                zoomPct = GetZoomPercent(mZoomIndexX);
-                
-                xLim = RecalcZoomAxesLimits('x', xLim, mDefaultXLim, cx, zoomPct);
-            end
-            if fIsEnableZoomY
-                mZoomIndexY = ChangeZoomIndex(direction, mZoomIndexY);
-                zoomPct = GetZoomPercent(mZoomIndexY);
-                
-                yLim = RecalcZoomAxesLimits('y', yLim, mDefaultYLim, cy, zoomPct);
-            end
+        end
+        if (fIsEnableZoomY || (~fIsEnableZoomX && ~fIsEnableZoomY ) )
+            mZoomIndexY = ChangeZoomIndex(direction, mZoomIndexY);
+            zoomPct = GetZoomPercent(mZoomIndexY);
+
+            yLim = RecalcZoomAxesLimits('y', yLim, mDefaultYLim, cy, zoomPct);
         end
         
         SetAxesLimits(xLim, yLim);
@@ -2534,9 +2763,13 @@ end
             extents = nan(cant_leads,4);
             
             for jj = 1:cant_leads
-                [aux_val, str_unit_prefix]= microVoltsTransformer(ECG( acx, jj));
                 
-                set(mPointerCross.htext(jj), 'String', sprintf(['%3.0f ' str_unit_prefix 'V'], aux_val ) );
+                if( any(jj == volt_idx) )
+                    [aux_val, str_unit_prefix]= microVoltsTransformer(ECG( acx, jj));
+                    set(mPointerCross.htext(jj), 'String', sprintf(['%3.0f ' str_unit_prefix 'V'], aux_val ) );
+                else
+                    set(mPointerCross.htext(jj), 'String', sprintf('%3.2f %s', ECG( acx, jj), heasig.units(jj,:) ) );
+                end
                 extents(jj,:) = get(mPointerCross.htext(jj), 'Extent');
             end
             % time
@@ -2546,11 +2779,11 @@ end
                 precision = 3;
             end
             
-            set(mPointerCross.htext(cant_leads+1), 'String', Seconds2HMS(acx/heasig.freq, precision));
+            set(mPointerCross.htext(cant_leads+1), 'String', Seconds2HMS( (acx + base_time )/heasig.freq, precision));
             
             % each lead
             for jj = 1:cant_leads
-                set(mPointerCross.htext(jj), 'Position', [ this_xlim(2) - extents(jj,3), -offsets(jj) + extraSpacingY(jj) ] );
+                set(mPointerCross.htext(jj), 'Position', [ this_xlim(2) - extents(jj,3), -offsets(jj) ] );
             end
             % time
             extents = get(mPointerCross.htext(cant_leads+1), 'Extent');
@@ -2572,10 +2805,10 @@ end
             % create rubber band struct
             mRubberBand = struct(...
                 'obj',	[patch('Parent', axes_hdl), patch('Parent', axes_hdl)], ...
-                'txt_start_hdl', text('String', Seconds2HMS(acx/heasig.freq, 3), 'Parent', axes_hdl, 'BackgroundColor', bgColor, 'EdgeColor', [0 0 0] ), ...                
+                'txt_start_hdl', text('String', Seconds2HMS((acx+ base_time )/heasig.freq, 3), 'Parent', axes_hdl, 'BackgroundColor', bgColor, 'EdgeColor', [0 0 0] ), ...                
                 'txt_duration_hdl', text('String', Seconds2HMS(0, 0), 'Parent', axes_hdl, 'BackgroundColor', bgColor, 'EdgeColor', [0 0 0] ), ...                
                 'txt_amp_hdl', text('String', '0', 'Parent', axes_hdl, 'BackgroundColor', bgColor, 'EdgeColor', [0 0 0] ), ...                
-                'txt_end_hdl', text('String', Seconds2HMS(acx/heasig.freq, 3), 'Parent', axes_hdl, 'BackgroundColor', bgColor, 'EdgeColor', [0 0 0] ), ...                
+                'txt_end_hdl', text('String', Seconds2HMS((acx+ base_time)/heasig.freq, 3), 'Parent', axes_hdl, 'BackgroundColor', bgColor, 'EdgeColor', [0 0 0] ), ...                
                 'x1',  	acx, ...
                 'y1',  	acy, ...
                 'x2',  	acx, ...
@@ -2643,8 +2876,16 @@ end
         if fIsRubberBandOn
             [acx, acy] = GetCursorCoordOnAxes();
             
-            mRubberBand.x2 = acx;
-            mRubberBand.y2 = acy;
+            if( fIsEnableZoomX )
+                mRubberBand.x2 = acx;
+                mRubberBand.y2 = mRubberBand.y1;
+            elseif( fIsEnableZoomY )
+                mRubberBand.y2 = acy;
+                mRubberBand.x2 = mRubberBand.x1;
+            else
+                mRubberBand.x2 = acx;
+                mRubberBand.y2 = acy;
+            end
             RubberBandSetPos();
             
             this_start = min(mRubberBand.x1, mRubberBand.x2);
@@ -2694,11 +2935,11 @@ end
 
             % time
             
-            set(mRubberBand.txt_start_hdl, 'String', Seconds2HMS( this_start/heasig.freq, time_precision) );
+            set(mRubberBand.txt_start_hdl, 'String', Seconds2HMS( (this_start+ base_time)/heasig.freq, time_precision) );
             extents = get(mRubberBand.txt_start_hdl, 'Extent');
             set(mRubberBand.txt_start_hdl, 'Position', [this_start - extents(3) lower_part - extents(4)] );
             
-            set(mRubberBand.txt_end_hdl, 'String', Seconds2HMS( this_end/heasig.freq, time_precision) );
+            set(mRubberBand.txt_end_hdl, 'String', Seconds2HMS( (this_end+ base_time)/heasig.freq, time_precision) );
             extents = get(mRubberBand.txt_end_hdl, 'Extent');
             set(mRubberBand.txt_end_hdl, 'Position', [this_end lower_part - extents(4)] );
             
@@ -2753,19 +2994,23 @@ end
     function RubberBandZoomAxes()
         %RubberBandZoomAxes apply zoom from rubber band
         
-        xLim = sort([mRubberBand.x1, mRubberBand.x2]);
-        yLim = sort([mRubberBand.y1, mRubberBand.y2]);
+        if( fIsEnableZoomY )
+            xLim = get(axes_hdl, 'Xlim'); 
+        else
+            xLim = sort([mRubberBand.x1, mRubberBand.x2]);
+        end
+        
+        if( fIsEnableZoomX )
+            yLim = get(axes_hdl, 'Ylim'); 
+        else
+            yLim = sort([mRubberBand.y1, mRubberBand.y2]);
+        end
         
         if (range(xLim) == 0 || range(yLim) == 0)
             return;
         end
         
         [zoomPctX, zoomPctY] = GetCurrentZoomAxesPercent(xLim, yLim);
-        
-        if fIsImage
-            zoomPctX = min(zoomPctX, zoomPctY);
-            zoomPctY = zoomPctX;
-        end
         
         cx = mean(xLim);
         cy = mean(yLim);
@@ -2928,22 +3173,6 @@ end
         xlabel(mMagnifier.obj, ''); 
         ylabel(mMagnifier.obj, '');
         
-        if fIsImage
-            mMagnifier.frame_obj = ...
-                [patch('Parent', mMagnifier.obj), ...
-                patch('Parent', mMagnifier.obj)];
-            
-            set(mMagnifier.frame_obj, 'FaceColor', 'none');
-            
-            set(mMagnifier.frame_obj(1), ...
-                'LineWidth', 1.5, ...
-                'EdgeColor', 'w')
-            set(mMagnifier.frame_obj(2), ...
-                'LineWidth', 1, ...
-                'EdgeColor', 'k')
-            
-            MagnifierBorderUpdate();
-        end
         
         hLines = findobj(mMagnifier.obj, 'Type', 'line');
         if ~isempty(hLines)
@@ -2960,14 +3189,6 @@ end
     function MagnifierBorderUpdate()
         %MagnifierBorderUpdate
         
-        if fIsImage
-            x = get(mMagnifier.obj, 'XLim');
-            y = get(mMagnifier.obj, 'YLim');
-            
-            set(mMagnifier.frame_obj, ...
-                'XData', [x(1) x(2) x(2) x(1)], ...
-                'YData', [y(1) y(1) y(2) y(2)]);
-        end
     end
 %--------------------------------------------------------------------------
 
@@ -3165,29 +3386,6 @@ end
 %--------------------------------------------------------------------------
 
 %==========================================================================
-    function SetSmoothKeys()
-        %SetSmoothKeys on/off cmoothing plots
-        
-        if fIsSmoothing
-            action = 'off';
-            fIsSmoothing = false;
-        else
-            action = 'on';
-            fIsSmoothing = true;
-        end
-        
-        if ~fIsImage
-            %FIXME: bug with switching opengl/painter renderer here
-            %Lost figure focus
-            hLine = findobj(axes_hdl, 'Type', 'Line');
-            if ~isempty(hLine)
-                set(hLine, 'LineSmooth', action);   % !!! Undocumented property
-            end
-        end
-    end
-%--------------------------------------------------------------------------
-
-%==========================================================================
     function [zg, st] = ZoomLogGrid(a, b, n)
         %ZoomLogGrid log zoom grid
         
@@ -3282,8 +3480,6 @@ end
         end
         mAxesInfo(axi).iscurrent = true;
         
-        fIsAxes2D = mAxesInfo(axi).is2d;
-        fIsImage = mAxesInfo(axi).isimage;
         
         mDefaultAxPos = mAxesInfo(axi).position;
         mDefaultXLim = mAxesInfo(axi).xlim;
@@ -3528,17 +3724,17 @@ end
         if( ann_graph_mode == kLinesAnns ) 
             
             % wave start
-            bOn = ~isnan(aux_on) & aux_on >= start_sample & aux_on <= start_sample+cant_samp;
+            bOn = ~isnan(aux_on) & aux_on >= start_sample & aux_on <= end_sample;
             aux_on_idx = find(bOn);
             this_hdl = [ this_hdl; plot(axes_hdl, repmat(rowvec(aux_on(aux_on_idx)), 2, 1 ), bsxfun( @plus, repmat([-vertTextOffset; vertTextOffset], 1, length(aux_on_idx)), rowvec( (ECG(aux_on(aux_on_idx) - start_sample + 1, lead) * gains(lead)) - offsets(lead) ) ), 'Color' , this_color, 'LineStyle', ':', 'Marker', '<' , 'MarkerSize', 2, 'LineWidth', 0.25)];
 
             % wave end
-            bOff = ~isnan(aux_off) & aux_off >= start_sample & aux_off <= start_sample+cant_samp;
+            bOff = ~isnan(aux_off) & aux_off >= start_sample & aux_off <= end_sample;
             aux_off_idx = find(bOff);
             this_hdl = [ this_hdl; plot(axes_hdl, repmat(rowvec(aux_off(aux_off_idx)), 2, 1 ), bsxfun( @plus, repmat([-vertTextOffset; vertTextOffset], 1, length(aux_off_idx)), rowvec((ECG(aux_off(aux_off_idx) - start_sample + 1, lead) * gains(lead)) - offsets(lead)  ) ), 'Color' , this_color, 'LineStyle', ':', 'Marker', '>', 'MarkerSize', 2, 'LineWidth', 0.25 )];
 
             % wave peak
-            bPeak = ~isnan(aux_peak) & aux_peak >= start_sample & aux_peak <= start_sample+cant_samp;
+            bPeak = ~isnan(aux_peak) & aux_peak >= start_sample & aux_peak <= end_sample;
             aux_peak_idx = find(bPeak);
             this_hdl = [ this_hdl; plot(axes_hdl, repmat(rowvec(aux_peak(aux_peak_idx)), 2, 1 ), bsxfun( @plus, repmat([-vertTextOffset; vertTextOffset]*1.3, 1, length(aux_peak_idx)), rowvec( (ECG(aux_peak(aux_peak_idx) - start_sample + 1, lead) * gains(lead)) - offsets(lead) ) ), 'Color' , this_color, 'LineStyle', ':', 'Marker', '^', 'MarkerSize', 2, 'LineWidth', 0.25 )];
             this_hdl = [ this_hdl; arrayfun( @(a)(text(a + 0.5*xTextOffset, (ECG(a - start_sample + 1, lead) * gains(lead)) - offsets(lead) + sign(ECG(a - start_sample + 1, lead)) * yTextOffset, field_names{2}, 'FontSize', 8, 'Color', this_color ) ), aux_peak(aux_peak_idx) ) ];
@@ -3551,12 +3747,12 @@ end
         elseif( ann_graph_mode == kBackColourAnns )
             
             % wave start
-            bOn = ~isnan(aux_on) & aux_on >= start_sample & aux_on <= start_sample+start_sample+cant_samp;
+            bOn = ~isnan(aux_on) & aux_on >= start_sample & aux_on <= end_sample;
             % wave end
-            bOff = ~isnan(aux_off) & aux_off >= start_sample & aux_off <= start_sample+cant_samp;
+            bOff = ~isnan(aux_off) & aux_off >= start_sample & aux_off <= end_sample;
             
             % wave peak
-            bPeak = ~isnan(aux_peak) & aux_peak >= start_sample & aux_peak <= start_sample+cant_samp;
+            bPeak = ~isnan(aux_peak) & aux_peak >= start_sample & aux_peak <= end_sample;
             aux_peak_idx = find(bPeak);
             this_hdl = [ this_hdl; plot(axes_hdl, repmat(rowvec(aux_peak(aux_peak_idx)), 2, 1 ), bsxfun( @plus, repmat([-vertTextOffset; vertTextOffset]*1.3, 1, length(aux_peak_idx)), rowvec( (ECG(aux_peak(aux_peak_idx) - start_sample + 1, lead) * gains(lead)) - offsets(lead) ) ), 'Color' , this_color, 'LineStyle', ':', 'Marker', '^', 'MarkerSize', 2, 'LineWidth', 0.25 )];
 %             this_hdl = [ this_hdl; arrayfun( @(a)(text(a + 0.5*xTextOffset, (ECG(a - start_sample + 1, lead) * gains(lead)) - offsets(lead) + sign(ECG(a - start_sample + 1, lead)) * yTextOffset, field_names{2}, 'FontSize', 8, 'Color', this_color ) ), aux_peak(aux_peak_idx) ) ];
@@ -3564,32 +3760,19 @@ end
             % wave conection between start-end
             bOnOff = bOn & bOff;
             aux_complete_idx = find(bOnOff);
+            aux_complete_idx2 = aux_complete_idx;
+            aux_complete_idxx = arrayfun( @(a)( max(1, aux_on(a)):min(heasig.nsamp,aux_off(a)) ),aux_complete_idx, 'UniformOutput', false);
             
-            % downsampled version
-%             aux_complete_idxx =                      arrayfun( @(a)( round(aux_on(a)/down_factor):round(aux_off(a)/down_factor) ),aux_complete_idx, 'UniformOutput', false);
-%             % on-peak
-%             aux_complete_idx = find( ~bOnOff & bOn & bPeak);
-%             aux_complete_idxx = [ aux_complete_idxx; arrayfun( @(a)( round(aux_on(a)/down_factor):round(aux_peak(a)/down_factor) ),aux_complete_idx, 'UniformOutput', false) ];
-%             % peak-off
-%             aux_complete_idx = find(~bOnOff & bPeak & bOff);
-%             aux_complete_idxx = [ aux_complete_idxx; arrayfun( @(a)( round(aux_peak(a)/down_factor):round(aux_off(a)/down_factor) ),aux_complete_idx, 'UniformOutput', false) ];
-%             
-%             aux_offset = round((start_sample - 1)/down_factor);
-%             this_hdl = [ this_hdl; cellfun( @(a)( patch( [a fliplr(a) ]*down_factor, [ (ECGd(a-aux_offset, lead)* gains(lead) )- offsets(lead) + 0.5*yTextOffset ; flipud((ECGd(a-aux_offset, lead)* gains(lead) )- offsets(lead)) - 0.5*yTextOffset ]', this_color, 'EdgeColor', 'none')), aux_complete_idxx) ];
+            % on-peak
+            aux_complete_idx = find( ~bOnOff & bOn & bPeak);
+            aux_complete_idx2 = [aux_complete_idx2;colvec(aux_complete_idx)];
+            aux_complete_idxx = [ aux_complete_idxx; arrayfun( @(a)( aux_on(a):aux_peak(a) ),aux_complete_idx, 'UniformOutput', false) ];
+            
+            % peak-off
+            aux_complete_idx = find(~bOnOff & bPeak & bOff);
+            aux_complete_idx2 = [aux_complete_idx2;colvec(aux_complete_idx)];
+            aux_complete_idxx = [ aux_complete_idxx; arrayfun( @(a)( aux_peak(a):min(heasig.nsamp,aux_off(a)) ),aux_complete_idx, 'UniformOutput', false) ];
 
-            % normal sampled version
-            aux_complete_idxx =                      arrayfun( @(a)( max(1, aux_on(a)):min(heasig.nsamp,aux_off(a)) ),aux_complete_idx, 'UniformOutput', false);
-            if( ~isempty(bOn) )
-                % on-peak
-                aux_complete_idx = find( ~bOnOff & bOn & bPeak);
-                aux_complete_idxx = [ aux_complete_idxx; arrayfun( @(a)( aux_on(a):aux_peak(a) ),aux_complete_idx, 'UniformOutput', false) ];
-            end
-            
-            if( ~isempty(bOff) )
-                % peak-off
-                aux_complete_idx = find(~bOnOff & bPeak & bOff);
-                aux_complete_idxx = [ aux_complete_idxx; arrayfun( @(a)( aux_peak(a):aux_off(a) ),aux_complete_idx, 'UniformOutput', false) ];
-            end            
             aux_offset = (start_sample - 1);
             %patch around the signal
 %             this_hdl = [ this_hdl; cellfun( @(a)( patch( [a fliplr(a) ], [ (ECG(a-aux_offset, lead)* gains(lead) )- offsets(lead) + 0.5*yTextOffset ; flipud((ECG(a-aux_offset, lead)* gains(lead) )- offsets(lead)) - 0.5*yTextOffset ]', this_color, 'EdgeColor', 'none')), aux_complete_idxx) ];
@@ -3597,7 +3780,19 @@ end
             
             max_vals = cellfun( @(a)( max(ECG(a-aux_offset, lead)) ), aux_complete_idxx, 'UniformOutput', false);
             min_vals = cellfun( @(a)( min(ECG(a-aux_offset, lead)) ), aux_complete_idxx, 'UniformOutput', false);
-            this_hdl = [ this_hdl; cellfun( @(a,b,c)( patch( [a(1) a(1) a(end) a(end) ], [ ( [ c b b c ] * gains(lead) )- offsets(lead) ], this_color, 'EdgeColor', 0.8*this_color)), aux_complete_idxx, max_vals, min_vals) ];
+            
+            if( any(strcmpi(field_names, 'qrs')) )
+                
+                if( isempty(hb_labels) )
+                    this_edge_color = repmat({0.8*this_color}, length(aux_complete_idxx), 1 );
+                else
+                    this_edge_color = colvec(cBeatLabelsColorCode(hb_labels_idx(aux_complete_idx2)));
+                end
+            else
+                this_edge_color = repmat({0.8*this_color}, length(aux_complete_idxx), 1 );
+            end
+            
+            this_hdl = [ this_hdl; cellfun( @(a,b,c,d)( patch( [a(1) a(1) a(end) a(end) ], [ ( [ c b b c ] * gains(lead) )- offsets(lead) ], this_color, 'EdgeColor', d)), aux_complete_idxx, max_vals, min_vals, this_edge_color) ];
             
         end
         
@@ -3632,19 +3827,19 @@ end
         if( ann_graph_mode == kLinesAnns ) 
             
             % wave start
-            bOn = ~isnan(aux_on) & aux_on >= start_sample & aux_on <= start_sample+cant_samp;
+            bOn = ~isnan(aux_on) & aux_on >= start_sample & aux_on <= end_sample;
             aux_on_idx = find(bOn);
 %             this_hdl = [ this_hdl; plot(axes_hdl, repmat(rowvec(aux_on(aux_on_idx)), 2, 1 ), bsxfun( @plus, repmat([-vertTextOffset; vertTextOffset], 1, length(aux_on_idx)), rowvec( (ECG(aux_on(aux_on_idx) - start_sample + 1, lead) * gains(lead)) - offsets(lead) ) ), 'Color' , this_color, 'LineStyle', ':', 'Marker', '<' , 'MarkerSize', 2, 'LineWidth', 0.25)];
             this_hdl = [ this_hdl; plot(axes_hdl, repmat(rowvec(aux_on(aux_on_idx)), 2, 1 ), repmat(colvec(limits), 1, length(aux_on_idx)), 'Color' , this_color, 'LineStyle', ':', 'Marker', '<' , 'MarkerSize', 4, 'LineWidth', 0.25)];
 
             % wave end
-            bOff = ~isnan(aux_off) & aux_off >= start_sample & aux_off <= start_sample+cant_samp;
+            bOff = ~isnan(aux_off) & aux_off >= start_sample & aux_off <= end_sample;
             aux_off_idx = find(bOff);
 %             this_hdl = [ this_hdl; plot(axes_hdl, repmat(rowvec(aux_off(aux_off_idx)), 2, 1 ), bsxfun( @plus, repmat([-vertTextOffset; vertTextOffset], 1, length(aux_off_idx)), rowvec((ECG(aux_off(aux_off_idx) - start_sample + 1, lead) * gains(lead)) - offsets(lead)  ) ), 'Color' , this_color, 'LineStyle', ':', 'Marker', '>', 'MarkerSize', 2, 'LineWidth', 0.25 )];
             this_hdl = [ this_hdl; plot(axes_hdl, repmat(rowvec(aux_off(aux_off_idx)), 2, 1 ), repmat(colvec(limits), 1, length(aux_off_idx)), 'Color' , this_color, 'LineStyle', ':', 'Marker', '>', 'MarkerSize', 4, 'LineWidth', 0.25 )];
 
             % wave peak
-            bPeak = ~isnan(aux_peak) & aux_peak >= start_sample & aux_peak <= start_sample+cant_samp;
+            bPeak = ~isnan(aux_peak) & aux_peak >= start_sample & aux_peak <= end_sample;
             aux_peak_idx = find(bPeak);
 %             this_hdl = [ this_hdl; plot(axes_hdl, repmat(rowvec(aux_peak(aux_peak_idx)), 2, 1 ), bsxfun( @plus, repmat([-vertTextOffset; vertTextOffset]*1.3, 1, length(aux_peak_idx)), rowvec( (ECG(aux_peak(aux_peak_idx) - start_sample + 1, lead) * gains(lead)) - offsets(lead) ) ), 'Color' , this_color, 'LineStyle', ':', 'Marker', '^', 'MarkerSize', 2, 'LineWidth', 0.25 )];
             this_hdl = [ this_hdl; plot(axes_hdl, repmat(rowvec(aux_peak(aux_peak_idx)), 2, 1 ), repmat(colvec(limits) + [-0.02; 0.02] * diff(limits), 1, length(aux_peak_idx)), 'Color' , this_color, 'LineStyle', ':', 'Marker', '^', 'MarkerSize', 4, 'LineWidth', 0.25 )];
@@ -3667,12 +3862,12 @@ end
         elseif( ann_graph_mode == kBackColourAnns )
             
             % wave start
-            bOn = ~isnan(aux_on) & aux_on >= start_sample & aux_on <= start_sample+start_sample+cant_samp;
+            bOn = ~isnan(aux_on) & aux_on >= start_sample & aux_on <= end_sample;
             % wave end
-            bOff = ~isnan(aux_off) & aux_off >= start_sample & aux_off <= start_sample+cant_samp;
+            bOff = ~isnan(aux_off) & aux_off >= start_sample & aux_off <= end_sample;
             
             % wave peak
-            bPeak = ~isnan(aux_peak) & aux_peak >= start_sample & aux_peak <= start_sample+cant_samp;
+            bPeak = ~isnan(aux_peak) & aux_peak >= start_sample & aux_peak <= end_sample;
             aux_peak_idx = find(bPeak);
             this_hdl = [ this_hdl; plot(axes_hdl, repmat(rowvec(aux_peak(aux_peak_idx)), 2, 1 ), repmat(colvec(limits) + [-0.02; 0.02] * diff(limits), 1, length(aux_peak_idx)), 'Color' , this_color, 'LineStyle', ':', 'Marker', '^', 'MarkerSize', 4, 'LineWidth', 0.25 )];
 
@@ -3682,23 +3877,22 @@ end
 
             % normal sampled version
             aux_complete_idxx = arrayfun( @(a)( max(1, aux_on(a)):min(heasig.nsamp,aux_off(a)) ),aux_complete_idx, 'UniformOutput', false);
-            if( ~isempty(bOn) )
-                % on-peak
-                aux_complete_idx = find( ~bOnOff & bOn & bPeak);
-                aux_complete_idxx = [ aux_complete_idxx; arrayfun( @(a)( aux_on(a):aux_peak(a) ),aux_complete_idx, 'UniformOutput', false) ];
-            end
+
+            % on-peak
+            aux_complete_idx = find( ~bOnOff & bOn & bPeak);
+            aux_complete_idxx = [ aux_complete_idxx; arrayfun( @(a)( aux_on(a):aux_peak(a) ),aux_complete_idx, 'UniformOutput', false) ];
             
-            if( ~isempty(bOff) )
-                % peak-off
-                aux_complete_idx = find(~bOnOff & bPeak & bOff);
-                aux_complete_idxx = [ aux_complete_idxx; arrayfun( @(a)( aux_peak(a):aux_off(a) ),aux_complete_idx, 'UniformOutput', false) ];
-            end            
+            % peak-off
+            aux_complete_idx = find(~bOnOff & bPeak & bOff);
+            aux_complete_idxx = [ aux_complete_idxx; arrayfun( @(a)( aux_peak(a):aux_off(a) ),aux_complete_idx, 'UniformOutput', false) ];
+
             aux_offset = (start_sample - 1);
             %patch around the signal
 %             this_hdl = [ this_hdl; cellfun( @(a)( patch( [a fliplr(a) ], [ (ECG(a-aux_offset, lead)* gains(lead) )- offsets(lead) + 0.5*yTextOffset ; flipud((ECG(a-aux_offset, lead)* gains(lead) )- offsets(lead)) - 0.5*yTextOffset ]', this_color, 'EdgeColor', 'none')), aux_complete_idxx) ];
             %box around the wave
             
-            this_hdl = [ this_hdl; cellfun( @(a,b,c)( patch( [a(1) a(1) a(end) a(end) ], [ limits(2) limits(1) limits(1) limits(2) ], this_color, 'EdgeColor', 0.5*this_color)), aux_complete_idxx) ];
+            
+            this_hdl = [ this_hdl; cellfun( @(a,b)( patch( [a(1) a(1) a(end) a(end) ] - aux_offset, [ limits(2) limits(1) limits(1) limits(2) ], this_color, 'EdgeColor', b)), aux_complete_idxx, this_edge_color) ];
             
         end
         
@@ -3765,9 +3959,50 @@ end
                 '      ''y''                         : If pressed and holding, zoom and drag works only for Y axis\n' ... 
                 '      ''m''                         : If pressed and holding, Magnifier mode on\n' ... 
                 '      ''p''                         : On/Off paper mode\n' ... 
+                '      ''r''                         : Export format (PDF/PNG)\n' ... 
+                '      ''s''                         : Export current view\n' ... 
                     ] );
+               
+    end
+
+    function timer_stop_fcn(obj,event_obj)
+         
+%         if(bPreserveFix)
+%             % never stop when editing
+%             start(my_timer)
+%         end
         
     end
+
+    function timer_fcn(obj,event_obj)
+        
+        delete(findobj('Tag', 'title_efimero' ));
+
+%         if(~bPreserveFix)
+%             % allow edition of the closer wave
+%             bFixedWave = false;
+%         end
+        
+    end
+
+    function update_title_efimero( strTitle, delay )
+       
+        delete(findobj('Tag', 'title_efimero' ))
+        
+        left_legend = plotXmin + 4*xTextOffset;
+        bottom_legend = plotYmax - 2*yTextOffset;
+
+        aux_hdl = text( left_legend , bottom_legend , strTitle, 'FontSize', 8, 'HorizontalAlignment', 'left', 'BackgroundColor', 'r' );
+
+        set(aux_hdl, 'Tag', 'title_efimero')
+            
+        if( ~isinf(delay) && strcmpi(my_timer.Running, 'off') )
+            my_timer.StartDelay = delay;
+            start(my_timer)
+        end
+        
+    end
+
 
 
 end

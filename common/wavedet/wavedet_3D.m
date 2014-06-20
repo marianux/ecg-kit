@@ -186,8 +186,9 @@ t=[1 size(sig_all,1)];
 if nargin < 4
     messages.warnings=[];
 end
+
 if ~isfield(messages,'setup'), messages.setup.wavedet=[]; end
-if ~isfield(messages.setup,'wavedet'), messages.setup.wavedet=[]; end
+if ~isfield(messages.setup.wavedet,'QRS_detection_only'), messages.setup.wavedet.QRS_detection_only=false; end
 if ~isfield(messages,'errors'), messages.errors=[]; end
 if ~isfield(messages,'errors_desc'), messages.errors_desc=[]; end
 if ~isfield(messages,'warnings'), messages.warnings=[]; end
@@ -938,10 +939,10 @@ end
 
 if qrs_flag==1,
     sel=find(ext_anot<messages.setup.wavedet.freq);
-    if ~isempty(sel)
-        ext_anot(sel)=[];
+%     if ~isempty(sel)
+%         ext_anot(sel)=[];
         maxlength= length(ext_anot);
-    end
+%     end
 end
 
 nanvec = nan(1,maxlength);
@@ -994,7 +995,22 @@ if  messages.setup.wavedet.filter_bank_design==1;
     filters_cache_filename = ['wt_filters_' num2str(MaxScales) ' scales_' num2str(messages.setup.wavedet.freq) ' Hz.mat' ];
     % check it form setup
     if( exist(filters_cache_filename, 'file') )
+        
+        db_stat = dbstatus();
+        bCaughtErrors = false;
+        for ii = 1:length(db_stat)
+            if( strcmpi(db_stat(ii).cond, 'caught error') )
+                bCaughtErrors = true;
+                dbclear if caught error
+                break
+            end
+        end
+        
         load( filters_cache_filename );
+        
+        if(bCaughtErrors)
+            dbstop if caught error
+        end
     else
         q_filters = qs_filter_design(1:MaxScales, messages.setup.wavedet.freq); %ver spf
         try
@@ -1515,329 +1531,342 @@ while ((endsamp+1) < t(2))
     else
         timenew=time;
     end
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%% QRS delineation %%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %if ~isempty(time(1,:)) %2JUN08 RUTE
-    if ~isempty(time) %2JUN08 RUTE
-        QRSon=indexes(:,intervalo(1):intervalo(end));
-        qrspiconsetall=NaN*ones(3,intervalo(end)-intervalo(1)+1);
-        QRSoff=indexes(:,intervalo(1):intervalo(end));
-        qrspicoffsetall=NaN*ones(3,intervalo(end)-intervalo(1)+1);
-        if ~isempty(intervalo1)
-            [position1,qrspiconset1,qrspicoffset1,messages]= qrswavef(heasig,samp,time1,position1,w1,intervalo1,messages);
-            auxindexes=indexes(1,intervalo(1):intervalo(end));
-            %NOTE: CHANGED 10.SET.05
-            qrspiconsetall(1,(~isnan(indexes(1,intervalo(1):intervalo(end)))&(QRSon(1,:)>=intervalo1(1)&QRSon(1,:)<=intervalo1(2))))=qrspiconset1(QRSon(1,~isnan(QRSon(1,:))&(QRSon(1,:)>=intervalo1(1)&QRSon(1,:)<=intervalo1(2)))-intervalo1(1)+1); %17Mar06
-            QRSon(1,~isnan(QRSon(1,:)))=position1.QRSon(QRSon(1,~isnan(QRSon(1,:))));
-            
-            qrspicoffsetall(1,(~isnan(indexes(1,intervalo(1):intervalo(end)))&(QRSoff(1,:)>=intervalo1(1)&QRSoff(1,:)<=intervalo1(2))))=qrspicoffset1(QRSoff(1,~isnan(QRSoff(1,:))&(QRSoff(1,:)>=intervalo1(1)&QRSoff(1,:)<=intervalo1(2)))-intervalo1(1)+1);
-            QRSoff(1,~isnan(QRSoff(1,:)))=position1.QRSoff(QRSoff(1,~isnan(QRSoff(1,:))));
-        end
-        if size(sig,2)>1
-            [position2,qrspiconset2,qrspicoffset2,messages]= qrswavef(heasig,samp,time2,position2,w2,intervalo2,messages);
-            if ~isempty(intervalo2)
-                auxindexes=indexes(2,intervalo(1):intervalo(end));
-                qrspiconsetall(2,(~isnan(indexes(2,intervalo(1):intervalo(end)))&(QRSon(2,:)<=intervalo2(2)&QRSon(2,:)>=intervalo2(1))))=qrspiconset2(QRSon(2,~isnan(QRSon(2,:))&(QRSon(2,:)<=intervalo2(2)&QRSon(2,:)>=intervalo2(1)))-intervalo2(1)+1); %Rute 17Mar06
-                QRSon(2,~isnan(QRSon(2,:)))=position2.QRSon(QRSon(2,~isnan(QRSon(2,:))));
-                qrspicoffsetall(2,(~isnan(indexes(2,intervalo(1):intervalo(end)))&(QRSoff(2,:)<=intervalo2(2)&QRSoff(2,:)>=intervalo2(1))))=qrspicoffset2(QRSoff(2,~isnan(QRSoff(2,:))&(QRSoff(2,:)<=intervalo2(2)&QRSoff(2,:)>=intervalo2(1)))-intervalo2(1)+1); %Rute 17Mar06
-                QRSoff(2,~isnan(QRSoff(2,:)))=position2.QRSoff(QRSoff(2,~isnan(QRSoff(2,:))));
-            end
-            if size(sig,2)>2 && ~isempty(intervalo3)
-                [position3,qrspiconset3,qrspicoffset3,messages]= qrswavef(heasig,samp,time3,position3,w3,intervalo3,messages); %#ok<ASGLU>
-                auxindexes=indexes(3,intervalo(1):intervalo(end));
-                if max(QRSon(3,~isnan(QRSon(3,:))&(QRSon(3,:)>=intervalo3(1)&QRSon(3,:)<=intervalo3(2)))-intervalo3(1)+1)> length(qrspiconset3)%17.Mar.06
-                    qrspiconsetall(3,(QRSon(3,~isnan(QRSon(3,:))&(QRSon(3,:)<=intervalo3(2)&QRSon(3,:)>=intervalo3(1)))-intervalo3(1)+1)<=length(qrspiconsetall(3,(~isnan(indexes(3,intervalo(1):intervalo(end)))&(QRSon(3,:)<=intervalo3(2)&QRSon(3,:)>=intervalo3(1)))))&(~isnan(indexes(3,intervalo(1):intervalo(end)))&(QRSon(3,:)>=intervalo3(1))))=qrspiconset3((QRSon(3,~isnan(QRSon(3,:))&(QRSon(3,:)>=intervalo3(1)))-intervalo3(1)+1)<=length(qrspiconsetall(3,(~isnan(indexes(3,intervalo(1):intervalo(end)))&(QRSon(3,:)>=intervalo3(1)))))& QRSon(3,~isnan(QRSon(3,:))&(QRSon(3,:)>=intervalo3(1)))-intervalo3(1)+1);%17Mar06
-                else%16.Fev.06
-                    qrspiconsetall(3,(~isnan(indexes(3,intervalo(1):intervalo(end)))&(QRSon(3,:)>=intervalo3(1))))=qrspiconset3(QRSon(3,~isnan(QRSon(3,:))&(QRSon(3,:)>=intervalo3(1)))-intervalo3(1)+1);
-                end %16.Fev.06
-                QRSon(3,~isnan(QRSon(3,:)))=position3.QRSon(QRSon(3,~isnan(QRSon(3,:))));
-                
-                if max(QRSoff(3,~isnan(QRSoff(3,:))&(QRSoff(3,:)>=intervalo3(1)&QRSoff(3,:)<=intervalo3(2)))-intervalo3(1)+1)> length(qrspiconset3)%17.Mar.06
-                    qrspicoffsetall(3,(QRSoff(3,~isnan(QRSoff(3,:))&(QRSoff(3,:)<=intervalo3(2)&QRSoff(3,:)>=intervalo3(1)))-intervalo3(1)+1)<=length(qrspicoffsetall(3,(~isnan(indexes(3,intervalo(1):intervalo(end)))&(QRSoff(3,:)<=intervalo3(2)&QRSoff(3,:)>=intervalo3(1)))))&(~isnan(indexes(3,intervalo(1):intervalo(end)))&(QRSoff(3,:)>=intervalo3(1))))=qrspiconset3((QRSoff(3,~isnan(QRSoff(3,:))&(QRSoff(3,:)>=intervalo3(1)))-intervalo3(1)+1)<=length(qrspicoffsetall(3,(~isnan(indexes(3,intervalo(1):intervalo(end)))&(QRSoff(3,:)>=intervalo3(1)))))& QRSoff(3,~isnan(QRSoff(3,:))&(QRSoff(3,:)>=intervalo3(1)))-intervalo3(1)+1);%17Mar06
-                else%16.Fev.06
-                    qrspicoffsetall(3,(~isnan(indexes(3,intervalo(1):intervalo(end)))&(QRSoff(3,:)>=intervalo3(1))))=qrspiconset3(QRSoff(3,~isnan(QRSoff(3,:))&(QRSoff(3,:)>=intervalo3(1)))-intervalo3(1)+1);
-                end %16.Fev.06
-                QRSoff(3,~isnan(QRSoff(3,:)))=position3.QRSoff(QRSoff(3,~isnan(QRSoff(3,:))));
-            end
-        end
-        auxqrspiconset=nanmin(qrspiconsetall);
-        auxqrspicoffset=nanmax(qrspicoffsetall);
-        aux=find(isnan(auxqrspiconset));
-        auxaux=intervalo(1):intervalo(end);
-        %
-        if ~isempty(aux)  % one beat is from the former interval  1.AGO.07
-            if aux(1)>1
-                messages.errors=[messages.errors {['QRS onset not found at beat(s): ' num2str(auxaux(aux ))]}];
-                warning(char(messages.errors(end)));
-            end
-            auxqrspiconset(aux)=[];
-            QRSon(:,aux)=[];  %31.07.07
-            auxqrspicoffset(aux)=[];
-            QRSoff(:,aux)=[]; %31.07.07
-            intervalo(end)=intervalo(end)-aux(end); %16MAR09
-            time(:,aux)=[];%31.07.07
-            timenew(:,aux)=[];%31.07.07
-            if length(auxaux)>size(QRSon,2)
-                auxaux(aux)=[];
-            end
-        end
-        
-        if size(sig,2)>1 %Rute 16Out08
-            %by default QRS onset in the earliest of the marks
-            %by default QRS end in the latest of the marks
-            position0.QRSon(auxaux)=min(QRSon);
-            position.QRSon(auxaux)=min(QRSon);
-            position0.QRSoff(auxaux)=max(QRSoff);
-            position.QRSoff(auxaux)=max(QRSoff);
-        end
-        if size(sig,2)>1
-            if ~exist('w3','var')
-                w3=[];
-            end
-            timeaux=time; %time is sorted %18.07.07
-            auxaux=NaN*ones(3,intervalo(end)-intervalo(1)+1);
-            auxindexes=indexes(:,intervalo(1):intervalo(end));
-            auxaux(1,~isnan(indexes(1,intervalo(1):intervalo(end))))=position1.R(auxindexes(1,~isnan(indexes(1,intervalo(1):intervalo(end)))));
-            auxaux(2,~isnan(indexes(2,intervalo(1):intervalo(end))))=position2.R(auxindexes(2,~isnan(indexes(2,intervalo(1):intervalo(end)))));
-            auxaux(3,~isnan(indexes(3,intervalo(1):intervalo(end))))=position3.R(auxindexes(3,~isnan(indexes(3,intervalo(1):intervalo(end)))));
-            position.R(intervalo(1):intervalo(end))=nanmin(auxaux);
-            
-            %timenew is the median, use min instead?
-            [position0,position,messages]=multiqrson(heasig,w1,w2,w3,auxqrspiconset,QRSon,timeaux,timenew,position0,position,intervalo,samp,messages);
-            timeaux=time;
-            
-            position.R(intervalo(1):intervalo(end))=round(nanmedian(auxaux)); %RUTE 09AGO2011 %MEDIAN %by default position is the median mark of all R
-            %timenew is the median, use max instead?
-            [position0,position,messages]=multiqrsend(heasig,w1,w2,w3,auxqrspicoffset,QRSoff,timeaux,timenew,position0,position, intervalo,samp,messages);
-            position.R(intervalo(1):intervalo(end))=round(nanmedian(auxaux));%RUTE 09AGO2011
-            %            squaresignal=(sig(:,1)/max(sig(:,1))).^2+(sig(:,2)/max(sig(:,2))).^2+(sig(:,3)/max(sig(:,3))).^2;
-            %             for ii=intervalo(1):intervalo(end)
-            %             if ~isempty(position.QRSon(ii):position.QRSoff(ii))
-            %                 [M,position.qrsnew(ii)]=max(squaresignal(position.QRSon(ii):position.QRSoff(ii)));
-            %                 position.qrsnew(ii)=position.qrsnew(ii)+position.QRSon(ii)-1;
-            %             end
-            %             end
-        end
-        %         lastqrs1=timeqrs(1,end);
-        %%%%%%%%%%%%%%%% caso em que rr tem dimensao inferior ao necessario
-        %%%%%%%%%%%%%%%% protection with respect to ultimo_anot
-        
-        while eval(['position' str '.QRSon(intervalo(1))<ultimo_anot'])
-            if ultimo_anottyp==10; % Toff
-                if eval(['(position' str '.qrs(intervalo(1))-position' str '.QRSon(intervalo(1))) < (position' str '.Toff(intervalo(1)-1)-position' str '.T(intervalo(1)-1))'])
-                    eval(['position' str '.Toff(intervalo(1)-1)=NaN;'])
-                    if eval(['isnan(position' str '.Tprima(intervalo(1)-1))'])
-                        eval(['ultimo_anot=position' str '.T(intervalo(1)-1);'])
-                        ultimo_anottyp=8;
-                    else
-                        eval(['ultimo_anot=position' str '.Tprima(intervalo(1)-1);'])
-                        ultimo_anottyp=9;
-                    end
-                else
-                    eval(['position' str '.QRSon(intervalo(1))=NaN;'])
-                end
-            elseif ultimo_anottyp==9 || ultimo_anottyp==8 || ultimo_anottyp==5; % Tprima | Tpeak | qrs
-                eval(['position' str '.QRSon(intervalo(1))=NaN;'])
-            else  % ultimo_anottyp==6 % QRSoff
-                if eval(['(position' str '.qrs(intervalo(1))-position' str '.QRSon(intervalo(1))) < (position' str '.QRSoff(intervalo(1)-1)-position' str '.qrs(intervalo(1)-1))'])
-                    eval(['position' str '.qrsoff(intervalo(1)-1)=NaN;'])
-                    eval(['ultimo_anot=position' str '.qrs(intervalo(1)-1);'])
-                    ultimo_anottyp=5;
-                else
-                    eval(['position' str '.QRSon(intervalo(1))=NaN;'])
-                end
-            end
-        end
-        % Modificado Juan 9/03/11
+    
+    
+    if( ~messages.setup.wavedet.QRS_detection_only )
+    
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        if qrs_flag~=2
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%% T wave
-            if ~isempty(time1)
-                [position1,janelas1,messages]= twavef(heasig,samp,time1,position1,w1,intervalo1,messages); %21AGO09
-            end
-            %end
-            if size(sig,2)>1 && ~isempty(time2)
-                if length(time2(1,:))>1%23SET08
-                    [position2,janelas2,messages]= twavef(heasig,samp,time2,position2,w2,intervalo2,messages);%21AGO09
-                end
-                if size(sig,2)>2  && ~isempty(intervalo3)
-                    if length(time3(1,:))>1%23SET08
-                        [position3,janelas3,messages]= twavef(heasig,samp,time3,position3,w3,intervalo3,messages);%21AGO09
-                    end
-                end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% QRS delineation %%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %if ~isempty(time(1,:)) %2JUN08 RUTE
+        if ~isempty(time) %2JUN08 RUTE
+            QRSon=indexes(:,intervalo(1):intervalo(end));
+            qrspiconsetall=NaN*ones(3,intervalo(end)-intervalo(1)+1);
+            QRSoff=indexes(:,intervalo(1):intervalo(end));
+            qrspicoffsetall=NaN*ones(3,intervalo(end)-intervalo(1)+1);
+            if ~isempty(intervalo1)
+                [position1,qrspiconset1,qrspicoffset1,messages]= qrswavef(heasig,samp,time1,position1,w1,intervalo1,messages);
+                auxindexes=indexes(1,intervalo(1):intervalo(end));
+                %NOTE: CHANGED 10.SET.05
+                qrspiconsetall(1,(~isnan(indexes(1,intervalo(1):intervalo(end)))&(QRSon(1,:)>=intervalo1(1)&QRSon(1,:)<=intervalo1(2))))=qrspiconset1(QRSon(1,~isnan(QRSon(1,:))&(QRSon(1,:)>=intervalo1(1)&QRSon(1,:)<=intervalo1(2)))-intervalo1(1)+1); %17Mar06
+                QRSon(1,~isnan(QRSon(1,:)))=position1.QRSon(QRSon(1,~isnan(QRSon(1,:))));
+
+                qrspicoffsetall(1,(~isnan(indexes(1,intervalo(1):intervalo(end)))&(QRSoff(1,:)>=intervalo1(1)&QRSoff(1,:)<=intervalo1(2))))=qrspicoffset1(QRSoff(1,~isnan(QRSoff(1,:))&(QRSoff(1,:)>=intervalo1(1)&QRSoff(1,:)<=intervalo1(2)))-intervalo1(1)+1);
+                QRSoff(1,~isnan(QRSoff(1,:)))=position1.QRSoff(QRSoff(1,~isnan(QRSoff(1,:))));
             end
             if size(sig,2)>1
-                subintervalo=indexes(:,intervalo(1):intervalo(end));
-                %NOTE are excluded the ones from the previous seg
-                if ~isempty(intervalo1)
-                    aux1=subintervalo(1,~isnan(subintervalo(1,:)))-intervalo1(1)+1;
-                end
-                if size(sig,2)>1 & ~isempty(intervalo2) %#ok<AND2>
-                    aux2=subintervalo(2,~isnan(subintervalo(2,:)))-intervalo2(1)+1;
-                end
-                if size(sig,2)>2 & ~isempty(intervalo3) %#ok<AND2>
-                    aux3=subintervalo(3,~isnan(subintervalo(3,:)))-intervalo3(1)+1;
-                end
-                %26.04.05
-                janelas=NaN*ones(size(subintervalo,2),9);
-                janelas(:,1)=(intervalo(1):intervalo(end))';
-                janelas(:,4)=(intervalo(1):intervalo(end))';
-                janelas(:,7)=(intervalo(1):intervalo(end))';
-                if ~isempty(intervalo1)
-                    janelas(~isnan(subintervalo(1,:)-intervalo1(1)+1),2)=aux1';
-                end
+                [position2,qrspiconset2,qrspicoffset2,messages]= qrswavef(heasig,samp,time2,position2,w2,intervalo2,messages);
                 if ~isempty(intervalo2)
-                    janelas(~isnan(subintervalo(2,:)-intervalo2(1)+1),5)=aux2';
+                    auxindexes=indexes(2,intervalo(1):intervalo(end));
+                    qrspiconsetall(2,(~isnan(indexes(2,intervalo(1):intervalo(end)))&(QRSon(2,:)<=intervalo2(2)&QRSon(2,:)>=intervalo2(1))))=qrspiconset2(QRSon(2,~isnan(QRSon(2,:))&(QRSon(2,:)<=intervalo2(2)&QRSon(2,:)>=intervalo2(1)))-intervalo2(1)+1); %Rute 17Mar06
+                    QRSon(2,~isnan(QRSon(2,:)))=position2.QRSon(QRSon(2,~isnan(QRSon(2,:))));
+                    qrspicoffsetall(2,(~isnan(indexes(2,intervalo(1):intervalo(end)))&(QRSoff(2,:)<=intervalo2(2)&QRSoff(2,:)>=intervalo2(1))))=qrspicoffset2(QRSoff(2,~isnan(QRSoff(2,:))&(QRSoff(2,:)<=intervalo2(2)&QRSoff(2,:)>=intervalo2(1)))-intervalo2(1)+1); %Rute 17Mar06
+                    QRSoff(2,~isnan(QRSoff(2,:)))=position2.QRSoff(QRSoff(2,~isnan(QRSoff(2,:))));
                 end
-                if ~isempty(intervalo1)
-                    aux1=aux1(aux1>0);
-                end
-                aux2=aux2(aux2>0);
-                if size(sig,2)>2 & ~isempty(intervalo3) %#ok<AND2>
-                    janelas(~isnan(subintervalo(3,:)-intervalo3(1)+1),8)=aux3';
-                    aux3=aux3(aux3>0);
-                end
-                janelas(janelas<=0)=NaN;
-                if exist('janelas1','var')&& sum(~isnan(janelas(:,2)))~=0
-                    janelas(~isnan(janelas(:,2)) & janelas(:,2)>0,2:3)=janelas1(aux1,2:3);
-                end
-                if exist('janelas2','var')& ~isempty(janelas(~isnan(janelas(:,5)) & janelas(:,5)>0 ,5:6)) %#ok<AND2>
-                    if max(aux2) > length(janelas2)%17.Mar.06
-                        janelas(~isnan(janelas(:,5)) & janelas(:,5)>0 ,5:6)=[janelas2((aux2) <= length(janelas2),2:3); NaN*ones(sum(aux2 > length(janelas2)),2)];%14.Mar.06
+                if size(sig,2)>2 && ~isempty(intervalo3)
+                    [position3,qrspiconset3,qrspicoffset3,messages]= qrswavef(heasig,samp,time3,position3,w3,intervalo3,messages); %#ok<ASGLU>
+                    auxindexes=indexes(3,intervalo(1):intervalo(end));
+                    if max(QRSon(3,~isnan(QRSon(3,:))&(QRSon(3,:)>=intervalo3(1)&QRSon(3,:)<=intervalo3(2)))-intervalo3(1)+1)> length(qrspiconset3)%17.Mar.06
+                        qrspiconsetall(3,(QRSon(3,~isnan(QRSon(3,:))&(QRSon(3,:)<=intervalo3(2)&QRSon(3,:)>=intervalo3(1)))-intervalo3(1)+1)<=length(qrspiconsetall(3,(~isnan(indexes(3,intervalo(1):intervalo(end)))&(QRSon(3,:)<=intervalo3(2)&QRSon(3,:)>=intervalo3(1)))))&(~isnan(indexes(3,intervalo(1):intervalo(end)))&(QRSon(3,:)>=intervalo3(1))))=qrspiconset3((QRSon(3,~isnan(QRSon(3,:))&(QRSon(3,:)>=intervalo3(1)))-intervalo3(1)+1)<=length(qrspiconsetall(3,(~isnan(indexes(3,intervalo(1):intervalo(end)))&(QRSon(3,:)>=intervalo3(1)))))& QRSon(3,~isnan(QRSon(3,:))&(QRSon(3,:)>=intervalo3(1)))-intervalo3(1)+1);%17Mar06
                     else%16.Fev.06
-                        janelas(~isnan(janelas(:,5)) & janelas(:,5)>0 ,5:6)=janelas2(aux2,2:3);
-                    end%16.Fev.06
+                        qrspiconsetall(3,(~isnan(indexes(3,intervalo(1):intervalo(end)))&(QRSon(3,:)>=intervalo3(1))))=qrspiconset3(QRSon(3,~isnan(QRSon(3,:))&(QRSon(3,:)>=intervalo3(1)))-intervalo3(1)+1);
+                    end %16.Fev.06
+                    QRSon(3,~isnan(QRSon(3,:)))=position3.QRSon(QRSon(3,~isnan(QRSon(3,:))));
+
+                    if max(QRSoff(3,~isnan(QRSoff(3,:))&(QRSoff(3,:)>=intervalo3(1)&QRSoff(3,:)<=intervalo3(2)))-intervalo3(1)+1)> length(qrspiconset3)%17.Mar.06
+                        qrspicoffsetall(3,(QRSoff(3,~isnan(QRSoff(3,:))&(QRSoff(3,:)<=intervalo3(2)&QRSoff(3,:)>=intervalo3(1)))-intervalo3(1)+1)<=length(qrspicoffsetall(3,(~isnan(indexes(3,intervalo(1):intervalo(end)))&(QRSoff(3,:)<=intervalo3(2)&QRSoff(3,:)>=intervalo3(1)))))&(~isnan(indexes(3,intervalo(1):intervalo(end)))&(QRSoff(3,:)>=intervalo3(1))))=qrspiconset3((QRSoff(3,~isnan(QRSoff(3,:))&(QRSoff(3,:)>=intervalo3(1)))-intervalo3(1)+1)<=length(qrspicoffsetall(3,(~isnan(indexes(3,intervalo(1):intervalo(end)))&(QRSoff(3,:)>=intervalo3(1)))))& QRSoff(3,~isnan(QRSoff(3,:))&(QRSoff(3,:)>=intervalo3(1)))-intervalo3(1)+1);%17Mar06
+                    else%16.Fev.06
+                        qrspicoffsetall(3,(~isnan(indexes(3,intervalo(1):intervalo(end)))&(QRSoff(3,:)>=intervalo3(1))))=qrspiconset3(QRSoff(3,~isnan(QRSoff(3,:))&(QRSoff(3,:)>=intervalo3(1)))-intervalo3(1)+1);
+                    end %16.Fev.06
+                    QRSoff(3,~isnan(QRSoff(3,:)))=position3.QRSoff(QRSoff(3,~isnan(QRSoff(3,:))));
                 end
-                if size(sig,2)>2 & ~isempty(intervalo3) %#ok<AND2>
-                    %ver altera�ao por erro de indexes em irec5 de
-                    %politec!!!!%16.Fev.06
-                    if exist('janelas3','var')
-                        if max(aux3) > length(janelas3)%16.Fev.06
-                            %janelas(~isnan(janelas(:,8)) & janelas(:,8)>0 ,8:9)=[janelas3(aux3(1:(end-1)),2:3);NaN NaN];%16.Fev.06
-                            janelas(~isnan(janelas(:,8)) & janelas(:,8)>0 ,8:9)=[janelas3((aux3) <= length(janelas3),2:3); NaN*ones(sum(aux3 > length(janelas3)),2)];%14.Mar.06
-                        else%16.Fev.06
-                            janelas(~isnan(janelas(:,8)) & janelas(:,8)>0 ,8:9)=janelas3(aux3,2:3);
-                        end%16.Fev.06
-                    end
+            end
+            auxqrspiconset=nanmin(qrspiconsetall);
+            auxqrspicoffset=nanmax(qrspicoffsetall);
+            aux=find(isnan(auxqrspiconset));
+            auxaux=intervalo(1):intervalo(end);
+            %
+            if ~isempty(aux)  % one beat is from the former interval  1.AGO.07
+                if aux(1)>1
+                    messages.errors=[messages.errors {['QRS onset not found at beat(s): ' num2str(auxaux(aux ))]}];
+                    warning(char(messages.errors(end)));
                 end
-                %cases were begwin>endwin!!!
-                janelas((janelas(:,3))<=janelas(:,2)|isnan(janelas(:,3)),2)=NaN;
-                janelas(janelas(:,3)<=janelas(:,2)|isnan(janelas(:,2)),3)=NaN;
-                janelas(janelas(:,6)<=janelas(:,5)|isnan(janelas(:,6)),5)=NaN;
-                janelas(janelas(:,6)<=janelas(:,5)|isnan(janelas(:,5)),6)=NaN;
-                janelas(janelas(:,9)<=janelas(:,8)|isnan(janelas(:,9)),8)=NaN;
-                janelas(janelas(:,9)<=janelas(:,8)|isnan(janelas(:,8)),9)=NaN;
-                begwin= min(janelas(:,[2 5 8])'); %#ok<UDIM>
-                endwin= max(janelas(:,[3 6 9])'); %#ok<UDIM>
-                intreg=[begwin' endwin'];
-                
-                count=count+1;
+                auxqrspiconset(aux)=[];
+                QRSon(:,aux)=[];  %31.07.07
+                auxqrspicoffset(aux)=[];
+                QRSoff(:,aux)=[]; %31.07.07
+                intervalo(end)=intervalo(end)-aux(end); %16MAR09
+                time(:,aux)=[];%31.07.07
+                timenew(:,aux)=[];%31.07.07
+                if length(auxaux)>size(QRSon,2)
+                    auxaux(aux)=[];
+                end
+            end
+
+            if size(sig,2)>1 %Rute 16Out08
+                %by default QRS onset in the earliest of the marks
+                %by default QRS end in the latest of the marks
+                position0.QRSon(auxaux)=min(QRSon);
+                position.QRSon(auxaux)=min(QRSon);
+                position0.QRSoff(auxaux)=max(QRSoff);
+                position.QRSoff(auxaux)=max(QRSoff);
+            end
+            if size(sig,2)>1
                 if ~exist('w3','var')
                     w3=[];
                 end
-                [position0,position,messages]= delineate3D(w1,w2,w3,intreg,timenew,position0,position,intervalo,position1,position2,position3,indexes,samp,[],messages); %   05MAY2011
+                timeaux=time; %time is sorted %18.07.07
+                auxaux=NaN*ones(3,intervalo(end)-intervalo(1)+1);
+                auxindexes=indexes(:,intervalo(1):intervalo(end));
+                auxaux(1,~isnan(indexes(1,intervalo(1):intervalo(end))))=position1.R(auxindexes(1,~isnan(indexes(1,intervalo(1):intervalo(end)))));
+                auxaux(2,~isnan(indexes(2,intervalo(1):intervalo(end))))=position2.R(auxindexes(2,~isnan(indexes(2,intervalo(1):intervalo(end)))));
+                auxaux(3,~isnan(indexes(3,intervalo(1):intervalo(end))))=position3.R(auxindexes(3,~isnan(indexes(3,intervalo(1):intervalo(end)))));
+                position.R(intervalo(1):intervalo(end))=nanmin(auxaux);
+
+                %timenew is the median, use min instead?
+                [position0,position,messages]=multiqrson(heasig,w1,w2,w3,auxqrspiconset,QRSon,timeaux,timenew,position0,position,intervalo,samp,messages);
+                timeaux=time;
+
+                position.R(intervalo(1):intervalo(end))=round(nanmedian(auxaux)); %RUTE 09AGO2011 %MEDIAN %by default position is the median mark of all R
+                %timenew is the median, use max instead?
+                [position0,position,messages]=multiqrsend(heasig,w1,w2,w3,auxqrspicoffset,QRSoff,timeaux,timenew,position0,position, intervalo,samp,messages);
+                position.R(intervalo(1):intervalo(end))=round(nanmedian(auxaux));%RUTE 09AGO2011
+                %            squaresignal=(sig(:,1)/max(sig(:,1))).^2+(sig(:,2)/max(sig(:,2))).^2+(sig(:,3)/max(sig(:,3))).^2;
+                %             for ii=intervalo(1):intervalo(end)
+                %             if ~isempty(position.QRSon(ii):position.QRSoff(ii))
+                %                 [M,position.qrsnew(ii)]=max(squaresignal(position.QRSon(ii):position.QRSoff(ii)));
+                %                 position.qrsnew(ii)=position.qrsnew(ii)+position.QRSon(ii)-1;
+                %             end
+                %             end
             end
-            %end
-            
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 24AGO2011
-            if ~exist('str','var'), str=''; end
-            eval(['position' str '.QRSon(position' str '.R<=(position' str '.QRSon+1))=NaN;']);
-            eval(['position' str '.QRSoff(position' str '.QRSoff>=(position' str '.Ton-1))=NaN;']);
-            eval(['position' str '.QRSoff(position' str '.QRSoff>=(position' str '.T-1))=NaN;']);
-            eval(['position' str '.QRSoff(position' str '.QRSoff<=(position' str '.qrs+1))=NaN;']);
-            eval(['position' str '.QRSoff(position' str '.R>=(position' str '.QRSoff-1))=NaN;']);
-            eval(['position' str '.Toff(position' str '.Toff<=(position' str '.T+1))=NaN;']);
-            eval(['position' str '.Ton(position' str '.Ton>=(position' str '.T-1))=NaN;']);
-            eval(['ii=1:sum(position' str '.qrs>0);']);
-            eval(['position' str '.QRSoff(position' str '.QRSoff(ii(1:end-1))>=(position' str '.R(ii(2:end))))=NaN;']);
-            eval(['position' str '.QRSoff(position' str '.QRSoff(ii(1:end-1))>=(position' str '.qrs(ii(2:end))))=NaN;']);
-            eval(['position' str '.Toff(position' str '.Toff(ii(1:end-1))>=position' str '.qrs(ii(2:end)))=NaN;']);
-            
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%% P wave %%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %11.04.05 P wave delineation inside the condition of existing some
-            [position1,picon_all,picoff_all,messages]= pwavef(heasig,samp,time1,position1,w1,intervalo1,ultimo_anot,messages); %#ok<ASGLU>
-            if size(sig,2)>1
-                [position2,picon_all,picoff_all,messages]= pwavef(heasig,samp,time2,position2,w2,intervalo2,ultimo_anot,messages); %#ok<ASGLU>
-                if size(sig,2)>2 & ~isempty(intervalo3) %#ok<AND2>
-                    [position3,picon_all,picoff_all,messages]= pwavef(heasig,samp,time3,position3,w3,intervalo3,ultimo_anot,messages); %#ok<ASGLU>
-                    auxaux(1,~isnan(indexes(1,intervalo(1):intervalo(end))))=position1.P(auxindexes(1,~isnan(indexes(1,intervalo(1):intervalo(end)))));
-                    auxaux(2,~isnan(indexes(2,intervalo(1):intervalo(end))))=position2.P(auxindexes(2,~isnan(indexes(2,intervalo(1):intervalo(end)))));
-                    auxaux(3,~isnan(indexes(3,intervalo(1):intervalo(end))))=position3.P(auxindexes(3,~isnan(indexes(3,intervalo(1):intervalo(end)))));
-                    position0.P(intervalo(1):intervalo(end))=round(nanmedian(auxaux)); %RUTE 09AGO2011; %MEDIAN %by default position is the median mark of all R
-                    [position0,position,messages]= delineateP3D(heasig,w1,w2,w3,timenew,position0,position,intervalo,samp,ultimo_anot,messages);
+            %         lastqrs1=timeqrs(1,end);
+            %%%%%%%%%%%%%%%% caso em que rr tem dimensao inferior ao necessario
+            %%%%%%%%%%%%%%%% protection with respect to ultimo_anot
+
+            while eval(['position' str '.QRSon(intervalo(1))<ultimo_anot'])
+                if ultimo_anottyp==10; % Toff
+                    if eval(['(position' str '.qrs(intervalo(1))-position' str '.QRSon(intervalo(1))) < (position' str '.Toff(intervalo(1)-1)-position' str '.T(intervalo(1)-1))'])
+                        eval(['position' str '.Toff(intervalo(1)-1)=NaN;'])
+                        if eval(['isnan(position' str '.Tprima(intervalo(1)-1))'])
+                            eval(['ultimo_anot=position' str '.T(intervalo(1)-1);'])
+                            ultimo_anottyp=8;
+                        else
+                            eval(['ultimo_anot=position' str '.Tprima(intervalo(1)-1);'])
+                            ultimo_anottyp=9;
+                        end
+                    else
+                        eval(['position' str '.QRSon(intervalo(1))=NaN;'])
+                    end
+                elseif ultimo_anottyp==9 || ultimo_anottyp==8 || ultimo_anottyp==5; % Tprima | Tpeak | qrs
+                    eval(['position' str '.QRSon(intervalo(1))=NaN;'])
+                else  % ultimo_anottyp==6 % QRSoff
+                    if eval(['(position' str '.qrs(intervalo(1))-position' str '.QRSon(intervalo(1))) < (position' str '.QRSoff(intervalo(1)-1)-position' str '.qrs(intervalo(1)-1))'])
+                        eval(['position' str '.qrsoff(intervalo(1)-1)=NaN;'])
+                        eval(['ultimo_anot=position' str '.qrs(intervalo(1)-1);'])
+                        ultimo_anottyp=5;
+                    else
+                        eval(['position' str '.QRSon(intervalo(1))=NaN;'])
+                    end
                 end
             end
-            %check the position structure size
-            eval(['position' str '.Pon((length(position' str '.Pon)+1):length(position' str '.qrs))=NaN;']); %6May2011
-            eval(['position' str '.P((length(position' str '.P)+1):length(position' str '.qrs))=NaN;']); %6May2011
-            eval(['position' str '.Poff((length(position' str '.Poff)+1):length(position' str '.qrs))=NaN;']); %6May2011
-            eval(['position' str '.Poff((length(position' str '.Poff)+1):length(position' str '.qrs))=NaN;']); %6May2011
-            if size(sig,2)>2 %6May2011
-                position0.Pon((length(position0.Pon)+1):length(position.qrs))=NaN;
-                position0.P((length(position0.P)+1):length(position.qrs))=NaN;
-                position0.Poff((length(position0.Poff)+1):length(position.qrs))=NaN;
+            % Modificado Juan 9/03/11
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            if qrs_flag~=2
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%% T wave
+                if ~isempty(time1)
+                    [position1,janelas1,messages]= twavef(heasig,samp,time1,position1,w1,intervalo1,messages); %21AGO09
+                end
+                %end
+                if size(sig,2)>1 && ~isempty(time2)
+                    if length(time2(1,:))>1%23SET08
+                        [position2,janelas2,messages]= twavef(heasig,samp,time2,position2,w2,intervalo2,messages);%21AGO09
+                    end
+                    if size(sig,2)>2  && ~isempty(intervalo3)
+                        if length(time3(1,:))>1%23SET08
+                            [position3,janelas3,messages]= twavef(heasig,samp,time3,position3,w3,intervalo3,messages);%21AGO09
+                        end
+                    end
+                end
+                if size(sig,2)>1
+                    subintervalo=indexes(:,intervalo(1):intervalo(end));
+                    %NOTE are excluded the ones from the previous seg
+                    if ~isempty(intervalo1)
+                        aux1=subintervalo(1,~isnan(subintervalo(1,:)))-intervalo1(1)+1;
+                    end
+                    if size(sig,2)>1 & ~isempty(intervalo2) %#ok<AND2>
+                        aux2=subintervalo(2,~isnan(subintervalo(2,:)))-intervalo2(1)+1;
+                    end
+                    if size(sig,2)>2 & ~isempty(intervalo3) %#ok<AND2>
+                        aux3=subintervalo(3,~isnan(subintervalo(3,:)))-intervalo3(1)+1;
+                    end
+                    %26.04.05
+                    janelas=NaN*ones(size(subintervalo,2),9);
+                    janelas(:,1)=(intervalo(1):intervalo(end))';
+                    janelas(:,4)=(intervalo(1):intervalo(end))';
+                    janelas(:,7)=(intervalo(1):intervalo(end))';
+                    if ~isempty(intervalo1)
+                        janelas(~isnan(subintervalo(1,:)-intervalo1(1)+1),2)=aux1';
+                    end
+                    if ~isempty(intervalo2)
+                        janelas(~isnan(subintervalo(2,:)-intervalo2(1)+1),5)=aux2';
+                    end
+                    if ~isempty(intervalo1)
+                        aux1=aux1(aux1>0);
+                    end
+                    aux2=aux2(aux2>0);
+                    if size(sig,2)>2 & ~isempty(intervalo3) %#ok<AND2>
+                        janelas(~isnan(subintervalo(3,:)-intervalo3(1)+1),8)=aux3';
+                        aux3=aux3(aux3>0);
+                    end
+                    janelas(janelas<=0)=NaN;
+                    if exist('janelas1','var')&& sum(~isnan(janelas(:,2)))~=0
+                        janelas(~isnan(janelas(:,2)) & janelas(:,2)>0,2:3)=janelas1(aux1,2:3);
+                    end
+                    if exist('janelas2','var')& ~isempty(janelas(~isnan(janelas(:,5)) & janelas(:,5)>0 ,5:6)) %#ok<AND2>
+                        if max(aux2) > length(janelas2)%17.Mar.06
+                            janelas(~isnan(janelas(:,5)) & janelas(:,5)>0 ,5:6)=[janelas2((aux2) <= length(janelas2),2:3); NaN*ones(sum(aux2 > length(janelas2)),2)];%14.Mar.06
+                        else%16.Fev.06
+                            janelas(~isnan(janelas(:,5)) & janelas(:,5)>0 ,5:6)=janelas2(aux2,2:3);
+                        end%16.Fev.06
+                    end
+                    if size(sig,2)>2 & ~isempty(intervalo3) %#ok<AND2>
+                        %ver altera�ao por erro de indexes em irec5 de
+                        %politec!!!!%16.Fev.06
+                        if exist('janelas3','var')
+                            if max(aux3) > length(janelas3)%16.Fev.06
+                                %janelas(~isnan(janelas(:,8)) & janelas(:,8)>0 ,8:9)=[janelas3(aux3(1:(end-1)),2:3);NaN NaN];%16.Fev.06
+                                janelas(~isnan(janelas(:,8)) & janelas(:,8)>0 ,8:9)=[janelas3((aux3) <= length(janelas3),2:3); NaN*ones(sum(aux3 > length(janelas3)),2)];%14.Mar.06
+                            else%16.Fev.06
+                                janelas(~isnan(janelas(:,8)) & janelas(:,8)>0 ,8:9)=janelas3(aux3,2:3);
+                            end%16.Fev.06
+                        end
+                    end
+                    %cases were begwin>endwin!!!
+                    janelas((janelas(:,3))<=janelas(:,2)|isnan(janelas(:,3)),2)=NaN;
+                    janelas(janelas(:,3)<=janelas(:,2)|isnan(janelas(:,2)),3)=NaN;
+                    janelas(janelas(:,6)<=janelas(:,5)|isnan(janelas(:,6)),5)=NaN;
+                    janelas(janelas(:,6)<=janelas(:,5)|isnan(janelas(:,5)),6)=NaN;
+                    janelas(janelas(:,9)<=janelas(:,8)|isnan(janelas(:,9)),8)=NaN;
+                    janelas(janelas(:,9)<=janelas(:,8)|isnan(janelas(:,8)),9)=NaN;
+                    begwin= min(janelas(:,[2 5 8])'); %#ok<UDIM>
+                    endwin= max(janelas(:,[3 6 9])'); %#ok<UDIM>
+                    intreg=[begwin' endwin'];
+
+                    count=count+1;
+                    if ~exist('w3','var')
+                        w3=[];
+                    end
+                    [position0,position,messages]= delineate3D(w1,w2,w3,intreg,timenew,position0,position,intervalo,position1,position2,position3,indexes,samp,[],messages); %   05MAY2011
+                end
+                %end
+
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 24AGO2011
+                if ~exist('str','var'), str=''; end
+                eval(['position' str '.QRSon(position' str '.R<=(position' str '.QRSon+1))=NaN;']);
+                eval(['position' str '.QRSoff(position' str '.QRSoff>=(position' str '.Ton-1))=NaN;']);
+                eval(['position' str '.QRSoff(position' str '.QRSoff>=(position' str '.T-1))=NaN;']);
+                eval(['position' str '.QRSoff(position' str '.QRSoff<=(position' str '.qrs+1))=NaN;']);
+                eval(['position' str '.QRSoff(position' str '.R>=(position' str '.QRSoff-1))=NaN;']);
+                eval(['position' str '.Toff(position' str '.Toff<=(position' str '.T+1))=NaN;']);
+                eval(['position' str '.Ton(position' str '.Ton>=(position' str '.T-1))=NaN;']);
+                eval(['ii=1:sum(position' str '.qrs>0);']);
+                eval(['position' str '.QRSoff(position' str '.QRSoff(ii(1:end-1))>=(position' str '.R(ii(2:end))))=NaN;']);
+                eval(['position' str '.QRSoff(position' str '.QRSoff(ii(1:end-1))>=(position' str '.qrs(ii(2:end))))=NaN;']);
+                eval(['position' str '.Toff(position' str '.Toff(ii(1:end-1))>=position' str '.qrs(ii(2:end)))=NaN;']);
+
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%% P wave %%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %11.04.05 P wave delineation inside the condition of existing some
+                [position1,picon_all,picoff_all,messages]= pwavef(heasig,samp,time1,position1,w1,intervalo1,ultimo_anot,messages); %#ok<ASGLU>
+                if size(sig,2)>1
+                    [position2,picon_all,picoff_all,messages]= pwavef(heasig,samp,time2,position2,w2,intervalo2,ultimo_anot,messages); %#ok<ASGLU>
+                    if size(sig,2)>2 & ~isempty(intervalo3) %#ok<AND2>
+                        [position3,picon_all,picoff_all,messages]= pwavef(heasig,samp,time3,position3,w3,intervalo3,ultimo_anot,messages); %#ok<ASGLU>
+                        auxaux(1,~isnan(indexes(1,intervalo(1):intervalo(end))))=position1.P(auxindexes(1,~isnan(indexes(1,intervalo(1):intervalo(end)))));
+                        auxaux(2,~isnan(indexes(2,intervalo(1):intervalo(end))))=position2.P(auxindexes(2,~isnan(indexes(2,intervalo(1):intervalo(end)))));
+                        auxaux(3,~isnan(indexes(3,intervalo(1):intervalo(end))))=position3.P(auxindexes(3,~isnan(indexes(3,intervalo(1):intervalo(end)))));
+                        position0.P(intervalo(1):intervalo(end))=round(nanmedian(auxaux)); %RUTE 09AGO2011; %MEDIAN %by default position is the median mark of all R
+                        [position0,position,messages]= delineateP3D(heasig,w1,w2,w3,timenew,position0,position,intervalo,samp,ultimo_anot,messages);
+                    end
+                end
+                %check the position structure size
+                eval(['position' str '.Pon((length(position' str '.Pon)+1):length(position' str '.qrs))=NaN;']); %6May2011
+                eval(['position' str '.P((length(position' str '.P)+1):length(position' str '.qrs))=NaN;']); %6May2011
+                eval(['position' str '.Poff((length(position' str '.Poff)+1):length(position' str '.qrs))=NaN;']); %6May2011
+                eval(['position' str '.Poff((length(position' str '.Poff)+1):length(position' str '.qrs))=NaN;']); %6May2011
+                if size(sig,2)>2 %6May2011
+                    position0.Pon((length(position0.Pon)+1):length(position.qrs))=NaN;
+                    position0.P((length(position0.P)+1):length(position.qrs))=NaN;
+                    position0.Poff((length(position0.Poff)+1):length(position.qrs))=NaN;
+                end
             end
-        end
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% finishing excerpt %%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % Last annotated position
-        if intervalo(2)>0
-            if size(sig,2)>1
-                if ~isnan(position.Toff(min(intervalo(2),length(position.Toff)))),
-                    ultimo_anot = position.Toff(min(intervalo(2),length(position.Toff)));
-                    ultimo_anottyp=10;
-                elseif ~isnan(position.Tprima(min(intervalo(2),length(position.Tprima)))),
-                    ultimo_anot = position.Tprima(min(intervalo(2),length(position.Tprima)));
-                    ultimo_anottyp=9;
-                elseif ~isnan(position.T(min(intervalo(2),length(position.T)))),
-                    ultimo_anot = position.T(min(intervalo(2),length(position.T)));
-                    ultimo_anottyp=8;
-                elseif ~isnan(position.QRSoff(min(intervalo(2),length(position.QRSoff)))),
-                    ultimo_anot = position.QRSoff(min(intervalo(2),length(position.QRSoff)));
-                    ultimo_anottyp=6;
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%% finishing excerpt %%%%%%%%%%%%%%%%%%%%%%%%%%%
+            % Last annotated position
+            if intervalo(2)>0
+                if size(sig,2)>1
+                    if ~isnan(position.Toff(min(intervalo(2),length(position.Toff)))),
+                        ultimo_anot = position.Toff(min(intervalo(2),length(position.Toff)));
+                        ultimo_anottyp=10;
+                    elseif ~isnan(position.Tprima(min(intervalo(2),length(position.Tprima)))),
+                        ultimo_anot = position.Tprima(min(intervalo(2),length(position.Tprima)));
+                        ultimo_anottyp=9;
+                    elseif ~isnan(position.T(min(intervalo(2),length(position.T)))),
+                        ultimo_anot = position.T(min(intervalo(2),length(position.T)));
+                        ultimo_anottyp=8;
+                    elseif ~isnan(position.QRSoff(min(intervalo(2),length(position.QRSoff)))),
+                        ultimo_anot = position.QRSoff(min(intervalo(2),length(position.QRSoff)));
+                        ultimo_anottyp=6;
+                    else
+                        ultimo_anot = ceil(position.qrs(min(intervalo(2),length(position.qrs))));
+                        ultimo_anottyp=5;
+                    end
                 else
-                    ultimo_anot = ceil(position.qrs(min(intervalo(2),length(position.qrs))));
-                    ultimo_anottyp=5;
-                end
-            else
-                if ~isnan(position1.Toff(min(intervalo(2),length(position1.Toff)))),
-                    ultimo_anot = position1.Toff(min(intervalo(2),length(position1.Toff)));
-                    ultimo_anottyp=10;
-                elseif ~isnan(position1.Tprima(min(intervalo(2),length(position1.Tprima)))),
-                    ultimo_anot = position1.Tprima(min(intervalo(2),length(position1.Tprima)));
-                    ultimo_anottyp=9;
-                elseif ~isnan(position1.T(min(intervalo(2),length(position1.T)))),
-                    ultimo_anot = position1.T(min(intervalo(2),length(position1.T)));
-                    ultimo_anottyp=8;
-                elseif ~isnan(position1.QRSoff(min(intervalo(2),length(position1.QRSoff)))),
-                    ultimo_anot = position1.QRSoff(min(intervalo(2),length(position1.QRSoff)));
-                    ultimo_anottyp=6;
-                else
-                    ultimo_anot = ceil(position1.qrs(min(intervalo(2),length(position1.qrs))));
-                    ultimo_anottyp=5;
+                    if ~isnan(position1.Toff(min(intervalo(2),length(position1.Toff)))),
+                        ultimo_anot = position1.Toff(min(intervalo(2),length(position1.Toff)));
+                        ultimo_anottyp=10;
+                    elseif ~isnan(position1.Tprima(min(intervalo(2),length(position1.Tprima)))),
+                        ultimo_anot = position1.Tprima(min(intervalo(2),length(position1.Tprima)));
+                        ultimo_anottyp=9;
+                    elseif ~isnan(position1.T(min(intervalo(2),length(position1.T)))),
+                        ultimo_anot = position1.T(min(intervalo(2),length(position1.T)));
+                        ultimo_anottyp=8;
+                    elseif ~isnan(position1.QRSoff(min(intervalo(2),length(position1.QRSoff)))),
+                        ultimo_anot = position1.QRSoff(min(intervalo(2),length(position1.QRSoff)));
+                        ultimo_anottyp=6;
+                    else
+                        ultimo_anot = ceil(position1.qrs(min(intervalo(2),length(position1.qrs))));
+                        ultimo_anottyp=5;
+                    end
                 end
             end
-        end
-    end %%%%%%%%%%%%%%%%introduzido a 17/05/02 Rute
+        end %%%%%%%%%%%%%%%%introduzido a 17/05/02 Rute
+
+    end
+    
+    
     inisamp = endsamp +2-endoverlap-begoverlap;
 end
-eval(['position' str '.Pon((length(position' str '.Pon)+1):length(position' str '.qrs))=NaN;']);
-eval(['position' str '.P((length(position' str '.P)+1):length(position' str '.qrs))=NaN;']);
-eval(['position' str '.Pprima((length(position' str '.Pprima)+1):length(position' str '.qrs))=NaN;']);
-eval(['position' str '.Poff((length(position' str '.Poff)+1):length(position' str '.qrs))=NaN;']);
-eval(['position' str '.Ton((length(position' str '.Ton)+1):length(position' str '.qrs))=NaN;']);
-eval(['position' str '.T((length(position' str '.T)+1):length(position' str '.qrs))=NaN;']);
-eval(['position' str '.Tprima((length(position' str '.Tprima)+1):length(position' str '.qrs))=NaN;']);
-eval(['position' str '.Toff((length(position' str '.Toff)+1):length(position' str '.qrs))=NaN;']);
-eval(['position' str '.Ttipo((length(position' str '.Ttipo)+1):length(position' str '.qrs))=NaN;']);
-eval(['position' str '.Tscale((length(position' str '.Tscale)+1):length(position' str '.qrs))=NaN;']);
-eval(['position' str '.Pon(position' str '.Pon>=(position' str '.qrs))=NaN;']);
-eval(['position' str '.P(position' str '.P>=(position' str '.qrs))=NaN;']);
-eval(['position' str '.Pprima(position' str '.Pprima>=(position' str '.qrs))=NaN;']);
-eval(['position' str '.Poff(position' str '.Poff>=(position' str '.qrs))=NaN;']);
-eval(['position' str '.Pon(position' str '.Pon>=(position' str '.QRSon))=NaN;']);
-eval(['position' str '.P(position' str '.P>=(position' str '.QRSon))=NaN;']);
-eval(['position' str '.Pprima(position' str '.Pprima>=(position' str '.QRSon))=NaN;']);
-eval(['position' str '.Poff(position' str '.Poff>=(position' str '.QRSon))=NaN;']);
+
+if( ~messages.setup.wavedet.QRS_detection_only )
+
+    eval(['position' str '.Pon((length(position' str '.Pon)+1):length(position' str '.qrs))=NaN;']);
+    eval(['position' str '.P((length(position' str '.P)+1):length(position' str '.qrs))=NaN;']);
+    eval(['position' str '.Pprima((length(position' str '.Pprima)+1):length(position' str '.qrs))=NaN;']);
+    eval(['position' str '.Poff((length(position' str '.Poff)+1):length(position' str '.qrs))=NaN;']);
+    eval(['position' str '.Ton((length(position' str '.Ton)+1):length(position' str '.qrs))=NaN;']);
+    eval(['position' str '.T((length(position' str '.T)+1):length(position' str '.qrs))=NaN;']);
+    eval(['position' str '.Tprima((length(position' str '.Tprima)+1):length(position' str '.qrs))=NaN;']);
+    eval(['position' str '.Toff((length(position' str '.Toff)+1):length(position' str '.qrs))=NaN;']);
+    eval(['position' str '.Ttipo((length(position' str '.Ttipo)+1):length(position' str '.qrs))=NaN;']);
+    eval(['position' str '.Tscale((length(position' str '.Tscale)+1):length(position' str '.qrs))=NaN;']);
+    eval(['position' str '.Pon(position' str '.Pon>=(position' str '.qrs))=NaN;']);
+    eval(['position' str '.P(position' str '.P>=(position' str '.qrs))=NaN;']);
+    eval(['position' str '.Pprima(position' str '.Pprima>=(position' str '.qrs))=NaN;']);
+    eval(['position' str '.Poff(position' str '.Poff>=(position' str '.qrs))=NaN;']);
+    eval(['position' str '.Pon(position' str '.Pon>=(position' str '.QRSon))=NaN;']);
+    eval(['position' str '.P(position' str '.P>=(position' str '.QRSon))=NaN;']);
+    eval(['position' str '.Pprima(position' str '.Pprima>=(position' str '.QRSon))=NaN;']);
+    eval(['position' str '.Poff(position' str '.Poff>=(position' str '.QRSon))=NaN;']);
+
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% position assigment %%%%%%%%%%%%%
 % Remove void annotations at the end

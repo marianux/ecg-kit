@@ -4,7 +4,7 @@ function artificial_annotations = combine_anns(time_serie, estimated_labs, heade
 
     start_sample = min(cell2mat(cellfun(@(a)(min(a)),time_serie, 'UniformOutput', false)));
     end_sample = max(cell2mat(cellfun(@(a)(max(a)),time_serie, 'UniformOutput', false))) + 1;
-    win_size = 20e3;
+    win_size = 20e3; % milliseconds
     
 %     aux_seq = (start_sample+win_size):round(win_size/2):end_sample;
     aux_seq = (start_sample+win_size):win_size:end_sample;
@@ -53,7 +53,7 @@ function start_end_aux = findStartEnd( bAux )
 function this_q = calc_q_val(this_labs, strt_end)
 %         win_size in milliseconds
 
-    if( isempty(strt_end) )
+    if( isempty(strt_end) || isempty(this_labs) )
         this_q = [];
     else
         this_labs = this_labs(strt_end(1):strt_end(2));

@@ -2,12 +2,33 @@ function recording_format = ECGformat(recording_name)
     
     recording_format = [];
 
-    cKnownFormats = {'MIT' 'ISHNE', 'HES', 'MAT'};
+    cKnownFormats = {'MIT' 'ISHNE', 'HES', 'MAT', 'Mortara'};
     lcKnownFormats = length(cKnownFormats);
 
     [rec_filepath, rec_filename, rec_fileExt] = fileparts(recording_name);
 
     aux_idx = 1:lcKnownFormats;
+
+    % Mortara format is a folder with predefined files inside named
+    % HourXXRawData.bin
+    if( isdir(recording_name) )
+        rec_path = recording_name;
+        hours_files = dir([rec_path filesep 'Hour*.bin' ]);
+        if( isempty(hours_files) )
+            % empty folder, not Mortara
+            return
+        else
+            recording_format = 'Mortara';
+            return
+        end
+    else
+        [~, rec_name] = fileparts(recording_name);
+        if( length(rec_name) > 7 && strcmpi( rec_name(1:4), 'Hour') && strcmpi( rec_name(end-6:end), 'RawData') )
+            recording_format = 'Mortara';
+            return
+        end
+    end
+    
     
     % first guess based on typical file extensions
     if( strcmpi(rec_fileExt, '.dat' ) )
@@ -58,17 +79,12 @@ function recording_format = ECGformat(recording_name)
         elseif( strcmp(cKnownFormats{ii}, 'MAT') )
 
             try
-                
                 aux_load = load(recording_name, 'header');
-
                 recording_format = cKnownFormats{ii};
                 return
-                
-%                 if( strcmp(aux_load.header.recname, rec_filename) )
-%                     recording_format = cKnownFormats{ii};
-%                     return
-%                 end
             
+            catch ME
+                
             end
 
         end

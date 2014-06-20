@@ -69,10 +69,10 @@ if( fid > 0 )
         %Paso a la fecha
         fseek(fid, 120, 'cof');
         date_of_recording = fread(fid, 3,'int16');
-        date_of_creation = fread(fid, 3,'int16');
+        date_of_file_creation = fread(fid, 3,'int16');
         time_of_recording = fread(fid, 3,'int16');
-        heasig.date = datenum(date_of_recording(3),date_of_recording(2),date_of_recording(1),time_of_recording(1),time_of_recording(2),time_of_recording(3));
-
+        heasig.btime = sprintf('%0d:%0d:%0d',time_of_recording(1),time_of_recording(2),time_of_recording(3));
+        heasig.btime = sprintf('%0d/%0d/%4d',date_of_recording(1),date_of_recording(2),date_of_recording(3));
         heasig.nsig = fread(fid, 1,'int16');
 
 %         al parecer esto ya no es más así

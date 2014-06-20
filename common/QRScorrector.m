@@ -10,7 +10,7 @@ function ann_output = QRScorrector(varargin)
 % 
 % Arguments:
 %     
-%     +ECG: [numeric or cell] REQUIRED
+%     +ECG: [numeric or cell]
 %           
 %           [numeric]: signal matrix of dimension [sig_length sig_size
 %           repetitions_size] where:
@@ -91,7 +91,9 @@ p.addParamValue('recording_indexes', [], @(x)( isnumeric(x) && all(x > 0) ) );
 p.addParamValue('ECG', [], @(x)(isnumeric(x)) );
 p.addParamValue('ECG_header', [], @(x)(isstruct(x)) );
 p.addParamValue('QRS_annotations', [], @(x)( (isnumeric(x) && all(x > 0)) || isstruct(x) ) );
+p.addParamValue('OutputVarName', [], @(x)( ischar(x)));
 p.addParamValue('tmp_path', [], @(x)(ischar(x)) );
+p.addParamValue('Figure', [], @(x)(ishandle(x)) );
 
 try
     p.parse( varargin{:} );
@@ -109,6 +111,9 @@ ECG = p.Results.ECG;
 ECG_header = p.Results.ECG_header;
 ECG_annotations = p.Results.QRS_annotations;
 tmp_path = p.Results.tmp_path;
+OutputVarName = p.Results.OutputVarName;
+fig_hdl = p.Results.Figure;
+
 
 % Dont know why this variable uses a lot of bytes to store at disk.
 clear p
@@ -120,7 +125,34 @@ user_data.bLoadECG = true;
 if( ~isempty(ECG) )
     %% ECG already read
 
-    ECG_struct.signal = ECG;
+    if( isempty(ECG_annotations))
+        disp( 'No annotations provided.' )
+    else
+        if( isstruct(ECG_annotations) )
+            if( isfield(ECG_annotations, cAnnotationsFieldNamesRequired ) )
+                % only one ann struct provided
+                ECG_struct.provided_anns = ECG_annotations;
+            else
+                bFieldFound = false;
+                for fn = rowvec(fieldnames(ECG_annotations))
+                    if( isfield(ECG_annotations.(fn{1}), cAnnotationsFieldNamesRequired ) )
+                        bFieldFound = true;
+                        break
+                    end
+                end
+                
+                if( bFieldFound )
+                    ECG_struct = ECG_annotations;
+                else
+                    strAux = [ repmat(' + ', length(cAnnotationsFieldNamesRequired), 1) char(cAnnotationsFieldNamesRequired) repmat('\n', length(cAnnotationsFieldNamesRequired), 1 ) ];
+                    error( 'QRScorrector:ArgCheck:InvalidAnnotations', ['Please provide the following fields in the annotations struct:\n ' rowvec(strAux') ] );
+                end                    
+                
+            end
+        else
+            ECG_struct.provided_anns.time = ECG_annotations;
+        end
+    end
     
     if( isempty(ECG_header))
        error( 'QRScorrector:ArgCheck:InvalidHeader', 'Please provide the ECG header.\n\n' );
@@ -131,32 +163,21 @@ if( ~isempty(ECG) )
         end
     end
 
+    ECG_struct.signal = ECG;
     ECG_struct.header = ECG_header;
-    
-    if( isempty(ECG_annotations))
-        disp( 'No annotations provided.' )
-    else
-        if(isstruct(ECG_annotations))        
-            if( ~isfield(ECG_annotations, cAnnotationsFieldNamesRequired ) )
-                strAux = [ repmat(' + ', length(cAnnotationsFieldNamesRequired), 1) char(cAnnotationsFieldNamesRequired) repmat('\n', length(cAnnotationsFieldNamesRequired), 1 ) ];
-                error( 'QRScorrector:ArgCheck:InvalidAnnotations', ['Please provide the following fields in the annotations struct:\n ' rowvec(strAux') ] );
-            end
-            ECG_struct.provided_anns = ECG_annotations;
-        else
-            ECG_struct.provided_anns.time = ECG_annotations;
-        end
-    end
     
     clear ECG ECG_header ECG_annotations
     
     recording_indexes = 1;
-    rec_names.name = 'ECG_already_loaded.ecg';
+    rec_names.name = ECG_struct.header.recname;
     
     if( isempty(recording_path) )
         recording_path = [fileparts(mfilename('fullpath')) filesep 'tmp' filesep ];
     end   
 
     user_data.bLoadECG = false;
+    ratios = [];
+    user_data.ECG_struct = ECG_struct;
     
 elseif( ~isempty(recording) )
     
@@ -252,7 +273,7 @@ end
 user_data.side_plot = [];
 
 user_data.filtro = [];
-
+user_data.OutputVarName = OutputVarName;
 user_data.rec_names = rec_names(recording_indexes,:);
 user_data.rec_idx = 1;
 user_data.recording_ratios = ratios;
@@ -269,10 +290,39 @@ user_data.tmp_path = tmp_path;
 
 user_data.hb_detail_window = 3;
 
+if( isempty(fig_hdl) )
+    user_data.fig_hdl = figure();
+else
+    clf(fig_hdl,'reset')
+    user_data.fig_hdl = fig_hdl;
+end
+
+set(user_data.fig_hdl,'CloseRequestFcn',@my_closefcn)
+
 user_data = DoRecording(user_data);
 
 set(user_data.fig_hdl, 'UserData', user_data);
 
+
+function my_closefcn(obj,event_obj)
+        
+    fig_hnd = gcbf; 
+    user_data = get(fig_hnd,'userdata');
+    if(user_data.bRecEdited)
+    
+       selection = questdlg('Unsaved results, edition will be lost. Exit anyway ?',...
+          'Close Request Function',...
+          'Yes','No','Yes'); 
+       switch selection, 
+          case 'Yes',
+             delete(fig_hnd)
+          case 'No'
+          return 
+       end
+
+    else
+        delete(fig_hnd)
+    end    
 
 function user_data = DoRecording(user_data)
 
@@ -285,13 +335,13 @@ function user_data = DoRecording(user_data)
     if(user_data.bLoadECG)
         disp('Loading ...')
         ECG_struct = load(user_data.rec_path);
+        user_data.ECG_struct = ECG_struct;
+        user_data.ECG_struct.header.recname = rec_name;
     end
 
     user_data.bAnnsEdited = false;
     user_data.bRecEdited = false;
-    user_data.ECG_struct = ECG_struct;
 
-    user_data.ECG_struct.header.recname = rec_name;
     user_data.hb_idx = 1;
     user_data.lead_idx = 1;
     user_data.bLockRRserie = false;
@@ -303,11 +353,11 @@ function user_data = DoRecording(user_data)
     user_data.undo_buffer_idx = 1;
     user_data.Pattern_hdl = [];
 
-    [~, ~, user_data.inv_dower_idx] = intersect({'I','II','V1','V2','V3','V4','V5','V6'}, cellstr(ECG_struct.header.desc));
+    [~, ~, user_data.inv_dower_idx] = intersect({'I','II','V1','V2','V3','V4','V5','V6'}, cellstr(user_data.ECG_struct.header.desc));
     if( length(user_data.inv_dower_idx) == 8 )
         user_data.bUseDower = true;
     else
-        user_data.inv_dower_idx = 1:ECG_struct.header.nsig;
+        user_data.inv_dower_idx = 1:user_data.ECG_struct.header.nsig;
         user_data.bUseDower = false;
     end
 
@@ -315,11 +365,11 @@ function user_data = DoRecording(user_data)
     user_data.AnnNames = [];
 
     if( user_data.bFilter && isempty(user_data.filtro) )
-        user_data.filtro = bandpass_filter_design( ECG_struct.header.freq );
+        user_data.filtro = bandpass_filter_design( user_data.ECG_struct.header.freq );
     end
     
-    if( isfield(ECG_struct, 'noise_power') )
-        noise_power = ECG_struct.noise_power;
+    if( isfield(user_data.ECG_struct, 'noise_power') )
+        noise_power = user_data.ECG_struct.noise_power;
     else
         noise_power = [];
     end
@@ -341,7 +391,9 @@ function user_data = DoRecording(user_data)
     
     [user_data.ratios, user_data.best_detections_idx] = sort(user_data.ratios, 'descend');
     
-    if( user_data.bBuildArtificial )
+    aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'artificial'))), user_data.AnnNames(:,1), 'UniformOutput', false)));
+
+    if( user_data.bBuildArtificial && isempty(aux_idx) )
 
         % generate artificial annotations combining K best annotations
         aux_idx = user_data.best_detections_idx(1:10);
@@ -471,7 +523,7 @@ function user_data = Redraw(user_data)
         y_lims_RRserie = get(user_data.RRserie_axes_hdl, 'Ylim');
     end
     
-    user_data.fig_hdl = figure(1);
+    figure(user_data.fig_hdl);
     
     if( ~isfield(user_data, 'maximized_size') )
         maximize(user_data.fig_hdl);
@@ -596,7 +648,7 @@ function user_data = Redraw(user_data)
         aux_anns = user_data.anns_under_edition;
     end
     
-    user_data.ECG_hdl = plot_ecg_heartbeat(user_data.ECG_struct.signal(:,user_data.lead_idx), aux_anns, user_data.hb_idx , user_data.hb_detail_window, user_data.ECG_struct.header, user_data.filtro, user_data.ECG_axes_hdl);    
+    user_data.ECG_hdl = plot_ecg_heartbeat(user_data.ECG_struct.signal, user_data.lead_idx, aux_anns, user_data.hb_idx , user_data.hb_detail_window, user_data.ECG_struct.header, user_data.filtro, user_data.ECG_axes_hdl);    
     
     if( length(user_data.lead_idx) > 1 )
         title(user_data.ECG_axes_hdl, ['Heartbeat ' num2str(user_data.hb_idx) ' : All Leads' ] )
@@ -790,7 +842,7 @@ function inspect_scatter(obj,event_obj)
                 aux_anns = user_data.anns_under_edition;
             end
 
-            user_data.ECG_hdl = plot_ecg_heartbeat(user_data.ECG_struct.signal(:,user_data.lead_idx), aux_anns, min_hb_idx , cant_hb_idx, user_data.ECG_struct.header, user_data.filtro, user_data.ECG_axes_hdl);    
+            user_data.ECG_hdl = plot_ecg_heartbeat(user_data.ECG_struct.signal, user_data.lead_idx, aux_anns, min_hb_idx , cant_hb_idx, user_data.ECG_struct.header, user_data.filtro, user_data.ECG_axes_hdl);    
 
             if( length(user_data.lead_idx) > 1 )
                 title(user_data.ECG_axes_hdl, ['Heartbeat ' num2str(min_hb_idx) ' : All Leads' ] )
@@ -848,7 +900,7 @@ function inspect_scatter(obj,event_obj)
                 aux_anns = user_data.anns_under_edition;
             end
 
-            user_data.ECG_hdl = plot_ecg_heartbeat(user_data.ECG_struct.signal(:,user_data.lead_idx), aux_anns, user_data.hb_idx , user_data.hb_detail_window , user_data.ECG_struct.header, user_data.filtro, user_data.ECG_axes_hdl);    
+            user_data.ECG_hdl = plot_ecg_heartbeat(user_data.ECG_struct.signal, user_data.lead_idx, aux_anns, user_data.hb_idx , user_data.hb_detail_window , user_data.ECG_struct.header, user_data.filtro, user_data.ECG_axes_hdl);    
 
             if( length(user_data.lead_idx) > 1 )
                 title(user_data.ECG_axes_hdl, ['Heartbeat ' num2str(user_data.hb_idx) ' : All Leads' ] )
@@ -1053,27 +1105,39 @@ function KeyPress(obj,event_obj)
 
         if(user_data.bRecEdited)
 
+            user_data = update_annotations(user_data);
+            
             if( user_data.bLoadECG )
                 disp('Saving data ...')
-                user_data.ECG_struct.(user_data.AnnNames{user_data.AnnNames_idx,1}).(user_data.AnnNames{user_data.AnnNames_idx,2}) = unique(round(colvec( user_data.anns_under_edition )));
                 ECG_struct = user_data.ECG_struct;
                 save(user_data.rec_path, '-struct', 'ECG_struct');        
                 disp(['Saved ' user_data.rec_path])
+
+                if( user_data.rec_idx >= 1 && user_data.rec_idx < length(user_data.recording_indexes) )
+                    user_data.rec_idx = user_data.rec_idx + 1;
+                else
+                    user_data.rec_idx = 1;
+                end
+
+                set(user_data.recordings_control, 'Value', user_data.rec_idx );
+
+                user_data = DoRecording(user_data);                
+                
             else
-                disp('Returning data ...')
-                ann_output = user_data.anns_under_edition; 
+                
+                anns_struct.series_quality = user_data.ECG_struct.series_quality;
+                for ii = 1:size(user_data.AnnNames,1)
+                    anns_struct.(user_data.AnnNames{ii,1}) = user_data.ECG_struct.(user_data.AnnNames{ii,1});
+                end
+                assignin( 'caller', user_data.OutputVarName, anns_struct );
+                fprintf(1, 'Saving ''%s'' variable.\n', user_data.OutputVarName);
+                
+                user_data.bAnnsEdited = false;
+                user_data.bRecEdited = false;
+                
             end
         end
 
-        if( user_data.rec_idx >= 1 && user_data.rec_idx < length(user_data.recording_indexes) )
-            user_data.rec_idx = user_data.rec_idx + 1;
-        else
-            user_data.rec_idx = 1;
-        end
-        
-        set(user_data.recordings_control, 'Value', user_data.rec_idx );
-        
-        user_data = DoRecording(user_data);
         
     elseif (strcmp(event_obj.Key,'leftarrow') && ~isempty(event_obj.Modifier) && strcmp(event_obj.Modifier,'control'))
 
@@ -1081,27 +1145,38 @@ function KeyPress(obj,event_obj)
 
         if(user_data.bRecEdited)
 
+            user_data = update_annotations(user_data);
+            
             if( user_data.bLoadECG )
                 disp('Saving data ...')
-                user_data.ECG_struct.(user_data.AnnNames{user_data.AnnNames_idx,1}).(user_data.AnnNames{user_data.AnnNames_idx,2}) = unique(round(colvec( user_data.anns_under_edition )));
                 ECG_struct = user_data.ECG_struct;
                 save(user_data.rec_path, '-struct', 'ECG_struct');        
                 disp(['Saved ' user_data.rec_path])
+
+                if( user_data.rec_idx > 1 && user_data.rec_idx <= length(user_data.recording_indexes) )
+                    user_data.rec_idx = user_data.rec_idx - 1;
+                else
+                    user_data.rec_idx = length(user_data.recording_indexes);
+                end
+
+                set(user_data.recordings_control, 'Value', user_data.rec_idx );
+
+                user_data = DoRecording(user_data);                
+                
             else
-                disp('Returning data ...')
-                ann_output = user_data.anns_under_edition; 
+                anns_struct.series_quality = user_data.ECG_struct.series_quality;
+                for ii = 1:size(user_data.AnnNames,1)
+                    anns_struct.(user_data.AnnNames{ii,1}) = user_data.ECG_struct.(user_data.AnnNames{ii,1});
+                end
+                assignin( 'caller', user_data.OutputVarName, anns_struct );
+                fprintf(1, 'Saving ''%s'' variable.\n', user_data.OutputVarName);
+                
+                user_data.bAnnsEdited = false;
+                user_data.bRecEdited = false;
+                
             end
         end
 
-        if( user_data.rec_idx > 1 && user_data.rec_idx <= length(user_data.recording_indexes) )
-            user_data.rec_idx = user_data.rec_idx - 1;
-        else
-            user_data.rec_idx = length(user_data.recording_indexes);
-        end
-        
-        set(user_data.recordings_control, 'Value', user_data.rec_idx );
-        
-        user_data = DoRecording(user_data);
 
     elseif (strcmp(event_obj.Key,'p') )
         
@@ -1168,7 +1243,7 @@ function KeyPress(obj,event_obj)
             aux_anns = user_data.anns_under_edition;
         end
             
-        user_data.ECG_hdl = plot_ecg_heartbeat(user_data.ECG_struct.signal(:,user_data.lead_idx), aux_anns, user_data.hb_idx , user_data.hb_detail_window , user_data.ECG_struct.header, user_data.filtro, user_data.ECG_axes_hdl);    
+        user_data.ECG_hdl = plot_ecg_heartbeat(user_data.ECG_struct.signal, user_data.lead_idx, aux_anns, user_data.hb_idx , user_data.hb_detail_window , user_data.ECG_struct.header, user_data.filtro, user_data.ECG_axes_hdl);    
         
         if( length(user_data.lead_idx) > 1 )
             title(user_data.ECG_axes_hdl, ['Heartbeat ' num2str(user_data.hb_idx) ' : All Leads' ] )
@@ -1247,7 +1322,6 @@ function user_data = PushUndoAction(user_data)
     
     user_data.undo_buffer{user_data.undo_buffer_idx} = user_data.anns_under_edition;
     user_data.undo_buffer_idx = user_data.undo_buffer_idx + 1;
-
     
 function inspect_RRserie(obj,event_obj)
 
@@ -1319,7 +1393,7 @@ function inspect_RRserie(obj,event_obj)
                 aux_anns = user_data.anns_under_edition;
             end
             
-            user_data.ECG_hdl = plot_ecg_heartbeat(user_data.ECG_struct.signal(:,user_data.lead_idx), aux_anns, min_hb_idx , cant_hb_idx, user_data.ECG_struct.header, user_data.filtro, user_data.ECG_axes_hdl);    
+            user_data.ECG_hdl = plot_ecg_heartbeat(user_data.ECG_struct.signal, user_data.lead_idx, aux_anns, min_hb_idx , cant_hb_idx, user_data.ECG_struct.header, user_data.filtro, user_data.ECG_axes_hdl);    
 
             if( length(user_data.lead_idx) > 1 )
                 title(user_data.ECG_axes_hdl, ['Heartbeat ' num2str(min_hb_idx) ' : All Leads' ] )
@@ -1392,7 +1466,7 @@ function inspect_RRserie(obj,event_obj)
             aux_anns = user_data.anns_under_edition;
         end
 
-        user_data.ECG_hdl = plot_ecg_heartbeat(user_data.ECG_struct.signal(:,user_data.lead_idx), aux_anns, user_data.hb_idx , user_data.hb_detail_window , user_data.ECG_struct.header, user_data.filtro, user_data.ECG_axes_hdl);    
+        user_data.ECG_hdl = plot_ecg_heartbeat(user_data.ECG_struct.signal, user_data.lead_idx, aux_anns, user_data.hb_idx , user_data.hb_detail_window , user_data.ECG_struct.header, user_data.filtro, user_data.ECG_axes_hdl);    
         
         if( length(user_data.lead_idx) > 1 )
             title(user_data.ECG_axes_hdl, ['Heartbeat ' num2str(user_data.hb_idx) ' : All Leads' ] )
@@ -1410,7 +1484,6 @@ function inspect_RRserie(obj,event_obj)
         set(fig_hnd, 'UserData', user_data);
         
     end
-        
     
 function user_data = SearchPattern(user_data)
 
@@ -1556,7 +1629,6 @@ function user_data = SearchPattern(user_data)
     
     close(2)
     
-
 function UpdateRRserieZoom(user_data)
 
     if( isempty(user_data.hb_idx) )
@@ -1649,7 +1721,6 @@ function DeleteAnnotations(obj,event_obj)
         
     end
     
-
 function ChangeRecordingSelected(obj,event_obj) 
 
 	fig_hnd = gcbf; user_data = get(fig_hnd,'userdata');
@@ -1667,15 +1738,25 @@ function ChangeRecordingSelected(obj,event_obj)
 
             if(user_data.bRecEdited)
 
+                user_data = update_annotations(user_data);
+                
                 if( user_data.bLoadECG )
                     disp('Saving data ...')
-                    user_data = update_annotations(user_data);
                     ECG_struct = user_data.ECG_struct;
                     save(user_data.rec_path, '-struct', 'ECG_struct');        
                     disp(['Saved ' user_data.rec_path])
                 else
-                    disp('Returning data ...')
-                    ann_output = user_data.anns_under_edition; 
+                    
+                    anns_struct.series_quality = user_data.ECG_struct.series_quality;
+                    for ii = 1:size(user_data.AnnNames,1)
+                        anns_struct.(user_data.AnnNames{ii,1}) = user_data.ECG_struct.(user_data.AnnNames{ii,1});
+                    end
+                    assignin( 'caller', user_data.OutputVarName, anns_struct );
+                    fprintf(1, 'Saving ''%s'' variable.\n', user_data.OutputVarName);
+
+                    user_data.bAnnsEdited = false;
+                    user_data.bRecEdited = false;
+                    
                 end
             end
 
@@ -1688,7 +1769,6 @@ function ChangeRecordingSelected(obj,event_obj)
         end
         
     end
-
 
 function ChangeLeadsSelected(obj,event_obj) 
 
@@ -1732,7 +1812,7 @@ function ChangeLeadsSelected(obj,event_obj)
                 aux_anns = user_data.anns_under_edition;
             end
             
-            user_data.ECG_hdl = plot_ecg_heartbeat(user_data.ECG_struct.signal(:,user_data.lead_idx), aux_anns, user_data.hb_idx , user_data.hb_detail_window , user_data.ECG_struct.header, user_data.filtro, user_data.ECG_axes_hdl);    
+            user_data.ECG_hdl = plot_ecg_heartbeat(user_data.ECG_struct.signal, user_data.lead_idx, aux_anns, user_data.hb_idx , user_data.hb_detail_window , user_data.ECG_struct.header, user_data.filtro, user_data.ECG_axes_hdl);    
 
             title(user_data.ECG_axes_hdl, ['Heartbeat ' num2str(user_data.hb_idx) ' : Lead ' user_data.ECG_struct.header.desc(user_data.lead_idx,:)] )
 
@@ -1769,7 +1849,7 @@ function ChangeLeadsSelected(obj,event_obj)
                 aux_anns = user_data.anns_under_edition;
             end
             
-            user_data.ECG_hdl = plot_ecg_heartbeat(user_data.ECG_struct.signal(:,user_data.lead_idx), aux_anns, user_data.hb_idx , user_data.hb_detail_window , user_data.ECG_struct.header, user_data.filtro, user_data.ECG_axes_hdl);    
+            user_data.ECG_hdl = plot_ecg_heartbeat(user_data.ECG_struct.signal, user_data.lead_idx, aux_anns, user_data.hb_idx , user_data.hb_detail_window , user_data.ECG_struct.header, user_data.filtro, user_data.ECG_axes_hdl);    
 
             title(user_data.ECG_axes_hdl, ['Heartbeat ' num2str(user_data.hb_idx) ' : Leads ' rowvec(colvec([repmat(' ', length(user_data.lead_idx), 1) num2str(colvec(user_data.lead_idx))]')) ] )
 
@@ -1798,7 +1878,6 @@ function user_data = update_annotations(user_data)
             user_data.ECG_struct.series_quality.AnnNames = user_data.AnnNames;
         end
     end            
-
 
 function ChangeAnnotationsSelected(obj,event_obj) 
         

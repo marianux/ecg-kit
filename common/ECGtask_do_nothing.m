@@ -32,9 +32,9 @@ classdef ECGtask_do_nothing < ECGtask
     end
 
     methods
-           
-        function obj = ECGtask_PCA_proj_basis(obj)
-            % not implemented
+        
+        function obj = ECGtask_do_nothing(obj)
+            
         end
         
         function Start(obj, ECG_header)
