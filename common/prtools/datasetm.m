@@ -1,4 +1,4 @@
-%DATASETM Mapping conversion to dataset
+%DATASETM Fixed mapping for conversion to dataset
 %
 %   B = DATASETM(A)
 %   B = A*DATASETM
@@ -15,7 +15,7 @@
 % especially useful to include the dataset conversion in the processing
 % definitions of a datafile.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DATAFILES, MAPPINGS, DATASET
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

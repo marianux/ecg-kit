@@ -1,6 +1,9 @@
-%QUADRC Quadratic Discriminant Classifier
+
+%QUADRC Trainable quadratic classifier
 % 
 %   W = QUADRC(A,R,S)
+%   W = A*QUADRC([],R,S)
+%   W = A*QUADRC(R,S)
 % 
 % INPUT
 % 	A 		Dataset
@@ -11,8 +14,8 @@
 %
 % DESCRIPTION  
 % Computation of the quadratic classifier between the classes of the dataset
-% A assuming normal densities. R and S are regularization parameters used
-% for finding the covariance matrix as
+% A based on different class covariances. R and S are regularization
+% parameters used for finding the covariance matrix as
 %
 %		G = (1-R-S)*G + R*diag(diag(G)) + S*mean(diag(G))*eye(size(G,1))
 %
@@ -22,7 +25,7 @@
 % two-class quadratic discriminants. It is, thereby, a quadratic equivalent
 % of FISHERC.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, FISHERC, NMC, NMSC, LDC, UDC, QDC
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl
@@ -31,25 +34,19 @@
 
 % $Id: quadrc.m,v 1.5 2010/02/08 15:29:48 duin Exp $
 
-function w = quadrc(a,arg2,s)
+function w = quadrc(varargin)
 
-		if (nargin < 3)
-		prwarning(5,'regularisation parameter S not given, assuming 0');
-		s = 0; 
-	end
-	if (nargin < 2)
-		prwarning(5,'regularisation parameter R not given, assuming 0');
-		arg2 = 0; 
-	end
-	if (nargin < 1) | (isempty(a))
-		r = arg2;
-		w = prmapping(mfilename,{r,s});
-		w = setname(w,'Quadr');
-		return
-	end
-
-	if (~isa(arg2,'prmapping'))					% Second argument is not a mapping: train.
-	
+  mapname = 'Quadr';
+  argin = shiftargin(varargin,'scalar');
+  argin = setdefaults(argin,[],0,0);
+  
+  if mapping_task(argin,'definition')
+    
+   w = define_mapping(argin,'untrained',mapname);
+    
+	elseif mapping_task(argin,'training')			% Train a mapping.
+ 
+    [a,arg2,s] = deal(argin{:});
     [m,k,c] = getsize(a);
 		
 		islabtype(a,'crisp');
@@ -95,7 +92,7 @@ function w = quadrc(a,arg2,s)
 				par0 = (mb*GB*mb'-ma*GA*ma') + log(DGB) -log(DGA);
 				w = prmapping(mfilename,'trained',{par0,par1',par2},getlablist(a),k,2);
 				w = cnormc(w,a);
-				w = setname(w,'Quadr');
+				w = setname(w,mapname);
 				w = setcost(w,a);
 			end
 
@@ -108,14 +105,15 @@ function w = quadrc(a,arg2,s)
 
 		end
 
-	else  												
+	else % Evaluation									
 
 		% Second argument is a trained mapping: test. Note that we can only
 		% have a 2-class case here. W's output will be [D, -D], as the distance
 		% of a sample to a class is the negative distance to the other class.
     
+    [a,v] = deal(argin{1:2});
     [m,k] = size(a);
-		v = arg2; pars = getdata(v); 
+		pars = getdata(v); 
 		d = +sum((a*pars{3}).*a,2) + a*pars{2} + ones(m,1)*pars{1}; 
 		w = setdat(a,[d, -d],v);
 

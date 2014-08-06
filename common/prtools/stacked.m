@@ -42,7 +42,7 @@
 % EXAMPLES
 % PREX_COMBINING
 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, MAXC, MINC, MEANC,
 % MEDIANC, PRODC, FISHERC, PARALLEL
 
@@ -116,7 +116,13 @@ function w = stacked(varargin)
         error('Mappings should have equal numbers of inputs.')
       end
       v = [v {v2}];
-      labels = [labels;getlabels(v2)];
+      if ischar(labels)
+        labels = char(labels,getlabels(v2));
+      elseif iscell(labels)
+        labels = {labels{:} getlabels(v2)};
+      else
+        labels = [labels;getlabels(v2)];
+      end
     end
     w = prmapping('stacked',type,v,labels,k);
 

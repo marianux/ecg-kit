@@ -2,6 +2,7 @@
 %
 %   W = KERNELC(A,KERNEL,CLASSF)
 %   W = A*KERNELC([],KERNEL,CLASSF)
+%   W = A*KERNELC(KERNEL,CLASSF)
 %
 % INPUT
 %   A       Dateset used for training
@@ -28,32 +29,29 @@
 % build the kernel space as well as to optimize the classifier (like in SVC).
 %
 % EXAMPLE
-% A = GENDATB([100 100]);    % Training set of 200 objects
-% R = GENDATB([10 10]);      % Representation set of 20 objects
-% V = KERNELM(R,'p',3);      % Compute kernel
-% W = KERNELC(A,V,FISHERC)   % compute classifier
-% SCATTERD(A);               % Scatterplot of trainingset
-% HOLD ON; SCATTERD(R,'ko'); % Add representation set to scatterplot
-% PLOTC(W);                  % Plot classifier
+% a = gendatb([100 100]);    % training set of 200 objects
+% r = gendatb([10 10]);      % representation set of 20 objects
+% v = proxm(r,'p',3);        % compute kernel
+% w = kernelc(a,v,fisherc)   % compute classifier
+% scatterd(a);               % scatterplot of trainingset
+% hold on; scatterd(r,'ko'); % add representation set to scatterplot
+% plotc(w);                  % plot classifier
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, KERNELM, PROXM, USERKERNEL
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-function w = kernelc(a,kernel,classf)
+function w = kernelc(varargin)
 
-		
-	if nargin < 3 | isempty(classf), classf = fisherc; end
-	if nargin < 2 | isempty(kernel)
-		kernel = kernelm([],[],'random',0.7,100); 
-	end
-	
-	if nargin < 1 | isempty(a)
-		w = prmapping(mfilename,'untrained',{kernel,classf}); 
-	else % training
+	argin = shiftargin(varargin,'prmapping');
+  argin = setdefaults(argin,[],kernelm([],[],'random',0.7,100),fisherc);
+  if mapping_task(argin,'definition')
+    w = define_mapping(argin,'untrained');
+  else % training
+    [a,kernel,classf] = deal(argin{:}); 
 		islabtype(a,'crisp');
 		isvaldfile(a,1,2); % at least 1 object per class, 2 classes
 		a = testdatasize(a,'objects');

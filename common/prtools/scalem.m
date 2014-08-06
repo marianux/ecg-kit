@@ -1,11 +1,13 @@
 %SCALEM Compute scaling map
 % 
-%   W = SCALEM(A,T)
+%   W = SCALEM(A,TYPE)
+%   W = A*SCALEM([],TYPE)
+%   W = A*SCALEM(TYPE)
 %
 % INPUT
-%   A  Dataset
-%   T  Type of scaling (optional; default: the class priors weighted mean of A 
-%      is shifted to the origin)
+%   A     Dataset
+%   TYPE  Type of scaling (optional; default: the class priors weighted  
+%         mean of A is shifted to the origin)
 %
 % OUTPUT
 %   W  Scaling mapping
@@ -31,7 +33,7 @@
 %
 % The map W may be applied to a new dataset B by B*W.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PRMAPPING, DATASET
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -40,14 +42,16 @@
 
 % $Id: scalem.m,v 1.9 2009/11/27 08:52:02 duin Exp $
 
-function W = scalem(a,t)
-		if nargin < 2
-		prwarning(4,'No mapping type specified. The class priors weighted mean of A is shifted to the origin.');
-		t = ''; 
-  elseif isempty(t)
-    t = '';
+function W = scalem(varargin)
+	
+  argin = shiftargin(varargin,'char');
+  argin = setdefaults(argin,[],'');
+  if mapping_task(argin,'definition')
+  	W = define_mapping(argin,'untrained');
+    return
   end
 	
+  [a,t] = deal(argin{:});
   %DXD Make the naming even better:
   dname = 'Scaling mapping';
   switch t

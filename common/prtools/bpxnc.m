@@ -29,7 +29,7 @@
 % 
 % Uses the Mathwork's Neural Network toolbox.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, LMNC, NEURC, RNNC, RBNC
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

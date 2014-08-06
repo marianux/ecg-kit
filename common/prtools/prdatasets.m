@@ -1,4 +1,4 @@
-%PRDATASETS Checks availability of a PRTOOLS dataset
+%PRDATASET Checks availability of a PRTOOLS dataset (PRTools5 version!)
 %
 %   PRDATASETS
 %
@@ -8,11 +8,11 @@
 %
 %   PRDATASET RENEW
 %
-% Replace PRDATASETS by its most recent version.
+% Replace PRDATASETS m-files by their most recent version.
 %
 %   PRDATASETS ALL
 %
-% Download and save all datasets related to the m-files.
+% Download and save all data related to the m-files.
 %
 %		PRDATASETS(DSET)
 %
@@ -25,12 +25,12 @@
 % This command should be used inside a PRDATASETS m-file. It checks the 
 % availability of the particular dataset file and downloads it if needed. 
 % SIZE is the size of the dataset in Mbyte, just used to inform the user.
-% In URL the web location may be supplied.  Default is 
-% http://37steps.com/prdatasets/DSET.mat
+% In URL the web location may be supplied. Default is 
+% http://prtools.org/prdatasets/DSET.mat
 %
 % All downloading is done interactively and should be approved by the user.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, PRDATAFILES
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -42,25 +42,31 @@ if isempty(ask), ask = true; end
 
 if nargin < 3, url = []; end
 if nargin > 0 & isempty(url)
-	url = ['http://37steps.com/prdatasets/' dset '.mat']; 
+  url = ['http://prtools.org/prdatasets/' dset '.mat']; 
 end
 if nargin < 2, siz = []; end
 if nargin < 1, dset = []; end
 dirname = fullfile(cd,'prdatasets');
 
-if exist('prdatasets/Contents','file') ~= 6
-	path = input(['The directory prdatasets is not found in the search path.' ... 
-		newline 'If it exists, give the path, otherwise hit the return for an automatic download.' ...
-		newline 'Path to prdatasets: '],'s');
-	if ~isempty(path)
-		addpath(path);
-		feval(mfilename,dset,siz);
-		return
-	else
-		%dirname = fullfile(cd,'prdatasets');
-		[ss,dirname] = prdownload('http://37steps.com/data/pfiles/prdatasets/prdatasets.zip','prdatasets');
-		addpath(dirname)
-	end
+if exist('sonar','file') ~= 2
+  prtoolsdir = fileparts(which(mfilename));
+  toolsdir = fileparts(prtoolsdir);
+  if exist(fullfile(toolsdir,'prdatasets/Contents.m'),'file') ~= 2
+    path = input(['The directory prdatasets is not found in the search path.' ... 
+      newline 'If it exists, give the path, otherwise hit the return for an automatic download.' ...
+      newline 'Path to prdatasets: '],'s');
+    if ~isempty(path)
+      addpath(path);
+      feval(mfilename,dset,siz);
+      return
+    else
+      % Load all m-files from prdataset5 !!!
+      [ss,dirname] = prdownload('http://prtools.org/prdatasets5/prdatasets.zip','prdatasets');
+      addpath(dirname)
+    end
+  else
+    addpath(fullfile(toolsdir,'prdatasets'));
+  end
 end
 
 if isempty(dset) % just list Contents file
@@ -70,16 +76,16 @@ if isempty(dset) % just list Contents file
 elseif ~isempty(dset) & nargin == 1 % check / load m-file
 	% this just loads the m-file in case it does not exist and updates the
 	% Contents file
-	if strcmp(lower(dset),'renew')
-		if exist('prdatasets/Contents','file') ~= 6
+	if strcmpi(dset,'renew')
+		if exist('prdatasets/Contents','file') ~= 2
 			% no prdatasets in the path, just start
 			feval(mfilename);
 		else
 			dirname = fileparts(which('prdatasets/Contents'));
-			prdownload('http://37steps.com/prdatasets/prdatasets.zip',dirname);
+			prdownload('http://prtools.org/prdatasets5/prdatasets.zip',dirname);
     end
-  elseif strcmp(lower(dset),'all')
-		if exist('prdatasets/Contents','file') ~= 6
+  elseif strcmpi(dset,'all')
+		if exist('prdatasets/Contents','file') ~= 2
 			% no prdatasets in the path, just start
 			feval(mfilename);
     end
@@ -88,8 +94,8 @@ elseif ~isempty(dset) & nargin == 1 % check / load m-file
     tooldir = fileparts(which('prdatasets/Contents'));
     files = dir([tooldir '/*.m']);
     files = char({files(:).name});
-    L = strmatch('Contents',files);
-    L = [L; strmatch('pr_',files)];
+    L = strmatch('Contents',files); % no data for Contents
+    L = [L; strmatch('pr',files)];  % no data for support routines
     files(L,:) = [];
     for j=1:size(files,1)
       cmd = deblank(files(j,:));
@@ -98,13 +104,14 @@ elseif ~isempty(dset) & nargin == 1 % check / load m-file
     end
     ask = true;
     
-    
-	elseif exist(['prdatasets/' dset],'file') ~= 2
-		prdownload(['http://37steps.com/prdatasets/' dset '.m'],dirname);
-		prdownload('http://37steps.com/prdatasets/Contents.m',dirname);
+	elseif exist(['prdatasets/' dset],'file') ~= 2 
+    % load m-file
+		prdownload(['http://prtools.org/prdatasets5/' dset '.m'],dirname);
+		prdownload('http://prtools.org/prdatasets5/Contents.m',dirname);
+    feval(dset);   % takes care that data is available as well
 	end
 	
-else   % now we load the m-file as well as the data given by the url
+else   % load the data given by the url
 	
 	% feval(mfilename,dset); % don't do this to allow for different mat-file
 	% naming

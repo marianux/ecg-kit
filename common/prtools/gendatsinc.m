@@ -14,7 +14,7 @@
 % Generate the standard 1D Sinc data containing N objects, with Gaussian
 % noise with standard deviation SIGMA. 
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 %  GENDATR, GENDATLIN, GENDATSIN
 
 % Copyright: D.M.J. Tax, D.M.J.Tax@37steps.com

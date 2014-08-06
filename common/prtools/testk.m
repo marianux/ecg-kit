@@ -19,7 +19,7 @@
 % error estimation. However, TESTK is based on just counting errors and
 % does not weight with testobject priors.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, KNNC, KNN_MAP, TESTC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

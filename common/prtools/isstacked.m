@@ -13,7 +13,7 @@
 % Returns 1 for stacked mappings. If no output is requested, false outputs
 % are turned into errors. This may be used for assertion.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % ISMAPPING, ISPARALLEL
 
 % $Id: isstacked.m,v 1.2 2006/03/08 22:06:58 duin Exp $

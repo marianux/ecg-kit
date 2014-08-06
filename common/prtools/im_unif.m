@@ -12,7 +12,7 @@
 % OUTPUT
 %   B     Dataset/datafile with Gaussian filtered images
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DATAFILES, IM_GAUSSF, FILTIM
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

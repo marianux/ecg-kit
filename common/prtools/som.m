@@ -22,8 +22,8 @@ function W = som(a,k,nrruns,eta,h)
 % Default: K=[5 5], NRRUNS = [20 40 40], ETA = [0.5 0.3 0.1],
 % H = [0.6 0.2 0.01];
 %
-% SEE ALSO
-% PCAM, KMEANS, PLOTSOM, PREX_SOM
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% PCAM, PRKMEANS, PRPLOTSOM, PREX_SOM
 
 % Copyright: D. Tax, davidt@ph.tn.tudelft.nl
 % Faculty of Applied Physics, Delft University of Technology

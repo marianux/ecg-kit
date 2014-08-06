@@ -9,7 +9,7 @@
 % OUTPUT
 %   B   Dataset, feature N is removed and used for labeling
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, SETFEATDOM, GETFEATDOM
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

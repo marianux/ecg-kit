@@ -25,7 +25,7 @@
 % A categorical dataset A can be combined with a dataset B representing a
 % set of numeric features for the same objects by [A B].
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, PRDATASET, SETFEATDOM, GETFEATDOM, FEAT2LAB
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

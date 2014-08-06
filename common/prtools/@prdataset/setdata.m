@@ -39,5 +39,5 @@
 % In case A is not a dataset but an array of doubles, the output dataset A
 % is identical to DATA and the FEATLAB parameter is neglected.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS

@@ -57,6 +57,8 @@ if( fidECG > 0 )
         heasig.nsamp = fread(fidECG, 1, 'uint32');
         
         fclose(fidECG);        
+
+        [~, heasig.recname] = fileparts(filename);
         
     catch ME
         fclose(fidECG);

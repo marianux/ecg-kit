@@ -23,7 +23,7 @@
 % it, either in the command window (default) or graphically setting the
 % 'mode' options to 'graph'.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, DTC, TREEC, CLASSIFICATIONTREE, VIEW
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -34,7 +34,7 @@ function W = statsdtc(varargin)
   
   if mapping_task(varargin,'definition')
     W = define_mapping(varargin,[],name);
-	elseif mapping_task(varargin,'training')
+  elseif mapping_task(varargin,'training')
     A       = varargin{1};
     data    = +A;
     labels  = getlabels(A);
@@ -49,7 +49,7 @@ function W = statsdtc(varargin)
   else % evaluation
     [A,W]    = deal(varargin{:});
     tree     = getdata(W);
-    [~,post] = predict(tree,+A);
+    [dummy,post] = predict(tree,+A);
     W        = setdat(A,post,W);
   end
   

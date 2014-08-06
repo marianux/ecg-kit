@@ -23,7 +23,7 @@
 % This routine can be considered as a classifier combiner based on global
 % selection. See DCSC for local, dynamic selection.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, STACKED, DCSC, CLASSC, TESTD, LABELD
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

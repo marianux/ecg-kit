@@ -1,9 +1,11 @@
 %FEATEVAL Evaluation of feature set for classification
 % 
 % 	J = FEATEVAL(A,CRIT,T)
-% 	J = FEATEVAL(A,CRIT,N)
 %   J = A*FEATEVAL([],CRIT,T)
+%   J = A*FEATEVAL(CRIT,T)
+% 	J = FEATEVAL(A,CRIT,N)
 %   J = A*FEATEVAL([],CRIT,N)
+%   J = A*FEATEVAL(CRIT,N)
 % 
 % INPUT
 %       A      input dataset
@@ -40,7 +42,7 @@
 % test sets generated from A by cross-validation. Results are averaged.
 % If T nor N are given, the apparent performance on A is used. 
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, FEATSELO, FEATSELB, FEATSELF, FEATSELP, FEATSELM, FEATRANK
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -56,7 +58,8 @@
 
 function J = feateval(varargin)
 	
-argin = setdefaults(varargin,[],'NN',[]);
+argin = shiftargin(varargin,'char');
+argin = setdefaults(argin,[],'NN',[]);
 if mapping_task(argin,'definition')
   J = define_mapping(argin,'fixed');
 else
@@ -67,7 +70,7 @@ else
 		if ~ismapping(crit) | ~isuntrained(crit)
  			error('Cross-validation only possible with untrained classifiers')
 		end
-		J = 1-crossval(a,crit,t);
+		J = 1-prcrossval(a,crit,t);
 		return
 	end
 		
@@ -126,11 +129,11 @@ else
 			else
 				J = 1 - testk(a,1,t);
 			end
-		elseif strcmp(crit,'kcentres') % data radius, unsupervised
+		elseif strcmp(crit,'kcentres') || strcmp(crit,'kcenters') % data radius, unsupervised
 				% assumes disrep, so experimental
 			J = max(min(+a,[],2));
 			if J == 0, J = inf; else J = 1/J; end
-		elseif strcmp(crit,'representation_error') % also unsupervised
+		elseif strcmp(crit,'representation_error') || strcmp(crit,'reperror')% also unsupervised
 			J = mean(min(+a,[],2));
 			if J == 0, J = inf; else J = 1/J; end
 		elseif strcmp(crit,'mad') % Mean Absolute Deviation for regression

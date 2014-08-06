@@ -34,5 +34,5 @@
 % EXAMPLES
 % [DATA,LABELS] = GET(W,'data','labels')
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, MAPPING

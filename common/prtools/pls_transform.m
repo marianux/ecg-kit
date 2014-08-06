@@ -19,7 +19,7 @@
 % DESCRIPTION
 % Applys PLS (Partial Least Squares) regression model
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PLS_TRAIN, PLS_APPLY
 
 % Copyright: S.Verzakov, serguei@ph.tn.tudelft.nl

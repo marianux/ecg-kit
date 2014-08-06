@@ -42,19 +42,18 @@ try
     % writing the rest of lines
     for ii=1:header.nsig
 
-        if isfield(header,'spf')||isfield(header,'skew')||isfield(header,'offset')
-            if isfield(header,'spf')
-                fprintf(fid,'\n%s %d',header.fname(ii,:),fmt);
-                fprintf(fid,'x%d ',header.spf(ii));
+        if isfield(header,'spf') || isfield(header,'skew') || isfield(header,'offset')
+            fprintf(fid,'\n%s %d',header.fname(ii,:),fmt);
+            if isfield(header,'spf') && ~isnan(header.spf(ii))
+                fprintf(fid,'x%d',header.spf(ii));
             end
-            if isfield(header,'skew')
-                fprintf(fid,'\n%s %d',header.fname(ii,:),fmt);
-                fprintf(fid,':%d ',header.skew(ii));
+            if isfield(header,'skew') && ~isnan(header.skew(ii))
+                fprintf(fid,':%d',header.skew(ii));
+            end 
+            if isfield(header,'offset') && ~isnan(header.offset(ii))
+                fprintf(fid,'+%d',header.offset(ii));
             end
-            if isfield(header,'offset')
-                fprintf(fid,'\n%s %d',header.fname(ii,:),fmt);
-                fprintf(fid,'+%d ',header.offset(ii));
-            end
+            fprintf(fid,' ');
         else
             fprintf(fid,'\n%s %d ',header.fname(ii,:),fmt);
         end
@@ -65,13 +64,11 @@ try
             fprintf(fid,'%f',200 );
         end
         
-        if isfield(header,'baseline')
-            if isfield(header,'units')
-                fprintf(fid,'(%d)',header.baseline(ii));
-            else
-                fprintf(fid,'(%d) ',header.baseline(ii));
-            end
-        elseif (isfield(header,'units') )
+        if(isfield(header,'baseline') && ~isnan(header.baseline(ii)) ) 
+            fprintf(fid,'(%d)',header.baseline(ii));
+        end
+        
+        if (isfield(header,'units') )
             fprintf(fid,'/%s ',header.units(ii,:));
         else
             fprintf(fid,' ' );

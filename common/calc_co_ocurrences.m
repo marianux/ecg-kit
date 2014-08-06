@@ -35,8 +35,10 @@ co_ocurrence = cell(1,cant_leads);
 %     
 % end
 
-aux_mat = zeros(max(cell2mat(cellfun(@(a)(max(a)),hb_idx_matrix, 'UniformOutput', false))) ,cant_leads);
-aux_idx = cell2mat(cellfun(@(a,b)(colvec(a + (b * size(aux_mat,1)))), colvec(hb_idx_matrix), num2cell((0:cant_leads-1)'), 'UniformOutput', false));
+aux_min = min(cell2mat(cellfun(@(a)(min(a)),hb_idx_matrix, 'UniformOutput', false)));
+aux_size = max(cell2mat(cellfun(@(a)(max(a)),hb_idx_matrix, 'UniformOutput', false))) - aux_min + 1;
+aux_mat = zeros( aux_size, cant_leads);
+aux_idx = cell2mat(cellfun(@(a,b)(colvec( (round(a) - aux_min + 1) + (b * aux_size)  ) ), colvec(hb_idx_matrix), num2cell((0:cant_leads-1)'), 'UniformOutput', false));
 
 aux_idx = aux_idx(aux_idx > half_win & aux_idx < (numel(aux_mat) - half_win) );
 
@@ -44,7 +46,7 @@ for ii = -half_win:half_win
     aux_mat(aux_idx+ii) = 1;
 end
 
-co_ocurrence = cellfun( @(a)( colvec(sum(aux_mat(a,:),2)+1) ), hb_idx_matrix, 'UniformOutput', false );
+co_ocurrence = cellfun( @(a)( colvec(sum(aux_mat(round(a) - aux_min + 1,:),2)+1) ), hb_idx_matrix, 'UniformOutput', false );
 
 co_ocurrence = cellfun( @(a)( round(soft_range_conversion( a, [ 0 cant_leads-1 ], range_out, 0.25 ) ) ), co_ocurrence, 'UniformOutput', false);
 

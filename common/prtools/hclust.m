@@ -36,8 +36,8 @@
 % lab = hclust(d,'complete',2); % labels
 % confmat(lab,getlabels(a));    % confusion matrix
 %
-% SEE ALSO
-% PLOTDG, KMEANS, KCENTRES, MODESEEK, EMCLUST
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% PLOTDG, PRKMEANS, KCENTRES, MODESEEK, EMCLUST
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology

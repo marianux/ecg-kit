@@ -78,7 +78,7 @@ function [ ratio, estimated_labs ]= CalcRRserieRatio(time_serie, ECG_header, sta
     ratio = nan(lreferences,1);
 
     estimated_labs = cell(lreferences,1);
-    
+
     for ii = 1:lreferences
 
         pb.start_loop();

@@ -7,4 +7,5 @@
 % This is not different from using the field specific routines
 % (e.g. SETDIR(A,DIR)
 %
-% SEE ALSO PRDATAFILE, GET
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% PRDATAFILE, GET

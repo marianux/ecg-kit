@@ -1,4 +1,4 @@
-%NUSVO Support Vector Optimizer: NU algorithm
+%NUSVO Support Vector Optimizer: NU algorithm, low-level routine
 %
 %   [V,J,NU,C] = NUSVO(K,NLAB,NU,OPTIONS)
 %
@@ -51,7 +51,7 @@
 % Weights V are rescaled in a such manner as if they were returned by SVO with the parameter C.
 %
 % SEE ALSO
-% SVC_NU, SVO, SVC
+% NUSVC, SVO, SVC
 
 % Copyright: S.Verzakov, s.verzakov@ewi.tudelft.nl 
 % Based on SVO.M by D.M.J. Tax, D. de Ridder, R.P.W. Duin
@@ -62,7 +62,9 @@
 
 function [v,J,nu,C] = nusvo(K,y,nu,Options,arg)
                  % old call: K,y,nu,pd,abort_on_error
-	    % Old call conventions
+	  prtrace(mfilename);
+
+  % Old call conventions
   if nargin > 4 | (nargin == 4 & ~isstruct(Options) & isempty(Options))
     abort_on_error = [];
     if nargin == 5 
@@ -84,6 +86,7 @@ function [v,J,nu,C] = nusvo(K,y,nu,Options,arg)
   if nargin < 4
     Options = [];
   end
+
 
   DefOptions.pd_check             = 1;
   DefOptions.bias_in_admreg       = 1;
@@ -145,12 +148,12 @@ function [v,J,nu,C] = nusvo(K,y,nu,Options,arg)
 		negdef = 0;
 		normalize = 1;
 		v = qp(D, f, A, b, lb, ub, p, length(b), verbos, negdef, normalize);
-	end
-	
+  end
+  
   try
     % check if the optimizer returned anything
     if isempty(v)
-      error('Optimization did not converge.');
+      error('prtools:nusvo','Optimization did not converge.');
     end
 
 	  % Find all the support vectors.
@@ -194,6 +197,7 @@ function [v,J,nu,C] = nusvo(K,y,nu,Options,arg)
   end  
 
 return;
+
 
 function [rho, b] = FindRhoAndB(nu,y,K,v,J,Jp,Jm,Ip,Im,Options)
   % There are boundary support objects from both classes, we can use them to find a bias term
@@ -245,7 +249,7 @@ function [rho, b] = FindRhoAndB(nu,y,K,v,J,Jp,Jm,Ip,Im,Options)
       ub2 = -max([K(J0m,J)*v(J); -inf]);
       
       if lb1 > ub1 | lb2 > ub2 
-        error('Admissible region of the bias term is empty.');    
+        error('prtools:nusvo','Admissible region of the bias term is empty.');    
       end
     
       if isinf(ub1) | isinf(ub2)
@@ -253,7 +257,7 @@ function [rho, b] = FindRhoAndB(nu,y,K,v,J,Jp,Jm,Ip,Im,Options)
         if Options.allow_ub_bias_admreg
           prwarning(1,Msg);
         else
-          error(Msg);
+          error('prtools:nusvo',Msg);
         end      
       end
       

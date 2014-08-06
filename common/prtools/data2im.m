@@ -9,10 +9,9 @@
 %
 % OUTPUT
 %   IM    If A is dataset, IM is a X*Y*N*K matrix with K images.
-%         K is the number of images (length(J))
-%         N is the number of bands per image.
-%         N = 3 for RGB images, N = 1 for gray value images.
-%
+%         - K is the number of images (length(J))
+%         - N is the number of bands per image.
+%         - N = 3 for RGB images, N = 1 for gray value images.
 %         If A is a datafile, IM is a cell array of K images.
 %
 % DESCRIPTION
@@ -21,7 +20,7 @@
 % datafile the images are stored in a cell array, except when a single
 % image is requested.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, IM2OBJ, IM2FEAT
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -100,7 +99,15 @@ function im = data2im(a,J)
 			im = zeros(featsize(1),featsize(2),featsize(3),m);
 			for j = 1:m
 				im(:,:,:,j) = reshape(data(j,:),featsize(1),featsize(2),featsize(3));
-			end
+      end
+%     elseif length(featsize) == 4
+%       if featsize(3) == 1
+%         im = zeros(featsize(1),featsize(2),featsize(4),m);
+%         for j = 1:m
+%           im(:,:,1,j) = reshape(data(j,:),featsize(1),featsize(2),featsize(4));
+%         end
+%       elseif featsize(3) == 3
+        
 		else
 			error('Unable to handle these images')
 		end

@@ -21,7 +21,7 @@
 % data vectors is returned. If W is a linear 2-class discriminant and N 
 % is not specified, the error is computed analytically.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, QDC, NBAYESC, TESTC
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

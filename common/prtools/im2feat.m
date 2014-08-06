@@ -1,14 +1,16 @@
 %IM2FEAT Convert Matlab images or datafile to dataset feature
 %
 %   B = IM2FEAT(IM,A)
+%   B = IM2OBJ(IM,OBJSIZE)
 %
 % INPUT
-%   IM    X*Y image, X*Y*K array of K images, or cell-array of images
-%         The images may be given as a datafile.
-%   A     Input dataset
+%   IM       X*Y image, X*Y*K array of K images, or cell-array of images.  
+%            The images may be given as a datafile.
+%   A        Input dataset
+%   OBJSIZE  Vector with desired object sizes to solve ambiguities
 %
 % OUTPUT
-%   B     Dataset with IM added
+%   B        Dataset with IM added
 %
 % DESCRIPTION
 % Add standard Matlab images, as features, to an existing dataset A. If A is
@@ -16,8 +18,8 @@
 % to 'double' and divided by 256. The set of images IM may be given as a 
 % datafile.
 %
-% SEE ALSO
-% DATASETS, DATAFILES, IM2OBJ, DATA2IM
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATASETS, DATAFILES, IM2OBJ, FEATIM
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
@@ -27,24 +29,61 @@
 
 function a = im2feat (im,a)
 
-		if (isa(im,'cell'))
+		
+	if iscell(im)
+		imsize = size(im{1}); 
+	else
+		imsize = size(im);   
+	end
+	
+	nodataset = 0;
+	if (nargin > 1)
+		if (~isdataset(a)) & size(a,1) ~= 1
+			error('second argument should be a dataset or a size vector'); 
+		end
+		if isdataset(a)
+			objsize = getobjsize(a);
+		else
+			objsize = a;
+			nodataset = 1;
+		end
+	else % no information on feature size, assume most simple solution
+		nodataset = 1;
+		if length(imsize) == 2
+			objsize = imsize;
+		else
+			objsize = imsize(1:end-1);
+		end
+	end	
+	if length(objsize) == length(imsize)
+		nfeat = 1;
+	elseif length(objsize) == (length(imsize)-1)
+		nfeat = imsize(end);
+	elseif length(objsize) == (length(imsize)-2) & imsize(3) == 1
+		nfeat = imsize(end);
+	else
+		wrongobjsize;
+	end
+	
+	if any(objsize ~= imsize(1:length(objsize)))
+		wrongobjsize;
+	end
+
+
+	if (isa(im,'cell'))
 
 		% If IM is a cell array of images, unpack it and recursively call IM2FEAT
 		% to add each image.
 
 		im = im(:);
-		if (nargin < 2)
-			a = prdataset([]);
-		end
-		n = length(im);
-		s = sprintf('Converting %i images: ',n);
-		prwaitbar(n,s);
 		for i = 1:length(im)
-			prwaitbar(n,i,[s int2str(i)]);
-			a = [a feval(mfilename,im{i})];
+			b = feval(mfilename,im{i});
+			if ~isempty(a) & any(a.objsize ~= b.objsize)
+				error('Images should have equal sizes')
+			end
+			a = [a b];
 		end
-		prwaitbar(0);
-    
+		    
   elseif isdatafile(im)
     
 		if (nargin < 2)
@@ -57,49 +96,35 @@ function a = im2feat (im,a)
 
 		% If IM is an image or array of images, reshape it and add it in one go.
 
-		n = size(im,3); imsize = size(im); 
-    if length(imsize) == 4
-      m = imsize(4);
-    else
-      m = 1;
-    end
-    imsize = imsize(1:2);
-
 		% Convert to double, if necessary
-		if (isa(im,'uint8') | isa(im,'uint16'))
-			prwarning(4,'Image is uint; converting to double and dividing by 256');
-			im = double(im)/256;
+		if (isa(im,'uint8'))
+			im = double(im)/256; 
+		else
+			im = double(im);
 		end
 
-		% Reshape images to vectors and store bands as features in dataset.
-    if m==1
-		  imm = reshape(im,imsize(1)*imsize(2),n);
-      objsize = imsize(1:2);
+		% ready for the real work, at last!
+		
+		if nfeat == 1
+			im = im(:)';
 		else
-			rtc = imsize(1)*imsize(2);
-			imm = zeros(m*rtc,n);
-			for i=1:m
-				imm(rtc*(i-1)+1:rtc*(i),:) = reshape(im(:,:,:,i),rtc,n);
-			end
-			objsize = [imsize(1:2) m]; 
-% 			imm = [];
-%       for i=1:m
-%         imm = [imm; reshape(im(:,:,:,i),imsize(1)*imsize(2),n)];
-%       end
-%       objsize = [imsize(1:2) m];
-    end
-		if (nargin > 1)
-			if (~isa(a,'prdataset'))
-				error('Second argument is not a dataset')
-			end
-			if (size(imm,1) ~= size(a,1))
-				error('Image size and dataset object size do not match')
-			end
-			a = [a imm];
-		else
-			a = prdataset(imm);
+			im = shiftdim(im,ndims(im)-1);
+			im = reshape(im,nfeat,prod(objsize));
+		end
+		
+		if nodataset
+			a = prdataset(im');
 			a = setobjsize(a,objsize);
+		else
+			a = [a; im'];
 		end
-	end
 
+	end	
+
+
+return
+
+
+function wrongobjsize
+	error('Desired object size and size of supplied image array are inconsistent')
 return

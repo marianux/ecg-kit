@@ -1,7 +1,11 @@
 %SCATTERD Display scatterplot
 % 
 %   H = SCATTERD(A)
+%   H = A*SCATTERD
+%
 %   H = SCATTERD(A,DIM,S,CMAP,FONTSIZE,'label','both','legend','gridded')
+%   H = A*SCATTERD([],DIM,S,CMAP,FONTSIZE,'label','both','legend','gridded')
+%   H = A*SCATTERD(DIM,S,CMAP,FONTSIZE,'label','both','legend','gridded')
 %
 % INPUT
 %   A     Dataset or matrix
@@ -48,8 +52,8 @@
 % EXAMPLES
 % See PREX_CONFMAT, PREX_DENSITY, PREX_PLOTC, PREX_MCPLOT.
 %
-% SEE ALSO
-% DATASETS, PLOTC
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATASETS, PLOTC, SCATTERN
 
 % Copyright: D. de Ridder, R.P.W. Duin, duin@ph.tn.tudelft.nl
 % Faculty of Applied Sciences, Delft University of Technology
@@ -61,8 +65,22 @@
 % DR1 - Dick, 05-10-2004
 % Added plotting of unlabeled data as 'k.'.
 
-function handle = scatterd(a,p1,p2,p3,p4,p5,p6,p7,p8)
+function handle = scatterd(varargin)
 
+  argin = shiftargin(varargin,'scalar');
+  argin = shiftargin(argin,'char');
+  argin = setdefaults(argin,[],[],[],[],[],[],[],[],[]);
+  if mapping_task(argin,'definition')
+    % standard return, name = filename
+    handle = define_mapping(argin,'fixed');
+    return
+  end
+  
+  par = cell(1,8);
+  [a,par{:}] = deal(argin{:});
+	a = prdataset(a); 		% Allow for a non-dataset data
+	a = remclass(a);
+  
 		% Defaults
 	d = min(size(a,2),2);		% Dimensionality of plot
 	s = []; 					% Plot symbol(s)
@@ -76,19 +94,15 @@ function handle = scatterd(a,p1,p2,p3,p4,p5,p6,p7,p8)
 	mark_size = [];
 	lab_size  = [];
 	hold_axis = ishold; % A flag to check if 'hold on' is set for the current axis
-
-	%if size(a,2) > 3, a = a(:,1:3); end % why the hell was this ????
-	a = prdataset(a); 		% Allow for a non-dataset data
-	a = remclass(a);
-
-	if (nargin < 9), par{8} = []; else, par{8} = p8; end
-	if (nargin < 8), par{7} = []; else, par{7} = p7; end
-	if (nargin < 7), par{6} = []; else, par{6} = p6; end
-	if (nargin < 6), par{5} = []; else, par{5} = p5; end
-	if (nargin < 5), par{4} = []; else, par{4} = p4; end
-	if (nargin < 4), par{3} = []; else, par{3} = p3; end
-	if (nargin < 3), par{2} = []; else, par{2} = p2; end
-	if (nargin < 2), par{1} = []; else, par{1} = p1; end
+% 
+% 	if (nargin < 9), par{8} = []; else, par{8} = p8; end
+% 	if (nargin < 8), par{7} = []; else, par{7} = p7; end
+% 	if (nargin < 7), par{6} = []; else, par{6} = p6; end
+% 	if (nargin < 6), par{5} = []; else, par{5} = p5; end
+% 	if (nargin < 5), par{4} = []; else, par{4} = p4; end
+% 	if (nargin < 4), par{3} = []; else, par{3} = p3; end
+% 	if (nargin < 3), par{2} = []; else, par{2} = p2; end
+% 	if (nargin < 2), par{1} = []; else, par{1} = p1; end
 
 	% Set up default values.
 	for i = 1:5

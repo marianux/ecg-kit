@@ -19,7 +19,7 @@
 % t = gendatd;       % test set
 % t*knnc(a,1)*test2  % execute, list of # errors per class
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

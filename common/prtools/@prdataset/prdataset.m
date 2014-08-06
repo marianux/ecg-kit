@@ -64,5 +64,5 @@
 % converted to a structure. By DOUBLE(A) or +A the data can be retrieved.
 % HELP DATASETS lists more information.
 %
-% SEE ALSO 
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>) 
 % DATASETS, MAPPINGS

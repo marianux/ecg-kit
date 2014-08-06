@@ -14,11 +14,10 @@
 %  [Q,L] = eig(H);
 %  prwaitbar(0)
 %
-% It makes clear to the user what is happening.
+% It makes clear to the user what is happening in case progress cannot be
+% accessed.
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
-% Faculty EWI, Delft University of Technology
-% P.O. Box 5031, 2600 GA Delft, The Netherlands
 
 function prwaitbaronce(ss,par)
 

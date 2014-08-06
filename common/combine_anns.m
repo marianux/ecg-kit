@@ -1,6 +1,7 @@
 function artificial_annotations = combine_anns(time_serie, estimated_labs, header)
 
 %     lreferences = length(time_serie);
+    artificial_annotations = [];
 
     start_sample = min(cell2mat(cellfun(@(a)(min(a)),time_serie, 'UniformOutput', false)));
     end_sample = max(cell2mat(cellfun(@(a)(max(a)),time_serie, 'UniformOutput', false))) + 1;
@@ -8,6 +9,10 @@ function artificial_annotations = combine_anns(time_serie, estimated_labs, heade
     
 %     aux_seq = (start_sample+win_size):round(win_size/2):end_sample;
     aux_seq = (start_sample+win_size):win_size:end_sample;
+    
+    if( isempty(aux_seq) )
+        return
+    end
     
     if(aux_seq(end) ~= end_sample )
         aux_seq = [aux_seq (aux_seq(end)+win_size) ];
@@ -36,7 +41,7 @@ function artificial_annotations = combine_anns(time_serie, estimated_labs, heade
         
     aux_val = arrayfun( @(ii)( cell2mat(cellfun( @(a, q_idx)( build_combined_series(time_serie, a, q_idx, ii ) ), aux_idx, aux_q_idx, 'UniformOutput', false)) ), 1:3, 'UniformOutput', false );
     
-    for ii = 1:3
+    for ii = 1:min(3, length(aux_val))
         % avoid annotations very close each other.
         aux_time_serie = aux_val{ii};
         aux_time_serie(find( diff(sort(aux_time_serie)) <= round(0.15 * header.freq) ) +1) = [];

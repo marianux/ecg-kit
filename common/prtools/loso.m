@@ -33,7 +33,7 @@
 % The reported error E identical to E = sum(C)./classsizes(D)*getprior(A)';
 % By confmat(D) a confusion matrix can be visualised.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, TESTC, CONFMAT
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

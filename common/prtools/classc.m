@@ -32,7 +32,7 @@
 % CLASSC lists the outcomes on the screen in case no output argument is
 % supplied. Also true and estimated labels are supplied.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, CNORMC, LABELD
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

@@ -1,7 +1,8 @@
-%DIPIM Run any DIPimage command with one input image (DIP_Image)
+%DIPIM Fixed mapping running any DIPimage command with one input image
 %
 %	B = DIPIM(A,COMMAND,PAR1,PAR2, ...)
 %	B = A*DIPIM([],COMMAND,PAR1,PAR2, ...)
+%	B = A*DIPIM(COMMAND,PAR1,PAR2, ...)
 %
 % INPUT
 %   A        Dataset or datafiles with object images
@@ -44,24 +45,27 @@
 %     maxima               - Detect local maxima
 %     watershed            - Watershed
 % 
-% SEE ALSO
-% DATASETS, DATAFILES, DIP_IMAGE
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATASETS, DATAFILES, DIP_IMAGE, DIPBIN
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-function b = dipim(a,command,varargin)
+function b = dipim(varargin)
 
-		
-	if nargin < 2
+  checktoolbox('diplib');
+	argin = shiftargin(varargin,'char');
+  argin = setdefaults(argin,[],'');
+  varargin = cell(1,numel(argin)-2);
+  [a,command,varargin{:}] = deal(argin{:});
+	if isempty(command)
     error('No DIPimage command supplied')
   end
-	
-  if isempty(a)
-    b = prmapping(mfilename,'fixed',{command varargin{:}});
-    b = setname(b,[command '(DIPimage)']);
-	elseif isa(a,'prdataset') % allows datafiles too
+  if mapping_task(argin,'definition')
+    b = define_mapping(argin,'fixed');
+    b = setname(b,'DIPimage');
+  elseif isa(a,'prdataset') % allows datafiles too
 		isobjim(a);
     b = filtim(a,mfilename,{command varargin{:}});
   elseif isa(a,'double') % here we have a single image
@@ -81,7 +85,7 @@ function b = dipim(a,command,varargin)
     b = feval(command,a,varargin{:});
   catch ME
     if strcmp(ME.message, 'Argument # 1: image data type not supported')
-      error('Wrong routine for this DIPimage coomand. Try DIPBIN.')
+      error('Wrong routine for this DIPimage command. Try DIPBIN.')
     end
     rethrow(ME);
   end

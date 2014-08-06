@@ -18,7 +18,7 @@
 %    A = SETDATA(A,DATA);
 %    A = SET(A,'featlab',GETLABELS(W),'featsize',GETSIZE_OUT(W));
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PRDATASET, SETDATA
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl
@@ -44,7 +44,12 @@ function a = setdat(a,b,w)
 		%	a = [a 1-a];
 		%end
 		% Add attributes of W to A.
-		a = set(a,'featlab',getlabels(w),'featsize',getsize_out(w));
+    a = setfeatsize(a,getsize_out(w));
+    featlab = getlabels(w);
+    if ~isempty(featlab);
+      a = setfeatlab(a,featlab);
+    end
+		%a = set(a,'featlab',getlabels(w),'featsize',getsize_out(w));
 	end
 		
 	return;

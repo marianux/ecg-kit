@@ -19,14 +19,15 @@
 % It detects and integrates levels of loops. The following calls are
 % supported:
 %
-%   PRWAITBAR(N,TEXT)          initialize loop
-%   PRWAITBAR(N,TEXT,FLAG)     initialize loop if FLAG == 1
-%   PRWAITBAR(N,M)             update progress
-%   PRWAITBAR(N,M,TEXT)        update info
-%   PRWAITBAR(0)               closes loop level
-%   PRWAITBAR OFF              removes waitbar
-%   PRWAITBAR ON               switches waitbar on again
-%   PRWAITBAR                  reset prwaitbar
+%   PRWAITBAR(N,TEXT)        initialize loop
+%   PRWAITBAR(N,TEXT,FLAG)   initialize loop if FLAG == 1
+%   PRWAITBAR(N,M)           update progress
+%   PRWAITBAR(N,M,TEXT)      update info
+%   PRWAITBAR(0)             closes loop level
+%   PRWAITBAR OFF            removes waitbar
+%   PRWAITBAR ON             switches waitbar on again
+%   PRWAITBAR REPORT         no waitbar, report progress in command window
+%   PRWAITBAR                reset prwaitbar
 %
 % A typical sequence of calls is:
 %    .....
@@ -41,18 +42,19 @@
 % waitbar. In this PRWAITBAR differs from Matlab's WAITBAR.
 % A typical example can be visualised by:
 %
-%    crossval({gendatb,gendath},{svc,loglc,fisherc},5,2)
+%    prcrossval({gendatb,gendath},{svc,loglc,fisherc},5,2)
+%
+% PRWAITBAR may increase the computation time with 25%. For long running
+% processes PRWAITBAR REPORT (e.g. in a screen window) is recommended.
 %
 % Some other, more high-level routines calling PRWAITBAR are
 % PRWAITBARINIT, PRWAITBARNEXT, PRWAITBARONCE, PREIG, PRINV, PRPINV, PRRANK,
 % PRSVD, PRCOV
 %
-% SEE ALSO
-% PRPROGRESS, PRWAITBARINIT, PRWAITBARNEXT, PRWAITBARONCE
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% PRWAITBARINIT, PRWAITBARNEXT, PRWAITBARONCE
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
-% Faculty EWI, Delft University of Technology
-% P.O. Box 5031, 2600 GA Delft, The Netherlands
 
 function varargout = prwaitbar(n,m,text)
 
@@ -70,6 +72,7 @@ persistent NSKIP            % level at which tracking progress has been switched
 persistent OLDPROG
 persistent OLDPROG1         % previous progress
 persistent OLDPROG2         % previous progress
+persistent OLDPROG3         % previous progress for report
 
 % disp(['prwaitbar ' callername])
 % disp(nargin)
@@ -97,6 +100,7 @@ if nargin == 0                            % ---- call: prwaitbar ----
 		MESS = cell(1,10); 
 		OLDPROG1 = 0;
 		OLDPROG2 = 0;
+		OLDPROG3 = 0;
 		err.message = '##';
 		lasterror(err);
 % 		if ishandle(WHANDLE) 
@@ -145,6 +149,7 @@ elseif nargin == 1
 			delete(WHANDLE);
 		end
 		WHANDLE = [];
+    OLDPROG3 = 0;
 		return
     
 	elseif n == 0 & STAT                    % ---- call: prwaitbar(0) ----
@@ -193,9 +198,9 @@ elseif nargin == 2
         prwaitbar;
       end
       DEPTH = 1;
-    elseif strcmp(err.message,'')
-      err.message = '##';
-      lasterror(err);
+%     elseif strcmp(err.message,'')
+%       err.message = '##';
+%       lasterror(err);
     end
 			                                   % find the name of the calling routine
 		[ss,ii] = dbstack;
@@ -314,8 +319,9 @@ if ishandle(WHANDLE)
 	end
 else                                      % handle was not proper (anymore)
 	if REP 
-    if progress - OLDPROG >= 0.0001
-      fprintf(['%6.3f ' s],progress)
+    if progress - OLDPROG3 >= 0.001
+      fprintf(['\n%6.3f ' s],progress)
+      OLDPROG3 = progress;
     end
   else % reconstruct waitbar
     if isempty(WPOS)

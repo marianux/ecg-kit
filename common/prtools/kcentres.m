@@ -24,8 +24,8 @@
 % If N = 0, initialisation is not random, but done by a systematic
 % selection based on a greedy approach.
 % 
-% SEE ALSO
-% HCLUST, KMEANS, EMCLUST, MODESEEK
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% HCLUST, PRKMEANS, EMCLUST, MODESEEK
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
@@ -165,7 +165,7 @@ return;
 % spaced judged from their dissimilarities. This may be used as
 % initialisation in KCENTRES. It works reasonably, but not very good.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % KCENTRES
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

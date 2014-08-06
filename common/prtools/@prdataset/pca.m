@@ -1,16 +1,18 @@
 %PCA Principal component analysis (PCA or MCA on overall covariance matrix)
 % 
-%   [W,FRAC] = PCA(A,N)
-%   [W,N]    = PCA(A,FRAC)
+%   [W,FRAC] = PCAM(A,N)
+%   [W,N]    = PCAM(A,FRAC)
 %
 % INPUT
 %   A           Dataset
-%   N  or FRAC  Number of dimensions (>= 1) or fraction of variance (< 1) 
-%               to retain; if > 0, perform PCA; otherwise MCA. Default: N = inf.
+%   N           Desired output dimensionality (>= 1), default N = inf.
+%   FRAC        Fraction of cumulative variance (< 1) to retain, 
+%               if > 0, perform PCA; otherwise MCA.
 %
 % OUTPUT
 %   W           Affine PCA mapping
-%   FRAC or N   Fraction of variance or number of dimensions retained.
+%   FRAC        Fraction of cumulative variance retained.
+%   N           Number of dimensions retained.
 %
 % DESCRIPTION
 % This routine performs a principal component analysis (PCA) or minor
@@ -29,7 +31,7 @@
 %
 % ALTERNATIVE
 %
-%   V = PCA(A,0)
+%   V = PCAM(A,0)
 % 
 % Returns the cumulative fraction of the explained variance. V(N) is the 
 % cumulative fraction of the explained variance by using N eigenvectors.
@@ -43,5 +45,5 @@
 % Users should preferably call PCAM for the PRTools routine and use PCA for 
 % for the Stats version.
 % 
-% SEE ALSO
-% MAPPINGS, DATASETS, PCLDC, KLLDC, KLM, FISHERM
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% MAPPINGS, DATASETS, PCLDC, KLLDC, KLM, FISHERM, PCAM

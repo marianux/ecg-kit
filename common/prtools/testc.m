@@ -78,7 +78,7 @@
 % EXAMPLES
 % See PREX_PLOTC.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, CONFMAT, REJECTC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -89,7 +89,7 @@
 
 function [OUT1,OUT2] = testc(a,w,type,label)
 
-		if nargin < 4, label = []; end
+  if nargin < 4, label = []; end
 	if nargin < 3, type = [];  end
 	if nargin < 2, w = []; end
 	if nargin < 1, a = []; end
@@ -306,8 +306,8 @@ function [OUT1,OUT2] = testc(a,w,type,label)
 			if (nargin == 1) || (isempty(w) && isempty(type) && isempty(label))
 				for j1 = 1:size(a,1)
 					for j2 = 1:size(a,2)
-            fprintf(1,'%s classification error of %15s : %6.4f\n',...
-              getname(a{j1,j2}),getuser(a{j1,j2},'evaluated_by'),out1(j1,j2));
+            fprintf(1,'%6.4f %s on %15s\n',out1(j1,j2),...
+              getname(a{j1,j2}),getuser(a{j1,j2},'evaluated_by'));
 						%disp(['Mean classification error on ' ...
             %num2str(size(a{j1,j2},1)) ' test objects: ' num2str(out1(j1,j2))]);
 					end
@@ -360,8 +360,8 @@ return
 % Note that E is an error and not a performance measure like the AUC often
 % used in literature.
 %
-% SEE ALSO
-% DATASETS, MAPPINGS, TESTC, ROC
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATASETS, MAPPINGS, TESTC, PRROC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology

@@ -4,6 +4,7 @@
 % to introduce a reject class.
 
 help prex_cost
+randstate = randreset;
 echo on
                 % Generate a three class problem
   randn('state',1);
@@ -43,6 +44,7 @@ echo on
   plotc(wr,'--')
 
 echo off
+randreset(randstate);
 disp(' ')
 disp('   The black decision boundary shows the standard ldc classifier');
 disp('   for this data. When the misclassification cost of a pear to an');

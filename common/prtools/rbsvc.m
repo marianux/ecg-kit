@@ -1,6 +1,7 @@
-%RBSVC Automatic radial basis Support Vector Classifier
+%RBSVC Trainable automatic radial basis Support Vector Classifier
 %
-%   [W,KERNEL,NU] = RBSVC(A)
+%   [W,KERNEL,NU,C] = RBSVC(A)
+%   [W,KERNEL,NU,C] = A*RBSVC
 %
 % INPUT
 %   A	      Dataset
@@ -8,7 +9,8 @@
 % OUTPUT
 %   W       Mapping: Radial Basis Support Vector Classifier
 %   KERNEL  Untrained mapping, representing the optimised kernel
-%   NU      Resulting value for NU from NUSVC
+%   NU      Resulting value for NU from NUSVC (W = NUSVC(A,KERNEL,C)
+%   C       Resulting value for C (W = SVC(A,KERNEL,C)
 %
 % DESCRIPTION
 % This routine computes a classifier by NUSVC using a radial basis kernel
@@ -18,14 +20,14 @@
 % Moreover it is very time-consuming as the kernel optimisation needs
 % about 100 calls to SVC.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, PROXM, SVC, NUSVC, REGOPTC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-function [w,kernel,nu] = rbsvc(a,sig)
+function [w,kernel,nu,c] = rbsvc(a,sig)
 
 if nargin < 2 | isempty(sig)
 	sig = NaN;
@@ -60,12 +62,12 @@ else
 		  % call optimiser
 		  defs = {1};
 		  parmin_max = [sigmin,sigmax];
-		  [w,kernel,nu] = regoptc(a,mfilename,{sig},defs,[1],parmin_max,testc([],'soft'));
+		  [w,kernel,nu,c] = regoptc(a,mfilename,{sig},defs,[1],parmin_max,testc([],'soft'));
 		
 	  else % kernel is given
 		
 		  kernel = proxm([],'r',sig);
-		  [w,J,nu] = nusvc(a,kernel);
+		  [w,J,nu,c] = nusvc(a,kernel);
 
 	  end
     

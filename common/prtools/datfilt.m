@@ -16,7 +16,7 @@
 % 
 % This command is deprecated, use IMFILT instead.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, IM2OBJ, DATA2IM, IM2FEAT, DATGAUSS, DATAIM
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

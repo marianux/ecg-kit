@@ -27,7 +27,7 @@
 %    LAB3 = GENLAB([50 50], {'Apple'; 'Pear'}); 
 %    LAB3 = GENLAB([50 50], ['Apple'; 'Pear ']);
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DATASET
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

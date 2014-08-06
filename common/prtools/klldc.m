@@ -20,7 +20,7 @@
 %
 % If N (ALF) is NaN it is optimised by REGOPTC.
 %
-%	SEE ALSO
+%	SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 %	MAPPINGS, DATASETS, PCLDC, KLM, FISHERM, REGOPTC
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

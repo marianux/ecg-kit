@@ -933,12 +933,12 @@ timeqrs1 = [];timeqrs2 = [];timeqrs3 = [];
 lastqrs1 = 1;lastqrs2 = 1;lastqrs3 = 1;
 
 if qrs_flag==0 || qrs_flag==2 % estimated maximum number of beats
-    maxlength = round((t(2)-t(1))/messages.setup.wavedet.freq*2);
+    maxlength = round((t(2)-t(1))/messages.setup.wavedet.freq*3);
 else maxlength=length(ext_anot);
 end
 
 if qrs_flag==1,
-    sel=find(ext_anot<messages.setup.wavedet.freq);
+%     sel=find(ext_anot<messages.setup.wavedet.freq);
 %     if ~isempty(sel)
 %         ext_anot(sel)=[];
         maxlength= length(ext_anot);
@@ -1454,7 +1454,8 @@ while ((endsamp+1) < t(2))
         first = max(firstnewsamp-ceil(messages.setup.wavedet.freq), samp(1)-1+ceil( messages.setup.wavedet.freq*0.050));
         % first is calculated according with the first lines of fiducial JP
         sel=find(ext_anot>=first & ext_anot<=samp(end)); %
-        position1.qrs(sel)=ext_anot(sel); %4ABRIL2011
+%         position1.qrs(sel)=ext_anot(sel); %4ABRIL2011
+        position1.qrs = rowvec(ext_anot);
         timeqrs(1,sel)=position1.qrs(sel)-samp(1)+1; %global
         time=timeqrs(1,sel);%4ABRIL2011 ?????%local
         indexes= 1:length(timeqrs(1,:));%4ABRIL2011
@@ -1865,6 +1866,10 @@ if( ~messages.setup.wavedet.QRS_detection_only )
     eval(['position' str '.P(position' str '.P>=(position' str '.QRSon))=NaN;']);
     eval(['position' str '.Pprima(position' str '.Pprima>=(position' str '.QRSon))=NaN;']);
     eval(['position' str '.Poff(position' str '.Poff>=(position' str '.QRSon))=NaN;']);
+    eval(['position' str '.Pon(position' str '.Pon>=(position' str '.P))=NaN;']);
+    eval(['position' str '.Poff(position' str '.Poff<=(position' str '.P))=NaN;']);
+    eval(['position' str '.Ton(position' str '.Ton>=(position' str '.T))=NaN;']);
+    eval(['position' str '.Toff(position' str '.Toff<=(position' str '.T))=NaN;']);
 
 end
 

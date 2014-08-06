@@ -21,6 +21,7 @@
 
 function varargout = setdefaults(parin,varargin)
 
+if ~iscell(parin), parin = {parin}; end
 varin = cell(1,max([nargout,numel(parin),numel(varargin)]));
 varin(1:numel(varargin)) = varargin;
 

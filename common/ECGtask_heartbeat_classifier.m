@@ -24,6 +24,9 @@ classdef ECGtask_heartbeat_classifier < ECGtask
         % memory_constant is the fraction respect to user.MaxPossibleArrayBytes
         % which determines the maximum input data size.
         memory_constant = 0.3;
+        
+        started = false;
+        
     end
     
     properties( Access = private, Constant)
@@ -35,7 +38,6 @@ classdef ECGtask_heartbeat_classifier < ECGtask
     
     properties( Access = private )
         
-        tmp_path
         
     end
     
@@ -44,7 +46,9 @@ classdef ECGtask_heartbeat_classifier < ECGtask
         progress_handle
         user_string = '';
         caller_variable = 'payload'
+        payload
         mode 
+        tmp_path        
         
     end
     
@@ -62,18 +66,18 @@ classdef ECGtask_heartbeat_classifier < ECGtask
 
         end
         
-        function payload = Process(obj, ECG, ECG_start_offset, ECG_sample_start_end_idx, ECG_header, ECG_annotations, ECG_annotations_start_end_idx, payload_in )
+        function payload_out = Process(obj, ECG, ECG_start_offset, ECG_sample_start_end_idx, ECG_header, ECG_annotations, ECG_annotations_start_end_idx )
             
-            payload = [];
+            payload_out = [];
             
             aux_val = ECG_sample_start_end_idx + ECG_start_offset - 1;
-            disp_string_title(1, sprintf( 'Correcting from %d to %d', aux_val(1), aux_val(2) ) );
+            disp_string_title(1, sprintf( 'Classifying from %d to %d', aux_val(1), aux_val(2) ) );
             
-            if( isempty(payload_in) )
+            if( isempty(obj.payload) )
                 Ann_struct = ECG_annotations;
-            elseif( isstruct(payload_in) )
+            elseif( isstruct(obj.payload) )
                 
-                aux_fn = fieldnames(payload_in);
+                aux_fn = fieldnames(obj.payload);
                 % prefer manually reviewed annotations corrected 
                 aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'corrected_'))), aux_fn, 'UniformOutput', false)));
                 
@@ -83,14 +87,19 @@ classdef ECGtask_heartbeat_classifier < ECGtask
                         disp_string_framed(2, 'Could not identify QRS detections in the input payload.');
                         return
                     else
-                        Ann_struct.time = payload_in.(aux_fn{1}).time;
+                        aux_val = obj.payload.(aux_fn{1}).time;
                     end
                 else
-                    Ann_struct.time = payload_in.(aux_fn{aux_idx(1)}).time;
+                    aux_val = obj.payload.(aux_fn{aux_idx(1)}).time;
                 end
                 
+                aux_val = aux_val - ECG_start_offset + 1 ;
+                bAux = aux_val >= ECG_sample_start_end_idx(1) & aux_val <= ECG_sample_start_end_idx(2);
+                Ann_struct.time = aux_val(bAux);
             else
-                Ann_struct = payload_in;
+                obj.payload = obj.payload - ECG_start_offset + 1 ;
+                bAux = obj.payload >= ECG_sample_start_end_idx(1) & obj.payload <= ECG_sample_start_end_idx(2);
+                Ann_struct.time = obj.payload(bAux);
             end
             
             [aux_val, ~, lablist ] = a2hbc('ECG', ECG, ...
@@ -99,8 +108,9 @@ classdef ECGtask_heartbeat_classifier < ECGtask
                             'op_mode', obj.mode );
 
             Ann_struct.anntyp = lablist(colvec(aux_val),1);
+            Ann_struct.time = Ann_struct.time + ECG_start_offset - 1;
             
-            payload = Ann_struct;
+            payload_out = Ann_struct;
             
         end
         

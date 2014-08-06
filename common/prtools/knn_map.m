@@ -28,7 +28,7 @@
 %
 % Warning: Class prior probabilities in the dataset A are neglected.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, KNNC, TESTK
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -64,6 +64,9 @@ function F = knn_map(T,W)
   prwaitbar(num,s);
 
 	% Loop in batches. 
+  if isdatafile(a)
+    a = prdataset(a);
+  end
 	for i = 0:num-1
     prwaitbar(num,i+1,[s int2str(i+1)]);									
 		if (i == num-1)
@@ -78,8 +81,13 @@ function F = knn_map(T,W)
 			% Set distances to itself at INF to find later the nearest
 			% neighbors more easily
 			DD(i*n+1:m+1:i*n+nn*m) = inf*ones(1,nn); 
-		else
-			DD = distm(+a,+T(range,:));
+    else
+      if isdatafile(T)
+        t = +prdataset(T(range));
+      else
+        t = +T;
+      end
+			DD = distm(+a,t);
 			dmax = max(DD(:));
 		end
 		J = find(isnan(DD));
@@ -113,9 +121,9 @@ function F = knn_map(T,W)
 
 		% Estimate posterior probabilities
 		if islabtype(a,'crisp') 
-			if (knn >= 2)                      % Use Bayes estimators on frequencies.
+			if (knn >= 2)           % Use Bayes estimators on frequencies.
 				F(range,:) = (F(range,:)+1)/(knn+c);
-			else			% Use distances.
+      else			              % Use distances for estimating posteriors
 				K = max(F(range,:)');
         ss = sprintf('Posteriors for %i classes: ',c);
         prwaitbar(c,ss);

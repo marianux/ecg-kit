@@ -27,7 +27,7 @@
 % 'objects'       SIZE(A,1).^2  < PRMEMORY
 % 'features'      SIZE(A,2).^2  < PRMEMORY
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DATAFILES, PRMEMORY
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

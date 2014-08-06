@@ -16,5 +16,5 @@
 % OBJSIZE or FEATSIZE contains the image size in order to detect 
 % and reconstruct the images.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DATA2IM, IMAGE, PLOTO.

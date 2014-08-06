@@ -18,7 +18,7 @@
 % the two classes by +1 and -1. Optimization is done by a quadratic programming. 
 % If available, the QLD function is used, otherwise an appropriate Matlab routine.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % NU_SVR, SVO, SVC
 
 % Revisions:

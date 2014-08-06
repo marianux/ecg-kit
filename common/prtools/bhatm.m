@@ -15,7 +15,7 @@
 % subspace such that it maximizes the Bhattacharrryya distance between the
 % classes, assuming Gaussian distributions. Only for two-class datasets.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, FISHERM, NLFISHERM, KLM, PCA
 
 % Copyright: F. van der Heijden(1) and Dick de Ridder(2)

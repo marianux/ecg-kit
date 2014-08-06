@@ -12,7 +12,7 @@
 % DESCRIPTION
 % Generate a regression data from the data X and the target values Y.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 %  SCATTERR, GENDATSINC
 
 % Copyright: D.M.J. Tax, D.M.J.Tax@37steps.com

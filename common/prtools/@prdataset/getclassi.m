@@ -15,5 +15,5 @@
 % can be retrieved by GETLABLIST or CLASSNAMES. GETCLASSI can be used to
 % find the index of the label directly.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, SETLABELS, SETLABLIST GETLABLIST, CLASSNAMES

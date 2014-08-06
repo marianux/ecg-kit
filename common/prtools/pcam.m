@@ -5,12 +5,14 @@
 %
 % INPUT
 %   A           Dataset
-%   N  or FRAC  Number of dimensions (>= 1) or fraction of variance (< 1) 
-%               to retain; if > 0, perform PCA; otherwise MCA. Default: N = inf.
+%   N           Desired output dimensionality (>= 1), default N = inf.
+%   FRAC        Fraction of cumulative variance (< 1) to retain, 
+%               if > 0, perform PCA; otherwise MCA.
 %
 % OUTPUT
 %   W           Affine PCA mapping
-%   FRAC or N   Fraction of variance or number of dimensions retained.
+%   FRAC        Fraction of cumulative variance retained.
+%   N           Number of dimensions retained.
 %
 % DESCRIPTION
 % This routine performs a principal component analysis (PCA) or minor
@@ -37,17 +39,13 @@
 % Use KLM for a principal component analysis on the mean class covariance.
 % Use FISHERM for optimizing the linear class separability (LDA).
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, PCLDC, KLLDC, KLM, FISHERM
 
-% Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl
-% Faculty of Applied Sciences, Delft University of Technology
-% P.O. Box 5046, 2600 GA Delft, The Netherlands
+% Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 
-% $Id: pca.m,v 1.2 2006/03/08 22:06:58 duin Exp $
+function [w,truefrac] = pcam(varargin)
 
-function [w,truefrac] = pca (varargin)
+	[w,truefrac] = pcaklm(mfilename,varargin{:});
 
-		[w,truefrac] = pcaklm(mfilename,varargin{:});
-
-	return
+return

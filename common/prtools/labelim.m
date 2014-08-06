@@ -22,7 +22,7 @@
 %		A*LABELIM
 % for which a suitable colormap is loaded automatically.
 % 
-%	SEE ALSO
+%	SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 %	DATASETS, CLASSIM
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

@@ -1,6 +1,6 @@
 %FEATSELLR Plus-L-takeaway-R feature selection for classification
 % 
-%  [W,RES] = FEATSELLR(A,CRIT,K,L,R,T,FID)
+%  [W,RES] = FEATSELLR(A,CRIT,K,L,R,T)
 %
 % INPUT	
 %   A     Dataset
@@ -12,7 +12,6 @@
 %   R     Number of features to deselect at a time (takeaway-R, default: 0)
 %   T     Tuning set (optional)
 %   N     Number of cross-validations (optional)
-%   FID   File ID to write progress to (default [], see PRPROGRESS)
 %
 % OUTPUT
 %   W     Output feature selection mapping
@@ -35,7 +34,7 @@
 % 	RES(:,2)            : criterion value
 % 	RES(:,3:3+max(L,R)) : added / deleted features
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, FEATEVAL, FEATSEL
 % FEATSELO, FEATSELB, FEATSELF, FEATSELI, FEATSELP, FEATSELM, PRPROGRESS
 
@@ -157,6 +156,8 @@ function [w,res] = featsellr(a,crit,ksel,l,r,t,fid)
 	if (ksel ~= 0), state.I_opt = state.I; end;
 
 	w = featsel(k,state.I_opt);
+  w = setmapping_type(w,'trained');
+  w = setsize(w,[k length(state.I_opt)]);
 	if ~isempty(featlist)
 		w = setlabels(w,featlist(state.I_opt,:));
 	end

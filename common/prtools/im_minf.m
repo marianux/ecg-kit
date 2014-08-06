@@ -1,7 +1,8 @@
-%IM_MINF Minimum filter of images stored in a dataset (DIP_Image)
+%IM_MINF Fixed mapping for minimum filter (DIP_Image) (DIP_Image)
 %
 %	B = IM_MINF(A,SIZE,SHAPE)
 %	B = A*IM_MINF([],SIZE,SHAPE)
+%	B = A*IM_MINF(SIZE,SHAPE)
 %
 % INPUT
 %   A        Dataset with object images dataset (possibly multi-band)
@@ -12,28 +13,36 @@
 % OUTPUT
 %   B        Dataset with filtered images
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DATAFILES, DIP_IMAGE, MINF
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-function b = im_minf(a,size,shape)
+function b = im_minf(varargin)
 
-		
-	if nargin < 3 | isempty(shape), shape = 'elliptic'; end
-	if nargin < 2 | isempty(size), size = 7; end
-	
-  if nargin < 1 | isempty(a)
-    b = prmapping(mfilename,'fixed',{size,shape});
+	argin = shiftargin(varargin,'scalar');
+  argin = setdefaults(argin,[],7,'elliptic');
+  if mapping_task(argin,'definition')
+    b = define_mapping(argin,'fixed');
     b = setname(b,'Minimum filter');
-	elseif isa(a,'prdataset') % allows datafiles too
-		isobjim(a);
-    b = filtim(a,mfilename,{size,shape});
-  elseif isa(a,'double') | isa(a,'dip_image') % here we have a single image
-		a = 1.0*dip_image(a);
-		b = minf(a,size,shape);
-	end
-	
+  else
+    [a,size,shape] = deal(argin{:});	
+    if isa(a,'prdataset') % allows datafiles too
+      isobjim(a);
+      b = filtim(a,mfilename,{size,shape});
+    elseif isa(a,'double') || isa(a,'dip_image') % here we have a single image
+      if checktoolbox('dipimage')
+        a = 1.0*dip_image(a);
+        b = minf(a,size,shape);
+      else
+        diplibwarn
+        %prwarning(1,'Rectangular shape only')
+        shape = ones(size,size);
+        b = ordfilt2(a,1,shape);
+      end
+    end
+  end
+  
 return

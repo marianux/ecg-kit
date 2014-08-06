@@ -1,6 +1,8 @@
-%NULIBSVC Support Vector Classifier by libsvm, nu version
+%NULIBSVC Trainable classifier: LIBSVM, nu-algorithme
 % 
 % 	[W,J,NU] = NULIBSVC(A,KERNEL,NU)
+% 	[W,J,NU] = A*NULIBSVC([],KERNEL,NU)
+% 	[W,J,NU] = A*NULIBSVC(KERNEL,NU)
 %
 % INPUT
 %   A	      Dataset
@@ -40,35 +42,31 @@
 % R.-E. Fan, P.-H. Chen, and C.-J. Lin. Working set selection using the second order 
 % information for training SVM. Journal of Machine Learning Research 6, 1889-1918, 2005
 %
-% SEE ALSO 
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>) 
 % MAPPINGS, DATASETS, LIBSVC, SVC, PROXM
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
   
-function [W,J,NU] = nulibsvc(a,kernel,NU)
+function [W,J,NU] = nulibsvc(varargin)
 		
-	libsvmcheck;
-	
-	if nargin < 3 
-		NU = [];
-	end
-	if nargin < 2 | isempty(kernel)
-		kernel = proxm([],'p',1);
-	end
+	checktoolbox('libsvm');
 
-	if nargin < 1 | isempty(a)
-		W = prmapping(mfilename,{kernel,NU});
-		W = setname(W,'nuLIBSVM');
-		return;
-	end
+  mapname = 'nuLIBSVM';
+  argin = shiftargin(varargin,{'prmapping','char','cell'});
+  argin = setdefaults(argin,[],proxm([],'p',1),[],[]);
+  
+  if mapping_task(argin,'definition')
+    
+    W = define_mapping(argin,'untrained',mapname);
+    
+	elseif mapping_task(argin,'training')			% Train a mapping.
 
-	if (~ismapping(kernel) | isuntrained(kernel)) % training
-	
+    [a,kernel,NU] = check_for_old_call(argin);	
 		if isempty(NU), NU = 2*min(max(testk(a,1),0.01),(0.8*min(classsizes(a))/size(a,1))); end
-		opt = ['-s 0 -t 4 -b 1 -c ',num2str(NU)];
-    %opt = ['-s 1 -t 4 -b 1 -n ',num2str(NU), ' -q'];
+		%opt = ['-s 0 -t 4 -b 1 -c ',num2str(NU)];
+    opt = ['-s 1 -t 4 -b 1 -n ',num2str(NU), ' -q'];
 		islabtype(a,'crisp');
 		isvaldset(a,1,2); % at least 1 object per class, 2 classes
 		[m,k,c] = getsize(a);
@@ -99,20 +97,15 @@ function [W,J,NU] = nulibsvc(a,kernel,NU)
     lablist = getlablist(a);         
     W = prmapping(mfilename,'trained',{u,s,kernel,J,opt},lablist(u.Label,:),in_size,c);
 		
-		W = setname(W,'nuLIBSVM');
+		W = setname(W,mapname);
 		W = setcost(W,a);
-		
-	else % execution
-		v = kernel;
-		w = +v;
+			
+  else % Evaluation
+
+    [a,W] = deal(argin{1:2});
+    [u,s,kernel,J,opt] = getdata(W);
 		m = size(a,1);
-	
-		u = w{1};
-		s = w{2};
-		kernel = w{3};
-		J = w{4};
-		opt = w{5};
-	
+		
 		K = compute_kernel(a,s,kernel);
     k = size(K,2);
     if k ~= length(J)
@@ -134,7 +127,7 @@ function [W,J,NU] = nulibsvc(a,kernel,NU)
     K = [[1:m]' K];  % as libsvm wants it
     %[lab,acc,d] = svmpredict(getnlab(a),K,u,'-b 1');
     [lab,acc,d] = svmpredict(ones(m,1),K,u,'-b 1');
-		W = setdat(a,d,v);
+		W = setdat(a,d,W);
 
 	end
 
@@ -160,3 +153,11 @@ function K = compute_kernel(a,s,kernel)
 	K = +K;
 		
 return
+
+function [a,kernel,NU] = check_for_old_call(argin)
+
+[a,kernel,NU,par] = deal(argin{:});
+if ischar(kernel) && exist(kernel,'file') ~= 2
+  kernel = proxm(kernel,NU);
+  NU = par;
+end

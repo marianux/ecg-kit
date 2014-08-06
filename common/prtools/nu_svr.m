@@ -40,7 +40,7 @@
 % the parameter C.
 %
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % NU_SVRO, SVO, SVC, MAPPINGS, DATASETS, PROXM
 
 % Copyright: S.Verzakov, s.verzakov@ewi.tudelft.nl 

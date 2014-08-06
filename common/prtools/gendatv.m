@@ -26,7 +26,7 @@
 % In U the class means, the class priors and R are returned, such that
 % similar data from the same distribution can be generated.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, PRDATASETS
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

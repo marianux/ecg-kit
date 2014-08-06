@@ -17,7 +17,7 @@
 % EXAMPLES
 % See PREX_CONFMAT
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PLOTC, PLOTM
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

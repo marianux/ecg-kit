@@ -28,7 +28,7 @@
 % in the same feature space by V = [V1,V2,V3, ... ] or in a parallel
 % way (operating in different feature spaces) by V = [V1;V2;V3; ... ]
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, VOTEC, MAXC, MINC, MEANC, MEDIANC, PRODC,
 % AVERAGEC, STACKED, PARALLEL
 %

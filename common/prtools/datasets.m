@@ -132,7 +132,7 @@
 % Many standard MATLAB operations and a number of general MATLAB commands have 
 % been overloaded for variables of the DATASET type.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PRDATASET, DATA2IM, OBJ2FEAT, FEAT2OBJ, IM2FEAT, IM2OBJ, DATAIM  
 % SETDATA, SETFEATLAB, SETFEATDOM, SETFEATSIZE, SETIDENT, SETLABELS, 
 % SETLABLIST, SETLABTYPE, SETNAME, SETNLAB, SETOBJSIZE, SETPRIOR, SETCOST, 

@@ -2,6 +2,7 @@
 %
 %   E = TESTAUC(A*W)
 %   E = TESTAUC(A,W)
+%   E = A*TESTAUC(W)
 %   E = A*W*TESTAUC
 %
 % INPUT
@@ -22,22 +23,26 @@
 % Note that E is an error and not a performance measure like the AUC often
 % used in literature.
 %
-% SEE ALSO
-% DATASETS, MAPPINGS, TESTC, ROC
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATASETS, MAPPINGS, TESTC, PRROC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-function e = testauc(a,w)
-
-	
-	if (nargin == 0) | (isempty(a))
-		% No input arguments given: return mapping information.
-		e = prmapping(mfilename,'fixed');
-        return
-	elseif (nargin == 1)
-		% Classification matrix already computed
+function e = testauc(varargin)
+  
+  argin = shiftargin(varargin,'prmapping');
+  argin = setdefaults(argin,[],[]);
+  
+  if mapping_task(argin,'definition')
+    e = define_mapping(argin,'fixed');
+    
+  else	% Evaluate.
+  
+    [a,w] = deal(argin{:}); 
+    if (isempty(w))
+        % Classification matrix already computed
         d = a;
     else
         % Compute classification matrix now
@@ -68,3 +73,5 @@ function e = testauc(a,w)
     end
     % average over all classes
     e = mean(e);
+    
+  end

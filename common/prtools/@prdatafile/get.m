@@ -9,5 +9,5 @@
 % OUTPUT
 %   VALUEx  Field values
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PRDATAFILE, SET

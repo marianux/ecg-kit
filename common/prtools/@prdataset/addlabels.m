@@ -24,5 +24,5 @@
 % A defined labeling can be removed by DELLABLIST.
 % This multiple labeling system is implemented for crisp labels only.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MULTI_LABELING, ADDLABLIST, CHANGELABLIST, DELLABLIST, SETPRIOR

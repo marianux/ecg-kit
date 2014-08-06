@@ -36,5 +36,5 @@
 % dataset by the feature labels of DATA. Labels and class probabilities of 
 % A are preserved.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS

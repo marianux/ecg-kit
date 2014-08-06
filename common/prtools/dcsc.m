@@ -1,7 +1,8 @@
 % DCSC Dynamic Classifier Selection Combiner
 % 
 %   V = DCSC(A,W,K,TYPE)
-%   V = A*(W*DCSC([],K,TYPE)) 
+%   V = A*DCSC([],W,K,TYPE)
+%   V = A*(W*DCSC(K,TYPE)) 
 %   D = B*V
 %     
 % INPUT
@@ -30,27 +31,33 @@
 % G. Giacinto and F. Roli, Methods for Dynamic Classifier Selection
 % 10th Int. Conf. on Image Anal. and Proc., Venice, Italy (1999), 659-664.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, STACKED, NAIVEBC, CLASSC, TESTD, LABELD
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-function OUT = dcsc(par1,par2,par3,par4)
+function OUT = dcsc(varargin)
 
 name = 'Dynamic Classifier Selection';
 DefaultNumNeigh = 20;
 DefaultType = 'soft';
+
+argin = shiftargin(varargin,{'prmapping','scalar'});
+argin = setdefaults(argin,[],[],[],[]);
+[par1,par2,par3,par4] = deal(argin{:});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %   Empty Call  DCSC, DCSC([],K,TYPE)
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if nargin < 1 | isempty(par1)
-	if nargin < 3 | isempty(par3), par3 = DefaultType; end
-	if nargin < 2 | isempty(par2), par2 = DefaultNumNeigh; end
+
+
+if isempty(par1)
+	if isempty(par3), par3 = DefaultType; end
+	if isempty(par2), par2 = DefaultNumNeigh; end
 	% If there are no inputs, return an untrained mapping.
 	% (PRTools transfers the latter into the first)
 	OUT = prmapping(mfilename,'combiner',{par2,par3});
@@ -62,8 +69,8 @@ if nargin < 1 | isempty(par1)
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif ismapping(par1)
-	if nargin < 3 | isempty(par3), par3 = DefaultType; end
-	if nargin < 2 | isempty(par2), par2 = DefaultNumNeigh; end
+	if isempty(par3), par3 = DefaultType; end
+	if isempty(par2), par2 = DefaultNumNeigh; end
 	% call like OUT = DCSC(W,k) or OUT = W*DCSC([],k)
 	% store trained or untrained base classifiers, 
 	% ready for later training of the combiner
@@ -88,8 +95,8 @@ elseif isdataset(par1) & ismapping(par2) & ...
 	% call like OUT = DCSC(TrainSet,W,k,type) or TrainSet*(W*DCSC([],k,type))
 	% (PRTools transfers the latter into the first)
 	% W is a set of trained or untrained set classifiers.
-	if nargin < 4 | isempty(par4), par4 = DefaultType; end
-	if nargin < 3 | isempty(par3), par3 = DefaultNumNeigh; end
+	if isempty(par4), par4 = DefaultType; end
+	if isempty(par3), par3 = DefaultNumNeigh; end
 	TrainSet = par1;
 	BaseClassf = par2;
 	islabtype(TrainSet,'crisp'); % allow crisp labels only
@@ -116,10 +123,10 @@ elseif isdataset(par1) & ismapping(par2) & ...
   end
   Data.BaseClassf = BaseClassf;
 	
-  if nargin > 2 % overrules previously defined k (NumNeigh)
+  if ~isempty(par3) || ~isempty(par4) % overrules previously defined k (NumNeigh)
     Data.NumNeigh = par3;
   end
-  if nargin > 3 % overrules previously defined type
+  if ~isempty(par4) % overrules previously defined type
 		if strcmp(par4,'soft')
 			Data.SoftVote = 1;
 		else
@@ -155,13 +162,13 @@ elseif isdataset(par1) & ismapping(par2) & ...
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif isdataset(par1) & ismapping(par2) & istrained(par2)
-	if nargin < 3 | isempty(par3), par3 = DefaultNumNeigh; end
+	if isempty(par3), par3 = DefaultNumNeigh; end
 	TestSet = par1;
 	BaseClassf = getdata(par2,'BaseClassf');
 	TrainSet = getdata(par2,'TrainSet');
   [m,p,c] = getsize(TrainSet);
   n = size(BaseClassf,2)/c;  % nr. of base classifiers
-  if nargin > 2
+  if ~isempty(par3) || ~isempty(par4)
     k = par3;
   else
 	  k = getdata(par2,'NumNeigh');

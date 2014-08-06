@@ -27,7 +27,7 @@
 %
 % which returns the indices of LABELS in a given LABLIST.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASET
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

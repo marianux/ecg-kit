@@ -31,5 +31,5 @@
 % labels of the resulting dataset D in case a dataset B is applied to W:
 % D = A*W.
 %
-% SEE ALSO 
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>) 
 % DATASETS, MAPPINGS, MULTI_LABELING

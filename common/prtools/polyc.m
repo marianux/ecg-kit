@@ -17,7 +17,7 @@
 % classifier CLASSF. Combinations of 2nd order terms may be constructed.
 % For higher order terms no combinations are generated.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

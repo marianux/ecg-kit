@@ -53,10 +53,10 @@
 % label list only. Interaction with the multiple label system is done
 % automatically.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % ADDLABELS, CHANGELABLIST, DELLABLIST, GETLABLISTNAMES, SETLABLISTNAMES,
 % ADDLABLIST, GETLABELS, SETLABELS, GETNLAB, SETNLAB, GETLABLIST,
-% SETLABLIST, GETPRIOR, SETPRIOR, GETCOST, SETCOST
+% SETLABLIST, CURLABLIST, GETPRIOR, SETPRIOR, GETCOST, SETCOST
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology

@@ -20,7 +20,7 @@
 % The classification matrix D is for this classifier a 0-1 matrix with just
 % a 1 in the column of the assigned class.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, CLASSIFICATIONKNN, KNNC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -40,7 +40,7 @@ function W = statsknnc(varargin)
   else % evaluation
     [A,W]    = deal(varargin{:});
     res      = getdata(W);
-    [~,post] = predict(res,+A);
+    [dummy,post] = predict(res,+A);
     W        = setdat(A,post,W);
   end
   

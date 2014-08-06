@@ -16,5 +16,5 @@
 % ADDLABLIST, the current one.
 % The default label list is the first one set for A.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MULTI_LABELING, ADDLABLIST, CURLABLIST

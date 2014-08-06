@@ -1,10 +1,11 @@
-%IM_SELECT_BLOB Select largest blob in binary images in dataset (DIP_Image)
+%IM_SELECT_BLOB Fixed mapping selecting largest blob in binary images (DIP_Image)
 %
-%       B = IM_SELECT_BLOB(IM)
+%       B = IM_SELECT_BLOB(A)
+%       B = A*IM_SELECT_BLOB
 %
 % Just the largest object in the image is returned.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DATAFILES, DIP_IMAGE
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

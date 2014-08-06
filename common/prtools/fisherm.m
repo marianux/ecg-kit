@@ -28,7 +28,7 @@
 % from Large Face Databases, IEEE Transactions on Image Processing, vol. 9, 
 % no. 1, 2000, 132-136.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, NLFISHERM, KLM, PCAM, KLMS, ORTH
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

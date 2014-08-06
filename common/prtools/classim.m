@@ -28,7 +28,7 @@
 % EXAMPLES
 % PREX_SPATM
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, IM2FEAT, LABELD
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

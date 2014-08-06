@@ -1,5 +1,6 @@
 %PREX_DATAFILE  PRTools example of the datafile usage
 
+delfigs
 echo on
 
 prdatafiles

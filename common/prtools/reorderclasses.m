@@ -22,7 +22,7 @@
 % B=REORDERCLASS(A,[3 1 2])), I will get a dataset B with a new
 % labellist of {'pear' 'apple' 'banana'}.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 %   RENUMLAB
 
 % Copyright: D.M.J. Tax, D.M.J.Tax@37steps.com

@@ -97,11 +97,18 @@ for ii = rowvec(files2read)
 
     if( fidECG > 0 )
 
+        
+        aux_offset = 0;
+        
         if(ii == files2read(1)) 
-            fseek(fid, (start_sample - start_samples(ii)) * 2 * leads_in_mortara_files, 'cof');
+            
+            aux_offset = start_sample - start_samples(ii);
+            fseek(fid, aux_offset * 2 * leads_in_mortara_files, 'cof');
+        
         end
         
         if(ii == files2read(end)) 
+            
             if( length(files2read) == 1 )
                 % read samples from a single file
                 this_samples2read = samples2read;
@@ -109,8 +116,15 @@ for ii = rowvec(files2read)
                 % read samples from several files
                 this_samples2read = end_sample - start_samples(ii) + 1;
             end
+            
         else
-            this_samples2read = samples_per_hour(ii);
+
+            if( aux_offset == 0)
+                this_samples2read = samples_per_hour(ii);
+            else
+                this_samples2read = samples_per_hour(ii) - aux_offset;
+            end
+            
         end
         
         ECG = [ECG; fread(fid, [leads_in_mortara_files this_samples2read], '*int16')'];
@@ -124,8 +138,8 @@ end
 
 [heasig.nsamp, heasig.nsig] = size(ECG);
 
-if( heasig.nsamp ~= samples2read )
-    error('read_Mortara:Impossible2read', 'Problem reading %s.\n', filename);
+if( abs(heasig.nsamp - samples2read) > 1 )
+    warning('read_Mortara:ReadError', 'Problem reading %s. Required %d samples, and only read %d.\n', filename, samples2read, heasig.nsamp);
 end
 
 heasig.adczero = zeros(heasig.nsig,1);

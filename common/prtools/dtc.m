@@ -1,4 +1,4 @@
-%DTC Verzakov Tree - Decision Tree Classifier
+%DTC Verzakov Tree - Trainable Decision Tree Classifier
 % 
 %   W = DTC(A, CRIT, CHISQSTOPVAL, PRUNE, T, NFEAT)
 % 

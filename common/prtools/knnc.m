@@ -19,7 +19,7 @@
 %
 % Warning: class prior probabilities in A are neglected.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, KNN_MAP
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

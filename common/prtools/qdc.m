@@ -1,7 +1,8 @@
 %QDC Quadratic Bayes Normal Classifier (Bayes-Normal-2)
 %
 %   [W,R,S,M] = QDC(A,R,S,M)
-%           W = A*QDC([],R,S)
+%   [W,R,S,M]  = A*QDC([],R,S,M)
+%   [W,R,S,M]  = A*QDC(R,S,M)
 %
 % INPUT
 %   A    Dataset
@@ -26,8 +27,6 @@
 % This covariance matrix is then decomposed as G = W*W' + sigma^2 * eye(K),
 % where W is a K x M matrix containing the M leading principal components
 % and sigma^2 is the mean of the K-M smallest eigenvalues.
-%
-% 
 % 
 % The use of soft labels is supported. The classification A*W is computed by
 % NORMAL_MAP.
@@ -47,7 +46,7 @@
 % 2. A. Webb, Statistical Pattern Recognition, John Wiley & Sons, 
 % New York, 2002.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, REGOPTC, NMC, NMSC, LDC, UDC, QUADRC, NORMAL_MAP
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -56,88 +55,86 @@
 
 % $Id: qdc.m,v 1.8 2010/02/08 15:29:48 duin Exp $
 
-function [w,r,s,dim] = qdc(a,r,s,dim)
+function [w,r,s,dim] = qdc(varargin)
 
-		if (nargin < 4)
-		prwarning(4,'subspace dimensionality M not given, assuming K');
-		dim = [];
-	end
-	if (nargin < 3) | isempty(s)
-		prwarning(4,'Regularisation parameter S not given, assuming 0.');
-		s = 0; 
-	end
-	if (nargin < 2) | isempty(r)
-		prwarning(4,'Regularisation parameter R not given, assuming 0.');
-		r = 0;
-	end
-	
-	if (nargin < 1) | (isempty(a))      % No input arguments: 
-		w = prmapping(mfilename,{r,s,dim}); % return an untrained mapping.
+  mapname = 'Bayes-Normal-2';
+  argin = shiftargin(varargin,'scalar');
+  argin = setdefaults(argin,[],0,0,[]);
+  
+  if mapping_task(argin,'definition')
+    
+    w = define_mapping(argin,'untrained',mapname);
+    
+	elseif mapping_task(argin,'training')			% Train a mapping.
+ 
+    [a,r,s,dim] = deal(argin{:});
 		
-	elseif any(isnan([r,s,dim]))        % optimize regularisation parameters
-		defs = {0,0,[]};
-		parmin_max = [1e-8,9.9999e-1;1e-8,9.9999e-1;1,size(a,2)];
-		[w,r,s,dim] = regoptc(a,mfilename,{r,s,dim},defs,[3 2 1],parmin_max,testc([],'soft'),[1 1 0]);
-			
-	else % training
-		
-		islabtype(a,'crisp','soft'); % Assert A has the right labtype.
-		isvaldfile(a,2,2); % at least 2 objects per class, 2 classes
+    if any(isnan([r,s,dim]))        % optimize regularisation parameters
+      defs = {0,0,[]};
+      parmin_max = [1e-8,9.9999e-1;1e-8,9.9999e-1;1,size(a,2)];
+      [w,r,s,dim] = regoptc(a,mfilename,{r,s,dim},defs,[3 2 1],parmin_max,testc([],'soft'),[1 1 0]);
 
-		[m,k,c] = getsize(a);
+    else % training
 
-		% If the subspace dimensionality is not given, set it to all dimensions.
+      islabtype(a,'crisp','soft'); % Assert A has the right labtype.
+      isvaldfile(a,2,2); % at least 2 objects per class, 2 classes
 
-		if (isempty(dim)), dim = k; end;
-		
-		dim = round(dim);
-		if (dim < 1) | (dim > k)
-			error ('Number of dimensions M should lie in the range [1,K].');
-		end
+      [m,k,c] = getsize(a);
 
-		[U,G] = meancov(a);
+      % If the subspace dimensionality is not given, set it to all dimensions.
 
-		% Calculate means and priors.
+      if (isempty(dim)), dim = k; end;
 
-		pars.mean  = +U;
-		pars.prior = getprior(a);
+      dim = round(dim);
+      if (dim < 1) | (dim > k)
+        error ('Number of dimensions M should lie in the range [1,K].');
+      end
 
-		% Calculate class covariance matrices.
+      [U,G] = meancov(a);
 
-		pars.cov   = zeros(k,k,c);
-		for j = 1:c
-			F = G(:,:,j);
-		
-			% Regularize, if requested.
+      % Calculate means and priors.
 
-			if (s > 0) | (r > 0) 
-				F = (1-r-s) * F + r * diag(diag(F)) +s*mean(diag(F))*eye(size(F,1));
-			end
+      pars.mean  = +U;
+      pars.prior = getprior(a);
 
-			% If DIM < K, extract the first DIM principal components and estimate
-			% the noise outside the subspace.
-			
-			if (dim < k)
-				dim = min(rank(F)-1,dim);	
-				[eigvec,eigval] = preig(F); eigval = diag(eigval);
-				[dummy,ind] = sort(-eigval);
+      % Calculate class covariance matrices.
 
-				% Estimate sigma^2 as avg. eigenvalue outside subspace.
-				sigma2 = mean(eigval(ind(dim+1:end)));
+      pars.cov   = zeros(k,k,c);
+      for j = 1:c
+        F = G(:,:,j);
 
-				% Subspace basis: first DIM eigenvectors * sqrt(eigenvalues).
-				F = eigvec(:,ind(1:dim)) * diag(eigval(ind(1:dim))) * eigvec(:,ind(1:dim))' + ...
-				    sigma2 * eye(k);
-			end
+        % Regularize, if requested.
 
-			pars.cov(:,:,j) = F;
-		end
+        if (s > 0) | (r > 0) 
+          F = (1-r-s) * F + r * diag(diag(F)) +s*mean(diag(F))*eye(size(F,1));
+        end
 
-		w = normal_map(pars,getlab(U),k,c);
-		w = setcost(w,a);
-		
-	end
+        % If DIM < K, extract the first DIM principal components and estimate
+        % the noise outside the subspace.
 
-	w = setname(w,'Bayes-Normal-2');
+        if (dim < k)
+          dim = min(rank(F)-1,dim);	
+          [eigvec,eigval] = preig(F); eigval = diag(eigval);
+          [dummy,ind] = sort(-eigval);
+
+          % Estimate sigma^2 as avg. eigenvalue outside subspace.
+          sigma2 = mean(eigval(ind(dim+1:end)));
+
+          % Subspace basis: first DIM eigenvectors * sqrt(eigenvalues).
+          F = eigvec(:,ind(1:dim)) * diag(eigval(ind(1:dim))) * eigvec(:,ind(1:dim))' + ...
+              sigma2 * eye(k);
+        end
+
+        pars.cov(:,:,j) = F;
+      end
+
+      w = normal_map(pars,getlab(U),k,c);
+      w = setcost(w,a);
+
+    end
+
+    w = setname(w,mapname);
+    
+  end
 
 return;

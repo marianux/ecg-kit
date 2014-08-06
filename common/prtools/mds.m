@@ -1,12 +1,17 @@
-%MDS - Multidimensional Scaling - a variant of Sammon mapping 
+%MDS Trainale mapping for multidimensional scaling, a variant of Sammon mapping 
 %
-%   [W,J,STRESS] = MDS(D,Y,OPTIONS)
-%   [W,J,STRESS] = MDS(D,N,OPTIONS)
+%   [W,J,STRESS] = MDS(DT,Y,OPTIONS)
+%   [W,J,STRESS] = MDS(DT,K,OPTIONS)
+%   [W,J,STRESS] = DT*MDS([],K,OPTIONS)
+%   [W,J,STRESS] = DT*MDS(K,OPTIONS)
+%              X = DS*W
+%    
 % 
 % INPUT
-%   D       Square (M x M) dissimilarity matrix
-%   Y       M x N matrix containing starting configuration, or
-%   N       Desired output dimensionality
+%   DT      Square (M x M) dissimilarity matrix used for training
+%   DS      N x M dissimilarity matrix between testset and trainset
+%   Y       M x K matrix containing starting target configuration, or
+%   K       Desired output dimensionality (default 2)
 %   OPTIONS Various parameters of the  minimization procedure put into 
 %           a structure consisting of the following fields: 'q', 'optim',
 %           'init','etol','maxiter', 'isratio', 'itmap', 'st' and 'inspect'
@@ -16,7 +21,7 @@
 %              OPTIONS.optim   = 'pn'      
 %              OPTIONS.init    = 'cs'
 %              OPTIONS.etol    = 1e-6 (the precise value depends on q)
-%              OPTIONS.maxiter = inf 
+%              OPTIONS.maxiter = 100 
 %              OPTIONS.isratio = 0 
 %              OPTIONS.itmap   = 'yes' 
 %              OPTIONS.st      = 1 
@@ -26,18 +31,27 @@
 %   W       Multidimensional scaling mapping
 %   J       Index of points removed before optimization
 %   STRESS  Vector of stress values
+%   X       N x K dataset with output configuration
 %
 % DESCRIPTION  
 % Finds a nonlinear MDS map (a variant of the Sammon map) of objects
 % represented by a symmetric distance matrix D with zero diagonal, given
-% either the dimensionality N or the initial configuration Y. This is done
-% in an iterative manner by minimizing the Sammon stress:
+% either the dimensionality K or the initial configuration Y. This is done
+% in an iterative manner by minimizing the Sammon stress between the given
+% dissimilarities D (DT or DS) and the distances DY in the K-dimensional  
+% target space:
 %
 %   E = 1/(sum_{i<j} D_{ij}^(Q+2)) sum_{i<j} (D_{ij} - DY_{ij})^2 * D_{ij}^Q
 %
-% where DY is the distance matrix of Y, which should approximate D. If D(i,j) 
-% = 0 for any different points i and j, then one of them is superfluous. The 
-% indices of these points are returned in J.
+% If D(i,j) = 0 for any different points i and j, then one of them is
+% superfluous. The indices of these points are returned in J.
+%
+% There is a simplified interface to MDS, called SAMMONM. The main
+% differences are that SAMMONM operates on feature based datasets, while MDS 
+% expects dissimilarity matrices; MDS maps new objects by a second
+% optimization procedures minimizing the stress for the test objects, while
+% SAMMONM uses a linear mapping between dissimilarities and the target
+% space. See also PREX_MDS for examples.
 %
 % OPTIONS is an optional variable, using which the parameters for the mapping
 % can be controlled. It may contain the following fields: 
@@ -99,253 +113,249 @@
 % 4. T.F. Cox and M.A.A. Cox, Multidimensional Scaling, Chapman and Hall, 
 %    London, 1994.
 %
-% SEE ALSO
-% MAPPINGS, MDS_STRESS, MDS_INIT, MDS_CS
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATASETS, MAPPINGS, PREX_MDS, MDS_CS, SAMMONM, TSNEM
 
 %
-% Copyright: Elzbieta Pekalska, Robert P.W. Duin, ela@ph.tn.tudelft.nl, 2000-2003
-% Faculty of Applied Sciences, Delft University of Technology
+% Copyright: E. Pekalska, R.P.W. Duin, e.pekalska@37steps.com
 %
 
-function [w,J,err,opt,y] = mds(D,y,options)
+function [w,J,err,opt,y] = mds(varargin)
 
-  if (nargin < 3)
-    options = [];               % Will be filled by MDS_SETOPT, below.
-  end
-  opt = mds_setopt(options);
-
-  if (nargin < 2) | (isempty(y))
-    prwarning(2,'no output dimensionality given, assuming N = 2.');
-    y = 2; 
-  end
-
-  % No arguments given: return an untrained mapping.
-  if (nargin < 1) | (isempty(D))
-    w = prmapping(mfilename,{y,opt,[],[],[],[]}); 
-    w = setname(w,'MDS');
-    return
-  end
+  mapname = 'MDS';
+	argin = shiftargin(varargin,{'scalar'});
+  argin = setdefaults(argin,[],2,[]);
+  
+  if mapping_task(argin,'definition')
+    w = define_mapping(argin,'untrained',mapname);
+    
+  else % Train, evaluate or extend a mapping.
+  
+    [D,y,options] = deal(argin{:});
+    opt = mds_setopt(options);
 
   % YREP contains representative objects in the projected MDS space, i.e. 
   % for which the mapping exists. YREP is empty for the original MDS, since 
   %  no projection is available yet.
 
-  yrep = [];              
+    yrep = [];              
 
-  if (isdataset(D) | isa(D,'double'))
-    [m,mm] = size(D);
+    if (isdataset(D) | isa(D,'double'))
+      [m,mm] = size(D);
 
-    % Convert D to double, but retain labels in LAB.
-    if (isdataset(D)), lab = getlab(D); D = +D; else, lab = ones(m,1); end;
+      % Convert D to double, but retain labels in LAB.
+      if (isdataset(D)), lab = getlab(D); D = +D; else, lab = ones(m,1); end;
 
-    if (ismapping(y))
+      if (ismapping(y))
 
-      % The MDS mapping exists; this means that YREP has already been stored.
-      pars = getdata(y); [k,c] = size(y);
+        % The MDS mapping exists; this means that YREP has already been stored.
+        pars = getdata(y); [k,c] = size(y);
 
-      y     = [];        % Empty, should now be found.
-      yrep  = pars{1};  % There exists an MDS map, hence YREP is stored.
-      opt   = pars{2};  % Options used for the mapping.
-      II    = pars{3};  % Index of non-repeated points in YREP.
-      winit = pars{4};  % The Classical Scaling map, if INIT = 'cs'.
-      v     = pars{5};  % Weights used for adding new points if ITMAP = 'no'.
-      n = c;            % Number of dimensions of the projected space.
+        y     = [];        % Empty, should now be found.
+        yrep  = pars{1};  % There exists an MDS map, hence YREP is stored.
+        opt   = pars{2};  % Options used for the mapping.
+        II    = pars{3};  % Index of non-repeated points in YREP.
+        winit = pars{4};  % The Classical Scaling map, if INIT = 'cs'.
+        v     = pars{5};  % Weights used for adding new points if ITMAP = 'no'.
+        n = c;            % Number of dimensions of the projected space.
 
-      % Initialization by 'cs' is not possible when there is no winit 
-      % (i.e. the CS map) and new points should be added.
-      if (strcmp(opt.init,'cs')) & (isempty(winit))
-        prwarning(2,'OPTIONS.init = cs is not possible when adding points; using kl.');
-        opt.init = 'kl';  
-      end
+        % Initialization by 'cs' is not possible when there is no winit 
+        % (i.e. the CS map) and new points should be added.
+        if (strcmp(opt.init,'cs')) & (isempty(winit))
+          prwarning(2,'OPTIONS.init = cs is not possible when adding points; using kl.');
+          opt.init = 'kl';  
+        end
 
-      % If YREP is a scalar, we have an empty mapping.
-      if (max(size(yrep)) == 1)
-        y    = yrep;
-        yrep = [];
-      end
+        % If YREP is a scalar, we have an empty mapping.
+        if (max(size(yrep)) == 1)
+          y    = yrep;
+          yrep = [];
+        end
 
-      % Check whether D is a matrix with the zero diagonal for the existing map.
-      if (m == mm) & (length(intersect(find(D(:)<eps),1:m+1:(m*mm))) >= m)
-        w = yrep;         % D is the same matrix as in the projection process; 
-        return            % YREP is then the solution
-      end
+        % Check whether D is a matrix with the zero diagonal for the existing map.
+        if (m == mm) & (length(intersect(find(D(:)<eps),1:m+1:(m*mm))) >= m)
+          w = yrep;         % D is the same matrix as in the projection process; 
+          return            % YREP is then the solution
+        end
 
-      if (length(pars) < 6) | (isempty(pars{6}))
-        yinit = [];
+        if (length(pars) < 6) | (isempty(pars{6}))
+          yinit = [];
+        else
+          yinit = pars{6};   % Possible initial configuration for points to 
+                            % be added to an existing map
+          if (size(yinit,1) ~= size(D,1))
+            prwarning(2,'the size of the initial configuration does not match that of the dissimilarity matrix, using random initialization.')
+            yinit =[];
+          end
+        end
+
       else
-        yinit = pars{6};   % Possible initial configuration for points to 
-                          % be added to an existing map
-        if (size(yinit,1) ~= size(D,1))
-          prwarning(2,'the size of the initial configuration does not match that of the dissimilarity matrix, using random initialization.')
-          yinit =[];
+
+        % No MDS mapping available yet; perform the checks.
+
+        if (~issym(D,1e-12))
+          prwarning(2,'D is not a symmetric matrix; will average.'); 
+          D = (D+D')/2;
+        end
+
+        % Check the number of zeros on the diagonal
+
+        if (any(abs(diag(D)) > 0))
+          error('D should have a zero diagonal'); 
         end
       end
 
-    else
-
-      % No MDS mapping available yet; perform the checks.
-
-      if (~issym(D,1e-12))
-        prwarning(2,'D is not a symmetric matrix; will average.'); 
-        D = (D+D')/2;
-      end
-
-      % Check the number of zeros on the diagonal
-
-      if (any(abs(diag(D)) > 0))
-        error('D should have a zero diagonal'); 
-      end
+    else    % D is neither a dataset nor a matrix of doubles
+      error('D should be a dataset or a matrix of doubles.');
     end
 
-  else    % D is neither a dataset nor a matrix of doubles
-    error('D should be a dataset or a matrix of doubles.');
-  end
+    if (~isempty(y))
 
-  if (~isempty(y))
+      % Y is the initial configuration or N, no MDS map exists yet;  
+      % D is a square matrix.
 
-    % Y is the initial configuration or N, no MDS map exists yet;  
-    % D is a square matrix.
-                            
-    % Remove identical points, i.e. points for which D(i,j) = 0 for i ~= j.
-    % I contains the indices of points left for the MDS mapping, J those
-    % of the removed points and P those of the points left in I which were
-    % identical to those removed.
+      % Remove identical points, i.e. points for which D(i,j) = 0 for i ~= j.
+      % I contains the indices of points left for the MDS mapping, J those
+      % of the removed points and P those of the points left in I which were
+      % identical to those removed.
 
-    [I,J,P] = mds_reppoints(D);
-    D = D(I,I);           
-    [ni,nc] = size(D);
+      [I,J,P] = mds_reppoints(D);
+      D = D(I,I);           
+      [ni,nc] = size(D);
 
-    % NANID is an extra field in the OPTIONS structure, containing the indices
-    % of NaN values (= missing values) in distance matrix D.
+      % NANID is an extra field in the OPTIONS structure, containing the indices
+      % of NaN values (= missing values) in distance matrix D.
 
-    opt.nanid = find(isnan(D(:)) == 1); 
+      opt.nanid = find(isnan(D(:)) == 1); 
 
-    % Initialise Y.
+      % Initialise Y.
 
-    [m2,n] = size(y);
-    if (max(m2,n) == 1)    % Y is a scalar, hence really is a dimensionality N.
-      n = y;
-      [y,winit] = mds_init(D,n,opt.init);
-    else
-      if (mm ~= m2)
-        error('The matrix D and the starting configuration Y should have the same number of columns.');
-      end
-      winit = [];
-      y = +y(I,:);
-    end
-
-    % The final number of true distances is:
-    no_dist = (ni*(ni-1) - length(opt.nanid))/2;
-
-  else                      
-
-    % This happens only if we add extra points to an existing MDS map. 
-    % Remove identical points, i.e. points for which D(i,j) = 0 for i ~= j.
-    % I contains the indices of points left for the MDS mapping, J those
-    % of the removed points and P those of the points left in I which were
-    % identical to those removed.
-
-    [I,J,P] = mds_reppoints(D(:,II));
-    D = D(I,II);             
-    [ni,nc] = size(D);
-    yrep = yrep(II,:);     
-    n = size(yrep,2);     
-
-    % NANID is an extra field in the OPTIONS structure, containing the indices
-    % of NaN values (= missing values) in distance matrix D.
-
-    opt.nanid = find(isnan(D(:))); 
-
-    % Initialise Y. if the new points should be added in an iterative manner.
-
-    [m2,n] = size(yrep);           
-    if (~isempty(yinit))             % An initial configuration exists.
-      y = yinit;
-    elseif (strcmp(opt.init, 'cs')) & (~isempty(winit))
-      y = D*winit;
-    else   
-      y = mds_init(D,n,opt.init);
-    end
-
-    if (~isempty(opt.nanid))         % Rescale.
-      scale = (max(yrep)-min(yrep))./(max(y)-min(y));
-      y = y .* repmat(scale,ni,1); 
-    end
-
-    % The final number of true distances is:
-    no_dist = (ni*nc - length(opt.nanid));
-  end
-
-  % Check whether there is enough data left.
-
-  if (~isempty(opt.nanid))
-    if (n*ni+2 > no_dist),
-      error('There are too many missing distances: it is not possible to determine the MDS map.');
-    end
-    if (strcmp (opt.itmap,'no'))
-      opt.itmap = 'yes';
-      prwarning(1,'Due to the missing values, the projection can only be iterative. OPTIONS are changed appropriately.')
-    end
-  end
-
-  if (opt.inspect > 0)
-    opt.plotlab = lab(I,:);  % Labels to be used for plotting in MDS_SAMMAP.
-  else
-    opt.plotlab = [];
-  end                       
-
-  if (isempty(yrep)) | (~isempty(yrep) & strcmp(opt.itmap, 'yes'))  
-
-    % Either no MDS exists yet OR new points should be mapped in an iterative manner.
-
-    printinfo(opt);
-    [yy,err] = mds_sammap(D,y,yrep,opt);
-
-    % Define the linear projection of distances.
-
-    v = [];
-    if (isempty(yrep)) & (isempty(opt.nanid))  
-      if (rank(D) < m)
-        v = prpinv(D)*yy;
+      [m2,n] = size(y);
+      if (max(m2,n) == 1)    % Y is a scalar, hence really is a dimensionality N.
+        n = y;
+        [y,winit] = mds_init(D,n,opt.init);
       else
-        v = D \ yy;
+        if (mm ~= m2)
+          error('The matrix D and the starting configuration Y should have the same number of columns.');
+        end
+        winit = [];
+        y = +y(I,:);
+      end
+
+      % The final number of true distances is:
+      no_dist = (ni*(ni-1) - length(opt.nanid))/2;
+
+    else                      
+
+      % This happens only if we add extra points to an existing MDS map. 
+      % Remove identical points, i.e. points for which D(i,j) = 0 for i ~= j.
+      % I contains the indices of points left for the MDS mapping, J those
+      % of the removed points and P those of the points left in I which were
+      % identical to those removed.
+
+      [I,J,P] = mds_reppoints(D(:,II));
+      D = D(I,II);             
+      [ni,nc] = size(D);
+      yrep = yrep(II,:);     
+      n = size(yrep,2);     
+
+      % NANID is an extra field in the OPTIONS structure, containing the indices
+      % of NaN values (= missing values) in distance matrix D.
+
+      opt.nanid = find(isnan(D(:))); 
+
+      % Initialise Y. if the new points should be added in an iterative manner.
+
+      [m2,n] = size(yrep);           
+      if (~isempty(yinit))             % An initial configuration exists.
+        y = yinit;
+      elseif (strcmp(opt.init, 'cs')) & (~isempty(winit))
+        y = D*winit;
+      else   
+        y = mds_init(D,n,opt.init);
+      end
+
+      if (~isempty(opt.nanid))         % Rescale.
+        scale = (max(yrep)-min(yrep))./(max(y)-min(y));
+        y = y .* repmat(scale,ni,1); 
+      end
+
+      % The final number of true distances is:
+      no_dist = (ni*nc - length(opt.nanid));
+    end
+
+    % Check whether there is enough data left.
+
+    if (~isempty(opt.nanid))
+      if (n*ni+2 > no_dist),
+        error('There are too many missing distances: it is not possible to determine the MDS map.');
+      end
+      if (strcmp (opt.itmap,'no'))
+        opt.itmap = 'yes';
+        prwarning(1,'Due to the missing values, the projection can only be iterative. OPTIONS are changed appropriately.')
       end
     end
-  else
-    % New points should be added by a linear projection of dissimilarity data.
-    yy = D*v;
-  end
 
-  % Establish the projected configuration including the removed points.
-
-  y = zeros(m,n); y(I,:) = +yy;                   
-  if (~isempty(J))
-    if (~isempty(yrep))
-      y(J,:) = +yrep(II(P),:);
+    if (opt.inspect > 0)
+      opt.plotlab = lab(I,:);  % Labels to be used for plotting in MDS_SAMMAP.
     else
-      for k=length(J):-1:1        % J: indices of removed points.
-        y(J(k),:) = y(P(k),:);    % P: indices of points equal to points in J.
-      end 
+      opt.plotlab = [];
+    end                       
+
+    if (isempty(yrep)) | (~isempty(yrep) & strcmp(opt.itmap, 'yes'))  
+
+      % Either no MDS exists yet OR new points should be mapped in an iterative manner.
+
+      printinfo(opt);
+      [yy,err] = mds_sammap(D,y,yrep,opt);
+
+      % Define the linear projection of distances.
+
+      v = [];
+      if (isempty(yrep)) & (isempty(opt.nanid))  
+        if (rank(D) < m)
+          v = prpinv(D)*yy;
+        else
+          v = D \ yy;
+        end
+      end
+    else
+      % New points should be added by a linear projection of dissimilarity data.
+      yy = D*v;
     end
+
+    % Establish the projected configuration including the removed points.
+
+    y = zeros(m,n); y(I,:) = +yy;                   
+    if (~isempty(J))
+      if (~isempty(yrep))
+        y(J,:) = +yrep(II(P),:);
+      else
+        for k=length(J):-1:1        % J: indices of removed points.
+          y(J(k),:) = y(P(k),:);    % P: indices of points equal to points in J.
+        end 
+      end
+    end
+
+    % In the definition step: shift the obtained configuration such that the
+    % mean lies at the origin.
+
+    if (isempty(yrep))
+      y = y - ones(length(y),1)*mean(y);
+      y = prdataset(y,lab);
+    else
+      w = prdataset(y,lab);
+      return;
+    end
+
+    % In the definition step: the mapping should be stored.
+
+    opt = rmfield(opt,'nanid');   % These fields are to be used internally only;
+    opt = rmfield(opt,'plotlab'); % not to be set up from outside
+    w   = prmapping(mfilename,'trained',{y,opt,I,winit,v,[]},[],m,n);
+    w   = setname(w,mapname);
+    
   end
-
-  % In the definition step: shift the obtained configuration such that the
-  % mean lies at the origin.
-
-  if (isempty(yrep))
-    y = y - ones(length(y),1)*mean(y);
-    y = prdataset(y,lab);
-  else
-    w = prdataset(y,lab);
-    return;
-  end
-
-  % In the definition step: the mapping should be stored.
-
-  opt = rmfield(opt,'nanid');   % These fields are to be used internally only;
-  opt = rmfield(opt,'plotlab'); % not to be set up from outside
-  w   = prmapping(mfilename,'trained',{y,opt,I,winit,v,[]},[],m,n);
-  w   = setname(w,'MDS');
 
 return
 
@@ -362,13 +372,13 @@ function printinfo(opt)
   if opt.st < 1
     return
   end
-  fprintf(opt.st,'Sammon mapping, error function with the parameter q=%d\n',opt.q);
+  %fprintf(opt.st,'Sammon mapping, error function with the parameter q=%d\n',opt.q);
 
   switch (opt.optim)
     case 'pn',  
-      fprintf(opt.st,'Minimization by Pseudo-Newton algorithm\n');
+      %fprintf(opt.st,'Minimization by Pseudo-Newton algorithm\n');
     case 'scg',  
-      fprintf(opt.st,'Minimization by Scaled Conjugate Gradients algorithm\n');
+      %fprintf(opt.st,'Minimization by Scaled Conjugate Gradients algorithm\n');
     otherwise 
       error(strcat('Possible initialization methods: pn (Pseudo-Newton), ',...
                    'or scg (Scaled Conjugate Gradients).'));
@@ -423,7 +433,7 @@ return;
 %               OPT.optim   = 'pn'
 %               OPT.init    = 'cs'
 %               OPT.etol    = 1e-6 (the precise value depends on q)
-%               OPT.maxiter = inf 
+%               OPT.maxiter = 100 
 %               OPT.itmap   = 'yes' 
 %               OPT.isratio = 0 
 %               OPT.st      = 1 
@@ -449,7 +459,7 @@ function opt = mds_setopt (opt_given)
   opt.optim   = 'pn';
   opt.st      = 1; 
   opt.itmap   = 'yes'; 
-  opt.maxiter = inf; 
+  opt.maxiter = 100; 
   opt.inspect = 2; 
   opt.etol    = inf; 
   opt.isratio = 0; 
@@ -501,9 +511,6 @@ function opt = mds_setopt (opt_given)
 return
 
 
-
-% **********************************************************************************
-
 % MDS_SAMMAP Sammon iterative nonlinear mapping for MDS
 %
 %   [YMAP,ERR] = MDS_SAMMAP(D,Y,YREP,OPTIONS)
@@ -520,7 +527,7 @@ return
 %             OPTIONS.optim   = 'pn'      
 %             OPTIONS.init    = 'cs'
 %             OPTIONS.etol    = 1e-6 (the precise value depends on q)
-%             OPTIONS.maxiter = inf 
+%             OPTIONS.maxiter = 100 
 %             OPTIONS.isratio = 0 
 %             OPTIONS.itmap   = 'yes' 
 %             OPTIONS.st      = 1 
@@ -544,7 +551,7 @@ return
 %
 % Missing values can be handled by marking them by NaN in D.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, MDS, MDS_CS, MDS_INIT, MDS_SETOPT
 
 %
@@ -575,9 +582,9 @@ function [y,err] = mds_sammap(Ds,y,yrep,opt)
     replab = [];
   end
 
-  if (isempty(opt.plotlab))
-    opt.plotlab = ones(m,1);
-  end
+%   if (isempty(opt.plotlab))
+%     opt.plotlab = ones(m,1);
+%   end
 
   it   = 0;           % Iteration number.
   eold = inf;         % Previous stress (error).
@@ -586,7 +593,10 @@ function [y,err] = mds_sammap(Ds,y,yrep,opt)
 
   [e,a]= mds_samstress(opt.q,y,yrep,Ds,D,opt.nanid,opt.isratio); err = e;
 
-  if opt.st > 0, fprintf(opt.st,'iteration: %4i   stress: %3.8d\n',it,e); end
+  %if opt.st > 0, fprintf(opt.st,'iteration: %4i   stress: %3.8d\n',it,e); end
+  
+  tt = sprintf('Processing %i iterations: ',opt.maxiter);
+  prwaitbar(opt.maxiter,tt)
 
   switch (opt.optim)  
     case 'pn',        % Pseudo-Newton minimization.
@@ -603,15 +613,15 @@ function [y,err] = mds_sammap(Ds,y,yrep,opt)
 
       % Loop until the error change falls below the tolerance or until
       % the maximum number of iterations is reached.
-
+      
       while (abs(e-eold) >= opt.etol*(1 + abs(e))) & (it < opt.maxiter)
 
         % Plot progress if requested.
 
-        if (opt.st > 0) & (opt.inspect > 0) & (mod(it,opt.inspect) == 0)
+%        if (opt.st > 0) & (opt.inspect > 0) & (mod(it,opt.inspect) == 0)
 %          if (it == 0), figure(1); clf; end
-          mds_plot(y,yrep,opt.plotlab,replab,e); 
-        end
+%          mds_plot(y,yrep,opt.plotlab,replab,e); 
+%        end
 
         yold = y; eold = e;
 
@@ -681,7 +691,9 @@ function [y,err] = mds_sammap(Ds,y,yrep,opt)
 
         it  = it + 1; 
         err = [err; e];
-        if opt.st > 0, fprintf(opt.st,'iteration: %4i   stress: %3.8d\n',it,e); end
+        
+        prwaitbar(opt.maxiter,it,[tt num2str(it) ', error: ' num2str(e)]);
+        %if opt.st > 0, fprintf(opt.st,'iteration: %4i   stress: %3.8d\n',it,e); end
 
       end
 
@@ -717,10 +729,10 @@ function [y,err] = mds_sammap(Ds,y,yrep,opt)
 
         % Plot progress if requested.
 
-        if (opt.inspect > 0) & (mod(it,opt.inspect) == 0) 
+%        if (opt.inspect > 0) & (mod(it,opt.inspect) == 0) 
 %          if (it == 0), figure(1); clf; end
-          mds_plot(y,yrep,opt.plotlab,replab,e); 
-        end
+%          mds_plot(y,yrep,opt.plotlab,replab,e); 
+%        end
 
         if (success)
           sigma = sigma0/sqrt(pnorm2);      % SIGMA: a small step from y to yy
@@ -776,7 +788,8 @@ function [y,err] = mds_sammap(Ds,y,yrep,opt)
 
           it  = it + 1; 
           err = [err; e];
-          fprintf (opt.st,'iteration: %4i   stress: %3.8d\n',it,e); 
+          prwaitbar(opt.maxiter,it,[tt num2str(it) ', error: ' num2str(e)]);
+          %fprintf (opt.st,'iteration: %4i   stress: %3.8d\n',it,e); 
 
         else        % Dc < 0  
           % Note that for Dc < 0, the iteration number IT is not increased, 
@@ -791,9 +804,9 @@ function [y,err] = mds_sammap(Ds,y,yrep,opt)
       end
     end
   end
+  prwaitbar(0);
 
-return;
-
+return
 
 
 % **********************************************************************************
@@ -803,14 +816,14 @@ return;
 %   E = MDS_SAMSTRESS(Q,Y,YREP,Ds,D,NANINDEX)
 %
 % INPUT
-%   Q          Indicator of the Sammon stress; Q = -2,-1,0,1,2
+%   Q         Indicator of the Sammon stress; Q = -2,-1,0,1,2
 %   Y         Current lower-dimensional configuration
 %   YREP      Configuration of the representation objects; it should be
 %             empty when no representation set is considered
 %   Ds        Original distance matrix
 %   D         Approximate distance matrix (optional; otherwise computed from Y)
 %   NANINDEX  Index of the missing values; marked in Ds by NaN (optional; to
-%               be found in Ds)
+%             be found in Ds)
 %
 % OUTPUT
 %   E         Sammon stress
@@ -840,7 +853,7 @@ function [e,alpha] = mds_samstress (q,y,yrep,Ds,D,nanindex,isratio)
       D = sqrt(distm(y));     
     end
   end
-
+  
   if (nargin < 6)
     nanindex = [];    % Not given, so calculate below.
   end
@@ -894,8 +907,7 @@ function [e,alpha] = mds_samstress (q,y,yrep,Ds,D,nanindex,isratio)
     e = sum(((Ds(I)-D(I)).^2))/c;
   end
 
-return; 
-
+return
 
 
 % **********************************************************************************
@@ -921,7 +933,7 @@ return;
 % DESCRIPTION  
 % This is a routine used directly in the MDS_SAMMAP routine.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MDS, MDS_INIT, MDS_SAMMAP, MDS_SAMSTRESS
 
 %
@@ -1016,58 +1028,4 @@ function [g1,g2,c] = mds_gradients(q,y,yrep,Ds,D,nanindex)
     g2 = c * (g2 + (h2*ones(k,n)).*y.^2 + h2*yrep.^2 - 2*(h2*yrep).*y);  
   end
 
-return;
-
-
-
-% **********************************************************************************
-
-%MDS_PLOT Plots the results of the MDS mapping in a 2D or 3D figure
-% 
-%   MDS_PLOT(Y,YREP,LAB,REPLAB,E)
-% 
-% INPUT
-%   Y       Configuration in 2D or 3D space
-%   YREP    Configuration of the representation points in 2D or 3D space
-%   LAB     Labels of Y
-%   REPLAB  Labels of YREP
-%   E       Stress value
-%
-% DESCRIPTION  
-% Used directly in MDS_SAMMAP routine.
-
-function mds_plot (y,yrep,lab,replab,e)
-
-  % This is done in a rather complicated way in order to speed up drawing.
-
-  K = min(size(y,2),3);
-  if (K > 1)
-    y   = +y;
-    col = 'brmk';
-    sym = ['+*xosdv^<>p']';
-    ii  = [1:44];
-    s   = [col(ii-floor((ii-1)/4)*4)' sym(ii-floor((ii-1)/11)*11)];
-    [nlab,lablist] = renumlab([replab;lab]); c = max(nlab);
-    [ms,ns] = size(s); if (ms == 1), s = setstr(ones(m,1)*s); end
-
-    yy = [yrep; y];  
-
-    cla; 
-    if (K == 2)
-      hold on;
-      for i = 1:c
-        J = find(nlab==i); plot(yy(J,1),yy(J,2),s(i,:));
-      end
-    else 
-      for i = 1:c
-        J = find(nlab==i); plot3(yy(J,1),yy(J,2),yy(J,3),s(i,:));
-        if (i == 1), hold on; grid on; end
-      end
-    end
-
-    title(sprintf('STRESS: %f', e));
-    axis equal; 
-     drawnow;
-  end
-
-return;
+return

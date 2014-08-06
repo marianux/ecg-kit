@@ -28,7 +28,7 @@
 %
 % For more information just type PRGLOBAL
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PRMEMORY, SETBATCH, GRIDSIZE, STAMP_MAP, PRWAITBAR, PRWARNING, REGOPTC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

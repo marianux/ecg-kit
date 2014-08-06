@@ -45,7 +45,7 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
 
     lead_processed_ok = 0;
     
-    for ii = lead_to_delineate
+    for ii = rowvec(lead_to_delineate)
 
 %         fprintf(1, [ 'Processing lead ' lead_names(ii,:) '\n'])
 %         fprintf(1, '.');
@@ -82,7 +82,7 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
             aux_struct.Tprima = aux_struct.T;
         end
 
-        aux_marks = positions2matrix(aux_struct, cAnnotationSLRfields);
+        aux_marks = positions2matrix(aux_struct, cAnnotationSLRfields) + start_offset - 1;
         
         % filter heartbeats within range
         bAux = aux_struct.qrs >= start_end(1) & aux_struct.qrs <= start_end(2);
@@ -90,7 +90,7 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
         for fn = cAnnotationOutputFields
             if( isfield(aux_struct, fn{1}) ) 
                 aux_val = aux_struct.(fn{1});
-                aux_struct2.(fn{1}) = aux_val(bAux) - start_offset + 1;
+                aux_struct2.(fn{1}) = aux_val(bAux) + start_offset - 1;
             else
                 aux_struct2.(fn{1}) = [];
             end
@@ -139,6 +139,14 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
         multilead_positions.T = round(SLRmarks(:,8));
         multilead_positions.Tprima = round(SLRmarks(:,9));
         multilead_positions.Toff = round(SLRmarks(:,10));
+
+        % trust more on peaks.
+        multilead_positions.Ton( multilead_positions.Ton >= multilead_positions.T ) = nan;
+        multilead_positions.Toff( multilead_positions.Toff <= multilead_positions.T ) = nan;
+        multilead_positions.Pon( multilead_positions.Pon >= multilead_positions.P ) = nan;
+        multilead_positions.Poff( multilead_positions.Poff <= multilead_positions.P ) = nan;
+        multilead_positions.QRSon( multilead_positions.QRSon >= multilead_positions.qrs ) = nan;
+        multilead_positions.QRSoff( multilead_positions.QRSoff <= multilead_positions.qrs ) = nan;
         
     else
         

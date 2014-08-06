@@ -18,8 +18,8 @@
 % on Pattern Analysis and Machine Intelligence, vol. 17, no. 8, pp. 790-799,
 % 1995.
 % 
-% SEE ALSO
-% MAPPINGS, DATASETS, KMEANS, HCLUST, KCENTRES, PROXM
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% MAPPINGS, DATASETS, PRKMEANS, HCLUST, KCENTRES, PROXM
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology

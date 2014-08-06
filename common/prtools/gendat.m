@@ -1,15 +1,17 @@
 %GENDAT Random sampling of datasets for training and testing
 % 
-%  [A,B,IA,IB] = GENDAT(X,N)
-%   A          = X*GENDAT([],N)
-%  [A,B,IA,IB] = GENDAT(X)
-%  [A,B,IA,IB] = GENDAT(X,ALF)
-%   A          = X*GENDAT([],ALF)
+%  [A,B,IA,IB] = GENDAT(X,N,SEED)
+%  [A,B,IA,IB] = X*GENDAT([],N,SEED)
+%  [A,B,IA,IB] = X*GENDAT(N,SEED)
+%  [A,B,IA,IB] = GENDAT(X,ALF,SEED)
+%  [A,B,IA,IB] = X*GENDAT([],ALF,SEED)
+%  [A,B,IA,IB] = X*GENDAT(ALF,SEED)
 % 
 % INPUT
-%   X      Dataset
-%   N,ALF  Number/fraction of objects to be selected 
-%          (optional; default: bootstrapping)
+%   X      Dataset.
+%   N,ALF  Number/fraction of objects to be selected (def: bootstrapping).
+%          Alternatively a vector of numbers of objects for each class.
+%   SEED   A state of the random number generation according to RANDRESET
 %
 % OUTPUT
 %   A,B    Datasets
@@ -41,42 +43,36 @@
 % EXAMPLES 
 % See PREX_PLOTC.
 %
-% SEE ALSO
-% DATASETS, GENSUBSETS
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATASETS, MAPPINGS, GENSUBSETS, RANDRESET
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
-% Faculty EWI, Delft University of Technology
-% P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-% $Id: gendat.m,v 1.7 2010/06/01 08:48:55 duin Exp $
+function [A,B,IA,IB] = gendat(varargin)
 
-function [A,B,IA,IB] = gendat(X,N);
-
-		
-	if (nargin < 2), N = []; end
-	if (nargin < 1 | isempty(X))
-		A = prmapping(mfilename,'fixed',N);
-		A = setname(A,'Data sampling');
-		return
-	end
-
-	% If an input is a cell array of datasets, apply this procedure
+  argin = shiftargin(varargin,'vector');
+	argin = setdefaults(argin,[],[],[]);
+  if mapping_task(argin,'definition')
+    A = define_mapping(argin,'generator','Data sampling');
+    return
+  end
+  
+  % execution
+  [X,N,seed] = deal(argin{:});
+  if isempty(seed)
+    seed = randreset;
+  end
+  randreset(seed);
+	% If the input is a cell array of datasets, apply this procedure
   % to the individual datasets.
 	if (iscell(X))
-		A  = cell(size(X));
-		B  = cell(size(X));
-		IA = cell(size(X));
-		IB = cell(size(X));
-		seed = rand('seed');
-		for j=1:length(X(:))
-			rand('seed',seed);
-			[A{j},B{j},IA{j},IB{j}] = feval(mfilename,X{j},N);
-		end
-		return;
-	end
+    [A,B,IA,IB] = X*feval(mfilename,[],N,seed);
+    return
+  end
 
 	% When required, get the right number of objects from the given
 	% fraction ALF.
+  if isdouble(X), Xdouble = true; else, Xdouble = false; end
 	if ~isdatafile(X), X = prdataset(X); end
 	X = setlablist(X); % remove empty classes first
 	[m,k,c] = getsize(X);
@@ -89,7 +85,7 @@ function [A,B,IA,IB] = gendat(X,N);
 	end
 
 	R = classsizes(X);
-	if ~isempty(N) & length(N) ~= 1 & length(N) ~= c
+	if ~isempty(N) && length(N) ~= 1 && length(N) ~= c
 		error('Data size should be scalar or a vector matching the number of classes')
 	end
 	if ~islabtype(X,'crisp') 
@@ -99,7 +95,7 @@ function [A,B,IA,IB] = gendat(X,N);
 		end
 		if N < 1, N = ceil(N*m); end
 	end
-	if (nargin == 2) & all(N < 1) & islabtype(X,'crisp')
+	if ~isempty(N) && all(N < 1) && islabtype(X,'crisp')
 		%DXD it should also be possible to have a fraction for each of the
 		%classes, I think...
 		if length(N)==1
@@ -112,7 +108,7 @@ function [A,B,IA,IB] = gendat(X,N);
 	% Depending if N (or ALF) is given, the objects are created using
 	% subsampling or bootstrapping.
 	IA = [];
-	if (nargin < 2) | (isempty(N))			% Bootstrap
+	if (nargin < 2) || (isempty(N))			% Bootstrap
 		for i=1:c
 			J = findnlab(X,i);
 			K = ceil(rand(R(i),1)*R(i));
@@ -142,7 +138,7 @@ function [A,B,IA,IB] = gendat(X,N);
 			for i=1:c
 				J = findnlab(X,i);
 				K = randperm(R(i));
-				if (N(i) > R(i))
+        if (N(i) > R(i))
 					%DXD: I would like to have just a warning:
 					%error('More objects requested than available.')
 					prwarning(1,'More objects requested than available in class %d.',i)
@@ -162,5 +158,8 @@ function [A,B,IA,IB] = gendat(X,N);
 	end
 	A = X(IA,:);
 	B = X(IB,:);
+  if Xdouble
+    A = +A; B = +B;
+  end
 
 return;

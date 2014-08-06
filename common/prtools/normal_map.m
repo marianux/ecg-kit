@@ -1,4 +1,5 @@
 %NORMAL_MAP Map a dataset on normal-density classifiers or mappings
+%           Back-end routine
 % 
 %   F = NORMAL_MAP(A,W)
 %
@@ -19,7 +20,7 @@
 % Use W = LOGDENS(W) (or W = W*LOGDENS) if absolute densities are not
 % needed and a more accurate posterior probability is desired.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, QDC, UDC, LDC, GAUSSM, LOGDENS
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -29,7 +30,6 @@
 % $Id: normal_map.m,v 1.16 2010/02/24 20:28:13 duin Exp $
 
 function F = normal_map(varargin)
-
 		
 	if isstruct(varargin{1})  % this is a constructor call like W = normal_map(w,nlab,k,c)
 		[w,nlab,k,c] = deal(varargin{:});

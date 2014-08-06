@@ -12,5 +12,5 @@
 % array with a set of parameters. In that case effectively 
 % feval(p,a1,a2,q{:}) will be executed inside DYADICM.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATAFILES, DYADICM

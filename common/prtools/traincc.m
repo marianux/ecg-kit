@@ -22,7 +22,7 @@
 % This routine is typically called by combining classifier schemes like
 % BAGGINGC and BOOSTINGC.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, STACKED, PARALLEL, BAGGINGC
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

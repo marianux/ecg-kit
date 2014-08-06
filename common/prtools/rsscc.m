@@ -1,6 +1,8 @@
-%RSSCC Random subspace combining classifier
+%RSSCC Trainable random subspace combining classifier
 %
 %    W = RSSCC(A,CLASSF,NFEAT,NCLASSF)
+%    W = A*RSSCC([],CLASSF,NFEAT,NCLASSF)
+%    W = A*RSSCC(CLASSF,NFEAT,NCLASSF)
 %
 % INPUT
 %   A       Dataset
@@ -17,53 +19,62 @@
 % W is just the set of base classifiers and still needs a combiner, e.g.
 % use W*MAXC or W*VOTEC.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, PARALLEL
 
-function w = rsscc(a,classf,nfeat,nclassf)
+function w = rsscc(varargin)
+  
+	mapname = 'rsscc';
+  argin = shiftargin(varargin,'prmapping');
+  argin = setdefaults(argin,[],nmc,[],[]);
+  
+  if mapping_task(argin,'definition')
+    w = define_mapping(argin,'untrained',mapname);
+    
+  elseif mapping_task(argin,'training')			% Train a mapping.
+  
+    [a,classf,nfeat,nclassf] = deal(argin{:});
+    isvaldset(a,1,1);
+    [m,k] = size(a);
+    if isempty(nfeat)
+      nfeat = max(round(m/10),2); % use at least 2D feature spaces
+    end
+    if isempty(nclassf)
+      nclassf = max(ceil(k/nfeat),10); % use at least 10 classifiers
+    end
+    if nfeat >= k  % allow for small feature sizes (k < nfeat)
+      nfeat = k;   % use all features
+      nclassf = 1; % compute a single classifier
+    end
+    nsets = ceil(nfeat*nclassf/k);
+    featset = zeros(k,nsets);
+    for j=1:nsets
+      featset(:,j) = randperm(k)';
+    end
+    featset = featset(1:nfeat*nclassf);
+    featset = reshape(featset,nclassf,nfeat);
 
-if nargin < 4, nclassf = []; end
-if nargin < 3, nfeat   = []; end
-if nargin < 2, classf = nmc; end
-if nargin < 1 | isempty(a)
-	w = prmapping(mfilename,'untrained',{classf,nfeat,nclassf});
-	w = setname(w,'rsscc');
-elseif isuntrained(classf) % training
-	isvaldset(a,1,1);
-	[m,k] = size(a);
-	if isempty(nfeat)
-		nfeat = max(round(m/10),2); % use at least 2D feature spaces
-	end
-	if isempty(nclassf)
-		nclassf = max(ceil(k/nfeat),10); % use at least 10 classifiers
-	end
-	if nfeat >= k  % allow for small feature sizes (k < nfeat)
-		nfeat = k;   % use all features
-		nclassf = 1; % compute a single classifier
-	end
-	nsets = ceil(nfeat*nclassf/k);
-	featset = [];
-	for j=1:nsets
-		featset = [featset, randperm(k)];
-	end
-	featset = featset(1:nfeat*nclassf);
-	featset = reshape(featset,nclassf,nfeat);
-	
-	w = [];
-	s = sprintf('Compute %i classifiers: ',nclassf);
-	prwaitbar(nclassf,s);
-	for j=1:nclassf
-		prwaitbar(nclassf,j,[s num2str(j)]);
-		w = [w; a(:,featset(j,:))*classf];
-	end
-	prwaitbar(0)
-	w = prmapping(mfilename,'trained',{w,featset},getlablist(a),k,getsize(a,3));
-else % execution, trained classifier stored in classf
-	wdata = getdata(classf);
-	w = wdata{1};
-	featset = wdata{2}';
-	w = a(:,featset(:))*w;
-end
+    w = [];
+    s = sprintf('Compute %i classifiers: ',nclassf);
+    prwaitbar(nclassf,s);
+    for j=1:nclassf
+      prwaitbar(nclassf,j,[s num2str(j)]);
+      w = [w; a(:,featset(j,:))*classf];
+    end
+    prwaitbar(0)
+    w = prmapping(mfilename,'trained',{w,featset},getlablist(a),k,getsize(a,3));
+    
+  else % Evaluation
+    
+    [a,w] = deal(argin{1:2});
+    wdata = getdata(w);
+    w = wdata{1};
+    featset = wdata{2}';
+    w = a(:,featset(:))*w;
+    
+  end
+  
+return
 	
 	
 		

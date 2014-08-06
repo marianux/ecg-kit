@@ -1,7 +1,8 @@
-%IM_MAXF Maximum filter of images stored in a dataset (DIP_Image)
+%IM_MAXF Fixed mapping for maximum filter (DIP_Image)
 %
 %	B = IM_MAXF(A,SIZE,SHAPE)
 %	B = A*IM_MAXF([],SIZE,SHAPE)
+%	B = A*IM_MAXF(SIZE,SHAPE)
 %
 % INPUT
 %   A        Dataset with object images dataset (possibly multi-band)
@@ -12,28 +13,36 @@
 % OUTPUT
 %   B        Dataset with filtered images
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DATAFILES, DIP_IMAGE, MINF
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-function b = im_maxf(a,size,shape)
+function b = im_maxf(varargin)
 
-		
-	if nargin < 3 | isempty(shape), shape = 'elliptic'; end
-	if nargin < 2 | isempty(size), size = 7; end
-	
-  if nargin < 1 | isempty(a)
-    b = prmapping(mfilename,'fixed',{size,shape});
+	argin = shiftargin(varargin,'scalar');
+  argin = setdefaults(argin,[],7,'elliptic');
+  if mapping_task(argin,'definition')
+    b = define_mapping(argin,'fixed');
     b = setname(b,'Maximum filter');
-	elseif isa(a,'prdataset') % allows datafiles too
-		isobjim(a);
-    b = filtim(a,mfilename,{size,shape});
-  elseif isa(a,'double') | isa(a,'dip_image') % here we have a single image
-		a = 1.0*dip_image(a);
-		b = maxf(a,size,shape);
-	end
+  else
+    [a,size,shape] = deal(argin{:});	
+    if isa(a,'prdataset') % allows datafiles too
+      isobjim(a);
+      b = filtim(a,mfilename,{size,shape});
+    elseif isa(a,'double') || isa(a,'dip_image') % here we have a single image
+      if checktoolbox('dipimage')
+        a = 1.0*dip_image(a);
+        b = maxf(a,size,shape);
+      else
+        diplibwarn
+        %prwarning(1,'Rectangular shape only')
+        shape = ones(size,size);
+        b = ordfilt2(a,size*size,shape);
+      end
+    end
+  end
 	
 return

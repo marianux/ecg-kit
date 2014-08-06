@@ -1,15 +1,15 @@
 %CLEVAL Classifier evaluation (learning curve)
 %
-%   E = CLEVAL(A,CLASSF,TRAINSIZES,NREPS,T,TESTFUN)
+%   E = CLEVAL(A,CLASSF,TRAINSIZES,NREPS,S,TESTFUN)
 %
 % INPUT
 %   A          Training dataset
 %   CLASSF     Classifier to evaluate
-%   TRAINSIZE  Vector of training set sizes, used to generate subsets of A
+%   TRAINSIZES Vector of training set sizes, used to generate subsets of A
 %              (default [2,3,5,7,10,15,20,30,50,70,100]). TRAINSIZE is per
 %              class unless A has no priors set or has soft labels.
 %   NREPS      Number of repetitions (default 1)
-%   T          Tuning dataset (default [], use remaining samples in A)
+%   S          Tuning dataset (default [], use remaining samples in A)
 %   TESTFUN    Mapping,evaluation function (default classification error)
 %
 % OUTPUT
@@ -41,7 +41,7 @@
 % EXAMPLE
 % See PREX_CLEVAL
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, CLEVALB, TESTC, PLOTE
 
 % Copyright: D.M.J. Tax, R.P.W. Duin, r.p.w.duin@37steps.com
@@ -137,6 +137,8 @@ function e = cleval(a,classf,learnsizes,nreps,t,testfun)
   end
   if (learnsizes(end)/learnsizes(1) > 20)
     e.plot = 'semilogx';        % If range too large, use a log-plot for X.
+  else
+    e.plot = 'plot';
   end
 
   % Report progress.
@@ -147,7 +149,7 @@ function e = cleval(a,classf,learnsizes,nreps,t,testfun)
   % Store the seed, to reset the random generator later for different
   % classifiers.
 
-	seed = rand('state');
+	seed = randreset;
 
   % Loop over all classifiers (with index WI).
 
@@ -167,7 +169,7 @@ function e = cleval(a,classf,learnsizes,nreps,t,testfun)
 
     % Take care that classifiers use same training set.
 
-    rand('state',seed); seed2 = seed;
+    randreset(seed); seed2 = seed;
 
 		% For NREPS repetitions...
 		
@@ -190,28 +192,28 @@ function e = cleval(a,classf,learnsizes,nreps,t,testfun)
 
 					% Necessary for reproducable training sets: set the seed and store
 					% it after generation, so that next time we will use the previous one.
-					rand('state',seed2);
+					randreset(seed2);
 
 					JD = JC(randperm(mc(ci)));
 					JR(ci,:) = JD(1:max(learnsizes))';
-					seed2 = rand('state'); 
+					seed2 = randreset; 
 				end
 				
 			elseif islabtype(a,'crisp')
 				
-				rand('state',seed2); % get seed for reproducable training sets
+				randreset(seed2); % get seed for reproducable training sets
 				% generate indices for the entire dataset taking care that in
 				% the first 2c objects we have 2 objects for every class
 				[a1,a2,I1,I2] = gendat(a,2*ones(1,c));
 				JD = randperm(m-2*c);
 				JR = [I1;I2(JD)];
-				seed2 = rand('state'); % save seed for reproducable training sets
+				seed2 = randreset; % save seed for reproducable training sets
 				
 			else  % soft labels
 				
-				rand('state',seed2); % get seed for reproducable training sets
+				randreset(seed2); % get seed for reproducable training sets
 				JR = randperm(m);
-				seed2 = rand('state'); % save seed for reproducable training sets
+				seed2 = randreset; % save seed for reproducable training sets
 				
 			end
 

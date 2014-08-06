@@ -16,5 +16,5 @@
 % added by ADDLABELS. This is stored in the LABLIST and NLAB fields of
 % the dataset. By this command, DELLABLIST such a labeling can be removed.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MULTI_LABELING, ADDLABELS, ADDLABLIST, CHANGELABLIST, CURLABLIST

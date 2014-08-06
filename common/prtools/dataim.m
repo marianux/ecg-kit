@@ -17,13 +17,13 @@
 %
 % and stores the result in dataset B.
 %
-%  This command is deprecated, use FILTIM instead.
+% This command is deprecated, use FILTIM instead.
 %
 % EXAMPLES
 % B = DATAIM (A,'CONV2',[-1 0 1; -1 0 1; -1 0 1],'same');
 % Performs a convolution with a horizontal gradient filter (see CONV2).
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, IM2OBJ, DATA2IM, IM2FEAT, FILTIM
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

@@ -16,7 +16,7 @@
 % be trained by a classifier like treec. This routine is called 
 % automatically to solve A*W if W is trained by treec.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % mappings, datasets, treec
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

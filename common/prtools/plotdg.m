@@ -1,10 +1,11 @@
 %PLOTDG Plot dendrogram
 % 
-%   PLOTDG(DENDROGRAM,K)
+%   PLOTDG(DENDROGRAM,K,FLIP)
 % 
 % INPUT
 %   DENDROGRAM Dendrogram
 %   K          Number of clusters
+%   FLIP       FALSE (default) or TRUE
 %
 % OUTPUT
 %
@@ -15,7 +16,7 @@
 % itself is defined by DENDROGRAM(2,:) in which each entry stands for the
 % level on which the previous and next group of objects are clustered.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % HCLUST
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl
@@ -24,22 +25,23 @@
 
 % $Id: plotdg.m,v 1.2 2006/03/08 22:06:58 duin Exp $
 
-function plotdg(dendrogram,k)
+function plotdg(varargin)
 
-		
+	[dendrogram,k,flip] = setdefaults(varargin,[],[],false);
+  if isempty(dendrogram)
+    error('No proper dendrogram supplied')
+  end
 	[n,m] = size(dendrogram);
-	if n ~= 2
-		error('No proper dendrogram supplied')
-	end
-	if nargin == 2	% compress dendrogram to k clusters
-		if k > m
-			error('Number of clusters should be less than sample size')
-		end
+  if isempty(k), k = m; end 
+  
+	if k < m	% compress dendrogram to k clusters
 		F = [dendrogram(2,:),inf];
 		S = sort(-F); t = -S(k+1);   % find cluster level
 		I = [find(F >= t),m+1];      % find all indices where cluster starts
 		dendrogram = [I(2:k+1) - I(1:k); F(I(1:k))];
 		m = k;
+  elseif k > m
+    error('Number of clusters should be less than sample size')
 	end
 	[S,I] = sort(dendrogram(2,:));
 
@@ -56,13 +58,25 @@ function plotdg(dendrogram,k)
 	end
 	T(m,:) = sprintf('%4d',dendrogram(1,m));
 	T = char(T);
-	X(m,:) = [0 0 m+1 m+1];
-	Y(m,:) = [0 0 0 0];
-	plot(X',Y','-b');
 	h = gca;
+  
+  if flip
+    X(m,:) = [0 0 m+1 m+1];
+    Y(m,:) = [0 0 0 0];
+    plot(Y',X','-b');
+    set(h,'ytick',[1:m]);
+    set(h,'yticklabel',T);
+    axis([0,max(max(Y))*1.05,0,m+1])
+  else
+    X(m,:) = [0 0 m+1 m+1];
+    Y(m,:) = [0 0 0 0];
+    plot(X',Y','-b');
+    set(h,'xtick',[1:m]);
+    set(h,'xticklabel',T);
+    axis([0,m+1,0,max(max(Y))*1.05])
+  end
+  
 	set(h,'box','off');
-	set(h,'xtick',[1:m]);
-	set(h,'xticklabel',T);
 	set(h,'fontsize',8)
 
 	return

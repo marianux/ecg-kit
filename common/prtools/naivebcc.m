@@ -32,7 +32,7 @@
 % REFERENCE
 % 1. Kuncheva, LI. Combining pattern classifiers, 2004, pp.126-128.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, STACKED, NAIVEBC, CLASSC, TESTD, LABELD
 
 % Copyright: Chunxia Zhang, R.P.W. Duin, r.p.w.duin@37steps.com

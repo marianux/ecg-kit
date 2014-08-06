@@ -19,7 +19,7 @@
 % If it is desired to operate on posterior probabilities then the input 
 % classifiers should be extended to output these, as V = V*CLASSC.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, VOTEC, MAXC, MINC, PRODC, MEANC, AVERAGEC, STACKED, 
 % PARALLEL, FIXEDCC
 %

@@ -19,7 +19,7 @@
 % objects labels, feature labels and class priors are included in the 
 % dataset A.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, CLASSIFICATIONDISCRIMINANT, FISHERC, LDC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -45,7 +45,7 @@ function W = statslinc(varargin)
   else % evaluation
     [A,W]    = deal(varargin{:});
     tree     = getdata(W);
-    [~,post] = predict(tree,+A);
+    [dummy,post] = predict(tree,+A);
     W        = setdat(A,post,W);
   end
   

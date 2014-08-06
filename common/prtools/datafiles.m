@@ -85,7 +85,7 @@
 % different sizes makes datafiles useful for handling raw data and
 % measurements of features.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PRDATAFILE, ADDPREPROC, ADDPOSTPROC, FILTM, FILTIM, CREATEDATAFILE,
 % SAVEDATAFILE
 

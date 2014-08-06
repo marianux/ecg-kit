@@ -16,8 +16,8 @@
 % EXAMPLES
 % See PREX_MATCHLAB.
 %
-% SEE ALSO
-% DATASETS, HCLUST, MODESEEK, KMEANS, EMCLUST
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATASETS, HCLUST, MODESEEK, PRKMEANS, EMCLUST
 
 % $Id: matchlab.m,v 1.2 2006/03/08 22:06:58 duin Exp $
 

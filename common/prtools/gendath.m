@@ -29,7 +29,7 @@
 % EXAMPLES
 % PREX_PLOTC, PREX_CLEVAL
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, GAUSS, PRDATASETS
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

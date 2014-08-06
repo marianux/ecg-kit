@@ -1,9 +1,9 @@
 function [B, ll] = drbmc(varargin)
-%DRBMC Discriminative Restricted Boltzmann Machine classifier
+%DRBMC Trainable classifier by Discriminative Restricted Boltzmann Machine
 %
-%   W = DRBMC(A)
-%   W = DRBMC(A, N)
-%   W = DRBMC(A, N, L)
+%   W = DRBMC(A,N,L)
+%   W = A*DRBMC([],N,L)
+%   W = A*DRBMC(N,L)
 %
 % INPUT 
 %   A   Dataset
@@ -28,7 +28,7 @@ function [B, ll] = drbmc(varargin)
 % Boltzmann Machines. Proceedings of the 25th International Conference on 
 % Machine Learning (ICML), pages 536?543, 2008.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, LOGLC
 
 % (C) Laurens van der Maaten, 2010
@@ -37,7 +37,8 @@ function [B, ll] = drbmc(varargin)
 % 28 Jan 2013, debugged, default N = 5, PRTools call tests
 
     name = 'Discr. RBM';
-    argin = setdefaults(varargin,[],5,0,1e-3);
+    argin = shiftargin(varargin,'scalar');
+    argin = setdefaults(argin,[],5,0,1e-3);
 
     % Handle untrained calls like W = drbmc([]);
     if mapping_task(argin,'definition')

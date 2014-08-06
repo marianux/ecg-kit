@@ -19,6 +19,6 @@
 % In case existing names are identified by OLD_NAMES, this
 % character array should have as many names as NEW_NAMES.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MULTI_LABELING, ADDLABELS, ADDLABLIST, CHANGELABLIST,
 % CURLABLIST, GETLABLISTNAMES

@@ -21,7 +21,7 @@
 % Note that for datasets and mappings GETLAB() is effectively the same
 % as GETLABELS().
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, GETLABELS
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

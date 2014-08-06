@@ -22,7 +22,7 @@
 %  'kl'     - Karhunen Loeve projection (linear mapping) of D (first n eigenvectors)
 %  'cs'     - Classical Scaling
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, MDS_CS, MDS
 %
 

@@ -1,15 +1,18 @@
-%BAYESC Bayes classifier
+%BAYESC Bayes classifier based on given density estimates
 %
 %		W = BAYESC(WA,WB, ... ,P,LABLIST)
+%   D = X*W
 %
 % INPUT
 %   WA, WB, ... Trained mappings for supplying class density estimates
 %   P           Vector with class prior probabilities 
 %               Default: equal priors
 %   LABLIST    	List of class names (labels)
+%   X           Testset
 %
 % OUTPUT
 %    W          Bayes classifier.
+%    D          Classification matrix
 %
 % DESCRIPTION
 % The trained mappings WA,WB, ... should supply proper densities estimates
@@ -26,7 +29,7 @@
 % John Wiley and Sons, New York, 2001.
 % 2. A. Webb, Statistical Pattern Recognition, John Wiley & Sons, New York, 2002.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, GAUSSM, PARZENM, KNNM
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

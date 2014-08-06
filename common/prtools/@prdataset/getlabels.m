@@ -25,5 +25,5 @@
 % If A has crisp labels or target labels they are converted to soft
 % labels first. See SETLABTYPE for conversion rules.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % SETLABTYPE, GETTARGETS, SETLABELS, SETTARGETS, MULTI_LABELING

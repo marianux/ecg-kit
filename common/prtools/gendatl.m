@@ -16,7 +16,7 @@
 % by a normal distribution with standard deviation S in all directions. 
 % Class priors are P(1) = P(2) = 0.5.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, PRDATASETS
 
 % Copyright: M. Skurichina, R.P.W. Duin, duin@ph.tn.tudelft.nl

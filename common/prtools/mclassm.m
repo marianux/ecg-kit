@@ -1,6 +1,8 @@
 %MCLASSM Computation of a combined, multi-class based mapping
 %
-%  W = MCLASSM(A,PRMAPPING,MODE,PAR)
+%  W = MCLASSM(A,MAPPING,MODE,PAR)
+%  W = A*MCLASSM([],MAPPING,MODE,PAR)
+%  W = A*MCLASSM(MAPPING,MODE,PAR)
 %
 % INPUT
 %   A       Dataset
@@ -28,21 +30,24 @@
 %
 % This routine is only defined for datasets with crisp labels.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-function w = mclassm(a,mapp,mode,par);
-		if nargin < 4, par = []; end
-	if nargin < 3, mode = 'weight'; end
-	if nargin < 2, mapp = []; end
-	if nargin < 1 | isempty(a)
-		w = prmapping(mfilename,{classf,mode});
-		return
-	end
+function w = mclassm(varargin)
+
+  argin = shiftargin(varargin,'prmapping');
+  argin = setdefaults(argin,[],[],'weight',[]);
+  
+  if mapping_task(argin,'definition')
+    w = define_mapping(argin,'untrained');
+    return
+  end
+    
+  [a,mapp,mode,par] = deal(argin{:});	
 	
 	if ~isa(mapp,'prmapping') | ~isuntrained(mapp)
 		error('Second parameter should be untrained mapping')
@@ -61,7 +66,7 @@ function w = mclassm(a,mapp,mode,par);
 			w = [w,b*mapp];
 		end
 		if ismapping(mode)
-			w = w*mode
+			w = w*mode;
 		elseif isstr(mode)
 			switch mode
 			case 'mean'

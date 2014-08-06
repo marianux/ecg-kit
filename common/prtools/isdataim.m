@@ -12,7 +12,7 @@
 % If no output argument is given, the function will produce an error if A does
 % not contain image objects or features (i.e. it will act as an assertion).
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % ISOBJIM, ISFEATIM
 
 % $Id: isdataim.m,v 1.2 2006/03/08 22:06:58 duin Exp $

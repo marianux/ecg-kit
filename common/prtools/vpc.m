@@ -24,7 +24,7 @@ function B = vpc(A, W)
 % Y. Freund and R.E. Schapire. Large Margin Classification Using the 
 % Perceptron Algorithm. Machine Learning 37(3):277-296, 1999.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, PERLC, ADABOOSTC
 
 % (C) Laurens van der Maaten, 2010

@@ -25,7 +25,7 @@
 %                 No new results are stored.
 % STAMP_MAP(2)  - Enables retrieval as well as storage of results.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, MAP 
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

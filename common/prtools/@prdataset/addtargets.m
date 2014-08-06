@@ -22,5 +22,5 @@
 %
 % A defined target set can be removed by DELLABLIST.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MULTI_LABELING, ADDLABLIST, ADDLABELS, CHANGELABLIST, DELLABLIST

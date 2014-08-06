@@ -1,7 +1,8 @@
-%NUSVC Support Vector Classifier: NU algorithm
+%NUSVC Trainable classifier: Support Vector Machine, nu-algorithme
 % 
 % 	[W,J,NU] = NUSVC(A,KERNEL,NU)
-%    W    = A*SVC([],KERNEL,NU)
+%   [W,J,NU] = A*NUSVC([],KERNEL,NU)
+%   [W,J,NU] = A*NUSVC(KERNEL,NU)
 %
 % INPUT
 %   A	      Dataset
@@ -32,7 +33,7 @@
 % There are several ways to define KERNEL, e.g. PROXM([],'r',1) for a
 % radial basis kernel or by USERKERNEL for a user defined kernel.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, SVC, NUSVO, PROXM, USERKERNEL, REGOPTC
 
 % Copyright: S.Verzakov, s.verzakov@ewi.tudelft.nl 
@@ -42,45 +43,36 @@
   
 % $Id: nusvc.m,v 1.6 2010/06/25 09:50:40 duin Exp $
 
-function [W,J,nu,C,alginf] = nusvc(a,kernel,nu,Options)
+function [W,J,nu,C,alginf] = nusvc(varargin)
 
-			
-  if nargin < 4
-    Options = [];
-  end
 
-  DefOptions.mean_centering       = 1;
-  DefOptions.pd_check             = 1;
-  DefOptions.bias_in_admreg       = 1;
-  DefOptions.allow_ub_bias_admreg = 1;
-  DefOptions.pf_on_failure        = 1;
-  DefOptions.multiclass_mode      = 'single';    
+  mapname = 'nuSVM';
+  argin = shiftargin(varargin,{'prmapping','char','cell'});
+  argin = setdefaults(argin,[],proxm([],'p',1),[],[]);
+  
+  if mapping_task(argin,'definition')
+    
+    W = define_mapping(argin,'untrained',mapname);
+    
+	elseif mapping_task(argin,'training')			% Train a mapping.
 
-  Options = updstruct(DefOptions,Options,1);
+    [a,kernel,nu,Options] = check_for_old_call(argin);
+
+    DefOptions.mean_centering       = 1;
+    DefOptions.pd_check             = 1;
+    DefOptions.bias_in_admreg       = 1;
+    DefOptions.allow_ub_bias_admreg = 1;
+    DefOptions.pf_on_failure        = 1;
+    DefOptions.multiclass_mode      = 'single';    
+
+    Options = updstruct(DefOptions,Options,1);
 		
-  if nargin < 3
-    nu = [];
-	  prwarning(3,'Regularization parameter nu set to NN error\n');
-  end
-	if nargin < 2 | isempty(kernel)
-		kernel = proxm([],'p',1);
-	end
-	
-	if nargin < 1 | isempty(a)
-    W = prmapping(mfilename,{kernel,nu,Options});
-    W = setname(W,'nuSVM');
-
-	elseif (~ismapping(kernel) | isuntrained(kernel)) % training
-		
-		pd = 1; % switches, fixed here.
-		mc = 1;
   	islabtype(a,'crisp');
   	isvaldfile(a,1,2); % at least 1 object per class, 2 classes
 		a = testdatasize(a,'objects');
   	[m,k,c] = getsize(a);
   	nlab = getnlab(a);  
 	
-	%	if isempty(nu), nu = max(testk(a,1),0.01); end
 		if isempty(nu)
 			nu = 2*min(max(testk(a,1),0.01),(0.8*min(classsizes(a))/size(a,1)));
 		end
@@ -95,29 +87,30 @@ function [W,J,nu,C,alginf] = nusvc(a,kernel,nu,Options)
 			else
       	% Compute the parameters for the optimization:
       	y = 3 - 2*nlab;
-			  if ~isequal(kernel,0)
-          if mc
-            u = mean(a);
-            b = a -ones(m,1)*u;
+        if isequal(kernel,0)
+          s = [];
+          u = [];
+          in_size = 0; % to allow old and new style calls
+        else
+          if Options.mean_centering
+            u = mean(a);         % shift origin for better accuracy
+            a = a - repmat(u,[m,1]);
           else
-            b = a;
             u = [];
-					end
-          K = b*(b*kernel);
-         	% Perform the optimization:
-				  [v,J,nu,C] = nusvo(+K,y,nu,Options);
-          s = b(J,:);
-          insize = k;
-				else % kernel is already given!
-					K = min(a,a'); % make sure kernel matrix is symmetric
-					% Perform the optimization:
-					[v,J,nu,C] = nusvo(+K,y,nu,Options);
-					u = [];
-            s = [];
-					insize = size(K,2); % ready for kernel inputs
-				end      
+          end
+          in_size = k;
+        end
+        K = compute_kernel(a,a,kernel);
+        K = min(K,K');   % make sure kernel is symmetric
+        [v,J,nu,C] = nusvo(+K,y,nu,Options);
+        
+        % Store the results:
+        if ~isequal(kernel,0)
+          s = a(J,:);
+        end   
+       
         % Store the results, use SVC for execution
-      	W = prmapping('svc','trained',{u,s,v,kernel,J},getlablist(a),insize,2);
+      	W = prmapping('svc','trained',{u,s,v,kernel,J},getlablist(a),in_size,2);
       	W = cnormc(W,a);
       	W = setcost(W,a);
       	alginf.svc_type = 'nu-SVM';
@@ -133,8 +126,38 @@ function [W,J,nu,C,alginf] = nusvc(a,kernel,nu,Options)
 	    [W,J,nu,C,alginf] = mclassc(a,prmapping(mfilename,{kernel,nu,Options}),'single');
 		end
 		
- 		W = setname(W,'nuSVM');
+ 		W = setname(W,mapname);
 
 	end
 	
   return;
+  
+function K = compute_kernel(a,s,kernel)
+
+	% compute a kernel matrix for the objects a w.r.t. the support objects s
+	% given a kernel description
+
+	if  isstr(kernel) % routine supplied to compute kernel
+		K = feval(kernel,a,s);
+	elseif iscell(kernel)
+		K = feval(kernel{1},a,s,kernel{2:end});
+	elseif ismapping(kernel)
+		K = a*prmap(s,kernel);
+	elseif kernel == 0 % we have already a kernel
+		K = a;
+	else
+		error('Do not know how to compute kernel matrix')
+	end
+		
+	K = +K;
+		
+return
+
+function [a,kernel,NU,par] = check_for_old_call(argin)
+
+[a,kernel,NU,par] = deal(argin{:});
+if ischar(kernel) && exist(kernel,'file') ~= 2
+  kernel = proxm(kernel,NU);
+  NU = par;
+end
+

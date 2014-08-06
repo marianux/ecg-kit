@@ -10,7 +10,8 @@
 % $Id: isuntrained.m,v 1.1 2009/03/18 16:12:41 duin Exp $
 
 function i = isuntrained(w)
-			if iscell(w)
+	
+  if iscell(w)
 		i = strcmp(w{1}.mapping_type,'untrained');
 		for j=2:length(w)
 			if strcmp(w{j}.mapping_type,'untrained') ~= i

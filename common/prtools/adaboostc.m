@@ -44,7 +44,7 @@
 % algorithm, based on a generalization of the exponential loss.
 % http://www-stat.stanford.edu/~hastie/Papers/samme.pdf
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

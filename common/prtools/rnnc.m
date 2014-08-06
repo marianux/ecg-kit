@@ -21,7 +21,13 @@
 %
 % Uses the Mathworks' Neural Network toolbox.
 %
-% SEE ALSO
+% REFERENCES
+% 1. W.F. Schmidt, M.A. Kraaijveld, and R.P.W. Duin, Feed forward neural
+% networks with random weights, Proc. ICPR11, Volume II, 1992, 1-4. 
+% 2. G.B. Huang, Q.Y. Zhu, C.K. Siew, Extreme learning machine: theory and
+% applications, Neurocomputing, 70 (1), 2006, 489-501
+%
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, LMNC, BPXNC, NEURC, RBNC
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl
@@ -33,10 +39,7 @@
 function w = rnnc(a,n,s)
 
 		
-	if exist('nnet') ~= 7
-		error('Neural network toolbox not found')
-	end
-	
+	checktoolbox('nnet');
 	mapname = 'RandNeuralNet';
 
 	if (nargin < 3)

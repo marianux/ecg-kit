@@ -11,7 +11,7 @@
 % DESCRIPTION
 % True if dataset contains features that are images.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % ISDATASET, ISMAPPING, ISDATAIM
 
 % $Id: isfeatim.m,v 1.2 2006/03/08 22:06:58 duin Exp $

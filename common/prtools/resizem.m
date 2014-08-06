@@ -1,5 +1,5 @@
 %RESIZEM Mapping for resizing object images in datasets and datafiles
-%(outdated, rplaced by im_resize)
+%(outdated, replaced by im_resize)
 %
 %  B = RESIZEM(A,SIZE,METHOD)
 %  B = A*RESIZEM([],SIZE,METHOD)
@@ -19,7 +19,7 @@
 % that for proper use in PRTools third size parameter of multi-band images,
 % e.g. 3 for RGB images, has to be supplied. 
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, DATAFILES, IM2OBJ, DATA2IM 
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

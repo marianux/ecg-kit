@@ -31,7 +31,7 @@
 % LABTYPE defines the desired label type: 'crisp' or 'soft'. In the 
 % latter case true posterior probabilities are set for the labels.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, PRDATASETS
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

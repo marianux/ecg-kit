@@ -1,7 +1,8 @@
-%REMOUTL Remove outliers from a dataset
+%REMOUTL Fixed mapping for removing outliers
 %
 %  B = REMOUTL(A,T,P)
 %  B = A*REMOUTL([],T,P)
+%  B = A*REMOUTL(T,P)
 %
 % INPUT
 %  A  Dataset
@@ -19,32 +20,36 @@
 % also on unlabeled datasets. In partially labeled datasets the unlabeled
 % objects are neglected.
 
-function a = remoutl(a,t,p);
-if nargin < 3, t = []; end
-if nargin < 2, p = []; end
-if nargin < 1 | isempty(a)
-	a = prmapping(mfilename,'fixed',{t,p});
-	a = setname(a,'rem_outliers');
-	return
-end
+function a = remoutl(varargin)
 
-a = testdatasize(a);
-
-c = getsize(a,3);
-if c == 0
-	d = sqrt(distm(+a));
-	J = findoutd(d,t,p);
-	a(J,:) = [];
-else
-	R = [];
-	for j=1:c
-		L = findnlab(a,j);
-		d = sqrt(distm(seldat(a,j)));
-		J = findoutd(d,t,p);
-		R = [R;L(J)];
-	end
-	a(R,:) = [];
-end
+	mapname = 'Remove outliers';
+  argin = shiftargin(varargin,'scalar');
+  argin = setdefaults(argin,[],3,0.10);
+  
+  if mapping_task(argin,'definition')
+    a = define_mapping(argin,'fixed',mapname);
+    
+  else 			% Execution
+    
+    [a,t,p] = deal(argin{:});
+    a = testdatasize(a);
+    c = getsize(a,3);
+    if c == 0
+      d = sqrt(distm(+a));
+      J = findoutd(d,t,p);
+      a(J,:) = [];
+    else
+      R = [];
+      for j=1:c
+        L = findnlab(a,j);
+        d = sqrt(distm(seldat(a,j)));
+        J = findoutd(d,t,p);
+        R = [R;L(J)];
+      end
+      a(R,:) = [];
+    end
+    
+  end
 
 %FINDOUTD Detect outliers in distance matrix
 %

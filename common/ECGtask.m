@@ -25,11 +25,13 @@ classdef ECGtask < handle
 
     properties(Abstract = true, GetAccess = public, SetAccess = private)
         memory_constant
+        started
     end
     
     properties(Abstract = true)
         progress_handle
         user_string
+        tmp_path
     end
 
     methods (Abstract)

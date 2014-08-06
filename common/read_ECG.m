@@ -40,8 +40,11 @@ elseif( strcmp(recording_format, 'MAT') )
             ann = aux_load.ann;            
         end
     else
-        ECG = aux_load.ECG;
+        ECG = aux_load.signal;
     end
+    
+    ECG = ECG(ECG_start_idx:ECG_end_idx,:);
+    
     clear aux_load
     
 elseif( strcmp(recording_format, 'Mortara') )
@@ -129,41 +132,48 @@ heasig.ECG_format = recording_format;
 
 function ECG = read_MIT_ecg(recording_name, ECG_start_idx, ECG_end_idx, nsig2read, nsig_present, fmt, heasig)
     
-    if( fmt == 16 || fmt == 61 || isnan(fmt) )
+    if( exist(recording_name, 'file') )
 
-        if( fmt == 16 || isnan(fmt) )
-            byte_ordering = 'ieee-le';
+        if( fmt == 16 || fmt == 61 || isnan(fmt) )
+
+            if( fmt == 16 || isnan(fmt) )
+                byte_ordering = 'ieee-le';
+            else
+                byte_ordering = 'ieee-be';
+            end
+
+            ECG_size = ECG_end_idx - (ECG_start_idx-1);
+
+            fidECG = fopen(recording_name, 'r');
+            try
+                fseek(fidECG, ((ECG_start_idx-1)*nsig_present)*2, 'bof');
+                ECG = fread(fidECG, [nsig2read ECG_size ], '*int16', (nsig_present-nsig2read)*2 , byte_ordering)';
+                fclose(fidECG);
+            catch ME
+                fclose(fidECG);
+                rethrow(ME);
+            end
+
+        elseif(fmt == 212)
+
+            ECG = rdsign212(recording_name, heasig.nsig, ECG_start_idx, ECG_end_idx);
+
+        elseif(fmt == 310)
+
+            ECG = read_310_format(recording_name, ECG_start_idx, ECG_end_idx, heasig  );
+
+        elseif(fmt == 311)
+
+            warning('read_ECG:UntestedRegion', 'Untested!! danger ...')
+            ECG = read_311_format(recording_name, ECG_start_idx, ECG_end_idx, heasig  );
+
         else
-            byte_ordering = 'ieee-be';
+            error('read_ECG:UnknownDataFormat', 'Unknown data format.')
         end
-        
-        ECG_size = ECG_end_idx - (ECG_start_idx-1);
-        
-        fidECG = fopen(recording_name, 'r');
-        try
-            fseek(fidECG, ((ECG_start_idx-1)*nsig_present)*2, 'bof');
-            ECG = fread(fidECG, [nsig2read ECG_size ], '*int16', (nsig_present-nsig2read)*2 , byte_ordering)';
-            fclose(fidECG);
-        catch ME
-            fclose(fidECG);
-            rethrow(ME);
-        end
-
-    elseif(fmt == 212)
-
-        ECG = rdsign212(recording_name, heasig.nsig, ECG_start_idx, ECG_end_idx);
-
-    elseif(fmt == 310)
-
-        ECG = read_310_format(recording_name, ECG_start_idx, ECG_end_idx, heasig  );
-
-    elseif(fmt == 311)
-
-        warning('read_ECG:UntestedRegion', 'Untested!! danger ...')
-        ECG = read_311_format(recording_name, ECG_start_idx, ECG_end_idx, heasig  );
-
-    else
-        error('read_ECG:UnknownDataFormat', 'Unknown data format.')
-    end
     
+    else
+        
+        error('read_ECG:FileNotFound', disp_string_framed(0, sprintf( 'Could not find %s', recording_name ) ) );
+        
+    end
     

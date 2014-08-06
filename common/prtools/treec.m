@@ -1,6 +1,8 @@
-%TREEC Build a decision tree classifier
+%TREEC Trainable decision tree classifier
 % 
 %   W = TREEC(A,CRIT,PRUNE,T)
+%   W = A*TREEC([],CRIT,PRUNE,T)
+%   W = A*TREEC(CRIT,PRUNE,T)
 % 
 % Computation of a decision tree classifier out of a dataset A using 
 % a binary splitting criterion CRIT:
@@ -20,7 +22,8 @@
 % 
 % If CRIT or PRUNE are set to NaN they are optimised by REGOPTC.
 %
-% see also DATASETS, MAPPINGS, TREE_MAP, REGOPTC
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATASETS, MAPPINGS, TREE_MAP, REGOPTC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
@@ -28,97 +31,99 @@
 
 % $Id: treec.m,v 1.9 2009/07/26 18:52:08 duin Exp $
 
-function w = treec(a,crit,prune,t)
+function w = treec(varargin)
+  
+	mapname = 'DecTree';
+  argin = shiftargin(varargin,'char');
+  argin = setdefaults(argin,[],'maxcrit',[],[]);
+  
+  if mapping_task(argin,'definition')
+    w = define_mapping(argin,'untrained',mapname);
+    
+  elseif mapping_task(argin,'training')			% Train a mapping.
+  
+    [a,crit,prune,t] = deal(argin{:});
+    parmin_max = [1,3;-1,10];
+    optcrit = inf;
+    
+    if isnan(crit) & isnan(prune)        % optimize criterion and pruning, grid search
+      global REGOPT_OPTCRIT REGOPT_PARS
+      for n = 1:3
+        defs = {n,0};
+        v = regoptc(a,mfilename,{crit,prune},defs,[2],parmin_max,testc([],'soft'),[0,0]);
+        if REGOPT_OPTCRIT < optcrit
+          w = v; optcrit = REGOPT_OPTCRIT; regoptpars = REGOPT_PARS;
+        end
+      end
+      REGOPT_PARS = regoptpars;
+      
+    elseif isnan(crit)                    % optimize criterion 
+      defs = {1,0};
+      w = regoptc(a,mfilename,{crit,prune},defs,[1],parmin_max,testc([],'soft'),[0,0]);
+      
+    elseif isnan(prune)                    % optimize pruning
+      defs = {1,0};
+      w = regoptc(a,mfilename,{crit,prune},defs,[2],parmin_max,testc([],'soft'),[0,0]);
 
-		% When no input data is given, an empty tree is defined:
-	if nargin == 0 | isempty(a)
-		if nargin <2, 
-			w = prmapping('treec');
-		elseif nargin < 3, w = prmapping('treec',{crit});
-		elseif nargin < 4, w = prmapping('treec',{crit,prune});
-		else, w = prmapping('treec',{crit,prune,t});
-		end
-		w = setname(w,'DecTree');
-		return
-	end
-	
-	if nargin < 3, prune = []; end
-	if nargin < 2, crit = []; end
-	parmin_max = [1,3;-1,10];
-	optcrit = inf;
-	if isnan(crit) & isnan(prune)        % optimize criterion and pruning, grid search
-		global REGOPT_OPTCRIT REGOPT_PARS
-		for n = 1:3
-			defs = {n,0};
-			v = regoptc(a,mfilename,{crit,prune},defs,[2],parmin_max,testc([],'soft'),[0,0]);
-			if REGOPT_OPTCRIT < optcrit
-				w = v; optcrit = REGOPT_OPTCRIT; regoptpars = REGOPT_PARS;
-			end
-		end
-		REGOPT_PARS = regoptpars;
-	elseif isnan(crit)                    % optimize criterion 
-		defs = {1,0};
-		w = regoptc(a,mfilename,{crit,prune},defs,[1],parmin_max,testc([],'soft'),[0,0]);
-	elseif isnan(prune)                    % optimize pruning
-		defs = {1,0};
-		w = regoptc(a,mfilename,{crit,prune},defs,[2],parmin_max,testc([],'soft'),[0,0]);
-		
-	else %  training for given parameters
-	
-		islabtype(a,'crisp');
-		isvaldfile(a,1,2); % at least 1 object per class, 2 classes
-		%a = testdatasize(a);
-		a = prdataset(a);
+    else %  training for given parameters
 
-		% First get some useful parameters:
-		[m,k,c] = getsize(a);
-		nlab = getnlab(a);
+      islabtype(a,'crisp');
+      isvaldfile(a,1,2); % at least 1 object per class, 2 classes
+      %a = testdatasize(a);
+      a = prdataset(a);
 
-		% Define the splitting criterion:
-		if nargin == 1 | isempty(crit), crit = 2; end
-		if ~isstr(crit)
-			if crit == 0 | crit == 1, crit = 'infcrit'; 
-			elseif crit == 2, crit = 'maxcrit';
-			elseif crit == 3, crit = 'fishcrit';
-			else, error('Unknown criterion value');
-			end
-		end
+      % First get some useful parameters:
+      [m,k,c] = getsize(a);
+      nlab = getnlab(a);
 
-		% Now the training can really start:
-		if (nargin == 1) | (nargin == 2)
-			tree = maketree(+a,nlab,c,crit);
-		elseif nargin > 2
-			% We have to apply a pruning strategy:
-			if prune == -1, prune = 'prunep'; end
-			if prune == -2, prune = 'prunet'; end
-			% The strategy can be prunep/prunet:
-			if isstr(prune)
-				tree = maketree(+a,nlab,c,crit);
-				if prune == 'prunep'
-					tree = prunep(tree,a,nlab);
-				elseif prune == 'prunet'
-					if nargin < 4
-						t = gendatp(a,5*sum(nlab==1));
-					end
-					tree = prunet(tree,t);
-				else
-					error('unknown pruning option defined');
-				end
-			else
-				% otherwise the tree is just cut after level 'prune'
-				tree = maketree(+a,nlab,c,crit,prune);
-			end
-		else
-			error('Wrong number of parameters')
-		end
+      % Define the splitting criterion:
+      if isempty(crit), crit = 2; end
+      if ~ischar(crit)
+        if crit == 0 || crit == 1, crit = 'infcrit'; 
+        elseif crit == 2, crit = 'maxcrit';
+        elseif crit == 3, crit = 'fishcrit';
+        else error('Unknown criterion value');
+        end
+      end
 
-		% Store the results:
-		w = prmapping('tree_map','trained',{tree,1},getlablist(a),k,c);
-		w = setname(w,'DecTree');
-		w = setcost(w,a);
-		
-	end
-	return
+      % Now the training can really start:
+      if isempty(prune)
+        tree = maketree(+a,nlab,c,crit);
+      elseif nargin > 2
+        % We have to apply a pruning strategy:
+        if prune == -1, prune = 'prunep'; end
+        if prune == -2, prune = 'prunet'; end
+        % The strategy can be prunep/prunet:
+        if isstr(prune)
+          tree = maketree(+a,nlab,c,crit);
+          if prune == 'prunep'
+            tree = prunep(tree,a,nlab);
+          elseif prune == 'prunet'
+            if nargin < 4
+              t = gendatp(a,5*sum(nlab==1));
+            end
+            tree = prunet(tree,t);
+          else
+            error('unknown pruning option defined');
+          end
+        else
+          % otherwise the tree is just cut after level 'prune'
+          tree = maketree(+a,nlab,c,crit,prune);
+        end
+      else
+        error('Wrong number of parameters')
+      end
+
+      % Store the results:
+      w = prmapping('tree_map','trained',{tree,1},getlablist(a),k,c);
+      w = setname(w,mapname);
+      w = setcost(w,a);
+
+    end
+    
+  end
+  
+ return
 
 %MAKETREE General tree building algorithm
 % 

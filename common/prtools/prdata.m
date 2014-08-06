@@ -14,7 +14,7 @@
 % as label data. Each line is stored row-wise and interpreted as the feature 
 % values of a single object. 
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, PRDATASET
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

@@ -43,9 +43,9 @@ classdef ECGwrapper < handle
         cKnownFormats = {'MIT' 'ISHNE', 'AHA', 'HES', 'MAT', 'Mortara'};
         cHeaderFieldNamesRequired = {'freq' 'nsamp' 'nsig' 'gain' 'adczero' };
         cPartitionModes = {'ECG_contiguous' 'ECG_overlapped' 'QRS'};
-        cAnnotationsFieldNamesRequired = {'time' };
+        cAnnotationsFieldNamesRequired = {'time'};
         cObjMethodsRequired = {'Process' 'Start' 'Concatenate'};
-        cObjPropsRequired = {'progress_handle' 'name'};
+        cObjPropsRequired = {'progress_handle' 'name' 'tmp_path'};
 
         % maxQRSxIter: Maximum amount of heartbeats in ECG recordings of 2 leads
         maxQRSxIter = 5e3;
@@ -86,6 +86,7 @@ classdef ECGwrapper < handle
         
         ErrorReport = [];
         
+        
     end
     
     properties (SetAccess = private, GetAccess = public)  
@@ -113,7 +114,7 @@ classdef ECGwrapper < handle
         cacheResults
         syncSlavesWithMaster
         class_labeling = 'AAMI'
-        Task_payload
+        
     end
     
 
@@ -162,8 +163,7 @@ classdef ECGwrapper < handle
             p.addParamValue('recording_name', [], @(x)( ischar(x)));
             p.addParamValue('recording_format', [], @(x)( ischar(x) && any(strcmpi(x,obj.cKnownFormats))) || isempty(x) );
             p.addParamValue('this_pid', 1, @(x)(ischar(x) || (isnumeric(x) && all(x > 0) ) ) );
-            p.addParamValue('Task_payload', [], @(x)(isstruct(x) || isempty(x)) );
-            p.addParamValue('tmp_path', tempdir, @(x)(ischar(x)) );
+            p.addParamValue('tmp_path', [], @(x)(ischar(x)) );
             p.addParamValue('output_path', [], @(x)(ischar(x)) );
             p.addParamValue('repetitions', 1, @(x)(isnumeric(x) && x > 0 ) );
             p.addParamValue('ECGtaskHandle', ECGtask_do_nothing, @(x)( isobject(x) || ischar(x) ) );
@@ -182,7 +182,6 @@ classdef ECGwrapper < handle
             obj.recording_format = p.Results.recording_format;
             obj.this_pid = p.Results.this_pid;
             obj.tmp_path = p.Results.tmp_path;
-            obj.Task_payload = p.Results.Task_payload;
             obj.output_path = p.Results.output_path;
             obj.repetitions = p.Results.repetitions;
             obj.ECGtaskHandle = p.Results.ECGtaskHandle;
@@ -212,21 +211,25 @@ classdef ECGwrapper < handle
                 obj.bArgChanged = false;
             end
 
+            fprintf(1, '\n');
+            cprintf( 'Blue', disp_option_enumeration( 'Description of the process:', { ['Recording: ' obj.recording_name] ['Task name: ' obj.ECGtaskHandle.name] } ));
+            fprintf(1, '\n');
+            
+            if( isempty(obj.ECGtaskHandle.user_string) )
+                aux_user_prefix = [];
+            else
+                aux_user_prefix= [obj.ECGtaskHandle.user_string '_'];
+            end
+            
             % check for cached results
             if( obj.cacheResults )
 
-                if( isempty(obj.ECGtaskHandle.user_string) )
-                    aux_prefix = [];
-                else
-                    aux_prefix= [obj.ECGtaskHandle.user_string '_'];
-                end
-                
-                files_this_pid = dir([obj.output_path obj.rec_filename '_' aux_prefix obj.ECGtaskHandle.name '*.mat']);
+                files_this_pid = dir([obj.output_path obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name '*.mat']);
                 
                 if( ~isempty(files_this_pid) )
                     obj.Processed = true;
                     obj.Result_files = strcat(obj.output_path, {files_this_pid(:).name});
-                    cellfun(@(a)(fprintf(2,'Cached results found in %s.\n', a)), obj.Result_files);
+                    cellfun(@(a)(cprintf('[1,0.5,0]','Cached results found in %s.\n', a)), obj.Result_files);
                     return
                 end
 
@@ -247,481 +250,508 @@ classdef ECGwrapper < handle
                     
                     % Initialization of the process.
                     obj.ECGtaskHandle.progress_handle = pb;
+                    obj.ECGtaskHandle.tmp_path = obj.tmp_path;
                     obj.ECGtaskHandle.Start( obj.ECG_header, obj.ECG_annotations );
                     
-                    % find out the ammount of memory in the system
-                    user = memory();
-                    % upper bound of 2 mins @ 12-leads 1000 Hz
-                    obj.maxECGxIter = round(obj.ECGtaskHandle.memory_constant*(min(2*60*60*12*1000,user.MaxPossibleArrayBytes/8))); % double = 8 bytes
-                    
-                    if( strcmpi(obj.partition_mode, 'QRS') )
-                        %% QRS mode
-
-                        cant_QRS_locations = length(obj.QRS_locations);
-
-                        %PID parsing
-                        if( obj.cant_pids > 1 )
-
-                            max_recommended_cant_pids = max(1, round( cant_QRS_locations / obj.minQRSxIter ));
-
-                            if( obj.cant_pids > max_recommended_cant_pids )
-                                warning('ECGwrapper:TooMuchPIDs', 'CantPIDs too large for the work to do, consider decreasing it.');
-                                obj.cant_pids = max_recommended_cant_pids;
-                            end
-
-                            [pid_starts, pid_ends] = TaskPartition( cant_QRS_locations, obj.cant_pids);
-
-                            if( obj.this_pid <= obj.cant_pids )
-                                QRS_start_idx = pid_starts(obj.this_pid);
-                                QRS_end_idx = pid_ends(obj.this_pid);
-                            else
-                                % Extra PIDs
-                                warning('ECGwrapper:TooMuchPIDs', 'This PID has nothing to do. Exiting.');
-                                return
-                            end
-
+                    if( obj.ECGtaskHandle.started )
+                        
+                        %% 
+                        
+                        % find out the ammount of memory in the system
+                        if( ispc() )
+                            user = memory();
                         else
-                            %Only one PID
-                            QRS_start_idx = 1;
-                            QRS_end_idx = cant_QRS_locations;
-                        end
-                        
-                        cant_QRS2do = QRS_end_idx - QRS_start_idx + 1;
-                        cant_samples= obj.QRS_locations(QRS_end_idx) - obj.QRS_locations(QRS_start_idx);
-                        cant_iter = ceil(cant_samples * obj.ECG_header.nsig / obj.maxECGxIter);
-                        %calculate iters.
-                        [iter_starts, iter_ends] = TaskPartition( cant_QRS2do, cant_iter);                        
-                       
-                        % check that none of the iterations exceed the
-                        % memory quota
-                        cant_samples_each_iter = obj.QRS_locations(iter_ends) - obj.QRS_locations(iter_starts) + 1;
-                        iter_exceeded_idx = find( cant_samples_each_iter > (obj.maxECGxIter/obj.ECG_header.nsig) );
-                        
-                        if( ~isempty(iter_exceeded_idx ) )
-                            aux_jj_start = 1;
-                            aux_iter_starts = [];
-                            aux_iter_ends = [];
-                            for  jj= rowvec(iter_exceeded_idx)
-
-                                aux_iter_starts = [aux_iter_starts ; iter_starts(aux_jj_start:jj-1)];
-                                aux_iter_ends = [aux_iter_ends; iter_ends(aux_jj_start:jj-1)];
-
-                                aux_jj_start = jj+1;
-
-                                aux_cant_this_iter = ceil(cant_samples_each_iter(jj) * obj.ECG_header.nsig / obj.maxECGxIter );
-                                [aux_sample_starts, aux_sample_ends] = TaskPartition( cant_samples_each_iter(jj), aux_cant_this_iter);
-                                
-                                aux_starts = [ ];
-                                aux_ends = [ ];
-                                for kk = 1:length(aux_sample_starts)
-                                    bAux = obj.QRS_locations >= aux_sample_starts(kk) + obj.QRS_locations(iter_starts(jj)) - 1 & obj.QRS_locations <= aux_sample_ends(kk) + obj.QRS_locations(iter_starts(jj)) - 1;
-                                    aux_starts = [ aux_starts; find( bAux, 1, 'first' ) ];
-                                    aux_ends = [ aux_ends ; find( bAux, 1, 'last' )];
-                                end
-
-                                aux_iter_starts = [aux_iter_starts ; ( aux_starts )];
-                                aux_iter_ends = [aux_iter_ends; ( aux_ends )];
-
-                            end
-                            
-                            aux_iter_starts = [aux_iter_starts ; iter_starts(aux_jj_start:cant_iter)];
-                            aux_iter_ends = [aux_iter_ends; iter_ends(aux_jj_start:cant_iter)];
-                            
-                            iter_starts = aux_iter_starts;
-                            iter_ends = aux_iter_ends;
-                            cant_iter = length(iter_starts);
-                                                        
-                        end   
-                        
-                    else
-                        %% ECG modes
-
-                        %PID parsing
-                        if( obj.cant_pids > 1 )
-
-                            max_recommended_cant_pids = max(1, round( obj.ECG_header.nsamp * obj.ECG_header.nsig / obj.min_ECG_perPID ));
-
-                            if( obj.cant_pids > max_recommended_cant_pids )
-                                warning('ECGwrapper:TooMuchPIDs', 'CantPIDs too large for the work to do, consider decreasing it.');
-                                obj.cant_pids = max_recommended_cant_pids;
-                            end
-
-                            % make a partition of the ECG
-                            [pid_starts, pid_ends] = TaskPartition( obj.ECG_header.nsamp, obj.cant_pids);
-
-                            if( obj.this_pid <= obj.cant_pids )
-                                ECG_start_idx = pid_starts(obj.this_pid);
-                                ECG_end_idx = pid_ends(obj.this_pid);
-                            else
-                                % Extra PIDs
-                                warning('ECGwrapper:TooMuchPIDs', 'This PID has nothing to do. Exiting.');
-                                return
-                            end
-
-                        else
-                            %Only one PID
-                            ECG_start_idx = 1;
-                            ECG_end_idx = obj.ECG_header.nsamp;
+                            % empirical value from a x64 platform.
+                            user.MaxPossibleArrayBytes = 9.3784e+09;
                         end
 
-                        % calculate iterations 
-                        cant_samples2do = ECG_end_idx - ECG_start_idx + 1;
-                        cant_iter = ceil(cant_samples2do * obj.ECG_header.nsig / obj.maxECGxIter );
-                        [iter_starts, iter_ends] = TaskPartition( cant_samples2do, cant_iter);
-
-                    end
-
-                    if( obj.this_pid > obj.cant_pids )
-                        %este pid no trabaja.
-                        error('ECGwrapper:TooMuchPIDs', [ 'This PID ' num2str(obj.this_pid) ' will not work, consider decreasing obj.cant_pids to ' num2str(obj.cant_pids) '.\n' ] );
-                    end
-
-                    % Update point
-                    pb.checkpoint('Initializing');
-
-                    %% Iterations over the whole ECG recording
-
-                    start_iter = 1;
-
-                    %check for previous iterations already done, and try to restore.
-                    for ii = 1:cant_iter
-                        aux_filename =  [obj.tmp_path 'tmpfile_' obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(obj.this_pid) '_iteration_' num2str(ii) '_of_' num2str(cant_iter)  '.mat'];
-                        if( exist(aux_filename, 'file') )
-                            start_iter = ii+1;
-                        else
-                            break
-                        end
-                    end
-
-                    pb.Loop2do = cant_iter;
-                    
-                    for this_iter = start_iter:cant_iter
-                        %% loop initialization
-
-                        % por q deberia saberlo ?
-                        %obj.ECGtaskHandle.this_iteration = this_iter;
-
-                        %start of the progress_struct loop 0%
-                        pb.start_loop();
+                        % upper bound of 2 mins @ 12-leads 1000 Hz
+                        obj.maxECGxIter = round(obj.ECGtaskHandle.memory_constant*(min(2*60*60*12*1000,user.MaxPossibleArrayBytes/8))); % double = 8 bytes
 
                         if( strcmpi(obj.partition_mode, 'QRS') )
-                            %% la partición se hizo en la cantidad de latidos
+                            %% QRS mode
 
-                            this_iter_QRS_start_idx = QRS_start_idx - 1 + iter_starts(this_iter);
-                            this_iter_QRS_end_idx = QRS_start_idx - 1 + iter_ends(this_iter);
+                            cant_QRS_locations = length(obj.QRS_locations);
 
-                            this_iter_ECG_start_idx = max(1, obj.QRS_locations(this_iter_QRS_start_idx) - overlapping_samples);
-                            this_iter_ECG_end_idx = min(obj.ECG_header.nsamp, obj.QRS_locations(this_iter_QRS_end_idx) + overlapping_samples);
-                            
-                            % create an annotation struct for this
-                            % iteration.
-                            this_ann = obj.ECG_annotations;
-                            for field_names = rowvec(fieldnames(this_ann))
-                                if( ~isempty( this_ann.(field_names{1}) ) )
-                                    this_ann.(field_names{1}) = this_ann.(field_names{1})(this_iter_QRS_start_idx:this_iter_QRS_end_idx);
+                            %PID parsing
+                            if( obj.cant_pids > 1 )
+
+                                max_recommended_cant_pids = max(1, round( cant_QRS_locations / obj.minQRSxIter ));
+
+                                if( obj.cant_pids > max_recommended_cant_pids )
+                                    warning('ECGwrapper:TooMuchPIDs', 'CantPIDs too large for the work to do, consider decreasing it.');
+                                    obj.cant_pids = max_recommended_cant_pids;
+                                end
+
+                                [pid_starts, pid_ends] = TaskPartition( cant_QRS_locations, obj.cant_pids);
+
+                                if( obj.this_pid <= obj.cant_pids )
+                                    QRS_start_idx = pid_starts(obj.this_pid);
+                                    QRS_end_idx = pid_ends(obj.this_pid);
+                                else
+                                    % Extra PIDs
+                                    warning('ECGwrapper:TooMuchPIDs', 'This PID has nothing to do. Exiting.');
+                                    return
+                                end
+
+                            else
+                                %Only one PID
+                                QRS_start_idx = 1;
+                                QRS_end_idx = cant_QRS_locations;
+                            end
+
+                            cant_QRS2do = QRS_end_idx - QRS_start_idx + 1;
+                            cant_samples= obj.QRS_locations(QRS_end_idx) - obj.QRS_locations(QRS_start_idx);
+                            cant_iter = ceil(cant_samples * obj.ECG_header.nsig / obj.maxECGxIter);
+                            %calculate iters.
+                            [iter_starts, iter_ends] = TaskPartition( cant_QRS2do, cant_iter);                        
+
+                            % check that none of the iterations exceed the
+                            % memory quota
+                            cant_samples_each_iter = obj.QRS_locations(iter_ends) - obj.QRS_locations(iter_starts) + 1;
+                            iter_exceeded_idx = find( cant_samples_each_iter > (obj.maxECGxIter/obj.ECG_header.nsig) );
+
+                            if( ~isempty(iter_exceeded_idx ) )
+                                aux_jj_start = 1;
+                                aux_iter_starts = [];
+                                aux_iter_ends = [];
+                                for  jj= rowvec(iter_exceeded_idx)
+
+                                    aux_iter_starts = [aux_iter_starts ; iter_starts(aux_jj_start:jj-1)];
+                                    aux_iter_ends = [aux_iter_ends; iter_ends(aux_jj_start:jj-1)];
+
+                                    aux_jj_start = jj+1;
+
+                                    aux_cant_this_iter = ceil(cant_samples_each_iter(jj) * obj.ECG_header.nsig / obj.maxECGxIter );
+                                    [aux_sample_starts, aux_sample_ends] = TaskPartition( cant_samples_each_iter(jj), aux_cant_this_iter);
+
+                                    aux_starts = [ ];
+                                    aux_ends = [ ];
+                                    for kk = 1:length(aux_sample_starts)
+                                        bAux = obj.QRS_locations >= aux_sample_starts(kk) + obj.QRS_locations(iter_starts(jj)) - 1 & obj.QRS_locations <= aux_sample_ends(kk) + obj.QRS_locations(iter_starts(jj)) - 1;
+                                        aux_starts = [ aux_starts; find( bAux, 1, 'first' ) ];
+                                        aux_ends = [ aux_ends ; find( bAux, 1, 'last' )];
+                                    end
+
+                                    aux_iter_starts = [aux_iter_starts ; ( aux_starts )];
+                                    aux_iter_ends = [aux_iter_ends; ( aux_ends )];
+
+                                end
+
+                                aux_iter_starts = [aux_iter_starts ; iter_starts(aux_jj_start:cant_iter)];
+                                aux_iter_ends = [aux_iter_ends; iter_ends(aux_jj_start:cant_iter)];
+
+                                iter_starts = aux_iter_starts;
+                                iter_ends = aux_iter_ends;
+                                cant_iter = max(1, length(iter_starts));
+
+                            end   
+
+                        else
+                            %% ECG modes
+
+                            %PID parsing
+                            if( obj.cant_pids > 1 )
+
+                                max_recommended_cant_pids = max(1, round( obj.ECG_header.nsamp * obj.ECG_header.nsig / obj.min_ECG_perPID ));
+
+                                if( obj.cant_pids > max_recommended_cant_pids )
+                                    warning('ECGwrapper:TooMuchPIDs', 'CantPIDs too large for the work to do, consider decreasing it.');
+                                    obj.cant_pids = max_recommended_cant_pids;
+                                end
+
+                                % make a partition of the ECG
+                                [pid_starts, pid_ends] = TaskPartition( obj.ECG_header.nsamp, obj.cant_pids);
+
+                                if( obj.this_pid <= obj.cant_pids )
+                                    ECG_start_idx = pid_starts(obj.this_pid);
+                                    ECG_end_idx = pid_ends(obj.this_pid);
+                                else
+                                    % Extra PIDs
+                                    warning('ECGwrapper:TooMuchPIDs', 'This PID has nothing to do. Exiting.');
+                                    return
+                                end
+
+                            else
+                                %Only one PID
+                                ECG_start_idx = 1;
+                                ECG_end_idx = obj.ECG_header.nsamp;
+                            end
+
+                            % calculate iterations 
+                            cant_samples2do = ECG_end_idx - ECG_start_idx + 1;
+                            cant_iter = max(1, ceil(cant_samples2do * obj.ECG_header.nsig / obj.maxECGxIter ));
+                            [iter_starts, iter_ends] = TaskPartition( cant_samples2do, cant_iter);
+
+                        end
+
+                        if( obj.this_pid > obj.cant_pids )
+                            %este pid no trabaja.
+                            if(obj.bHaveUserInterface)
+                                cprintf('*[1,0.5,0]', 'This PID %d will not work, consider decreasing obj.cant_pids to %d.\n', obj.this_pid, obj.cant_pids);
+                            else
+                                fprintf(2, 'This PID %d will not work, consider decreasing obj.cant_pids to %d.\n', obj.this_pid, obj.cant_pids);
+                            end
+                            return
+                        end
+
+                        % Update point
+                        pb.checkpoint('Initializing');
+
+                        %% Iterations over the whole ECG recording
+
+                        start_iter = 1;
+                        payload_files = [];
+
+                        %check for previous iterations already done, and try to restore.
+                        if( cant_iter > 1 )
+                            % look for the previous cached point to continue
+                            for ii = 1:cant_iter
+                                
+                                aux_filename =  [obj.output_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(obj.this_pid) '_iteration_' num2str(ii) '_of_' num2str(cant_iter)  '.mat'];
+                                
+                                if( exist(aux_filename, 'file')  )
+                                    payload_files = [ payload_files; cellstr(aux_filename)];
+                                    start_iter = ii+1;
+                                else
+                                    break
                                 end
                             end
-                            this_ann.time = this_ann.time - this_iter_ECG_start_idx + 1;
-
-                            % in QRS mode, this is not useful.
-                            this_iter_ECG_relative_start_end_idx = [1 (this_iter_ECG_end_idx - this_iter_ECG_start_idx + 1)];
-                            
                         else
-                            %% la partición se hizo en el registro de ECG 
-
-                            this_iter_QRS_start_idx = nan;
-                            this_iter_QRS_end_idx = nan;
-                            this_iter_cant_QRS = nan;
-
-                            this_iter_ECG_start_idx = max(1, ECG_start_idx - 1 + iter_starts(this_iter) - overlapping_samples);
-                            this_iter_ECG_end_idx = min(obj.ECG_header.nsamp, ECG_start_idx - 1 + iter_ends(this_iter) + overlapping_samples);
-
-                            %No annotations provided in this mode
-                            this_ann = [];
+                            aux_filename =  [obj.output_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(obj.this_pid) '_iteration_1_of_1.mat'];
                             
-                            %Sample where the ECG starts. Useful for
-                            %overlapped mode.
-                            this_iter_ECG_relative_start_end_idx = [(ECG_start_idx - 1 + iter_starts(this_iter) - this_iter_ECG_start_idx + 1), (ECG_start_idx - 1 + iter_ends(this_iter) - this_iter_ECG_start_idx + 1) ];
+                            if( exist(aux_filename, 'file')  )
+                                payload_files = [ payload_files; cellstr(aux_filename)];
+                                start_iter = 2;
+                                cprintf('*[1,0.5,0]', 'All work done. Exiting.\n');
+                            end
                         end
 
-                        % create a header struct for this iteration.
-                        this_header = obj.ECG_header;
-                        this_header.nsamp = this_iter_ECG_end_idx - this_iter_ECG_start_idx + 1;
-                        
-                        %% ECG Recording reading
-                        % Update point
-                        pb.checkpoint('ECG Recording reading');
+                        pb.Loop2do = cant_iter;
 
-                        %% read from file
+                        for this_iter = start_iter:cant_iter
+                            %% loop initialization
 
-                        ECG = read_ECG(obj.recording_name, this_iter_ECG_start_idx, this_iter_ECG_end_idx, obj.recording_format );
+                            % por q deberia saberlo ?
+                            %obj.ECGtaskHandle.this_iteration = this_iter;
 
-                        %convert ADC samples (int16) to obj.ECGtaskHandle.target_units volts.
-                        if( ~isempty(obj.ECGtaskHandle.target_units) )
-                            if(strcmpi(obj.ECGtaskHandle.target_units, 'ADCu') )
-                                ECG = int16(ECG);
+                            %start of the progress_struct loop 0%
+                            pb.start_loop();
+
+                            if( strcmpi(obj.partition_mode, 'QRS') )
+                                %% la partición se hizo en la cantidad de latidos
+
+                                this_iter_QRS_start_idx = QRS_start_idx - 1 + iter_starts(this_iter);
+                                this_iter_QRS_end_idx = QRS_start_idx - 1 + iter_ends(this_iter);
+
+                                this_iter_ECG_start_idx = max(1, obj.QRS_locations(this_iter_QRS_start_idx) - overlapping_samples);
+                                this_iter_ECG_end_idx = min(obj.ECG_header.nsamp, obj.QRS_locations(this_iter_QRS_end_idx) + overlapping_samples);
+
+                                % create an annotation struct for this
+                                % iteration.
+                                this_ann = obj.ECG_annotations;
+
+                                for field_names = rowvec(fieldnames(this_ann))
+                                    if( ~isempty( this_ann.(field_names{1}) ) )
+                                        this_ann.(field_names{1}) = this_ann.(field_names{1})(this_iter_QRS_start_idx:this_iter_QRS_end_idx);
+                                    end
+                                end
+                                this_ann.time = this_ann.time - this_iter_ECG_start_idx + 1;
+
+                                % in QRS mode, this is not useful.
+                                this_iter_ECG_relative_start_end_idx = [1 (this_iter_ECG_end_idx - this_iter_ECG_start_idx + 1)];
+
                             else
-                                [ECG this_header] = ADC2units(double(ECG), this_header, obj.ECGtaskHandle.target_units);
+                                %% la partición se hizo en el registro de ECG 
+
+                                this_iter_QRS_start_idx = nan;
+                                this_iter_QRS_end_idx = nan;
+                                this_iter_cant_QRS = nan;
+
+                                this_iter_ECG_start_idx = max(1, ECG_start_idx - 1 + iter_starts(this_iter) - overlapping_samples);
+                                this_iter_ECG_end_idx = min(obj.ECG_header.nsamp, ECG_start_idx - 1 + iter_ends(this_iter) + overlapping_samples);
+
+                                %No annotations provided in this mode
+                                this_ann = [];
+
+                                %Sample where the ECG starts. Useful for
+                                %overlapped mode.
+                                this_iter_ECG_relative_start_end_idx = [(ECG_start_idx - 1 + iter_starts(this_iter) - this_iter_ECG_start_idx + 1), (ECG_start_idx - 1 + iter_ends(this_iter) - this_iter_ECG_start_idx + 1) ];
                             end
-                        end
-                        
-                        %% User defined function calculation
 
-                        % Update point
-                        pb.checkpoint('User function');
+                            % create a header struct for this iteration.
+                            this_header = obj.ECG_header;
+                            this_header.nsamp = this_iter_ECG_end_idx - this_iter_ECG_start_idx + 1;
 
-%                         if( strcmpi(obj.partition_mode, 'QRS') )
-%                             fprintf(1, 'ECG from: %d - %d\n', obj.QRS_locations(this_iter_QRS_start_idx) , obj.QRS_locations(this_iter_QRS_end_idx) );
-%                         else
-%                             fprintf(1, 'ECG from: %d - %d\n', this_iter_ECG_start_idx + this_iter_ECG_relative_start_end_idx - 1);
-%                         end
+                            %% ECG Recording reading
+                            % Update point
+                            pb.checkpoint('ECG Recording reading');
 
-                        %user-defined execution according to 'process'
-                        payload = obj.ECGtaskHandle.Process(ECG, this_iter_ECG_start_idx, this_iter_ECG_relative_start_end_idx, this_header, this_ann, [this_iter_QRS_start_idx this_iter_QRS_end_idx], obj.Task_payload);
-                        
-                        if( ~isempty(payload) )
-                            
-                            if( obj.ECGtaskHandle.doPayload )
+                            if(strcmpi(obj.ECGtaskHandle.target_units, 'Wrapper') )
+                                % pass this same object to the target class.
+                                ECG = obj;
 
-                                % Update point
-                                pb.checkpoint('Saving results');
+                            else
+                                %% read from file
 
-                                % save results
-                                save([obj.tmp_path 'tmpfile_' obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_' num2str(obj.this_pid) '_' num2str(this_iter) '_' num2str(cant_iter) '.mat'], '-struct', 'payload');
+                                ECG = read_ECG(obj.recording_name, this_iter_ECG_start_idx, this_iter_ECG_end_idx, obj.recording_format );
 
+                                %convert ADC samples (int16) to obj.ECGtaskHandle.target_units volts.
+                                if( ~isempty(obj.ECGtaskHandle.target_units) )
 
-                                % rename results.
-                                movefile(   [obj.tmp_path 'tmpfile_' obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_' num2str(obj.this_pid) '_' num2str(this_iter) '_' num2str(cant_iter)  '.mat'], ...
-                                            [obj.tmp_path 'tmpfile_' obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(obj.this_pid) '_iteration_' num2str(this_iter) '_of_' num2str(cant_iter)  '.mat'], 'f' );
+                                    if(strcmpi(obj.ECGtaskHandle.target_units, 'ADCu') )
+
+                                        if( any(any((ECG - fix(ECG)) < -(2^15-1))) || any(any((ECG - fix(ECG))) > 2^15 ) || any(any((ECG - fix(ECG)) ~= 0)) )
+                                            % outside int16 range -> match range
+                                            % non-integer values
+                                            ECG = bsxfun( @minus, ECG, rowvec(median(ECG)) );
+                                            aux_val = max(abs(ECG));
+                                            ECG = round(bsxfun( @times, ECG, 2^15 ./ rowvec(aux_val) ));
+                                        end
+
+                                        ECG = int16(ECG);
+
+                                    else
+                                        [ECG this_header] = ADC2units(double(ECG), this_header, obj.ECGtaskHandle.target_units);
+                                    end
+
+                                end
 
                             end
-                            
-                        end
-                        
-                        pb.end_loop();
-                                
-                    end
-                    
-                    %indicate end of loop.
-                    pb.reset();
 
-                    %clear some not needed variables 
-                    clear *ECG this_iter* ECG_annotations
-
-                    if( obj.ECGtaskHandle.doPayload )
-                        % if PIDs generates payloads, try to collect them.
-                        %% multiPIDs. Try to build the whole thing from every parts, otherwise exit
-                        if( obj.this_pid == obj.cant_pids )
-                        %% Master PID
-                        %last pid
+                            %% User defined function calculation
 
                             % Update point
-                            pb.checkpoint('Collecting results');
+                            pb.checkpoint('User function');
 
-                            %%Master PID last pid
-                            bContinue = true;
+    %                         if( strcmpi(obj.partition_mode, 'QRS') )
+    %                             fprintf(1, 'ECG from: %d - %d\n', obj.QRS_locations(this_iter_QRS_start_idx) , obj.QRS_locations(this_iter_QRS_end_idx) );
+    %                         else
+    %                             fprintf(1, 'ECG from: %d - %d\n', this_iter_ECG_start_idx + this_iter_ECG_relative_start_end_idx - 1);
+    %                         end
 
-                            %Wait for obj.Time2WaitPIDs seconds the finalization of all PIDs. Otherwise exit
-                            %with error.
-                            Start2Wait = tic();
-                            start_pid = 1;
-                            start_iter_this_pid = 1;
-                            resume_iter_this_pid = 0;
-                            payload_dump_counter = 1;
+                            %user-defined execution according to 'process'
+                            payload = obj.ECGtaskHandle.Process(ECG, this_iter_ECG_start_idx, this_iter_ECG_relative_start_end_idx, this_header, this_ann, [this_iter_QRS_start_idx this_iter_QRS_end_idx] );
 
-                            while(bContinue)
+                            if( ~isempty(payload) )
 
-                                try
+                                if( obj.ECGtaskHandle.doPayload )
 
                                     % Update point
-                                    pb.checkpoint('Collecting other PIDs results');
+                                    pb.checkpoint('Saving results');
 
-                                    %feature matrices
-                                    payload = [];
-                                    payload_idx = 1;
+                                    % save results
+                                    save([obj.tmp_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_' num2str(obj.this_pid) '_' num2str(this_iter) '_' num2str(cant_iter) '.mat'], '-struct', 'payload');
 
-                                    % to resume after the last dump to disk.
-                                    if( resume_iter_this_pid > 0 )
-                                        start_iter_this_pid = resume_iter_this_pid;
-                                    end
+                                    % rename results.
+                                    auxStr = [obj.tmp_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(obj.this_pid) '_iteration_' num2str(this_iter) '_of_' num2str(cant_iter)  '.mat'];
 
-                                    for ii = start_pid:obj.cant_pids
+                                    movefile(   [obj.tmp_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_' num2str(obj.this_pid) '_' num2str(this_iter) '_' num2str(cant_iter)  '.mat'], ...
+                                                auxStr, 'f' );
 
-                                        files_this_pid = dir([obj.tmp_path 'tmpfile_' obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(ii) '_*.mat' ]);
+                                    payload_files = [ payload_files; cellstr(auxStr)];
 
-                                        if( isempty(files_this_pid) )
-                                            
-                                            if(obj.cant_pids == 1)
-                                                % no payload generated
-                                                bContinue = false;
-                                                break
-                                            else
-                                                error('ECGwrapper:PIDnotFinished', 'Handled error');
-                                            end
-                                        end
-
-                                        cant_iteraciones_this_pid = length(files_this_pid);
-
-                                        % por q deberia saberlo ?
-                                        %obj.ECGtaskHandle.cant_iteration = cant_iteraciones_this_pid;
-
-                                        for jj = start_iter_this_pid:cant_iteraciones_this_pid 
-
-                                            % por q deberia saberlo ?
-                                            %obj.ECGtaskHandle.this_iteration = jj;
-
-                                            aux_FM_filename = [obj.tmp_path 'tmpfile_' obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(ii) '_iteration_' num2str(jj) '_of_' num2str(cant_iteraciones_this_pid) '.mat' ];
-                                            if( ~exist(aux_FM_filename, 'file'))
-                                                %Probably this PID not finished yet.
-                                                error('ECGwrapper:PIDnotFinished', 'Handled error');
-                                            end
-                                            aux = load(aux_FM_filename);
-
-                                            % Process the results according to the
-                                            % 'Concatenate' method
-                                            payload = obj.ECGtaskHandle.Concatenate(payload, aux);
-
-                                            %check variable growth
-                                            payload_var_size = whos('payload');
-                                            payload_var_size = payload_var_size.bytes/obj.typical_compression_ratio;
-
-                                            if( payload_var_size > obj.payload_max_size )
-                                                %force dump to disk.
-                                                payload.payload_idx = payload_idx;
-                                                save([obj.tmp_path 'payloads_' obj.ECGtaskHandle.name '_' obj.rec_filename '_' num2str(payload_dump_counter) '.mat'], '-struct', 'payload');
-                                                %update counter and reset payload.
-                                                payload_idx = payload_idx + size(payload,1) + 1;
-                                                payload = [];
-                                                payload_dump_counter = payload_dump_counter + 1;
-                                                %to continue from this pid/iteration.
-                                                start_pid = ii;
-                                                resume_iter_this_pid = jj+1;
-                                            end
-
-                                        end
-
-                                        %the first time in this loop we resume after the last
-                                        %file dump, and never again.
-                                        start_iter_this_pid = 1;
-
-                                    end
-
-                                    % Update point
-                                    pb.checkpoint('Generating final results');
-                                    
-                                    if( ~isempty(payload) )
-                                        % data remain in memory -> dump 2 disk
-                                        if( payload_idx > 1 )
-                                            payload.payload_idx = payload_idx;
-                                        end
-                                        save([obj.tmp_path 'payloads_' obj.ECGtaskHandle.name '_' obj.rec_filename '_' num2str(payload_dump_counter) '.mat'], '-struct', 'payload');
-                                        %update counter and reset payload.
-                                        payload = [];
-                                    end
-
-                                    %rename results to put some ordering.
-                                    files_this_pid = dir([obj.tmp_path 'payloads_' obj.ECGtaskHandle.name '_' obj.rec_filename '_*.mat']);
-                                    cant_iteraciones_this_pid = length(files_this_pid);
-
-                                    if( isempty(obj.ECGtaskHandle.user_string) )
-                                        aux_prefix = [];
-                                    else
-                                        aux_prefix= [obj.ECGtaskHandle.user_string '_'];
-                                    end
-                                    
-                                    for jj = 1:cant_iteraciones_this_pid
-
-                                        if( cant_iteraciones_this_pid > 1 )
-                                            aux_sufix = ['_part_' num2str(jj) '_of_' num2str(cant_iteraciones_this_pid)];
-                                        else
-                                            aux_sufix = [];
-                                        end
-
-                                        if( obj.repetitions > 1)
-                                            aux_sufix = [aux_sufix '_repetition_' num2str(repeat_idx)];
-                                        end
-                                        
-                                        auxStr = [obj.tmp_path obj.rec_filename '_' aux_prefix obj.ECGtaskHandle.name aux_sufix '.mat'];
-
-                                        movefile(   [obj.tmp_path 'payloads_' obj.ECGtaskHandle.name '_' obj.rec_filename '_' num2str(jj) '.mat'], ...
-                                                    auxStr, 'f' );
-
-                                        result_files = [ result_files; cellstr(auxStr)];
-
-                                    end
-
-                                    % Update point
-                                    pb.checkpoint('Deleting temporal files');
-
-                                    %clean temporal files
-                                    delete([obj.tmp_path 'tmpfile_' obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '*.mat' ]);
-
-                                    bContinue = false;
-
-
-                                catch ME
-                                    % Error handling
-
-                                    if( strfind(ME.identifier, 'ECGwrapper') )
-                                        if( obj.cant_pids == 1 || toc(Start2Wait) > obj.Time2WaitPIDs )
-                                            error('ECGwrapper:PIDnotFinished', 'Timeout. Master give up waitng Slaves.');
-                                        end
-                                        pause(30);
-                                    else
-                                        rethrow(ME)
-                                    end
                                 end
 
                             end
-                            
-                            for result_fn = rowvec(result_files)
-                            % Master PID can operate over the global
-                            % payload.
-                                payload = load(result_fn{1});
-                                payload = obj.ECGtaskHandle.Finish( payload, obj.ECG_header );
-                                save(result_fn{1}, '-struct', 'payload');
-                            end
-                            
-                            % move to the destination folder if needed
-                            if( ~strcmpi(obj.tmp_path, obj.output_path) )
+
+                            pb.end_loop();
+
+                        end
+
+
+                        % move to the destination folder if needed
+                        if( ~strcmpi(obj.tmp_path, obj.output_path) )
+
+                            pause_time = 1;
+                            for jj = 1:length(payload_files)
+
+                                % sometimes this file move takes long
+                                % time, specially in distributed
+                                % filesystems.
+
+                                tic_id = tic;
                                 
-                                for jj = 1:length(result_files)
-                                    movefile( result_files{jj}, obj.output_path, 'f' );
-                                    [~, aux_filename] = fileparts(result_files{jj});
-                                    result_files{jj} = [obj.output_path aux_filename ];
-                                end                            
+                                if( ~strcmp(fileparts(payload_files{jj}), fileparts(obj.output_path)) )
+                                    movefile( payload_files{jj}, obj.output_path, 'f' );
+                                end
+
+                                time_elapsed = toc(tic_id);
+
+                                if( time_elapsed > pause_time )
+                                    % network congestion, wait for a while
+                                    pause(pause_time)
+                                    pause_time = min(180, 3 * pause_time );
+                                else
+                                    pause_time = max(1, pause_time / 1.5 );
+                                end
+
                             end                            
-                            
-                        else
-                        %% Slave PIDs
+                        end    
 
-                            if( obj.syncSlavesWithMaster )
-                            % other PIDS sync here after Master build the
-                            % results file/s.
+                        %indicate end of loop.
+                        pb.reset();
 
+                        %clear some not needed variables 
+                        clear *ECG this_iter* ECG_annotations
+
+                        if( obj.ECGtaskHandle.doPayload )
+                            % if PIDs generates payloads, try to collect them.
+                            %% multiPIDs. Try to build the whole thing from every parts, otherwise exit
+                            if( obj.this_pid == obj.cant_pids )
+                            %% Master PID
+                            %last pid
+
+                                % Update point
+                                pb.checkpoint('Collecting results');
+
+                                %%Master PID last pid
                                 bContinue = true;
-                                %Wait for Time2WaitPIDs seconds the finalization of all PIDs. Otherwise exit
+
+                                %Wait for obj.Time2WaitPIDs seconds the finalization of all PIDs. Otherwise exit
                                 %with error.
                                 Start2Wait = tic();
+                                start_pid = 1;
+                                start_iter_this_pid = 1;
+                                resume_iter_this_pid = 0;
+                                payload_dump_counter = 1;
 
                                 while(bContinue)
 
                                     try
 
-                                        files_this_pid = dir([obj.tmp_path 'tmpfile_' obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(obj.this_pid) '_*.mat' ]);
+                                        % Update point
+                                        pb.checkpoint('Collecting other PIDs results');
 
-                                        if( ~isempty(files_this_pid) )
-                                            error('ECGwrapper:MasterNotFinished', 'Handled error');
+                                        %feature matrices
+                                        payload = [];
+                                        payload_idx = 1;
+
+                                        % to resume after the last dump to disk.
+                                        if( resume_iter_this_pid > 0 )
+                                            start_iter_this_pid = resume_iter_this_pid;
                                         end
 
+                                        for ii = start_pid:obj.cant_pids
+
+                                            files_this_pid = dir([obj.output_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(ii) '_*.mat' ]);
+
+                                            if( isempty(files_this_pid) )
+
+                                                if(obj.cant_pids == 1)
+                                                    % no payload generated
+                                                    bContinue = false;
+                                                    break
+                                                else
+                                                    error('ECGwrapper:PIDnotFinished', 'Handled error');
+                                                end
+                                            end
+
+                                            cant_iteraciones_this_pid = length(files_this_pid);
+
+                                            % por q deberia saberlo ?
+                                            %obj.ECGtaskHandle.cant_iteration = cant_iteraciones_this_pid;
+
+                                            for jj = start_iter_this_pid:cant_iteraciones_this_pid 
+
+                                                % por q deberia saberlo ?
+                                                %obj.ECGtaskHandle.this_iteration = jj;
+
+                                                aux_FM_filename = [obj.output_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(ii) '_iteration_' num2str(jj) '_of_' num2str(cant_iteraciones_this_pid) '.mat' ];
+                                                if( ~exist(aux_FM_filename, 'file'))
+                                                    %Probably this PID not finished yet.
+                                                    error('ECGwrapper:PIDnotFinished', 'Handled error');
+                                                end
+                                                aux = load(aux_FM_filename);
+
+                                                % Process the results according to the
+                                                % 'Concatenate' method
+                                                payload = obj.ECGtaskHandle.Concatenate(payload, aux);
+
+                                                %check variable growth
+                                                payload_var_size = whos('payload');
+                                                payload_var_size = payload_var_size.bytes/obj.typical_compression_ratio;
+
+                                                if( payload_var_size > obj.payload_max_size )
+                                                    %force dump to disk.
+                                                    payload.payload_idx = payload_idx;
+                                                    save([obj.output_path 'payloads_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_' num2str(payload_dump_counter) '.mat'], '-struct', 'payload');
+                                                    %update counter and reset payload.
+                                                    payload_idx = payload_idx + size(payload,1) + 1;
+                                                    payload = [];
+                                                    payload_dump_counter = payload_dump_counter + 1;
+                                                    %to continue from this pid/iteration.
+                                                    start_pid = ii;
+                                                    resume_iter_this_pid = jj+1;
+                                                end
+
+                                            end
+
+                                            %the first time in this loop we resume after the last
+                                            %file dump, and never again.
+                                            start_iter_this_pid = 1;
+
+                                        end
+
+                                        % Update point
+                                        pb.checkpoint('Generating final results');
+
+                                        if( ~isempty(payload) )
+                                            % data remain in memory -> dump 2 disk
+                                            if( payload_idx > 1 )
+                                                payload.payload_idx = payload_idx;
+                                            end
+                                            save([obj.output_path 'payloads_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_' num2str(payload_dump_counter) '.mat'], '-struct', 'payload');
+                                            %update counter and reset payload.
+                                            payload = [];
+                                        end
+
+                                        %rename results to put some ordering.
+                                        files_this_pid = dir([obj.output_path 'payloads_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_*.mat']);
+                                        cant_iteraciones_this_pid = length(files_this_pid);
+
+                                        if( isempty(obj.ECGtaskHandle.user_string) )
+                                            aux_user_prefix = [];
+                                        else
+                                            aux_user_prefix= [obj.ECGtaskHandle.user_string '_'];
+                                        end
+
+                                        for jj = 1:cant_iteraciones_this_pid
+
+                                            if( cant_iteraciones_this_pid > 1 )
+                                                aux_sufix = ['_part_' num2str(jj) '_of_' num2str(cant_iteraciones_this_pid)];
+                                            else
+                                                aux_sufix = [];
+                                            end
+
+                                            if( obj.repetitions > 1)
+                                                aux_sufix = [aux_sufix '_repetition_' num2str(repeat_idx)];
+                                            end
+
+                                            auxStr = [obj.output_path obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name aux_sufix '.mat'];
+
+                                            movefile(   [obj.output_path 'payloads_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_' num2str(jj) '.mat'], ...
+                                                        auxStr, 'f' );
+
+                                            result_files = [ result_files; cellstr(auxStr)];
+
+                                        end
+
+                                        % Update point
+                                        pb.checkpoint('Deleting temporal files');
+
+                                        %clean temporal files
+                                        delete([obj.output_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '*.mat' ]);
 
                                         bContinue = false;
 
+
                                     catch ME
+                                        % Error handling
 
                                         if( strfind(ME.identifier, 'ECGwrapper') )
-                                            if( toc(Start2Wait) > 1.5*obj.Time2WaitPIDs )
-                                                error('ECGwrapper:MasterNotFinished', 'Timeout. Slave give up waitng Master.');
+                                            if( obj.cant_pids == 1 || toc(Start2Wait) > obj.Time2WaitPIDs )
+                                                error('ECGwrapper:PIDnotFinished', 'Timeout. Master give up waitng Slaves.');
                                             end
                                             pause(30);
                                         else
@@ -729,17 +759,68 @@ classdef ECGwrapper < handle
                                         end
                                     end
 
+                                end
 
-                                end                        
+                                for result_fn = rowvec(result_files)
+                                % Master PID can operate over the global
+                                % payload.
+                                    payload = load(result_fn{1});
+                                    payload = obj.ECGtaskHandle.Finish( payload, obj.ECG_header );
+                                    save(result_fn{1}, '-struct', 'payload');
+                                end
+
+                            else
+                            %% Slave PIDs
+
+                                if( obj.syncSlavesWithMaster )
+                                % other PIDS sync here after Master build the
+                                % results file/s.
+
+                                    bContinue = true;
+                                    %Wait for Time2WaitPIDs seconds the finalization of all PIDs. Otherwise exit
+                                    %with error.
+                                    Start2Wait = tic();
+
+                                    while(bContinue)
+
+                                        try
+
+                                            files_this_pid = dir([obj.tmp_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(obj.this_pid) '_*.mat' ]);
+
+                                            if( ~isempty(files_this_pid) )
+                                                error('ECGwrapper:MasterNotFinished', 'Handled error');
+                                            end
+
+
+                                            bContinue = false;
+
+                                        catch ME
+
+                                            if( strfind(ME.identifier, 'ECGwrapper') )
+                                                if( toc(Start2Wait) > 1.5*obj.Time2WaitPIDs )
+                                                    error('ECGwrapper:MasterNotFinished', 'Timeout. Slave give up waitng Master.');
+                                                end
+                                                pause(30);
+                                            else
+                                                rethrow(ME)
+                                            end
+                                        end
+
+
+                                    end                        
+
+                                end
 
                             end
-                            
-                        end
-                        
-                    else
-                        obj.ECGtaskHandle.Finish( payload, obj.ECG_header );
-                    end
 
+                        else
+                            obj.ECGtaskHandle.Finish( payload, obj.ECG_header );
+                        end
+
+                    else
+                        cprintf('[1,0.5,0]', 'Requirements not satisfied in %s for task %s.\n', obj.recording_name, obj.ECGtaskHandle.name);
+                    end
+                    
                 catch MException
                     %% Error handling
 
@@ -776,17 +857,12 @@ classdef ECGwrapper < handle
                         
                     else
                         %% No User interface report clearly to log file
-                        fprintf(2,'\n\n')
-                        fprintf(2,'###########\n')
-                        fprintf(2,'## ERROR ##\n')
-                        fprintf(2,'###########\n')
-
+                        
+                        str_aux = disp_string_framed(0, [ 'Error in ' obj.recording_name ] );
+                        
                         report = getReport(MException);
                         
-                        fprintf(2, '%s', report);
-                        fprintf(2,'###########\n')
-                        fprintf(2,'## ERROR ##\n')
-                        fprintf(2,'###########\n')
+                        fprintf(2, '\n\n%s\n%s\n%s', str_aux, report, str_aux);
 
                         rethrow(MException)
 
@@ -808,12 +884,20 @@ classdef ECGwrapper < handle
             
             if( isempty(result_files) )
                 
-                obj.Error = true;
-                disp_string_framed(2, 'No payload generated')
+                if( obj.ECGtaskHandle.started )
+                    if( obj.cant_pids == 1 || obj.this_pid == obj.cant_pids )
+                        obj.Error = true;
+                        disp_string_framed(2, 'No payload generated');
+                    else
+                        disp_string_framed('*Blue', 'Work done!');
+                    end
+                else
+                    disp_string_framed('[1,0.5,0]', 'Nothing to do here');
+                end
                 
             else
                 
-                disp_string_framed(1, 'Work done!')
+                disp_string_framed('*Blue', 'Work done!');
 
                 if( nargout > 0 )
                     % result required
@@ -826,14 +910,14 @@ classdef ECGwrapper < handle
                         result_payload = [];
                     end
                 else
-                    fprintf(1,'\n\nResults saved in:\n');
-                    cellfun(@(a)(fprintf(1,'%s\n',a)), obj.Result_files);
+                    fprintf(1, '\n');
+                    cprintf( 'Blue', disp_option_enumeration( 'Results saved in', obj.Result_files));
+                    fprintf(1, '\n');
                 end
             end
             
             % destroy the progress bar.
             pb.delete;
-
             
         end
         
@@ -852,31 +936,57 @@ classdef ECGwrapper < handle
                 ECG_end_idx = ECG_start_idx + 10 * obj.ECG_header.freq;
             end
             
-            ECG = read_ECG(obj.recording_name, ECG_start_idx, ECG_end_idx, obj.recording_format );
+            ECG = read_ECG(obj.recording_name, max(1,ECG_start_idx), min(obj.ECG_header.nsamp,ECG_end_idx), obj.recording_format );
             
         end
         
-        function result_files = GetCahchedFileName(obj)
+        function result_files = GetCahchedFileName(obj, task_names)
            
+            if( nargin < 2 || isempty(task_names) )
+                task_names = {obj.ECGtaskHandle};
+            end
+
+            if( ~iscell(task_names) && ~ischar(task_names))
+                task_names = {obj.ECGtaskHandle};
+            elseif( ischar(task_names) )
+                task_names = {task_names};
+            end
+            
+            result_files = {};
+            
+            prev_ECGtaskHandle = obj.ECGtaskHandle;
+            
+            for this_name = rowvec(task_names)
+                
+                obj.ECGtaskHandle = this_name{1};
+                
+                if( obj.bArgChanged )
+                    obj = CheckArguments(obj);
+                    obj.bArgChanged = false;
+                end
+
+                if( isempty(prev_ECGtaskHandle.user_string) )
+                    aux_user_prefix = [];
+                else
+                    aux_user_prefix= [prev_ECGtaskHandle.user_string '_'];
+                end
+
+                files_this_pid = dir([obj.output_path obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name '*.mat']);
+
+                if( ~isempty(files_this_pid) )
+                    result_files = [ result_files; strcat(obj.output_path, {files_this_pid(:).name}) ];
+                end
+
+            end
+
+            % leave things as we found.
+            obj.ECGtaskHandle = prev_ECGtaskHandle;
+            
             if( obj.bArgChanged )
                 obj = CheckArguments(obj);
                 obj.bArgChanged = false;
             end
             
-            result_files = [];
-            
-            if( isempty(obj.ECGtaskHandle.user_string) )
-                aux_prefix = [];
-            else
-                aux_prefix= [obj.ECGtaskHandle.user_string '_'];
-            end
-
-            files_this_pid = dir([obj.output_path obj.rec_filename '_' aux_prefix obj.ECGtaskHandle.name '*.mat']);
-
-            if( ~isempty(files_this_pid) )
-                result_files = strcat(obj.output_path, {files_this_pid(:).name});
-            end
-                
         end
         
         function obj = CheckECGrecording(obj)
@@ -887,7 +997,12 @@ classdef ECGwrapper < handle
                 
                 % ECG to be read
 
-                if( ~exist(obj.recording_name, 'file') )
+                if( exist(obj.recording_name, 'file') )
+                    
+                    [obj.rec_path, obj.rec_filename] = fileparts(obj.recording_name);
+                    obj.rec_path = [obj.rec_path filesep];
+                    
+                else
                     [obj.rec_path, obj.rec_filename] = fileparts(obj.recording_name);
                     
                     obj.rec_path = [obj.rec_path filesep];
@@ -901,16 +1016,18 @@ classdef ECGwrapper < handle
                         [~, aux_idx] = max(cell2mat({aux_files(:).bytes}));
                         obj.recording_name = [obj.rec_path aux_files(aux_idx).name];
                     end
+                    
+                    [~, obj.rec_filename] = fileparts(obj.recording_name);
+                    
                 end
 
-                [~, obj.rec_filename] = fileparts(obj.recording_name);
                 
                 if( strcmp(obj.recording_format, 'auto') )
                     %Try guessing the ECG format
                     aux_fmt = ECGformat(obj.recording_name);
 
                     if( isempty(aux_fmt) )
-                       str_aux = disp_option_enumeration('Unknown format. Choose one of the following:', obj.cKnownFormats);
+                       str_aux = disp_option_enumeration( sprintf('Could not guess the format of:\n\n%s\n\nChoose one of the following:', strrep(obj.recording_name, '\', '\\')), obj.cKnownFormats);
                        error( 'ECGwrapper:ArgCheck:InvalidFormat', str_aux);
                     else
                         obj.recording_format = aux_fmt;
@@ -948,6 +1065,9 @@ classdef ECGwrapper < handle
                 elseif( strcmp(obj.recording_format, 'Mortara') )
                     ann_aux = [];
                     obj.ECG_header = read_Mortara_header(obj.recording_name);
+                    [obj.rec_path, obj.rec_filename] = fileparts(obj.recording_name);
+                    obj.rec_path = [obj.rec_path filesep];
+                    
 
                 elseif( strcmp(obj.recording_format, 'HES') )
                     ann_aux = read_HES_ann([obj.recording_name(1:end-3) 'lst']);
@@ -961,16 +1081,16 @@ classdef ECGwrapper < handle
 
                 elseif( strcmp(obj.recording_format, 'MAT') )
 
-                    aux_load = load(obj.recording_name, { 'heasig', 'ann' });
+                    aux_load = load(obj.recording_name);
 
-                    if( ~isfield( aux_load, 'heasig') )
+                    if( isfield( aux_load, 'header') )
+                        obj.ECG_header = aux_load.header;
+                    else                        
                         error( 'ECGwrapper:ArgCheck:InvalidECGarg', 'MAT file does not include the "heasig" variable.\n' );
                     end
 
-                    obj.ECG_header = aux_load.obj.ECG_header;
-
-                    if( ~isfield( aux_load, 'ann') )
-                        ann_aux = aux_load.ECG_annotations;
+                    if( isfield( aux_load, 'ann') )
+                        ann_aux = aux_load.ann;
                     else
                         ann_aux = [];
                     end
@@ -1001,10 +1121,14 @@ classdef ECGwrapper < handle
 
             if( obj.Processed )
                 if( obj.Error )
-                    fprintf(2, 'Some error happened in %s:\n\n', obj.recording_name );
+                    
+                    fprintf(2, 'Some error happened in %s\n', obj.ECGtaskHandle.name );
+                    
                     for ii = 1:length(obj.ErrorReport)
-                        fprintf(2, 'Error %d\n----------\n\n%s\n', obj.ErrorReport{ii} );
+                        disp_string_framed(2, sprintf('Error %d', ii));
+                        fprintf(2, '\n%s\n', obj.ErrorReport{ii} );
                     end
+                    
                 end
             else
                 fprintf(1, 'Task not processed yet. Execute ''Run'' method first\n');
@@ -1013,47 +1137,53 @@ classdef ECGwrapper < handle
         
         function disp(obj)
             tab_size = 60;
-            if( obj.bCreated )
-                if( isobject(obj.ECGtaskHandle) )
-                    task_name = obj.ECGtaskHandle.name;
-                else
-                    task_name = 'Undef';
-                end
+            
+            for this_obj = rowvec(obj)
                 
-                fprintf(1,[ '+--------------------------+\n' ...
-                            '| ECGwrapper object config |\n' ...
-                            '+--------------------------+\n' ...
-                            '+ECG recording: %s (%s) \t +PID: %d/%d\n' ... 
-                            '+Function name: %s '   '\t +repetitions: %d\n' ...
-                            '+Partition mode: %s\n'], ... 
-                            adjust_string(obj.recording_name, tab_size-23), ...
-                            obj.recording_format, ...
-                            obj.this_pid, ...
-                            obj.cant_pids, ...
-                            adjust_string(task_name, tab_size-16), ...
-                            obj.repetitions, ...
-                            adjust_string(obj.partition_mode, tab_size));
+                if( this_obj.bCreated )
+                    if( isobject(this_obj.ECGtaskHandle) )
+                        task_name = this_obj.ECGtaskHandle.name;
+                    else
+                        task_name = 'Undef';
+                    end
 
-                if( obj.Processed)
-                    strAux = '+Processed: true';
+                    disp_string_framed( '*Blue', 'ECGwrapper object config' );
+                    fprintf(1,[ ...
+                                '+ECG recording: %s (%s)\n' ... 
+                                '+PID: %d/%d\n' ... 
+                                '+Function name: %s\n' ...
+                                '+Repetitions: %d\n' ...
+                                '+Partition mode: %s\n'], ... 
+                                adjust_string(this_obj.recording_name, tab_size-23), ...
+                                this_obj.recording_format, ...
+                                this_obj.this_pid, ...
+                                this_obj.cant_pids, ...
+                                adjust_string(task_name, tab_size-16), ...
+                                this_obj.repetitions, ...
+                                adjust_string(this_obj.partition_mode, tab_size));
+
+                    fprintf(1, '+Processed: ');                    
+                    if( this_obj.Processed)
+                        cprintf('*Magenta', 'true\n');                    
+                    else
+                        cprintf('*Red', 'false\n');                    
+                    end
+
+                    fprintf(1, '+TMP: %s\n', adjust_string(this_obj.tmp_path, 20) );
+
+                    if( this_obj.Processed)
+                        fprintf(1, disp_option_enumeration( '+Result files:', this_obj.Result_files));
+                    end
+
                 else
-                    strAux = '+Processed: false';
-                end
-                fprintf(1, [ strAux repmat(' ', 1, tab_size-length(strAux)) '\t +TMP: %s\n'], adjust_string(obj.tmp_path, 20));
-                
-                if( obj.Processed)
-                    fprintf(1, ['\n' ... 
-                                'Result files\n' ...
-                                '------------\n'] );
-                    disp(obj.Result_files);
+                    fprintf(1, 'Object not created yet.');
                 end
                 
-            else
-                fprintf(1, 'Object not created yet.');
             end
         end
         
         function set.tmp_path(obj,value)
+            
             if( isempty(value) )
                 obj.tmp_path = value;
             elseif( (ischar(value) && exist(value, 'dir') ) )
@@ -1066,21 +1196,31 @@ classdef ECGwrapper < handle
             else
                 warning('ECGwrapper:BadArg', 'tmp_path must be a string.');
             end
+            
         end
         
         function set.output_path(obj,value)
             if( isempty(value) )
                 obj.output_path = value;
                 
-            elseif(ischar(value) && exist(value, 'dir') ) 
+            elseif(ischar(value) ) 
+                
+                if( ~exist(value, 'dir') )
+                    if( ~mkdir(value) )
+                        warning('ECGwrapper:BadArg', 'output_path must exist, or privileges should be granted to this script.');
+                        return
+                    end
+                end
+                
                 if( value(end) == filesep )
                     obj.output_path = value;
                 else
                     obj.output_path = [value filesep];
                 end
                 obj.bArgChanged = true;
+                
             else
-                warning('ECGwrapper:BadArg', 'tmp_path must be a string.');
+                warning('ECGwrapper:BadArg', 'output_path must be a string.');
             end
         end
         
@@ -1091,14 +1231,6 @@ classdef ECGwrapper < handle
                 obj.bECG_rec_changed = true;
             else
                 warning('ECGwrapper:BadArg', 'recording_name must be a string.');
-            end
-        end
-
-        function set.Task_payload(obj,value)
-            if( isstruct(value) || isempty(value) )
-                obj.Task_payload = value;
-            else
-                warning('ECGwrapper:BadArg', 'Task_payload must be a struct.');
             end
         end
 
@@ -1131,9 +1263,7 @@ classdef ECGwrapper < handle
                         obj.QRS_locations = value.time;
 
                     else
-
-                        strAux = [ repmat(' + ', length(obj.cAnnotationsFieldNamesRequired), 1) char(obj.cAnnotationsFieldNamesRequired) repmat('\n', length(obj.cAnnotationsFieldNamesRequired), 1 ) ];
-                        warning( 'ECGwrapper:BadArg', ['Please provide the following fields in the annotations struct:\n ' rowvec(strAux') ] );
+                        warning( 'ECGwrapper:BadArg', disp_option_enumeration( 'Please provide the following fields in the annotations struct:',  obj.cAnnotationsFieldNamesRequired) );
                     end
 
                 else
@@ -1206,6 +1336,10 @@ classdef ECGwrapper < handle
                     obj.ECGtaskHandle = obj.cKnownECGtasksHdl{aux_idx};
                     obj.bArgChanged = true;
                 end
+            elseif( isempty(value) )
+                
+                obj.ECGtaskHandle = ECGtask_do_nothing();
+                
             else
                 warning('ECGwrapper:BadArg', 'ECGtaskHandle must be a ECGtask object.');
             end
@@ -1255,11 +1389,9 @@ function obj = CheckArguments(obj)
     obj = CheckECGrecording(obj);
 
     if( isempty(obj.tmp_path) )
-        if(ispc())
-            obj.tmp_path = tempdir ;
-        else
-            obj.tmp_path = './tmp/';
-        end
+        
+        obj.tmp_path = tempdir ;
+        
     %         obj.tmp_path = [fileparts(mfilename('fullpath')) filesep 'tmp' filesep ];
     %     obj.tmp_path = [fileparts(obj.recording_name) filesep ];
     end

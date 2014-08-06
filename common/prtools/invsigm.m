@@ -13,14 +13,12 @@
 % The inverse sigmoidal transformation to transform a classifier to a
 % mapping, transforming posterior probabilities into distances.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, CLASSC, SIGM
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl
 % Faculty of Applied Sciences, Delft University of Technology
 % P.O. Box 5046, 2600 GA Delft, The Netherlands
-
-% $Id: invsigm.m,v 1.3 2007/03/22 08:54:59 duin Exp $
 
 function w = invsigm(arg)
 		if nargin == 0
@@ -44,7 +42,7 @@ elseif isa(arg,'prmapping')
 			w.data = data;
 		end
 	else
-		w_s = setname(mapping('invsigm','fixed'),'Inverse Sigmoidal Mapping');
+		w_s = setname(prmapping('invsigm','fixed'),'Inverse Sigmoidal Mapping');
 		w = arg*w_s;
 	end
 	

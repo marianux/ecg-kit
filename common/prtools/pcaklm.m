@@ -40,7 +40,7 @@
 % This function should not be called directly, only trough PCA or KLM.
 % Use FISHERM for optimizing the linear class separability (LDA).
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, PCLDC, KLLDC, PCAM, KLM, FISHERM
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -128,7 +128,7 @@ function [w,truefrac] = pcaklm (type,a,frac)
 	% Calculate overall or average class prior-weighted covariance matrix and
 	% find eigenvectors F. 
 
-	if (strcmp(type,'pca'))
+	if (strcmp(type,'pcam'))
 		if (c==0) | ~islabtype(a,'crisp')  % we have unlabeled data!
 			G = prcov(+b); % use all
 		else

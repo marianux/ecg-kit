@@ -1,6 +1,7 @@
-%FISHERC Fisher's Least Square Linear Classifier
+%FISHERC Trainable classifier: Fisher's Least Square Linear Discriminant
 % 
 %   W = FISHERC(A)
+%   W = A*FISHERC
 % 
 % INPUT
 %   A  Dataset
@@ -37,7 +38,7 @@
 % Fisher linear classifier with pseudo-inverse covariance matrix, Pattern
 % Recognition Letters, vol. 19, no. 5-6, 1998, 385-392.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, TESTC, LDC, NMC, FISHERM
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

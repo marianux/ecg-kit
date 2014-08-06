@@ -19,7 +19,7 @@
 %
 % If A has soft labels or target labels, W is returned without change.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, CLASSC
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

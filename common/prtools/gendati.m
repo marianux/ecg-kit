@@ -18,7 +18,7 @@
 % If specified, all objects have label LABEL. Otherwise they are
 % unlabeled.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

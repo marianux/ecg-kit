@@ -1,30 +1,27 @@
-%LABELD Find labels of classification dataset (perform crisp classification)
+%LABELD Fixed mapping finding labels of classification dataset 
+%      (perform crisp classification)
 % 
-%   LABELS = LABELD(Z)
-%   LABELS = Z*LABELD
 %   LABELS = LABELD(A,W)
 %   LABELS = A*W*LABELD
-%   LABELS = LABELD(Z,THRESH)
-%   LABELS = Z*LABELD([],THRESH)
+%   LABELS = LABELD(A*W,THRESH)
+%   LABELS = A*W*LABELD(THRESH)
 %   LABELS = LABELD(A,W,THRESH)
-%   LABELS = A*W*LABELD([],THRESH)
 %
 % INPUT
-%		Z        Classification dataset, or
-%		A,W      Dataset and classifier mapping
+%		A        Dataset
+%   W        Trained classifier
 %   THRESH   Rejection threshold
 %
 % OUTPUT
-%		LABELS	List of labels
+%		LABELS 	List of labels
 %
 % DESCRIPTION 
-% Returns the labels of the classification dataset Z (typically the result
-% of a mapping or classification A*W). For each object in Z (i.e. each row)
-% the feature label or class label (i.e. the column label) of the maximum 
-% column value is returned.
+% Returns the labels of the classification dataset Z=A*W. For each object 
+% in Z (i.e. each row) the feature label or class label (i.e. the column
+% label) of the maximum column value is returned.
 %
 % Effectively, this performs the classification. It can also be considered
-% as a conversion from soft labels Z to crisp labels.
+% as a conversion from soft labels (posteriors) stored in Z to crisp labels.
 %
 % When the parameter THRESH is supplied, then all objects which
 % classifier output falls below this value are rejected. The returned
@@ -33,27 +30,22 @@
 % is recommended to convert the output to a posterior prob. output using
 % CLASSC.                                    (David Tax,  27-12-2004)
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, TESTC, PLOTC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-function labels = labeld(a,w,thresh)
+function labels = labeld(varargin)
 
-		% Add the possibility to reject objects for which the posterior is
-	% too low:
-	if (nargin < 3)
-		thresh = [];
-	end
-	if (nargin == 2) & isa(w,'double') % we did something like labeld(z,0.3)
-		thresh = w;
-		w = [];
-	end
-	if (nargin < 2)
-		w = [];
-	end
+
+  argin = shiftargin(varargin,'scalar');
+  if numel(argin) > 1
+    argin = [argin(1) shiftargin(argin(2:end),'scalar')];
+  end
+  argin = setdefaults(argin,[],[],[]);
+  [a,w,thresh] = deal(argin{:});
 
 	if (nargin == 0) | isempty(a)
 
@@ -92,7 +84,7 @@ function labels = labeld(a,w,thresh)
 			% decision boundary = 0. 
 			J = 2 - (double(a) >= 0); 
 			if ~isempty(thresh)
-				warning('Inproper thresholding of the 2-class dataset, please use classc.');
+				warning('Improper thresholding of the 2-class dataset, please use classc.');
 			end
 		else
 			% Otherwise, pick the column containing the maximum output.
@@ -109,7 +101,8 @@ function labels = labeld(a,w,thresh)
 			if isa(featlist,'double')
 				labels(Jrej) = NaN;
 			elseif isa(featlist,'char')
-				labels(Jrej,:) = repmat(' ',size(featlist(1,:)) ); % Trick!:-)
+				% labels(Jrej,:) = repmat(' ',size(featlist(1,:)) ); % Trick!:-)
+        labels(Jrej,:) = repmat(' ', length(Jrej), size(labels,2) ); % Trick!:-)
 			else
 				error('The featlist of A is confusing. Cannot make a reject label');
 			end
@@ -117,6 +110,7 @@ function labels = labeld(a,w,thresh)
 	else
 
 		% Just construct classified dataset and call again.
+		%labels = feval(mfilename,a*w,thresh);
 		labels = feval(mfilename,a*w,thresh);
 
 	end

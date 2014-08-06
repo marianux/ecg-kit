@@ -30,8 +30,8 @@
 % John Wiley and Sons, New York, 2001.
 % 2. A. Webb, Statistical Pattern Recognition, John Wiley & Sons, New York, 2002.
 %
-% SEE ALSO
-% DATASETS, MAPPINGS, PLOTE, ROC, TESTC
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATASETS, MAPPINGS, PLOTE, PRROC, TESTC
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl
 % Faculty of Applied Sciences, Delft University of Technology

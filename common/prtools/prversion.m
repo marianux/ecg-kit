@@ -27,7 +27,12 @@ if nargin < 1 % get it locally
 		clear version
   end
 else % location is url
-  s = urlread(location);
+  if verLessThan('matlab','8.0')
+    s = ''; % Cannot read if server is down
+  else
+    [s,status] = urlread(location,'TimeOut',5);
+  end
+  %s = urlread(location);
   s = [s ' '];                % make sure there is a space
   s = strrep(s,char(10),' '); % replace newline by space
   n = strfind(lower(s),'version');

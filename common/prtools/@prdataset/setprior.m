@@ -25,5 +25,5 @@
 % prior probabilities. Note that these prior probabilities change, if the
 % number of elements in A is changed, or its labeling.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PRDATASET, GETPRIOR, ISEMPTY

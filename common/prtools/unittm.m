@@ -16,7 +16,7 @@
 % dimensionality the feature size of A. Consequently B*W returns B, but
 % checks the feature size against A.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, UNITM
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

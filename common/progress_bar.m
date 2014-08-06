@@ -198,7 +198,7 @@ classdef progress_bar < handle
             end 
 
             % take care always a waitbar to draw.
-            if( ~ishandle(obj.wb_handle) )
+            if( obj.bUIpresent && ~ishandle(obj.wb_handle) )
                 obj.wb_handle = waitbar(0);
                 set(obj.wb_handle, 'Tag', 'progress_bar');
                 obj.wb_axes_hdl = findobj(obj.wb_handle,'Type','Axes');
@@ -206,7 +206,9 @@ classdef progress_bar < handle
                 set(obj.wb_axes_hdl, 'position', obj.bar_position );
             end
 
-            waitbar( obj.counter - fix(obj.counter), obj.wb_handle, obj.Message );
+            if( obj.bUIpresent )
+                waitbar( obj.counter - fix(obj.counter), obj.wb_handle, obj.Message );
+            end
             
             if( isempty(obj.parent) )
                 aux_LoopMeanTime = obj.LoopMeanTime;
@@ -215,7 +217,7 @@ classdef progress_bar < handle
             end
             
             if( isempty(aux_LoopMeanTime) )
-                if( ~isempty(obj.obj_tic) )
+                if( obj.bUIpresent && ~isempty(obj.obj_tic) )
                     %Learning phase
                     set(obj.wb_handle, 'Name', [ obj.Title '. Learning loop time ...' ]);
                 end
@@ -227,10 +229,14 @@ classdef progress_bar < handle
                     aux_Time2Finish = (obj.parent.Loop2do - obj.parent.LoopsDone) * obj.parent.LoopMeanTime + (obj.Loop2do-obj.LoopsDone) * obj.LoopMeanTime - currTime;
                 end                
                 
-                if( isempty(obj.Loop2do) )
-                    set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 30) '. [' Seconds2HMS( aux_LoopMeanTime ) ' s/loop]']);
-                else
-                    set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 30) '. Finishing in ' Seconds2HMS(aux_Time2Finish) ]);
+                if( obj.bUIpresent )
+                
+                    if( isempty(obj.Loop2do) )
+                        set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 30) '. [' Seconds2HMS( aux_LoopMeanTime ) ' s/loop]']);
+                    else
+                        set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 30) '. Finishing in ' Seconds2HMS(aux_Time2Finish) ]);
+                    end
+                    
                 end
             end
                 
@@ -247,7 +253,7 @@ classdef progress_bar < handle
                 aux_mean_time = obj.parent.LoopMeanTime + obj.LoopMeanTime;
             end
             
-            if( ~isempty(aux_mean_time) && aux_mean_time > obj.long_loop_in_sec )
+            if( obj.bUIpresent && ~isempty(aux_mean_time) && aux_mean_time > obj.long_loop_in_sec )
                 % long process: progress within a loop.
                 waitbar( 0, obj.wb_handle, 'Start of loop.' );
 %             else
@@ -264,13 +270,16 @@ classdef progress_bar < handle
             obj.LoopMeanTime = mean(obj.LoopTimes);
             obj.LoopsDone = obj.LoopsDone + 1;
             
-            if( obj.LoopMeanTime > obj.long_loop_in_sec )
-                % long process: progress within a loop.
-                waitbar( 1, obj.wb_handle, 'End of loop.' );
-%             else
-                % short process: total progress                 
+            if( obj.bUIpresent )
+
+                if( obj.LoopMeanTime > obj.long_loop_in_sec )
+                    % long process: progress within a loop.
+                    waitbar( 1, obj.wb_handle, 'End of loop.' );
+    %             else
+                    % short process: total progress                 
+                end
+                
             end
-            
             
         end
         
@@ -291,15 +300,18 @@ classdef progress_bar < handle
             obj.Loop2do = [];
             obj.obj_tic = [];
             obj.Message = '';
-            waitbar( 0, obj.wb_handle, obj.Message );
-            set(obj.wb_handle, 'Name', obj.Title);
+            
+            if( obj.bUIpresent )
+                waitbar( 0, obj.wb_handle, obj.Message );
+                set(obj.wb_handle, 'Name', obj.Title);
+            end
             
         end
         
         function set.Message(obj,value)
             if( ischar(value) )
                 obj.Message = value;
-                if( obj.bPBcreated )
+                if( obj.bUIpresent && obj.bPBcreated )
                     waitbar( obj.counter - fix(obj.counter), obj.wb_handle, obj.Message );
                 end
             else
@@ -310,7 +322,7 @@ classdef progress_bar < handle
         function set.Title(obj,value)
             if( ischar(value) )
                 obj.Title = value;
-                if( obj.bPBcreated )
+                if( obj.bUIpresent && obj.bPBcreated )
                     set(obj.wb_handle, 'Name', obj.Title);
                 end
             else

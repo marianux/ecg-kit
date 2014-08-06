@@ -1,4 +1,4 @@
-%IM_BPROPAGATION Binary propagation of images stored in a dataset (DIP_Image)
+%IM_BPROPAGATION Fixed mapping or binary propagation (DIP_Image)
 %
 %   B = IM_BPROPAGATION(A1,A2,N,CONNECTIVITY,EDGE_CONDITION)
 %
@@ -25,7 +25,7 @@
 % cleaned = im_bpropagation(seed,mask);  figure, show(cleaned)
 % showfigs
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DATAFILES, DIP_IMAGE, BPROPAGATION
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

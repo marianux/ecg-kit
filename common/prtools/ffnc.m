@@ -21,7 +21,7 @@
 % This function should not be called directly, but through one of its 
 % front-ends, BPXNC or LMNC. Uses the Mathworks' Neural Network toolbox.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, BPXNC, LMNC, NEURC, RNNC, RBNC, PRPROGRESS
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl
@@ -32,11 +32,9 @@
 
 function [w,hist] = ffnc(alg,a,units,max_iter,w_ini,tt,fid)
 
-		% Settings for the different training algorithms.
+		% Settings for the various training algorithms.
 	
-	if exist('nnet') ~= 7
-		error('Neural network toolbox not found')
-	end
+  checktoolbox('nnet');
 
 	if (strcmp(alg,'bpxnc'))
 		mapname = 'BP-NeuralNet';	

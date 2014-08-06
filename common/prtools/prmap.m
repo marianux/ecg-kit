@@ -35,7 +35,8 @@ if iscell(a) || iscell(b)
     % return a cell array with the individual mappings
     % in case and b are both cell arrays, they should have the same size
     % and the result is computed element by element
-    d = cellmap(a,b);
+    varargout = cell(1,nargout-1);
+    [d,varargout{:}] = cellmap(a,b);
     return
   end
 end
@@ -175,8 +176,10 @@ elseif isa(a,'prdataset') || isa(a,'prdatafile') || isa(a,'double') || ...
         if b.scale ~= 1
           d = b.scale*d;
         end
-			else
-				b.scale*feval(mapp,a,pars{:})
+      else
+        feval(mapp,a,pars{:})
+				% dd = feval(mapp,a,pars{:});
+        % dd  % just tric to show result on the screen (why??)
 				return
 			end
     catch
@@ -189,8 +192,11 @@ elseif isa(a,'prdataset') || isa(a,'prdatafile') || isa(a,'double') || ...
       end
       d = addpostproc(a,{b}); % just add mapping to postprocesing and execute later
       return
-		end
-  elseif isfixed(b) & isparallel(b)
+    end
+  elseif isgenerator(b)
+    pars = getdata(b);
+    [d,varargout{:}] = feval(mapp,a,pars{:});
+  elseif isfixed(b) && isparallel(b)
     % execution of fixed paralllel mapping
     d = parallel(a,b);
  	elseif isfixed(b) || isfixed_cell(b) || iscombiner(b)
@@ -368,35 +374,40 @@ if ismapping(b) && ~isuntrained(b) % check for batch processing
   end
 end
 
-function d = cellmap(a,b)
+function varargout = cellmap(a,b)
 
+varargout = cell(1,nargout);
 if iscell(a) && ~iscell(b)
-  d = cell(size(a));
+  dargout = cell([size(a) nargout]);
   [n,s,count] = prwaitbarinit('Mapping %i cells: ',numel(a));
   for i = 1:size(a,1);
   for j = 1:size(a,2);
-    d{i,j} = prmap(a{i,j},b);
+    [dargout{i,j,:}] = prmap(a{i,j},b);
     count = prwaitbarnext(n,s,count);
   end
   end
 elseif ~iscell(a) && iscell(b)
-  d = cell(size(b));
+  dargout = cell([size(b) nargout]);
   [n,s,count] = prwaitbarinit('Mapping %i cells: ',numel(b));
   for i = 1:size(b,1);
   for j = 1:size(b,2);
-    d{i,j} = prmap(a,b{i,j});
+    [dargout{i,j,:}] = prmap(a,b{i,j});
     count = prwaitbarnext(n,s,count);
   end
   end
 else
-  d = cell(numel(a),numel(b));
-  [n,s,count] = prwaitbarinit('Mapping %i cells: ',numel(d));
-  for i = 1:length(a)
-    for j = 1:length(b)
-      d{i,j} = prmap(a{i},b{j});
+  dargout = cell(numel(a),numel(b),nargout);
+  [n,s,count] = prwaitbarinit('Mapping %i cells: ',numel(a)*numel(b));
+  for i = 1:numel(a)
+    for j = 1:numel(b)
+      [dargout{i,j,:}] = prmap(a{i},b{j});
       count = prwaitbarnext(n,s,count);
     end
   end
+end
+
+for j=1:nargout
+  varargout(j) = {dargout(:,:,j)};
 end
 
 function printdebug(a,b)

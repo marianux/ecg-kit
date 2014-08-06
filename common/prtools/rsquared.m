@@ -14,7 +14,7 @@
 % DESCRIPTION
 % Compute the R^2 statistic of regression W on dataset X.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 %  TESTR
 
 % Copyright: D.M.J. Tax, D.M.J.Tax@37steps.com

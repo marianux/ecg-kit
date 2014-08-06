@@ -13,7 +13,7 @@
 % such that (when sufficient figures are created), the screen is
 % covered by an array of figures, with FIGURE_PER_ROW figures per row.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % SCATTERD, PLOTC
 
 % $Id: newfig.m,v 1.2 2006/03/08 22:06:58 duin Exp $

@@ -21,7 +21,7 @@
 % orthogonalize and scale). The resulting mapping has a unit average
 % covariance matrix.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, KLM, PCA
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

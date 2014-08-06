@@ -18,7 +18,7 @@
 % If given, just the names of the classes corresponding to the indices in
 % C are returned.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, CLASSSIZES
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

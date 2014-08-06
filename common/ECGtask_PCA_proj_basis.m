@@ -24,6 +24,9 @@ classdef ECGtask_PCA_proj_basis < ECGtask
         % memory_constant is the fraction respect to user.MaxPossibleArrayBytes
         % which determines the maximum input data size.
         memory_constant = 0.3;
+        
+        started = false;
+        
     end
     
     properties( Access = private, Constant)
@@ -46,6 +49,7 @@ classdef ECGtask_PCA_proj_basis < ECGtask
         cant_QRS_locations
         autovec
         user_string = 'results'
+        tmp_path
     end
     
     methods
@@ -68,6 +72,8 @@ classdef ECGtask_PCA_proj_basis < ECGtask
             obj.halfwin_samples = round( obj.time_heartbeat_window/2*ECG_header.freq);
             
             obj.some_window = colvec(blackman(2*obj.halfwin_samples+1));
+
+            obj.started = true;
             
         end
         
@@ -76,6 +82,14 @@ classdef ECGtask_PCA_proj_basis < ECGtask
             % this object doesn't generate any payload
             payload = [];
 
+            if( ~obj.started )
+                obj.Start(ECG_header);
+                if( ~obj.started )
+                    cprintf('*[1,0.5,0]', 'Task %s unable to be started for %s.\n', obj.name, ECG_header.recname);
+                    return
+                end
+            end
+            
             this_iter_QRS_sample_idx = find(obj.QRS_sample_idx >= ECG_annotations_start_end_idx(1) & obj.QRS_sample_idx <= ECG_annotations_start_end_idx(2));
             
             if( ~isempty(this_iter_QRS_sample_idx) )

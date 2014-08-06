@@ -49,7 +49,7 @@
 % 2. M. Budka, B. Gabrys, Correntropy-based density-preserving data
 % sampling as an alternative to standard cross-validation, IJCNN2010, 1-8
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, DPS, CLEVAL, TESTC
 
 % Copyright: D.M.J. Tax, R.P.W. Duin, r.p.w.duin@37steps.com
@@ -58,9 +58,9 @@
 
 % $Id: crossval.m,v 1.16 2010/06/25 07:55:34 duin Exp $
 
-function [err,cerr,nlabout,tclassf,tress] = crossval(data,classf,n,nrep,testf,fid)
+function [err,cerr,nlabout,tclassf,tress] = prcrossval(data,classf,n,nrep,testf,fid)
 
-  if nargin < 6, fid = []; end
+  if nargin < 6, fid = 0; end
   if nargin < 5, testf = []; end
 	if nargin < 4, nrep = []; end
 	if nargin < 3, n = []; end
@@ -83,7 +83,7 @@ function [err,cerr,nlabout,tclassf,tress] = crossval(data,classf,n,nrep,testf,fi
 	% datasets or classifiers are cell arrays
 	if iscell(classf) | iscell(data)
 
-		seed = rand('state');
+    randstate = randreset;
 		if ~iscell(classf), classf = {classf}; end
 		if ~iscell(data), data = {data}; end
 		if isdataset(classf{1}) & ismapping(data{1}) % correct for old order
@@ -117,7 +117,7 @@ function [err,cerr,nlabout,tclassf,tress] = crossval(data,classf,n,nrep,testf,fi
 			
  			for jd = 1:numd % Run over a set of datasets
 				prwaitbar(numd,jd,[s2 getname(data{jd})]);
-				rand('state',seed);
+				randreset(randstate);
 				if nargout > 3 % store resulting classifiers
 					[ee,cc,nn,tclassf(:,:,jc,jd),tress(:,:,jc,jd)] = feval(mfilename,data{jd},classf{jc},n,nrep,testf);
 				else
@@ -133,7 +133,7 @@ function [err,cerr,nlabout,tclassf,tress] = crossval(data,classf,n,nrep,testf,fi
 		prwaitbar(0);
 		if nrep > 1, cerr = cell2mat(cerr); nlabout = NaN; end
 			
-		if nargout == 0
+		if nargout == 0 || fid == 1
 			fprintf('\n  %i-fold cross validation result for',n);
 			disperror(data,classf,e);
 		end
@@ -141,6 +141,7 @@ function [err,cerr,nlabout,tclassf,tress] = crossval(data,classf,n,nrep,testf,fi
 
 	else % single dataset, single classifier
 		
+    data = seldat(data);  % remove unlabeled objects
 		data = setprior(data,getprior(data)); % just to generate warning when needed
 		
 		if isempty(nrep), nrep = 1; end
@@ -295,12 +296,13 @@ function [err,cerr,nlabout,tclassf,tress] = crossval(data,classf,n,nrep,testf,fi
 			else
 				cerr = [];
 				nlabout = [];
-			end
+      end
+      
 		else
 			disp([num2str(n) '-fold cross validation error on ' num2str(size(data,1)) ' objects: ' num2str(e)])
 		end
 
-	end
+  end
 	
 	prwarning(warnlevel);
 	return

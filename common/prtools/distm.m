@@ -1,4 +1,4 @@
-%DISTM Compute square Euclidean distance matrix
+%DISTM Fixed mapping for computing a square Euclidean distance matrix
 % 
 %   D = DISTM(A,B)
 %   D = DISTM(A);
@@ -25,7 +25,7 @@
 % NOTE
 % DISTM(A,B) is equivalent to A*PROXM(B,'d',2)).
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, PROXM
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

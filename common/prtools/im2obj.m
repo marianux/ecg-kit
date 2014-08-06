@@ -19,8 +19,8 @@
 % to 'double' and divided by 256. The resulting feature size is X*Y or
 % X*Y*C. The set of images IM may be given as a datafile.
 %
-% SEE ALSO
-% DATASETS, DATAFILES, IM2FEAT, DATA2IM
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATASETS, DATAFILES, IM2FEAT, FEATIM
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
@@ -55,8 +55,7 @@ function a = im2obj (im,a)
 		else
 			featsize = imsize(1:end-1);
 		end
-	end
-	
+	end	
 	if length(featsize) == length(imsize)
 		nobj = 1;
 	elseif length(featsize) == (length(imsize)-1)
@@ -79,10 +78,10 @@ function a = im2obj (im,a)
 		im = im(:);																	% Reshape to 1D cell array.
 		for i = 1:length(im)
 			b = feval(mfilename,im{i});
-			if ~isempty(a) & any(a.objsize ~= b.objsize)
+			if ~isempty(a) & any(a.featsize ~= b.featsize)
 				error('Images should have equal sizes')
 			end
-			a = [a; feval(mfilename,im{i},featsize)];
+			a = [a; b];
 		end
 		
   elseif isdatafile(im)
@@ -99,7 +98,6 @@ function a = im2obj (im,a)
 
 		% Convert to double, if necessary
 		if (isa(im,'uint8'))
-			prwarning(4,'image is uint8; converting to double and dividing by 256');
 			im = double(im)/256; 
 		else
 			im = double(im);

@@ -7,4 +7,5 @@
 % to the labels defined in this label list. Values of NLAB <= 0 are
 % stored but treated as missing labels. For crisp labels only.
 %
-% SEE ALSO MULTI_LABELING
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% MULTI_LABELING

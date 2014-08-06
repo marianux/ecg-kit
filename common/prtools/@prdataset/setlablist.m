@@ -15,4 +15,5 @@
 %   X = setlablist(X,char('A','B','A'));
 %   X = setlablist(X);
 %
-% SEE ALSO MULTI_LABELING
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% MULTI_LABELING

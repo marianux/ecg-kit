@@ -1,12 +1,12 @@
-%FIXEDCC Construction of fixed combiners
+%FIXEDCC Construction of fixed combiners, back-end routine
 %
 %   V = FIXEDCC(A,W,TYPE,NAME,PAR)
 %
 % INPUT
 %   A      Dataset
 %   W      A set of classifier mappings
-%   TYPE   The type of combination rule
-%   NAME   The name of this combination rule
+%   TYPE   String defining the type of combination rule
+%   NAME   The name of this combination rule, arbitrary
 %   PAR    Possible parameter for combiner defined by TYPE
 %
 % OUTPUT
@@ -17,7 +17,7 @@
 % set of mappings W. The set of mappings W should be a parallel
 % combination (see MAPPINGS).
 %
-% The TYPE of combining can be any of the following:
+% TYPE defines the combining rule and can be any of the following:
 % average, min, max, mean, median, prod, vote,
 %
 % Note that average is only possible for affine 2-class classifiers.
@@ -30,10 +30,12 @@
 %   V = FIXEDCC(A,W,TYPE)    computes the combining output for dataset A,
 %                            where W is trained using A
 % 
+% This is a back-end routine. Users should directly call the fixed combiners.
+%
 % EXAMPLES
 % See prex_combining.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, VOTEC, MAXC, MEANC, MEDIANC, MINC, PRODC, AVERAGEC
 
 % $Id: fixedcc.m,v 1.3 2009/02/04 10:53:10 duin Exp $
@@ -149,23 +151,27 @@ function v = fixedcc(a,w,type,name,par)
 					error('All classifiers should refer to all classes')
 				end
 				% First get the votes for each of the classes:
-				[nf,fl] = renumlab(featlist);
+				[dummy,fl] = renumlab(featlist);
 				mlab = zeros(m,n);
+        % we are in a loop over all clases, but we treat here all classes
+        % simultaneously and break below. First run over all classifiers
 				for j=1:n
 					J = [(j-1)*c+1:j*c];
 					labels = labeld(a(:,J));
-					[nl,nlab,ll] = renumlab(fl,labels);
+					[dummy,nlab,ll] = renumlab(fl,labels);
 					mlab(:,j) = nlab;
 				end
-				% Then count the number of votes:
+				% Then count the number of votes for every class
 				for j=1:c
 					d(:,j) = (sum(mlab==j,2)+1)/(n+c);
 				end
 				%DXD: for this voting rule, the feature domain will change:
 				for k=1:c
 					newfeatdom{k} = [0 inf; 0 inf];
-				end
-				
+        end
+        % and we are done
+				break
+        
 			case 'perc'
 				d(:,j) = prctile(b(:,J),par,2);
 				
@@ -187,7 +193,7 @@ function v = fixedcc(a,w,type,name,par)
 		end
 		
 		
-	elseif (isa(a,'double') | isa(a,'prdataset')) & isa(w,'prmapping')
+	elseif (isa(a,'double') || isa(a,'prdataset')) && isa(w,'prmapping')
 		
 		% call like v = dataset * trained combiner (e.g. a*votec([u v w]))
 

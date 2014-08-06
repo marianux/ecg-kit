@@ -23,7 +23,7 @@
 %  y = genregsin(x,0);
 % generates the true function along the x-axis, with zero noise.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % GENDATR, GENDATSINC
 
 % Copyright: D.M.J. Tax, D.M.J.Tax@37steps.com

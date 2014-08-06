@@ -25,7 +25,7 @@ function [ ECG BaselineWander ] = BaselineWanderRemovalSplines( ECG, QRS_locatio
 
 [ECG_size ECG_leads] = size(ECG);
 
-QRS_locations = QRS_locations(QRS_locations > round(0.2*sampling_rate));
+QRS_locations = QRS_locations(QRS_locations > round(0.2*sampling_rate) & QRS_locations <= ECG_size );
 
 cant_QRS = length(QRS_locations);
 

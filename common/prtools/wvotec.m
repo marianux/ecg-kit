@@ -18,7 +18,7 @@
 % results of the labeled dataset A using 0.5*log((1-E)/E)
 % if E is the classifier error. 
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS,
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

@@ -184,7 +184,7 @@ else
     heasig.spf = ones(1,heasig.nsig);
     heasig.baseline = zeros(1,heasig.nsig);
     heasig.units(1:heasig.nsig) = {''};
-    heasig.fname = repmat(ecg_filename, heasig.nsig,1);
+    heasig.fname = cell(heasig.nsig,1);
     heasig.group = nan(heasig.nsig,1);
     heasig.fmt = nan(heasig.nsig,1);
     heasig.gain = nan(heasig.nsig,1);
@@ -218,7 +218,7 @@ else
         if( s(1)=='#' && feof(fid) ); break; end;
         
         % file hea_filename
-        [heasig.fname(i,:),s] = strtok(s);  %% Modificado 29/04/2008  old "[heasig.fname(i,:),s]=strtok(s,pp);"
+        [heasig.fname{i},s] = strtok(s);  %% Modificado 29/04/2008  old "[heasig.fname(i,:),s]=strtok(s,pp);"
         [s1,s] = strtok(s,pp);
         
         %     % group
@@ -291,7 +291,7 @@ else
             if ~isempty(deblank(s))
                 [s1,s] = strtok(s,pp);
                 heasig.adcres(i) = str2double(s1); % ADC resolution (bits) [optional]
-                if (heasig.adcres(i) == 0)||isempty(heasig.adcres(i))
+                if (heasig.adcres(i) == 0) || isempty(heasig.adcres(i))
                     heasig.adcres(i) = 12;
                 end
             end
@@ -338,5 +338,8 @@ else
     if isfield(heasig,'units')
         heasig.units = char(heasig.units);
     end
+    
+    heasig.fname = char(heasig.fname);
+    
 end
 fclose(fid);

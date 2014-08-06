@@ -28,11 +28,11 @@ function h_out = plotf(a,n,z)
 
 	% Define the color for each of the classes:
   if c == 1
-    map = [0 0 1];
+    clrmap = [0 0 1];
 	elseif c == 2
-		map = [0 0 1; 1 0 0];
+		clrmap = [0 0 1; 1 0 0];
 	else
-		map = hsv(c);
+		clrmap = hsv(c);
 	end
 
 	% Make subplots for each feature, so a grid of p x q subplots is
@@ -79,16 +79,22 @@ function h_out = plotf(a,n,z)
 			d(:,i) = sum(exp(-D/(s(i).^2)),2)./(length(I)*s(i));;
 		end
 		% Create the subplots with the correct sizes:
-		subplot(p,q,j)
-		plot(bb,zeros(size(bb)),'w.');
-		hold on
+    if p==1 && q==1
+      % avoid subplots in case of single plot
+      plot(bb,zeros(size(bb)),'w.');
+      hold on;
+    else
+      subplot(p,q,j)
+      plot(bb,zeros(size(bb)),'w.');
+      hold on
+    end
 		h = [];
 		% Scatter the data and plot the density functions for each of the
 		% classes:
 		for i = 1:c
 			I = findnlab(a,i);
 			hh = plot(b(I),zeros(size(b(I))),'x',bb,+d(:,i));
-			set(hh,'color',prmap(i,:));
+			set(hh,'color',clrmap(i,:));
 			h = [h;hh];
 		end
 		legend(h(1:2:end)',num2str(getlablist(a))); %does not work properly

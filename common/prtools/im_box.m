@@ -1,4 +1,4 @@
-%IM_BOX Find rectangular image in datafile enclosing a blob (0/1 image)
+%IM_BOX Fixed mapping determining a rectangular enclosing a blob (0/1 image)
 %
 %   B = IM_BOX(A)
 %   B = A*IM_BOX
@@ -24,65 +24,76 @@
 % For ALF == 0, images are taken as they are and N rows and columns are
 % added.
 %
-% SEE ALSO
+% EXAMPLE
+% prdatafiles;            % make sure prdatafiles is in the path
+% x = kimia_images;       % load kimia images
+% x = x*im_box(0);        % remove all empty rows and columns
+% x = x*im_box(0,1);      % add rows/columns to make images square
+% x = x*im_resize([32 32]); % resample them 
+% x = x*im_box(1,0);      % add rows/columns and keep image square
+% % now all images are 34x34 and no object touches the border.
+% show(gendat(x,4))       % show a few
+%
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DATAFILES
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-function [b,J] = im_box(a,n,alf)
+function [b,J] = im_box(varargin)
 
-		
-	if nargin < 3, alf = []; end
-	if nargin < 2 | isempty(n), n= []; end
-	
-  if nargin < 1 | isempty(a)
-    b = prmapping(mfilename,'fixed',{n,alf});
+	argin = shiftargin(varargin,'vector');
+  argin = setdefaults(argin,[],[],[]);
+  if mapping_task(argin,'definition')
+    b = define_mapping(argin,'fixed');
     b = setname(b,'Image bounding box');
-	elseif isdataset(a)
-		error('Command cannot be used for datasets as it may change image size')
-	elseif isdatafile(a)
-		isobjim(a);
-    b = filtim(a,mfilename,{n,alf});
-		%b = setfeatsize(b,getfeatsize(a));
-  elseif isa(a,'double') | isa(a,'dip_image') % here we have a single image
-		if isa(a,'dip_image'), a = double(a); end
-		if isempty(n)
-			jx = find(sum(a,1) ~= 0);
-			jy = find(sum(a,2) ~= 0);
-			J = [min(jy),max(jy),min(jx),max(jx)];
-			b = a(min(jy):max(jy),min(jx):max(jx));
-		else
-    	if (~isempty(alf) & alf == 0)
-				c = a;
-			else
-				c = feval(mfilename,a); 
-			end
-    	[my,mx] = size(c);
-    	if length(n) == 1
+  else
+    [a,n,alf] = deal(argin{:});
+    if isdataset(a)
+      error('Command cannot be used for datasets as it may change image size')
+    elseif isdatafile(a)
+      isobjim(a);
+      b = filtim(a,mfilename,{n,alf});
+      %b = setfeatsize(b,getfeatsize(a));
+    elseif isa(a,'double') || isa(a,'dip_image') % here we have a single image
+      if isa(a,'dip_image'), a = double(a); end
+      if isempty(n)
+        jx = find(sum(a,1) ~= 0);
+        jy = find(sum(a,2) ~= 0);
+        J = [min(jy),max(jy),min(jx),max(jx)];
+        b = a(min(jy):max(jy),min(jx):max(jx));
+      else
+        if (~isempty(alf) && alf == 0)
+          c = a;
+        else
+          c = feval(mfilename,a); 
+        end
+        [my,mx] = size(c);
+        if length(n) == 1
         	n = [n n n n];
-    	elseif length(n) ~= 4
+        elseif length(n) ~= 4
         	error('Second parameter should be scalar or vector of length 4')
-    	end
-    	b = zeros(my+n(3)+n(4),mx+n(1)+n(2));
-    	b(n(3)+1:n(3)+my,n(1)+1:n(1)+mx) = c;
-		end
-		if ~isempty(alf) & alf ~= 0
-			[m,k] = size(b);
-			r = round(m*alf) - k;
-			if r == 0
-				;
-			elseif r >= 1 % add r columns
-				c = zeros(m,k+r);
-				c(:,ceil(r/2):ceil(r/2)+k-1) = b;
-				b = c;
-			else % add rows
-				r = round(k/alf) - m;
-				c = zeros(m+r,k);
-				c(ceil(r/2):ceil(r/2)+m-1,:) = b;
-				b = c;
-			end
+        end
+        b = zeros(my+n(3)+n(4),mx+n(1)+n(2));
+        b(n(3)+1:n(3)+my,n(1)+1:n(1)+mx) = c;
+      end
+      if ~isempty(alf) && alf ~= 0
+        [m,k] = size(b);
+        r = round(m*alf) - k;
+        if r == 0
+          ;
+        elseif r >= 1 % add r columns
+          c = zeros(m,k+r);
+          c(:,ceil(r/2):ceil(r/2)+k-1) = b;
+          b = c;
+        else % add rows
+          r = round(k/alf) - m;
+          c = zeros(m+r,k);
+          c(ceil(r/2):ceil(r/2)+m-1,:) = b;
+          b = c;
+        end
+      end
 		end	 
 	end
 

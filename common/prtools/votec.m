@@ -27,7 +27,7 @@
 % EXAMPLES
 % PREX_COMBINING
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, PRODC, MAXC, MINC,
 % MEDIANC, MEANC, AVERAGEC, STACKED, PARALLEL
 

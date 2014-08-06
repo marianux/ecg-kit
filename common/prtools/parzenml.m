@@ -22,7 +22,7 @@
 % It may be profitable to scale the data before calling it. eg. 
 % WS = SCALEM(A,'variance'); A = A*WS.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, SCALEM, SELDAT, PARZENM, PARZENDC, PRPROGRESS
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

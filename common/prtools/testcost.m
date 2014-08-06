@@ -23,8 +23,8 @@ function e = testcost(x,w,C,lablist)
 % output of the classifier should be transformed using CLASSC. See
 % for an example the help of costm.m.
 %
-% SEE ALSO
-% testd, costm, setcost, getcost
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% TESTD, COSTM, SETCOST, GETCOST
 
 % Copyright: D.M.J. Tax, davidt@ph.tn.tudelft.nl
 % Faculty of Applied Physics, Delft University of Technology

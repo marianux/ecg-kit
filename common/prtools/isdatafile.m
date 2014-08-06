@@ -11,7 +11,7 @@
 % DESCRIPTION
 % The function ISDATAFILE test if A is a datafile object.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % ISMAPPING, ISDATAIM, ISFEATIM 
 
 function n = isdatafile(a)

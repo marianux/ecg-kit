@@ -15,7 +15,7 @@
 % The function ISCOMDSET tests whether A and B are compatible
 % datasets, i.e. have the same features and the same classes.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % ISDATASET, ISMAPPING, ISDATAIM, ISFEATIM, ISVALDFILE, ISVALDSET
 
 function n = iscomdset(a,b,clas)

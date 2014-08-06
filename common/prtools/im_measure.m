@@ -1,4 +1,4 @@
-%IM_MEASURE Computation by DIP_Image of feature measurements
+%IM_MEASURE Fixed mapping computating features by DIP_Image
 %
 %		F = IM_MEASURE(A,GRAY,FEATURES)
 %
@@ -24,8 +24,9 @@
 %
 % Use FEATURES = 'all' for computing all features.
 % Use MEASUREHELP for some description of the features.
+% Use IM_FEATURES for a set of features not based on DIP_Image
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DATAFILES, MEASURE, MEASUREHELP
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -35,7 +36,7 @@
 function b = im_measure(a,gray,features)
 
 	 
-	dipimagecheck;
+	checktoolbox('diplib');
 	if nargin < 3  features = []; end
 	if nargin < 2  gray = []; end
 	%if nargin < 2 | isempty(gray), gray = a; end

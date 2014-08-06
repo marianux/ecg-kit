@@ -32,7 +32,7 @@
 % others. So by rejection the error estimate by TESTC may increase,
 % decrease or stay equal.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, LABELD, TESTC, REJECTM
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

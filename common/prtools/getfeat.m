@@ -15,7 +15,7 @@
 %
 % Note that for a mapping W, getfeat(W) is effectively the same as GETLAB(W).
 %
-% SEE ALSO 
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>) 
 % DATASETS, MAPPINGS, GETLAB
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

@@ -24,7 +24,7 @@
 %objects is not fully independent. For that reason it is skipped during
 %training of mappings and classifiers.
 %
-%SEE ALSO
+%SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 %MAPPINGS, GETBATCH
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

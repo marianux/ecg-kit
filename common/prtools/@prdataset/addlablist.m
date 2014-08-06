@@ -17,8 +17,8 @@
 % given to identify this label list in the CHANGELABLIST command.
 % Alternatively, the label list number may be used there.
 %
-% Multiple label lists are only supported for crisp label types and 
-% not for the soft and target label types. See SETLABELS.
+% Multiple label lists are only supported for crisp labels and not for
+% the soft and target label types. See SETLABELS.
 %
 % In addition to storing the new label list the following changes in
 % the dataset are made:
@@ -61,5 +61,5 @@
 % and endpoint of the corresponding columns in A.TARGET. If T0<T1: no
 % targets are set.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MULTI_LABELING, ADDLABELS, CHANGELABLIST, CURLABLIST, DELLABLIST

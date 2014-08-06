@@ -4,7 +4,8 @@
 %
 % INPUT
 %   URL          String containing URL of file to be downloaded
-%   DIRNAME      Final directory for download, created if necessary
+%   DIRNAME      Final directory for download, created if necessary.
+%                Default: directory of calling function
 %
 % DESCRIPTION
 % The URL will be downloaded in directory DIRNAME (to be created if
@@ -14,16 +15,15 @@
 % The main purpose of this routine is to download missing datafiles or
 % datasets from PRDATAFILES and PRDATASETS.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PRDATASETS, PRDATAFILES
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
-% Faculty EWI, Delft University of Technology
-% P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-function [status,dirname] = prdownload(url,dirname)
+function [status,dirname] = prdownload(url,dirname,siz)
 
 % create target directory if needed
+if nargin < 3, siz = []; end
 if nargin > 1 
   if exist(dirname,'dir') ~= 7
     success = mkdir(dirname);
@@ -35,55 +35,63 @@ if nargin > 1
     end
   end
 else
-  dirname = callerdir
+  dirname = callerdir;
 end
 
 % download
 [dummy,ff,xx]= fileparts(url);
 filename = [ff xx];
-disp(['Downloading ' filename ' ....'])
+if isempty(siz)
+  disp(['Downloading ' filename ' ....'])
+else
+  disp(['Downloading ' filename ' (' num2str(siz) ' MB) ....'])
+end
 rfilename = fullfile(dirname,filename);
 if ~usejava('jvm') & isunix 
+  disp('isunix')
+  disp(['wget -q -O ' rfilename [' '] url])
 	stat = unix(['wget -q -O ' rfilename [' '] url]);
 	status = (stat == 0);
 else
-	[f,status] = urlwrite(url,rfilename);
+  if verLessThan('matlab','8')
+    [f,status] = urlwrite(url,rfilename);
+  else
+    [f,status] = urlwrite(url,rfilename,'TimeOut',20);
+  end
 end
 if status == 0
-	error('Server unreachable or file not found')
+	error('Server unreachable, timed out or file not found')
 end
 
-% assume file is created, uncompress if needed
-% delete compressed file
-if strcmp(xx,'.zip')
-	disp('Decompression ....')
-	if ~usejava('jvm') & isunix
-		[stat,s] = unix(['unzip ' rfilename ' -d ' dirname]);
-	else
-		unzip(rfilename,dirname);
-	end
-	delete(rfilename);
-elseif strcmp(xx,'.gz')
-	disp('Decompression ....')
-	gunzip(filename,dirname);
-	delete(filename);
-elseif strcmp(xx,'.tar')| strcmp(xx,'.tgz') | strcmp(xx,'.tar.gz')
-	disp('Decompression ....')
-	untar(filename,dirname);
-	delete(filename);
-end
-dirname = fullfile(pwd,dirname);
-disp('Ready')
+decompress(rfilename);
 
 function dirname = callerdir
 
-[ss ,i] = dbstack;
+ss = dbstack;
 if length(ss) < 3
-	fil = [];
+  % no caller, commandline call
+  dirname = pwd;
 else
-	fil = ss(3).name;
+  dirname = fileparts(ss(3).name);
 end
-dirname = fileparts(fil);
 
+function decompress(file)
 
+[dirname,filename,ext] = fileparts(file);
+if any(strcmp(ext,{'.zip','.gz','.tgz','.tar'}))
+  disp('Decompression ....')
+  if strcmp(ext,'.zip')
+    if ~usejava('jvm') & isunix
+      [stat,s] = unix(['unzip ' file ' -d ' dirname]);
+    else
+      unzip(file,dirname);
+    end
+  elseif strcmp(ext,'.gz')
+    gunzip(file,dirname);
+  elseif strcmp(ext,'.tar')| strcmp(ext,'.tgz') 
+    untar(file,dirname);
+  end
+  delete(file);
+  decompress(fullfile(dirname,filename));
+end
 

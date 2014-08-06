@@ -16,7 +16,7 @@
 %      y = B0 + B1^T*x + N(0,SIGMA)
 % Data x is distributed uniformly between 0 and 1.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 %  GENDATSIN, GENDATSINC
 
 % Copyright: D.M.J. Tax, D.M.J.Tax@37steps.com

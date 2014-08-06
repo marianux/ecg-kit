@@ -18,7 +18,7 @@
 % Stats toolbox. See there for more information. It is assumed that objects
 % labels, feature labels and class priors are included in the dataset A.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, NAIVEBAYES, NAIVEBC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

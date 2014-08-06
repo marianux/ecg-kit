@@ -4,7 +4,7 @@
 %
 % INPUT
 %   A       Dataset, training set
-%   CLASSF  Untrained classifiers (mapping)
+%   CLASSF  String containing the name of the classifier routine.
 %   PARS    Cell array with parameters for CLASSF
 %   DEFS    Defaults for PARS
 %   NPAR    Index in PARS of parameters to be optimised
@@ -18,7 +18,7 @@
 %   W       Best classifier, trained by A
 %   PARS    Resulting parameter vector
 %
-% DESCRIPTIOM
+% DESCRIPTION
 % This routine is used inside classifiers and mappings to optimise a
 % regularisation or complexity parameter. Using cross-validation the
 % performance of the classifier is estimated using TESTFUN (e.g. TESTC).
@@ -35,13 +35,16 @@
 % For examples of usage inside a classifier see LDC and SVC. Consequently
 % LDC can be called as in the below example.
 %
-% EXAMPLE
-% A = GENDATD([30 30],50);
-% W = LDC(A,0,NaN); % set first reg par to 0 and optimise second.
-% GETOPT_PARS       % retrieve optimal paameter set
+% Some globals are used to specify the optimization. Users may change them
+% by PRGLOBAL. See the <a href="http://www.37steps.com/faq/faq-regopt/">FAQ</a> on this topic.
 %
-% SEE ALSO
-% DATASETS, MAPPINGS, CROSSVAL, TESTC, GETOPT_PARS
+% EXAMPLE
+% A = gendatd([30 30],50);
+% W = ldc(A,0,NaN); % set first reg par to 0 and optimise second.
+% getopt_pars       % retrieve optimal paameter set
+%
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATASETS, MAPPINGS, PRCROSSVAL, TESTC, GETOPT_PARS, PRGLOBAL
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
@@ -154,9 +157,10 @@ function regcrit = evalregcrit(regpar,classf,a,parms,regparnum, ...
 	end
 		
 	w = feval(classf,[],parms{:});
-	rand('state',1); randn('state',1);
-	regcrit = crossval(a,w,nfolds,reps,testfunc); % use soft error as criterion (more smooth)
-	
+	randstate = randreset(1);
+	regcrit = prcrossval(a,w,nfolds,reps,testfunc); % use soft error as criterion (more smooth)
+	randreset(randstate);
+  
 	REGOPT_OPTCRIT = min(mean(regcrit),REGOPT_OPTCRIT);
 	
 return

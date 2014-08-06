@@ -23,7 +23,8 @@
 %   W            Affine mapping
 %
 % DESCRIPTION  
-% Defines a mapping W based on a linear transformation R and an offset. 
+% This is a low level basic PRTools routine, not intended for direct use.
+% It efines a mapping W based on a linear transformation R and an offset. 
 % R should be a [K x L] matrix describing a linear transformation from 
 % a K-dimensional space to an L-dimensional space. If K=1, then R is 
 % interpreted as the diagonal of an [L x L] diagonal matrix. OFFSET is 
@@ -42,7 +43,7 @@
 % to [+A, ones(M,1)]*[R; OFFSET]. The dataset D has feature labels stored 
 % in LABLIST. The number of this labels should, thereby, be at least L.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -53,7 +54,7 @@
 
 function w = affine(R,offset,lablist_in, lablist_out,size_in,size_out)
 
-		if (nargin == 1) | (~isa(offset,'prmapping'))
+  if (nargin == 1) | (~isa(offset,'prmapping'))
 
 		% Definition of an affine mapping
 		[m,k] = size(R);
@@ -165,7 +166,7 @@ function w = affine(R,offset,lablist_in, lablist_out,size_in,size_out)
 	else  
 
 		% Execution of the affine mapping.
-		% R is a dataset, OFFSET defines the mapping.
+		% R is a dataset or double, OFFSET defines the mapping.
 		
 		v = offset;
 		[m,k] = size(R);
@@ -199,9 +200,13 @@ function w = affine(R,offset,lablist_in, lablist_out,size_in,size_out)
 		
 		if size(v,2) == 2 & size(x,2) == 1
 			x = [x -x];
-		end
+    end
 		
-		w = setdat(R,x,v);
+    if isdataset(R)
+      w = setdat(R,x,v);
+    else
+      w = x;
+    end
 		
 	end
 

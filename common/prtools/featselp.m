@@ -1,6 +1,11 @@
-%FEATSELP Pudil's floating feature selection (forward)
+%FEATSELP Trainable mapping for Pudil's floating feature selection
 % 
-% [W,R] = FEATSELP(A,CRIT,K,T,FID)
+%   [W,R] = FEATSELP(A,CRIT,K,T)
+%   [W,R] = A*FEATSELP([],CRIT,K,T)
+%   [W,R] = A*FEATSELP(CRIT,K,T)
+%   [W,R] = FEATSELP(A,CRIT,K,N)
+%   [W,R] = A*FEATSELP([],CRIT,K,N)
+%   [W,R] = A*FEATSELP(CRIT,K,N)
 %
 % INPUT	
 %   A    Training dataset
@@ -9,7 +14,6 @@
 %   K    Number of features to select (default: K = 0, select optimal set)
 %   T    Tuning dataset (optional)
 %   N    Number of cross-validations (optional)
-%   FID  File ID to write progress to (default [], see PRPROGRESS)
 %
 % OUTPUT
 %   W    Feature selection mapping
@@ -32,9 +36,9 @@
 % 	R(:,2) : criterion value
 % 	R(:,3) : added / deleted feature
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, FEATEVAL, FEATSELO, FEATSELB, FEATSELI,
-% FEATSEL, FEATSELF, FEATSELM, PRPROGRESS
+% FEATSEL, FEATSELF, FEATSELM
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl
 % Faculty of Applied Sciences, Delft University of Technology
@@ -42,35 +46,21 @@
 
 % $Id: featselp.m,v 1.5 2009/07/01 09:33:23 duin Exp $
 
-function [w,r] = featselp(a,crit,ksel,t,fid)
-
-		
-	if (nargin < 2) | isempty(crit)
-	prwarning(2,'no criterion specified, assuming NN');
-		crit = 'NN'; 
-	end
-	if (nargin < 3) | isempty(ksel)
-		ksel = 0; 
-	end
-	if (nargin < 4) | isempty(t)
-	prwarning(3,'no tuning set supplied (risk of overfit)');
-		t = [];
-	end
-	if (nargin < 5)
-		fid = [];
-	end
-
-	% If no arguments are supplied, return an untrained mapping.
-
-	if (nargin == 0) | (isempty(a))
-		w = prmapping('featselp',{crit,ksel,t});
-		w = setname(w,'Floating FeatSel');
-		return
-	end
+function [w,r] = featselp(varargin)
+		 
+  varargin = shiftargin(varargin,{'char','prmapping'});
+  argin = setdefaults(varargin,[],'NN',0,[],[]);
+  if mapping_task(argin,'definition')
+    w = define_mapping(argin,'untrained','Floating FeatSel');
+    return
+  end
+    
+  [a,crit,ksel,t,fid] = deal(argin{:});
 
 	isvaldfile(a,1,2); % at least 1 object per class, 2 classes
 	a = testdatasize(a);
-	iscomdset(a,t);
+  a = setprior(a,getprior(a));
+	if isdataset(t), iscomdset(a,t); end
 	
 	[m,k,c] = getsize(a); featlist = getfeatlab(a);
 
@@ -96,7 +86,6 @@ function [w,r] = featselp(a,crit,ksel,t,fid)
 	Iopt = J; 
 
 	n = 0;
-	prprogress(fid,'\nfeatselp: Pudils Floating Search\n')
 	while (n < k)
 
 		critval = zeros(1,length(I));
@@ -130,9 +119,6 @@ function [w,r] = featselp(a,crit,ksel,t,fid)
 		n = n + 1; critval_opt(n) = mx;
 
 		r = [r; [n, mx, J(end)]];
-		prprogress(fid,'  %d %f',r(end,1:2));
-		prprogress(fid,' %i',J);
-		prprogress(fid,'\n')
 		
 		% Now keep removing features until the criterion gets worse.
 
@@ -169,9 +155,6 @@ function [w,r] = featselp(a,crit,ksel,t,fid)
 				n = n - 1; critval_opt(n) = mx;
 				I = [I,J(j)]; J(j) = [];
 				r = [r; [n, mx, -I(end)]];
-				prprogress(fid,'  %d %f',r(end,1:2));
-				prprogress(fid,' %i',J);
-				prprogress(fid,'\n')
 			else
 				break;
 			end
@@ -186,8 +169,7 @@ function [w,r] = featselp(a,crit,ksel,t,fid)
 				J = Iopt(1:ksel);
 			else
 				J = Iopt;
-			end
-			prprogress(fid,'featselp finished\n')
+      end
 			w = featsel(k,J);
 			if ~isempty(featlist)
 				w = setlabels(w,featlist(J,:));
@@ -196,8 +178,7 @@ function [w,r] = featselp(a,crit,ksel,t,fid)
 			return
 		end
 
-	end
-	prprogress(fid,'featselp finished\n')
+  end
 	
 	% Return all features, sorted by their criterion value.
 

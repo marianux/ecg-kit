@@ -4,7 +4,7 @@
 %
 % If A is not a dataset it is converted to a dataset.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DATASET
 
 function a = datasetconv(a)

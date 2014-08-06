@@ -40,7 +40,7 @@ end
 fidECG = fopen( filename, 'r');
 
 if( fidECG > 0 )
-
+    
     fseek(fidECG, 900, 'bof');
     
     num_of_leads = fread(fidECG, 1, 'uint8');
@@ -96,6 +96,10 @@ if( fidECG > 0 )
     end
 
     last_sample = size(ECG,1) + start_sample - 1;
+    
+    [~, heasig.recname] = fileparts(filename);
+    heasig.btime = '00:00:00';
+    heasig.bdate = '01/01/2001';
     
     if( nargout > 2 )
         ann = read_HES_ann([ filename(1:end-4) '.lst' ]);

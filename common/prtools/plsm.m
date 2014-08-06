@@ -25,7 +25,7 @@
 % Crisp labels will be converted into soft labels which 
 % will be used as a target matrix.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PLS_TRAIN, PLS_TRANSFORM, PLS_APPLY
 
 % Copyright: S.Verzakov, s.verzakov@ewi.tudelft.nl 

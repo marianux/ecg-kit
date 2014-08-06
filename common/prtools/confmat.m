@@ -52,7 +52,7 @@
 % LAB1 = GETLABELS(A); LAB2 = A*W*LABELD.
 % More examples can be found in PREX_CONFMAT, PREX_MATCHLAB.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, GETLABELS, LABELD
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -275,7 +275,7 @@ function output(C,labcv,labch,method,fid)
 			case 'disagreement'
 				fprintf(fid,' %5.3f ',sum(C));
 				fprintf(fid,'|');
-				fprintf(fid,' %5.3f ',sum(C));
+			%	fprintf(fid,' %5.3f ',sum(C(:)));
 			case 'soft'
 				fprintf(fid,' %5.2f ',C(j,:)');
 				fprintf(fid,'|');

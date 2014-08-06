@@ -1,7 +1,8 @@
 %LDC Linear Bayes Normal Classifier (BayesNormal_1)
 %
 %  [W,R,S,M] = LDC(A,R,S,M)
-%          W = A*LDC([],R,S,M);
+%  [W,R,S,M] = A*LDC([],R,S,M);
+%  [W,R,S,M] = A*LDC(R,S,M);
 % 
 % INPUT
 %  A    Dataset
@@ -61,7 +62,7 @@
 %    from Large Face Databases, IEEE Transactions on Image Processing, vol. 9, 
 %    no. 1, 2000, 132-136.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, REGOPTC, NMC, NMSC, LDC, UDC, QUADRC, NORMAL_MAP, FISHERC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -70,75 +71,73 @@
 
 % $Id: ldc.m,v 1.11 2010/02/08 15:31:48 duin Exp $
 
-function [W,r,s,dim] = ldc(a,r,s,dim)
+function [W,r,s,dim] = ldc(varargin)
 
-		if (nargin < 4)
-		prwarning(4,'subspace dimensionality M not given, assuming K');
-		dim = [];
-	end
-	if (nargin < 3) | isempty(s)
-		prwarning(4,'Regularisation parameter S not given, assuming 0.');
-		s = 0; 
-	end
-	if (nargin < 2) | isempty(r)
-		prwarning(4,'Regularisation parameter R not given, assuming 0.');
-		r = 0;
-	end
-
-	if (nargin < 1) | (isempty(a))	% No input arguments: 
-		W = prmapping(mfilename,{r,s,dim}); % return an untrained mapping.
+  mapname = 'Bayes-Normal-1';
+  argin = shiftargin(varargin,'scalar');
+  argin = setdefaults(argin,[],0,0,[]);
+  
+  if mapping_task(argin,'definition')
+    
+    W = define_mapping(argin,'untrained',mapname);
+    
+	elseif mapping_task(argin,'training')			% Train a mapping.
+ 
+    [a,r,s,dim] = deal(argin{:});
 	
-	elseif any(isnan([r,s,dim]))		% optimize regularisation parameters
-		defs = {0,0,[]};
-		parmin_max = [1e-8,9.9999e-1;1e-8,9.9999e-1;1,size(a,2)];
-		[W,r,s,dim] = regoptc(a,mfilename,{r,s,dim},defs,[3 2 1],parmin_max,testc([],'soft'),[1 1 0]);
-	
-	else % training
+    if any(isnan([r,s,dim]))		% optimize regularisation parameters
+      defs = {0,0,[]};
+      parmin_max = [1e-8,9.9999e-1;1e-8,9.9999e-1;1,size(a,2)];
+      [W,r,s,dim] = regoptc(a,mfilename,{r,s,dim},defs,[3 2 1],parmin_max,testc([],'soft'),[1 1 0]);
 
-		islabtype(a,'crisp','soft');
-		isvaldfile(a,2,2); % at least 2 object per class, 2 classes
+    else % training with known reg pars
 
-		[m,k,c] = getsize(a);
+      islabtype(a,'crisp','soft');
+      isvaldfile(a,2,2); % at least 2 object per class, 2 classes
 
-		% Calculate mean vectors, priors and the covariance matrix G.
-		%DXD: for large datasets (high dim, many classes) it is impossible
-		%to keep all cov. matrices into memory. We have to loop over the
-		%individual classes:
-		%[U,G] = meancov(a);
-		U = meancov(a);
-		w.mean	= +U;
-		w.prior = getprior(a);
-		%G = reshape(sum(reshape(G,k*k,c)*w.prior',2),k,k);
-		[tmpU,G] = meancov(seldat(a,1)); 
-		G = w.prior(1)*G;
-		for i=2:c
-			[tmpU,tmpG] = meancov(seldat(a,i)); 
-			G = G + w.prior(i)*tmpG;
-		end
-		clear tmpG;
+      [m,k,c] = getsize(a);
 
-		% Regularize 
-		if (s > 0) | (r > 0)
-			G = (1-r-s)*G + r * diag(diag(G)) + s*mean(diag(G))*eye(size(G,1));
-		end	
-	
-		if (dim < k)
-			dim = min(rank(G)-1,dim);
-		 	[eigvec,eigval] = preig(G); eigval = diag(eigval);
-		 	[dummy,ind] = sort(-eigval);
-			% Estimate sigma^2 as avg. eigenvalue outside subspace.
-		 	sigma2 = mean(eigval(ind(dim+1:end)));
-		 	% Subspace basis: first DIM eigenvectors * sqrt(eigenvalues).
-		 	G = eigvec(:,ind(1:dim)) * diag(eigval(ind(1:dim))) * eigvec(:,ind(1:dim))' + ...
-					sigma2 * eye(k);
-	 	end
-		
-		w.cov = G;
-		W = normal_map(w,getlab(U),k,c);
-		W = setcost(W,a);
-		
-	end
-	
-	W = setname(W,'Bayes-Normal-1');
+      % Calculate mean vectors, priors and the covariance matrix G.
+      %DXD: for large datasets (high dim, many classes) it is impossible
+      %to keep all cov. matrices into memory. We have to loop over the
+      %individual classes:
+      %[U,G] = meancov(a);
+      U = meancov(a);
+      w.mean	= +U;
+      w.prior = getprior(a);
+      %G = reshape(sum(reshape(G,k*k,c)*w.prior',2),k,k);
+      [tmpU,G] = meancov(seldat(a,1)); 
+      G = w.prior(1)*G;
+      for i=2:c
+        [tmpU,tmpG] = meancov(seldat(a,i)); 
+        G = G + w.prior(i)*tmpG;
+      end
+      clear tmpG;
+
+      % Regularize 
+      if (s > 0) | (r > 0)
+        G = (1-r-s)*G + r * diag(diag(G)) + s*mean(diag(G))*eye(size(G,1));
+      end	
+
+      if (dim < k)
+        dim = min(rank(G)-1,dim);
+        [eigvec,eigval] = preig(G); eigval = diag(eigval);
+        [dummy,ind] = sort(-eigval);
+        % Estimate sigma^2 as avg. eigenvalue outside subspace.
+        sigma2 = mean(eigval(ind(dim+1:end)));
+        % Subspace basis: first DIM eigenvectors * sqrt(eigenvalues).
+        G = eigvec(:,ind(1:dim)) * diag(eigval(ind(1:dim))) * eigvec(:,ind(1:dim))' + ...
+            sigma2 * eye(k);
+      end
+
+      w.cov = G;
+      W = normal_map(w,getlab(U),k,c);
+      W = setcost(W,a);
+
+    end
+
+    W = setname(W,mapname);
+    
+  end
 	
 return

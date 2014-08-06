@@ -1,6 +1,6 @@
 %PREX_SOM   PRTools example on training SelfOrganizing Maps
 %
-% Show the training and plotting of 1- or 1-D Self-Organizing Maps.
+% Show the training and plotting of 1- or 2-D Self-Organizing Maps.
 %
 help prex_som
 
@@ -22,7 +22,7 @@ echo on
 								 % Show the results in a scatter plot
 	figure(1); clf;
   scatterd(A); hold on;
-	plotsom(W);
+	prplotsom(W);
 	title('One-dimensional SOM');
 	drawnow
 	
@@ -32,7 +32,7 @@ echo on
 								 % Show the results in a scatter plot
 	figure(2); clf;
    scatterd(A); hold on;
-	plotsom(W);
+	prplotsom(W);
 	title('Two-dimensional SOM');
 	drawnow
 	

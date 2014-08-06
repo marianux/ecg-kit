@@ -1,4 +1,4 @@
-%IM_MEAN Computation of the centers of gravity of images
+%IM_MEAN Fixed mapping computating the centers of gravity of images
 %
 %   B = IM_MEAN(A)
 %   B = A*IM_MEAN
@@ -15,7 +15,7 @@
 % Computes the centers of gravity of all images stored in A.
 % This center is computed, relative to the top-left corner of the image.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DATAFILES
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

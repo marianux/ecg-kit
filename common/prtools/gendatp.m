@@ -1,6 +1,8 @@
 %GENDATP Parzen density data generation
 % 
 %   B = GENDATP(A,N,S,G)
+%   B = A*GENDATP([],N,S,G)
+%   B = A*GENDATP(N,S,G)
 % 
 % INPUT
 %   A  Dataset
@@ -23,34 +25,37 @@
 % G is the covariance matrix to be used for generating the data. G may be 
 % a 3-dimensional matrix storing separate covariance matrices for each class.
 % 
-% SEE ALSO
-% DATASETS, GENDATK
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATASETS, MAPPINGS, GENDAT, GENDATK
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
-% Faculty EWI, Delft University of Technology
-% P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-% $Id: gendatp.m,v 1.5 2010/03/25 15:41:39 duin Exp $
+function B = gendatp(varargin)
 
-function B = gendatp(A,N,s,G)
+  argin = shiftargin(varargin,'vector');
+	argin = setdefaults(argin,[],[],0,[]);
+  if mapping_task(argin,'definition')
+    B = define_mapping(argin,'generator','Parzen generation');
+    return
+  end
+  
+  % execution
+  [A,N,s,G] = deal(argin{:});
 
-		if (nargin < 1)
-		error('No dataset found');
-	end
-
-	A = prdataset(A);
-	A = setlablist(A); % remove empty classes first
+  if isdataset(A)
+    Adouble = false;
+    A = prdataset(A);
+    A = setlablist(A); % remove empty classes first
+  else
+    Adouble = true;
+    A = prdataset(A,1);
+  end
 
 	[m,k,c] = getsize(A);
 	p = getprior(A);
-	if (nargin < 2) 
-		prwarning(4,'Number of points not specified, 50 per class assumed.');
+	if (isempty(N)) 
 		N = repmat(50,1,c); 
-	end
-	if (nargin < 3) 
-		prwarning(4,'Smoothing parameter(s) not specified, to be determined be an ML estimate.');
-		s = 0; 
-	end
+  end
 
 	if (length(s) == 1)
 		s = repmat(s,1,c);
@@ -59,8 +64,7 @@ function B = gendatp(A,N,s,G)
 		error('Wrong number of smoothing parameters.')
 	end
 
-	if (nargin < 4)
-		prwarning(4,'Covariance matrices not specified, identity matrix assumed.');
+	if (isempty(G))
 		covmat = 0; 			% covmat indicates whether a covariance matrix should be used
 											% 0 takes the identity matrix as the covariance matrix
 	else
@@ -97,9 +101,13 @@ function B = gendatp(A,N,s,G)
 
 		B = [B;b];
 		labels = [labels; repmat(lablist(j,:),N(j),1)];
-	end
-	B = prdataset(B,labels);
-	B = setprior(B,p);
-	B = set(B,'featlab',getfeatlab(A),'name',getname(A),'featsize',getfeatsize(A));	
+  end
+  
+  if Adouble
+    B = +B;
+  else
+    B = prdataset(B,labels,'prior',A.prior);
+    B = set(B,'featlab',getfeatlab(A),'name',getname(A),'featsize',getfeatsize(A));	
+  end
 
 return

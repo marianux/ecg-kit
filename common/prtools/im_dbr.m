@@ -69,7 +69,7 @@
 % figure(3); show(a(L,:)); % show outliers
 % showfigs
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DATAFILES, MAPPINGS, KNNC, MEANC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

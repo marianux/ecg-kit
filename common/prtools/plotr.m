@@ -12,7 +12,7 @@
 % The resolution of the plot is determined by the global parameter
 % GRIDSIZE.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 %  SCATTERR, PLOTC
 
 % Copyright: D.M.J. Tax, D.M.J.Tax@37steps.com

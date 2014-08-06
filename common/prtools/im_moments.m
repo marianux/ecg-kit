@@ -1,7 +1,8 @@
-%IM_MOMENTS PRTools routine for computing central moments of object images
+%IM_MOMENTS Fixed mapping for computing central moments of object images
 %
 %	  M = IM_MOMENTS(A,TYPE,MOMENTS)
 %	  M = A*IM_MOMENTS([],TYPE,MOMENTS)
+%	  M = A*IM_MOMENTS(TYPE,MOMENTS)
 %
 % INPUT
 %   A        Dataset with object images dataset (possibly multi-band)
@@ -26,72 +27,70 @@
 %                   covariance between x and y and the variance in the
 %                   y-direction (vertical).
 % TYPE = 'scaled'   Scale-invariant moments as specified in the Nx2 array
-%                   MOMENTS. Default MOMENTS = [2 0; 1 1; 0 2].
-%                   After: M. Sonka et al.,
-%                   Image processing, analysis and machine vision.
+%                   MOMENTS. Default MOMENTS = [2 0; 1 1; 0 2]. See [1].
 % TYPE = 'hu'       Calculates 7 moments of Hu, invariant to translation,
-%                   rotation and scale.
-%                   After: M. Sonka et al.,
-%                   Image processing, analysis and machine vision.
+%                   rotation and scale. See [1].
 % TYPE = 'zer'      Calculates the Zernike moments up to the order as 
 %                   specified in the scalar MOMENTS (1 <= MOMENTS <= 12). 
-%                   MOMENTS = 12 generates in total 47 moments.
-%                   After: A. Khotanzad and Y.H. Hong, Invariant image
-%                   recognition by Zernike moments, IEEE-PAMI, vol. 12,
-%                   no. 5, 1990, 489-497.
+%                   MOMENTS = 12 generates in total 47 moments. See [2].
 %
-% SEE ALSO
+% REFERENCES
+% 1. M. Sonka et al., Image processing, analysis and machine vision.
+% 2. A. Khotanzad and Y.H. Hong, Invariant image recognition by Zernike
+%    moments, IEEE-PAMI, vol. 12, no. 5, 1990, 489-497.
+%
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DATAFILES
 
 % Copyright: D. de Ridder, R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-function b = im_moments(a,type,mom)
+function b = im_moments(varargin)
 
-	
-	if nargin < 3, mom = []; end
-	if nargin < 2 | isempty(type), type = 'none'; end
-	
-	
-  if nargin < 1 | isempty(a)
-    b = prmapping(mfilename,'fixed',{type,mom});
+	argin = shiftargin(varargin,'char');
+  argin = setdefaults(argin,[],'none',[]);
+  if mapping_task(argin,'definition')
+    b = define_mapping(argin,'fixed');
     b = setname(b,'Image moments');
-	elseif isa(a,'prdataset') % allows datafiles too
-		isobjim(a);
-    b = filtim(a,mfilename,{type,mom});
-  elseif isa(a,'double') | isa(a,'dip_image') % here we have a single image
-		if isa(a,'dip_image'), a = double(a); end
-		switch type
-		case {'none'}
-			if isempty(mom)
-				mom = [1 0; 0 1];
-			end
-			b = moments(a,mom(:,1),mom(:,2),0,0);
-		case {'central'}
-			if isempty(mom)
-				mom = [2 0; 1 1; 0 2];
-			end
-			b = moments(a,mom(:,1),mom(:,2),1,0);		
-		case {'scaled'}
-			if isempty(mom)
-				mom = [2 0; 1 1; 0 2];
-			end
-			b = moments(a,mom(:,1)',mom(:,2)',1,1);		
-		case {'hu' 'Hu'}
-			b = hu_moments(a);
-		case {'zer' 'zernike' 'Zernike'}
-			if isempty(mom)
-				mom = 12;
-			end
-			b = zernike_moments(a,mom);
-		otherwise
-			error('Moments should be of type none, central, scaled, hu or zer')
-		end
   else
-    error('Illegal datatype for input')
+    [a,type,mom] = deal(argin{:});	
+    if isa(a,'prdataset') % allows datafiles too
+      isobjim(a);
+      b = filtim(a,mfilename,{type,mom});
+    elseif isa(a,'double') || isa(a,'dip_image') % here we have a single image
+      if isa(a,'dip_image'), a = double(a); end
+      switch type
+      case {'none'}
+        if isempty(mom)
+          mom = [1 0; 0 1];
+        end
+        b = moments(a,mom(:,1),mom(:,2),0,0);
+      case {'central'}
+        if isempty(mom)
+          mom = [2 0; 1 1; 0 2];
+        end
+        b = moments(a,mom(:,1),mom(:,2),1,0);		
+      case {'scaled'}
+        if isempty(mom)
+          mom = [2 0; 1 1; 0 2];
+        end
+        b = moments(a,mom(:,1)',mom(:,2)',1,1);		
+      case {'hu' 'Hu'}
+        b = hu_moments(a);
+      case {'zer' 'zernike' 'Zernike'}
+        if isempty(mom)
+          mom = 12;
+        end
+        b = zernike_moments(a,mom);
+      otherwise
+        error('Moments should be of type none, central, scaled, hu or zer')
+      end
+    else
+      error('Illegal datatype for input')
+    end
   end
-		
+  
 return
 		
 % M = MOMENTS (IM, P, Q, CENTRAL, SCALED)

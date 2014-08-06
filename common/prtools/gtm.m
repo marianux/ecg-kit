@@ -1,5 +1,4 @@
-%GTM  Fit a Generative Topographic Mapping using the 
-%     expectation-maximisation algorithm.
+%GTM  Trainable mapping fitting a Generative Topographic Mapping by EM
 %
 %   [W,L] = GTM (A,K,M,MAPTYPE,REG,EPS,MAXITER)
 %
@@ -24,8 +23,8 @@
 % Bishop, C.M., Svensen, M. and Williams, C.K.I., "GTM: The Generative 
 % Topographic Mapping", Neural Computation 10(1):215-234, 1998.
 %
-% SEE ALSO
-% PLOTGTM, SOM, PLOTSOM
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% PLOTGTM, SOM, PRPLOTSOM
 
 % (c) Dick de Ridder, 2003
 % Information & Communication Theory Group

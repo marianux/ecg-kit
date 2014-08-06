@@ -1,6 +1,7 @@
-%LOGLC Logistic Linear Classifier
+%LOGLC Trainable logistic linear classifier
 % 
 %   W = LOGLC(A)
+%   W = A*LOGLC
 % 
 % INPUT
 %   A   Dataset
@@ -19,7 +20,7 @@
 % Kanal (eds.), Handbook of Statistics 2: Classification, Pattern Recognition 
 % and Reduction of Dimensionality, North Holland, Amsterdam, 1982, 169--191.
 %
-%  SEE ALSO 
+%  SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>) 
 %  MAPPINGS, DATASETS, LDC, FISHERC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

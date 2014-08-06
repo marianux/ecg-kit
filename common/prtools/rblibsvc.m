@@ -1,6 +1,7 @@
-%RBSVC Automatic radial basis Support Vector Classifier using LIBSVM
+%RBSVC Trainable automatic radial basis Support Vector Classifier by LIBSVM
 %
 %   [W,KERNEL,NU] = RBLIBSVC(A)
+%   [W,KERNEL,NU] = A*RBLIBSVC
 %
 % INPUT
 %   A	      Dataset
@@ -18,7 +19,7 @@
 % Moreover it is very time-consuming as the kernel optimisation needs
 % about 100 calls to LIBSVC.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, PROXM, LIBSVC, NULIBSVC, REGOPTC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

@@ -72,7 +72,7 @@ if( fid > 0 )
         date_of_file_creation = fread(fid, 3,'int16');
         time_of_recording = fread(fid, 3,'int16');
         heasig.btime = sprintf('%0d:%0d:%0d',time_of_recording(1),time_of_recording(2),time_of_recording(3));
-        heasig.btime = sprintf('%0d/%0d/%4d',date_of_recording(1),date_of_recording(2),date_of_recording(3));
+        heasig.bdate = sprintf('%0d/%0d/%4d',date_of_recording(1),date_of_recording(2),date_of_recording(3));
         heasig.nsig = fread(fid, 1,'int16');
 
 %         al parecer esto ya no es más así
@@ -106,11 +106,20 @@ if( fid > 0 )
         % Corroboro la integridad header vs contenido
         fseek(fid, 0, 'eof');
         bytes_totales = ftell(fid);
-        muestras_guardadas = (bytes_totales - (522+var_length_size)) / 2 / heasig.nsig;
+        muestras_guardadas = round((bytes_totales - (522+var_length_size)) / 2 / heasig.nsig);
         
         if( abs(muestras_guardadas - heasig.nsamp) > 584 )
+            str_aux = sprintf('Header of %s corrupted, expected %d samples and found %d. Reading only the available samples. Check data/header integrity.', heasig.recname, heasig.nsamp, muestras_guardadas);
+            bUseDesktop = usejava('desktop');
+            if(bUseDesktop)
+                fprintf(1, ' ')
+                cprintf('[1,0.5,0]', str_aux);
+                fprintf(1, '\n')
+            else
+                % esto lo quito porque ensucia los logs.
+%                 fprintf(2, '%s\n', str_aux);
+            end
             heasig.nsamp = muestras_guardadas;
-            warning('read_ishne:CorruptFile', 'File corrupted. Check data/header integrity.')
         end
         
         fclose(fid);

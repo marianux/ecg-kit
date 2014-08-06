@@ -14,5 +14,5 @@
 %FLAG is TRUE in case batch mode is allowed (default).
 %Use SETBATCH to set or disable batch processing of mappings
 %
-%SEE ALSO
+%SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 %MAPPINGS, SETBATCH

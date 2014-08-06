@@ -1,6 +1,8 @@
 %NEURC Automatic neural network classifier
 % 
-% 	W = NEURC (A,UNITS)
+% 	W = NEURC(A,UNITS)
+% 	W = A*NEURC([],UNITS)
+% 	W = A*NEURC(UNITS)
 %
 % INPUT
 %   A      Dataset
@@ -25,7 +27,7 @@
 %
 % Uses the Mathworks' neural network toolbox.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, LMNC, BPXNC, GENDATK, REGOPTC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -34,27 +36,26 @@
 
 % $Id: neurc.m,v 1.9 2008/07/03 09:11:44 duin Exp $
 
-function argout = neurc (a,units)
+function argout = neurc (varargin)
 
-		mapname = 'AutoNeuralNet';
-	n_attempts = 3;							% Try three different random initialisations.
-
-	if (nargin < 2)
-		units = []; 
-	end
-	if (nargin < 1) | (isempty(a))
-		w = prmapping(mfilename,units);
-		argout = setname(w,mapname);
-		return
-	end
-
-	[m,k] = size(a);
-	if isempty(units)
-		cs = classsizes(a);
-		units = ceil(0.2*min(cs));
-	end
-	
-	if (~ismapping(units)) 
+  checktoolbox('nnet');
+  
+	mapname = 'AutoNeuralNet';
+  argin = shiftargin(varargin,'integer');
+  argin = setdefaults(argin,[],[]);
+  
+  if mapping_task(argin,'definition')
+    argout = define_mapping(argin,'untrained',mapname);
+    
+  elseif mapping_task(argin,'training')			% Train a mapping.
+  
+    [a,units] = deal(argin{:});
+    n_attempts = 3;			% Try three different random initialisations.
+    [m,k] = size(a);
+    if isempty(units)
+      cs = classsizes(a);
+      units = ceil(0.2*min(cs));
+    end
 
   	if isnan(units) % optimize complexity parameter: number of neurons
 			defs = {[]};
@@ -66,11 +67,11 @@ function argout = neurc (a,units)
 		islabtype(a,'crisp');
 		isvaldfile(a,1,2); % at least 1 object per class, 2 classes
 		a = testdatasize(a);
-		%a = setprior(a,getprior(a));
+		a = setprior(a,getprior(a,0));
 
-		% Second parameter is not a mapping: train a network.
+		% train a network.
 		% Reproducability: always use same seeds. 
-		rand('seed',1); randn('seed',1); opt_err = inf; opt_mapping = [];
+		randstate = randreset(1); opt_err = inf; opt_mapping = [];
 
 		% Try a number of random initialisations.
 		s = sprintf('%i neural network initializations: ',n_attempts);
@@ -87,17 +88,15 @@ function argout = neurc (a,units)
 			end
 		end
 		prwaitbar(0);
+    randreset(randstate); % return original state
 		
 		% Output is best network found.
 		argout = setname(opt_mapping,mapname);
 
-	else 
-
+  else % Evaluation
+    
+    [a,w] = deal(argin{1:2});
 		nodatafile(a);
-		
-		% Second parameter is a mapping: execute.
-		w = units;													
-
 		data = getdata(w); 
 
 		if (length(data) > 1)

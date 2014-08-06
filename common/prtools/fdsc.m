@@ -1,4 +1,4 @@
-%FDSC Feature based Dissimilarity Space Classification 
+%FDSC Trainable Feature based Dissimilarity Space Classifier 
 %
 %   W = FDSC(A,R,FEATMAP,TYPE,P,CLASSF)
 %   W = A*FDSC([],R,FEATMAP,TYPE,P,CLASSF)
@@ -45,23 +45,20 @@
 % HOLD ON; SCATTERD(R,'ko'); % Add representation set to scatterplot
 % PLOTC(W);                  % Plot classifier
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, SCALEM, KLMS, PROXM, LABELD, KERNELC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-function w = fdsc(a,r,featmap,type,p,classf)
+function w = fdsc(varargin)
 
-if nargin < 6 | isempty(classf), classf = libsvc([],[],100); end
-if nargin < 5 | isempty(p), p = 1; end
-if nargin < 4 | isempty(type), type = 'distance'; end
-if nargin < 3 | isempty(featmap), featmap = []; end
-if nargin < 2, r = []; end
-if nargin < 1 | isempty(a)
-		w1 = prmapping(mfilename,'untrained',{r,featmap,type,p,classf}); 
-		w = setname(w1,['DisSpace-',getname(classf)]);
+argin = setdefaults(varargin,[],[],[],'distance',1,libsvc([],[],100));
+[a,r,featmap,type,p,classf] = deal(argin{:});
+if mapping_task(argin,'definition')
+	w1 = prmapping(mfilename,'untrained',{r,featmap,type,p,classf}); 
+	w = setname(w1,['DisSpace-',getname(classf)]);
 	return
 end
 

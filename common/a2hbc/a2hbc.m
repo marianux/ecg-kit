@@ -156,11 +156,9 @@ default_paths = '';
 %to keep all windows and figures clean and tidy when closing a2hbc
 intial_state_open_handles = findall(0);
 
-dbstop if caught error 
-
 % uncomment for debugging.
-% bDebug = false;
-bDebug = true;
+bDebug = false;
+% bDebug = true;
 
 db_status = dbstatus();
 if( length(db_status) > 1 && strcmpi(db_status(end).cond, 'caught error')  )
@@ -171,6 +169,8 @@ else
         % debug errors inside A2HBC, clear on exit
         dbstop if caught error
         bRestoreErrorStatus = true;
+    else
+        bRestoreErrorStatus = false;
     end
 end
 

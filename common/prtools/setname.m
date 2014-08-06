@@ -1,14 +1,24 @@
-%SETNAME Mapping for easy name setting
+%SETNAME Fixed mapping for easy name setting
 %
-%   A = A*SETNAME([],NAME)
-%   W = W*SETNAME([],NAME)
+%   A = A*SETNAME(NAME)
+%   W = W*SETNAME(NAME)
 %
 %Set name of dataset A or mapping W
 
-function a = setname(a,varargin)
+function a = setname(varargin)
 
-if nargin < 1 | isempty(a)
-	a = prmapping(mfilename,'combiner',varargin);
-else
-	a = setname(a,varargin);
-end
+  argin = shiftargin(varargin,'char');
+  argin = setdefaults(argin,[],[]);
+  
+  if mapping_task(argin,'definition')
+    a = define_mapping(argin,'combiner');
+    
+  else			% Evaluate
+  
+    [a,name] = deal(argin{:});
+    if isa(a,'prdataset') || isa(a,'prmapping')
+      a = setname(a,name);
+    else
+      error('Illegal input')
+    end
+  end

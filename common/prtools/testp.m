@@ -17,7 +17,7 @@
 % the classification error E.  Returns the leave-one-out error estimate. If
 % H is not given, it is determined by PARZENC.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, PARZEN_MAP, PARZENML, PARZENC. 
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

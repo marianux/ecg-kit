@@ -7,7 +7,7 @@
 % Classifiers can be trained like A*(FEATSELV*LDC([],1E-3)) to make
 % use of this feature selection
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, FEATEVAL, FEATSELO, FEATSELB, FEATSELF,
 % FEATSEL, FEATSELP, FEATSELM, FEATSELI
 

@@ -24,5 +24,5 @@
 % If A has target labels, an error is returned since in that case, no 
 % classes are defined.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, SETPRIOR

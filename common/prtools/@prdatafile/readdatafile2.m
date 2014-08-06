@@ -31,8 +31,9 @@
 % while next > 0
 %    [b,next] = readdatafile(a,next)
 %    u = u + meancov(b) .* repmat(nobjects',1,k);
+%    if next <= 0, break; end
 % end
 % u = u ./ repmat(classsizes(a)',1,k);
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PRDATASET, DATAFILE

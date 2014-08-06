@@ -27,7 +27,7 @@
 % central interface to all other feature selection methods. W can be used
 % for selecting features in a dataset B using B*W.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, FEATEVAL, FEATSELO, FEATSELB, FEATSELI,
 % FEATSELP, FEATSELF, FEATSELLR
 

@@ -1,4 +1,4 @@
-%IM_FILL_NORM Fill and normalize image for display puproses
+%IM_FILL_NORM Fixed mapping for normalizing image for display puproses
 %
 %   B = IM_FILL_NORM(A,N,BACKGROUND)
 %

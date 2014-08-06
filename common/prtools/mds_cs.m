@@ -1,6 +1,8 @@
-% MDS_CS Classical scaling
+% MDS_CS Trainable mapping for classical scaling
 %
 % 	W = MDS_CS(D,N)
+% 	W = D*MDS_CS([],N)
+% 	W = D*MDS_CS(N)
 % 
 % INPUT
 % 	D 	Square dissimilarity matrix of the size M x M
@@ -23,7 +25,7 @@
 % 	 1997.
 % 2. T.F. Cox and M.A.A. Cox, Multidimensional Scaling, Chapman and Hall, London, 1994.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, MDS_INIT, MDS_CS
 
 %
@@ -31,78 +33,80 @@
 % Faculty of Applied Sciences, Delft University of Technology
 %
 
-function W = mds_cs (D,n)
+function W = mds_cs (varargin)
 
-if nargin < 2, n = 2; end
-	if nargin < 1 | isempty(D)
-		W = prmapping(mfilename,n);
-		W = setname(W,'Classical MDS');
-		return
-	end
+  mapname = 'Classical MDS';
+	argin = shiftargin(varargin,'scalar');
+  argin = setdefaults(argin,[],2);
+  
+  if mapping_task(argin,'definition')
+    
+    W = define_mapping(argin,'fixed',mapname);
+    
+  elseif mapping_task(argin,'training')			% Train a mapping.
+  
+    [D,n] = deal(argin{:});
+    [m,mm] = size(D);
+    % Definition of the projection;
+    if ~issym(D,1e-12),
+      error('Matrix should be symmetric.')
+    end
 
-	[m,mm] = size(D);
+    D = remove_nan(D);  
+    D = +D.^2;
+    B = -repmat(1/m,m,m);					
+    B(1:m+1:end) = B(1:m+1:end) + 1;		% B = eye(m) - ones(m,m)/m
+    B = -0.5 * B * D * B; 							% B is now the matrix of inner products 
 
-	if (isa(D,'prdataset') | isa(D,'double')) 
-		if isa(n,'prmapping')
-			% The projection is already defined; apply it to new data
-			w = getdata(n);
-			[m,n] = size(D);
-	      if isa(D,'prdataset'),
-				lab = getlab(D); 
-				D = +D;
-			else
-				lab = [];
-			end
-			D = remove_nan(D);  
-			D     = D.^2;
-			Q     = w{1}; 
-			me    = w{2};
-			L     = w{3};
-	
-			Z = -repmat(1/n,n,n);                 
-			Z(1:n+1:end) = Z(1:n+1:end) + 1;    	 % Z = eye(n) - ones(n,n)/n
-			data = -0.5 * (D - me(ones(m,1),:)) * Z * Q * diag(sqrt(abs(L))./L);          
-			if ~isempty(lab), 
-				W = prdataset(data,lab); 
-			else
-				W = data;
-			end
-			return; 
+    ok = 0;
+    p  = 1;
+    k  = min (p*n,m);
+    options.disp   = 0; 
+    options.isreal = 1; 
+    options.issym  = 1; 
+
+    while ~ok & k <= m, 								% Find k largest eigenvalues
+      k = min (p*n,m);
+      [V,S,U] = eigs(B,k,'lm',options);
+      s = diag(real(S));
+      [ss,I] = sort(-s);
+      ok = sum(s>0) >= n;
+      p  = p+1;
+    end
+    if ~ok & k == m,
+      error ('The wanted configuration cannot be found.');
+    end
+    J = I(1:n);
+    W = prmapping(mfilename,'trained',{V(:,J), mean(D,2)', s(J)},[],m,length(J));
+    W = setname(W,mapname);
+  
+  else % Evaluation
+    
+    [D,w] = deal(argin{:});
+    [m,n] = size(D);
+	  if isa(D,'prdataset'),
+      lab = getlab(D); 
+			D = +D;
+		else
+			lab = [];
 		end
-	end
+    D = remove_nan(D);  
+    D     = D.^2;
+    Q     = w{1}; 
+    me    = w{2};
+    L     = w{3};
 
-	% Definition of the projection; we are here only if there is no projection yet
-	if ~issym(D,1e-12),
-		error('Matrix should be symmetric.')
-	end
-
-  D = remove_nan(D);  
-	D = +D.^2;
-	B = -repmat(1/m,m,m);					
-	B(1:m+1:end) = B(1:m+1:end) + 1;		% B = eye(m) - ones(m,m)/m
-	B = -0.5 * B * D * B; 							% B is now the matrix of inner products 
-
-	ok = 0;
-	p  = 1;
-	k  = min (p*n,m);
-	options.disp   = 0; 
-	options.isreal = 1; 
-	options.issym  = 1; 
-
-	while ~ok & k <= m, 								% Find k largest eigenvalues
-		k = min (p*n,m);
-		[V,S,U] = eigs(B,k,'lm',options);
-		s = diag(real(S));
-		[ss,I] = sort(-s);
-		ok = sum(s>0) >= n;
-		p  = p+1;
-	end
-	if ~ok & k == m,
-		error ('The wanted configuration cannot be found.');
-	end
-	J = I(1:n);
-	W = prmapping(mfilename,'trained',{V(:,J), mean(D,2)', s(J)},[],m,length(J));
-	W = setname(W,'Classical MDS');
+    Z = -repmat(1/n,n,n);                 
+    Z(1:n+1:end) = Z(1:n+1:end) + 1;    	 % Z = eye(n) - ones(n,n)/n
+    data = -0.5 * (D - me(ones(m,1),:)) * Z * Q * diag(sqrt(abs(L))./L);          
+    if ~isempty(lab), 
+      W = prdataset(data,lab); 
+    else
+      W = data;
+    end
+    
+  end
+  
 return
 
 

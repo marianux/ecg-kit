@@ -12,7 +12,7 @@
 % DESCRIPTION
 % Scatter the regression dataset X with marker colors CLRS.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 %  PLOTR
 
 % Copyright: D.M.J. Tax, D.M.J.Tax@37steps.com

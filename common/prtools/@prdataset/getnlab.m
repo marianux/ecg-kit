@@ -9,4 +9,5 @@
 % numeric labels NLAB <= 0. Note also that for labels of type 'targets'
 % the numeric labels NLAB are all set to 0. 
 %
-% SEE ALSO MULTI_LABELING
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% MULTI_LABELING

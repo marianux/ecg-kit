@@ -43,7 +43,7 @@
 %
 % This function is basically a wrapper around pcaklm.m.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, PCAKLM, PCLDC, KLLDC, PCAM, FISHERM
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

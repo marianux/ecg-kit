@@ -1,7 +1,8 @@
-%IM_GAUSSF Gaussian filter of images stored in a dataset (DIPImage)
+%IM_GAUSSF Fixed mapping for Gaussian filtering images (DIPImage)
 %
 %	B = IM_GAUSSF(A,S)
 %	B = A*IM_GAUSSF([],S)
+%	B = A*IM_GAUSSF(S)
 %
 % INPUT
 %   A        Dataset with object images dataset (possibly multi-band)
@@ -15,35 +16,39 @@
 % DIPImage command GAUSSF.
 % In case DIPImage is not available, IM_GAUSS may be used.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DATAFILES, DIPIMAGE, GAUSSF, IM_GAUSS
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-function b = im_gaussf(a,s)
+function b = im_gaussf(varargin)
 
-		
-	if ~isdipimage
-		error('DipImage not available, use im_gauss instead of im_gaussf')
-	end
-	
-	if nargin < 2 | isempty(s), s = 1; end
-	
-  if nargin < 1 | isempty(a)
-    b = prmapping(mfilename,'fixed',s);
+	argin = shiftargin(varargin,'scalar');
+  argin = setdefaults(argin,[],1);
+  if mapping_task(argin,'definition')
+    b = define_mapping(argin,'fixed');
     b = setname(b,'Gaussian filter');
-	elseif isa(a,'prdataset') % allows datafiles too
-		isobjim(a);
-    b = filtim(a,mfilename,s);
-  elseif isa(a,'double') | isa(a,'dip_image') % here we have a single image
-		n = size(a,3);
-		b = zeros(size(a));
-		for j=1:n
-			aa = 1.0*dip_image(a(:,:,j));
-    	b(:,:,j) = double(gaussf(aa,s));
-		end
-	end
+  else
+	  checktoolbox('diplib');
+    [a,s] = deal(argin{:});	
+    if isa(a,'prdataset') % allows datafiles too
+      isobjim(a);
+      b = filtim(a,mfilename,s);
+    elseif isa(a,'double') | isa(a,'dip_image') % here we have a single image
+      n = size(a,3);
+      b = zeros(size(a));
+      if checktoolbox('dipimage')
+        for j=1:n
+          aa = 1.0*dip_image(a(:,:,j));
+          b(:,:,j) = double(gaussf(aa,s));
+        end
+      else
+        diplibwarn
+        b = im_gauss(a,s,s);
+      end
+    end
+  end
 	
 return

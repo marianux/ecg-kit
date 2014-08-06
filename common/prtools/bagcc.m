@@ -2,6 +2,7 @@
 %
 %		DBAG = BAGCC(DOBJ,COMBC)
 %		DBAG = DOBJ*BAGCC([],COMBC)
+%		DBAG = DOBJ*BAGCC(COMBC)
 %
 % INPUT
 %   DOBJ   Dataset, classification matrix, output of some base classifier
@@ -26,8 +27,8 @@
 %
 % This routine is called by BAGC where needed.
 %
-% SEE ALSO
-% DATASETS, BAGC, MULTI-LABELING
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% MAPPINGS, DATASETS, BAGC, MULTI-LABELING
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
@@ -35,71 +36,71 @@
 
 function [dbag,id] = bagcc(dobj,combc)
 
-if nargin < 2 | isempty(combc), combc = votec; end
+	argin = shiftargin(varargin,'prmapping');
+  argin = setdefaults(argin,[],votec);
+  if mapping_task(argin,'definition')
+    out1 = define_mapping(argin,'untrained');
+    out1 = setname(out1,'Bag combiner');
+  else
+    [dobj,combc] = deal(argin{:});
 
-if nargin < 1 | isempty(dobj)
-	% define the mapping
-	dbag = prmapping(mfilename,'untrained',{combc});
-	dbag = setname(dbag,'Bag combiner');
-else % execution
-	
-	% we should have a proper dataset
-	isdataset(dobj);
-	
-	% the class names are the bag indentifiers
-	bagnames = classnames(dobj);
-	
-	% retrieve datasize, and number of sets c
-	[m,k,c] = getsize(dobj);
-	
-	% get number of objects for every set
-	s = classsizes(dobj);
-	
-	% dobj is a classification matrix, so its features point to classes
-	featlab = getfeatlab(dobj);
-	
-	% reserve spave for the result
-	dbag = prdataset(zeros(c,k));
+    % we should have a proper dataset
+    isdataset(dobj);
 
-	% space the object identifiers of the first object per bag
-	id = zeros(c,1);
-	
-	t = sprintf('Combining %i bags: ',c);
-	prwaitbar(c,t);
-	
-	% run over all bags
-	for j=1:c
-		prwaitbar(c,j,[t int2str(j)]);
-		
-		% get the objects in the bag
-		y = seldat(dobj,j);
-		
-		% the identifier of the first object
-		id(j) = getident(y(1,:));
-		
-		%create a dataset with all objects in the bag concatenated horizontally
-		y = +y';
-		y = prdataset(y(:)');
-		
-		% give the the proper class labels
-		y = setfeatlab(y,repmat(featlab,s(j),1));
-		
-		% now classifier combiners can be used
-		dbag(j,:) = y*combc;
-		
-	end
-	prwaitbar(0);
-	
-	% find the first objects of every set
-	J = findident(dobj,id); 
-	
-	% and replace them by the bag combining result
-	% so object labels become bag labels
-	dbag = setdata(dobj(J,:),dbag);
-	
-	% give columns the classnames
-	dbag = setfeatlab(dbag,featlab);
-	
-	% use set bag names as bag identifiers
-	dbag = setident(dbag,bagnames);
-end
+    % the class names are the bag indentifiers
+    bagnames = classnames(dobj);
+
+    % retrieve datasize, and number of sets c
+    [m,k,c] = getsize(dobj);
+
+    % get number of objects for every set
+    s = classsizes(dobj);
+
+    % dobj is a classification matrix, so its features point to classes
+    featlab = getfeatlab(dobj);
+
+    % reserve spave for the result
+    dbag = prdataset(zeros(c,k));
+
+    % space the object identifiers of the first object per bag
+    id = zeros(c,1);
+
+    t = sprintf('Combining %i bags: ',c);
+    prwaitbar(c,t);
+
+    % run over all bags
+    for j=1:c
+      prwaitbar(c,j,[t int2str(j)]);
+
+      % get the objects in the bag
+      y = seldat(dobj,j);
+
+      % the identifier of the first object
+      id(j) = getident(y(1,:));
+
+      %create a dataset with all objects in the bag concatenated horizontally
+      y = +y';
+      y = prdataset(y(:)');
+
+      % give the the proper class labels
+      y = setfeatlab(y,repmat(featlab,s(j),1));
+
+      % now classifier combiners can be used
+      dbag(j,:) = y*combc;
+
+    end
+    prwaitbar(0);
+
+    % find the first objects of every set
+    J = findident(dobj,id); 
+
+    % and replace them by the bag combining result
+    % so object labels become bag labels
+    dbag = setdata(dobj(J,:),dbag);
+
+    % give columns the classnames
+    dbag = setfeatlab(dbag,featlab);
+
+    % use set bag names as bag identifiers
+    dbag = setident(dbag,bagnames);
+  end

@@ -34,5 +34,5 @@
 %
 % Additional preprocessing commands may be stored by ADDPREPROCC.
 %
-% SEE ALSO 
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>) 
 % DATAFILES, ADDPREPROC, DATASETS

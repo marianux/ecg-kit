@@ -23,7 +23,7 @@
 % as an alternative to standard cross-validation, IJCNN2010, 1-8
 % http://www.budka.co.uk/
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, CROSSVAL
   
 function [R H] = dps(A,levels,classwise)

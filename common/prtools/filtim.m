@@ -1,23 +1,25 @@
-%FILTIM Mapping to filter multiband image objects in datasets and datafiles
+%FILTIM Fixed mapping to filter images in datasets and datafiles
 %
-%    B = FILTIM(A,FILTER_COMMAND,{PAR1,PAR2,....},SIZE)
-%    B = A*FILTIM([],FILTER_COMMAND,{PAR1,PAR2,....},SIZE)
+%    B = FILTIM(A,COMMAND,{PAR1,PAR2,....},SIZE)
+%    B = A*FILTIM([],COMMAND,{PAR1,PAR2,....},SIZE)
+%    B = A*FILTIM(COMMAND,{PAR1,PAR2,....},SIZE)
 %
 % INPUT
 %    A               Dataset or datafile with multi-band image objects
-%    FILTER_COMMAND  String with function name
-%    {PAR1, ...  }   Cell array with optional parameters to FILTER_COMMAND
+%    COMMAND         String with function name of command to be executed
+%    {PAR1,...}      Cell array with optional parameters to COMMAND
 %    SIZE            Output size of the mapping (default: input size)
 %
 % OUTPUT
 %    B               Dataset containing multi-band images processed by 
-%                    FILTER_COMMAND, band by band. 
+%                    COMMAND, band by band. 
 %
 % DESCRIPTION
-% For each band of each object stored in A a filter operation is performed as
+% For each band of each image in A a filter operation is performed 
 %
-%    OBJECT_OUT = FILTER_COMMAND(OBJECT_IN,PAR1,PAR2,....)
+%    OBJECT_OUT = COMMAND(OBJECT_IN,PAR1,PAR2,....)
 %
+% Object images as well as feature images are supported.
 % The results are collected and stored in B. In case A (and thereby B) is
 % a datafile, execution is postponed until conversion into a dataset, or a
 % call to SAVEDATAFILE.
@@ -25,72 +27,96 @@
 % The difference between FILTIM and the similar command FILTM is that
 % FILTIM is aware of the band structure of the objects. As FILTIM treats
 % the bands separately it cannot be used for commands that change the number
-% of bands (like RGB2GRAY) or need to access them all.
+% of bands (like RGB2GRAY) or need to access them all simultaneaously.
+% However, FILTM can handle cells and FILTIM cannot.
 %
 % EXAMPLE
-% a = delft_images; b = a(120 121 131 230)*col2gray
-% e = b*filtim([],'fft2')*filtim([],'abs')*filtim([],'fftshift');
-% figure; show(e); figure; show((1+e)*filtim([],'log')); 
+% A = delft_images; B = A([120 121 131 230])*doublem*col2gray;
+% E = B*filtim('fft2')*filtim('abs')*filtim('fftshift');
+% figure; show(E); figure; show((1+E)*filtim('log')); 
 %
-% SEE ALSO
-% DATASETS, DATAFILES, IM2OBJ, DATA2IM, IM2FEAT, DATGAUSS, DATFILT, FILTM
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATASETS, DATAFILES, IM2OBJ, IM2FEAT, FILTM, DATA2IM, PROCM, MAPM
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
-% Faculty EWI, Delft University of Technology
-% P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-function b = filtim(a,command,pars,outsize)
+function b = filtim(varargin)
 
-		if nargin < 4, outsize = []; end
-	if nargin < 3, pars = {}; end
-	if nargin < 2
-		error('No command given')
-	end
-	if ~iscell(pars), pars = {pars}; end
-	
-	mapname = 'Dataset/file band filtering';
-	
-	if isempty(a)                    % no data, so just mapping definition
-		b = prmapping(mfilename,'fixed',{command,pars});
-		if ~isempty(outsize)
-			b = setsize_out(b,outsize);
-		end
-		b = setname(b,mapname);
+  if nargin == 0
+    error('No command found')
+  end
+  
+  mapname = 'ImageFilt';
+  % check for mapping definition: first argument empty or string
+  varargin = shiftargin(varargin,'char');
+  if isempty(varargin{1})
+    b = prmapping(mfilename,'fixed',varargin(2:end));
+    b = setname(b,mapname);
+    % set size_out if user wants so
+    if numel(varargin) == 4, b = setsize_out(b,varargin{4}); end
+    return
+  end
 
-	elseif isdatafile(a)                 
+  % now we have: proc(data,command,pars)
+  % data might be dataset, datafile, cell array, double, structure array
+  nout = max(1,nargout);
+  argin = setdefaults(varargin,[],[],[],[]);
+  [a,command,pars,outsize] = deal(argin{:}); % use nice names
+  if isempty(pars)
+    pars = {};
+  elseif ~iscell(pars)
+    pars = {pars}; 
+  end
+
+	if isdatafile(a)               % for datafiles filters are stored
 		
-		% for datafiles filters will be stored
 		isobjim(a);      
-    if isempty(getpostproc(a))     % as preprocessing (if no postproc defined)
+    if isempty(getpostproc(a))&& ~ismapping(command)
+                                 % as preprocessing (if no postproc defined)
       b = addpreproc(a,mfilename,{command pars},outsize);
-    else                           % or as mapping as postprocessing
-		  v = prmapping(mfilename,'fixed',{command,pars});
-		  if ~isempty(outsize)
-			  v = setsize_out(v,outsize);
-		  end
-		  v = setname(v,mapname);
-		  b = addpostproc(a,v);
+    else                         % or as mapping as postprocessing
+      if ismapping(command)      % we have already a mapping
+        v = command;
+      else                       % just a string, construct mapping
+		    v = prmapping(mfilename,'fixed',{command,pars});
+		    v = setname(v,mapname);
+      end
+		  if ~isempty(outsize)% user wants to set an output size (hope he has good reasons)
+			   v = setsize_out(v,outsize);  % add it to mapping
+      end
+		  b = addpostproc(a,v);      % store mapping
 		end
     
 	elseif isdataset(a)
    
 		% convert to image and process
-		isobjim(a);
-    m = size(a,1);
-    d = data2im(a);
-		out = feval(mfilename,d,command,pars); % effectively jumps to double (below)
-    out = double(out);
-		fsize = size(out);		
-		if m > 1
-			fsize = fsize(1:3);
-			if fsize(3) == 1
-				fsize = fsize(1:2);
-			end
-		end
-    % store processed images in dataset
-		b = setdata(a,im2obj(out,fsize));
-		b = setfeatsize(b,fsize);
-		
+		if isobjim(a)
+      m = size(a,1);
+      d = data2im(a);
+      out = feval(mfilename,d,command,pars); % effectively jumps to double (below)
+      out = double(out);
+      fsize = size(out);		
+      if m > 1
+        fsize = fsize(1:3);
+        if fsize(3) == 1
+          fsize = fsize(1:2);
+        end
+      end
+      % store processed images in dataset
+      b = setdata(a,im2obj(out,fsize));
+      b = setfeatsize(b,fsize);
+    elseif isfeatim(a)
+      k = size(a,2);
+      d = data2im(a);
+      out = feval(mfilename,d,command,pars); % effectively jumps to double (below)
+      out = double(out);
+      % store processed images in dataset, assume size didn't change
+      b = setdata(a,im2feat(out,getobjsize(a)));
+     % b = setobjsize(b,osize);
+    else
+      error('No images found in dataset')
+    end
+      
 	else % double
 		
 		% make imsize 4D: horz*vert*bands*objects

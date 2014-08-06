@@ -55,5 +55,5 @@
 % 2. M. Budka, B. Gabrys, Correntropy-based density-preserving data
 % sampling as an alternative to standard cross-validation, IJCNN2010, 1-8
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, DPS, CLEVAL, TESTC, PRCROSSVAL

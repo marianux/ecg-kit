@@ -1,4 +1,4 @@
-%IM_NORM Mapping for normalizing images: mean, variance
+%IM_NORM Fixed mapping for normalizing images on mean and variance
 %
 %  B = IM_NORM(A)
 %  B = A*IM_NORM
@@ -12,8 +12,8 @@
 % DESCRIPTION
 % The objects stored as images in the dataset or datafile A are normalised
 % w.r.t. their mean (0) and variance (1).
-
-%% SEE ALSO
+%
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, DATAFILES, IM2OBJ, DATA2IM 
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

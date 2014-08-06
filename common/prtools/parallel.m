@@ -45,7 +45,7 @@
 % by the call WC = PARALLEL(WC,N), in which N is an array of integers, such
 % that sum(N) equals the feature size of A.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, MAXC, MINC, MEANC, MEDIANC, PRODC, FISHERC, STACKED
 %
 % EXAMPLES

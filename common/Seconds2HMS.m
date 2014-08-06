@@ -1,4 +1,4 @@
-function strRetVal = Seconds2HMS(data, prec)
+function [strRetVal, iHours, iMins, iSeconds, iMilliSeconds ] = Seconds2HMS(data, prec)
 
 if( nargin < 2 )
     % decimals of the seconds
@@ -8,14 +8,11 @@ end
 sign_data = sign(data);
 data = abs(data);
 
-iHours = floor(data * 1 / 60 / 60);
-iMins = floor(data * 1 / 60 - iHours * 60 );
-iSeconds = data - iHours * 60  * 60 - iMins * 60;
-iMilliSeconds = iSeconds - floor(iSeconds);
-
-if(iMilliSeconds == 0) 
-    prec = 0;
-end
+iDays = floor(data * 1 / 60 / 60 / 24);
+iHours = floor(data * 1 / 60 / 60 - iDays * 24);
+iMins = floor(data * 1 / 60 - iDays * 24 * 60 - iHours * 60 );
+iSeconds = floor(data - iDays * 24 * 60  * 60 - iHours * 60  * 60 - iMins * 60);
+iMilliSeconds = (data - iDays * 24 * 60  * 60 - iHours * 60  * 60 - iMins * 60 - iSeconds) * 1000;
 
 ldata = length(data);
 strRetVal = cell(ldata,1);
@@ -28,8 +25,12 @@ for ii = 1:ldata
         strAux = [];
     end
     
+    if( iDays(ii) > 0 )
+        strAux = [ strAux num2str(iDays(ii)) 'd ' ]; 
+    end
+    
     if( iHours(ii) > 0 )
-        strAux = [   num2str(iHours(ii)) ' h ' ]; 
+        strAux = [  strAux num2str(iHours(ii)) 'h ' ]; 
     end
 
     if( iMins(ii) > 0 )
@@ -37,7 +38,13 @@ for ii = 1:ldata
     end
 
     if (iSeconds(ii) > 0  || isempty(strAux) )
-        strAux = [  strAux sprintf( [ '%2.' num2str(prec) 'f"' ] , iSeconds(ii)) ]; 
+        if( prec > 0 && iMilliSeconds(ii) > 0 )
+            strAux = [  strAux sprintf( [ '%d.' ] , iSeconds(ii) ) ]; 
+            strAux2 = sprintf( '%03d', round(iMilliSeconds(ii)) ); 
+            strAux = [  strAux strAux2(1:min(3,prec)) '"' ]; 
+        else
+            strAux = [  strAux sprintf( [ '%d"' ] , iSeconds(ii)) ]; 
+        end
     end
     
     strRetVal{ii} = strAux;

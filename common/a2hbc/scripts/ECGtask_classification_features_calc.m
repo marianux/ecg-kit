@@ -26,6 +26,9 @@ classdef ECGtask_classification_features_calc < ECGtask
     properties(GetAccess = public, SetAccess = private)
         true_labels
         memory_constant = 0.4;
+        
+        started = false;
+        
     end
     
     properties( Access = private, Constant)
@@ -54,6 +57,7 @@ classdef ECGtask_classification_features_calc < ECGtask
         class_labeling
         autovec
         user_string
+        tmp_path        
     end
     
     methods

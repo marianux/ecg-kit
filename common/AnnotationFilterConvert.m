@@ -68,8 +68,7 @@ if( strcmpi(recording_format, 'AHA') )
                                 3   2   2   4   4   1   4   1   4   4   4;
                                 2   1   1   3   3   2   3   2   3   3   3;
                             ];
-
-
+                        
 elseif( strcmpi(recording_format, 'HES') )
 
 %%%%%%%%%%%%%%%%%%
@@ -228,6 +227,11 @@ elseif( strcmpi(recording_format, 'MIT') )
                                 1   1   1   1   1   2   1   1   2   2   3   3   3   1   1   2   3   3   3   3   3   3   3   3   2   3   1   1   3;
                             ];
 
+else
+    
+    cprintf('[1,0.5,0]', 'Heartbeats annotations types in %s format no translated.\n', recording_format);
+    return
+                        
 end
 
 iAAMItranslation = iLabListsTranslations(2,:);

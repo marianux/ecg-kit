@@ -13,7 +13,7 @@
 % vectors. Classes have equal prior probabilities. If N is a vector of
 % sizes, exactly N(I) objects are generated for class I, I = 1..8.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, PRDATASETS
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl
@@ -46,5 +46,6 @@ function a = gendatm(n)
 
 	lab = genlab(n,['a';'b';'c';'d';'e';'f';'g';'h']);
 	a = prdataset(a,lab,'name','Multi-Class Problem');
+  a = setprior(a,0); % make all classes equally probable
 
 return

@@ -28,7 +28,7 @@
 % [U,G] = MEANCOV(GENDATB(25));
 % W = NBAYESC(U,G);
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, QDC, LDC, NMC.
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

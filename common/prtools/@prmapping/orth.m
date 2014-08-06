@@ -6,5 +6,5 @@
 %an error is generated. The output mapping V has no offset and has
 %thereby a distance zero to the origin.
 %
-%SEE ALSO 
+%SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>) 
 %MAPPINGS, AFFINE

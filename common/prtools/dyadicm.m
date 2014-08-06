@@ -32,7 +32,7 @@
 % are discouraged to call it directly. The routine is called by the 
 % dyadic operations of the classes 'prmapping' and 'prdatafile'.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, DATAFILES
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -139,19 +139,19 @@ return
 
 function [a1,a2,fsize] = split_dataset(a,p,q,fsize)
 
-%   if iscell(a)
-%     
-%     a1 = a{1};
-%     a2 = a{2};
-%     
-%   %elseif ischar(p) & ~isempty(q)
-% %   elseif ~isempty(q)
-% %     % split as defined by q
-% %     fsize = q;
-% %     a1 = a(:,1:q);
-% %     a2 = a(:,q+1:end);
-%     
-%   else
+  if iscell(a)
+    
+    a1 = a{1};
+    a2 = a{2};
+    
+  %elseif ischar(p) & ~isempty(q)
+%   elseif ~isempty(q)
+%     % split as defined by q
+%     fsize = q;
+%     a1 = a(:,1:q);
+%     a2 = a(:,q+1:end);
+    
+  else
     % 50-50 split, but preserve possible image structure
     if isempty(fsize) | fsize == 0
       if isdataset(a)
@@ -178,6 +178,6 @@ function [a1,a2,fsize] = split_dataset(a,p,q,fsize)
       a2 = setfeatsize(a2,fsize);
     end
     
-%   end
+  end
   
 return

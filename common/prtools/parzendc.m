@@ -1,7 +1,8 @@
-%PARZENDC Parzen density based classifier
+%PARZENDC Trainable classifier based on Parzen density estimation
 % 
-%  [W,H] = PARZENDC(A)
-%  W     = PARZENDC(A,H)
+%  [W,H] = PARZENDC(A,H)
+%  [W,H] = A*PARZENDC([],H)
+%  [W,H] = A*PARZENDC(H)
 % 
 % INPUT
 %  A   Dataset
@@ -27,79 +28,78 @@
 % D is an [M x C] dataset, if B has M objects.
 % 
 % EXAMPLES
-% See PREX_DENSITY.
+% See PREX_DENSITY for densities and PREX_PARZEN for differences between
+% PARZENC, PARZENDC and PARZENM.
 %
-% SEE ALSO
-% DATASETS, MAPPINGS, PARZENC, PARZEN_MAP, PARZENML
+%
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATASETS, MAPPINGS, PARZENC, PARZENM, PARZENML, PREX_DENSITY
  
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-% $Id: parzendc.m,v 1.7 2008/07/03 09:11:44 duin Exp $
+function [W,h] = parzendc(varargin)
+  
+	mapname = 'ParzenD';
+  argin = shiftargin(varargin,'scalar');
+  argin = setdefaults(argin,[],[]);
+  
+  if mapping_task(argin,'definition')
+    W = define_mapping(argin,'untrained',mapname);
+    
+  elseif mapping_task(argin,'training')			% Train a mapping.
+  
+    [a,h] = deal(argin{:});
+    islabtype(a,'crisp','soft');
+    isvaldfile(a,2,2); % at least 2 objects per class, 2 classes
+    a = testdatasize(a);
+    a = testdatasize(a,'objects');
 
-function [W,h] = parzendc(a,h)
+    [m,k,c] = getsize(a);
+    nlab = getnlab(a);
 
-		
-	if nargin < 2
-		prwarning(5,'Smoothing parameters not specified, estimated from the data.');
-		h = [];
-	end
+    if ~isempty(h)       % Take user settings for smoothing parameters.
 
-	% No input arguments: return an untrained mapping.
-	if nargin == 0 | isempty(a)
-		W = prmapping(mfilename,h); 
-		W = setname(W,'ParzenD');
-		return; 
-	end
+      if size(h,1) == 1, h = repmat(h,c,1); end
+      if size(h,2) == 1, h = repmat(h,1,k); end
+      if any(size(h) ~= [c,k])
+        error('Array with smoothing parameters has a wrong size.');
+      end
 
-	islabtype(a,'crisp','soft');
-	isvaldfile(a,2,2); % at least 2 objects per class, 2 classes
-	a = testdatasize(a);
-	a = testdatasize(a,'objects');
+    else   % Estimate smoothing parameters
 
-	[m,k,c] = getsize(a);
-	nlab = getnlab(a);
+      % Scale A such that its mean is shifted to the origin and 
+      % the variances of all features are scaled to 1. 
+      ws = scalem(a,'variance');
+      b = a*ws;  
 
-	if ~isempty(h)       % Take user settings for smoothing parameters.
-		
-		if size(h,1) == 1, h = repmat(h,c,1); end
-		if size(h,2) == 1, h = repmat(h,1,k); end
-		if any(size(h) ~= [c,k])
-			error('Array with smoothing parameters has a wrong size.');
-		end
+      % SCALE is basically [1/mean(A) 1/STD(A)] based on the properties of SCALEM.
+      scale = ws.data.rot;				
+      if (size(scale,1) ~= 1) % formally ws.data.rot stores a rotation matrix 
+        scale = diag(scale)'; % extract the diagonal if it does,
+      end                     % otherwise we already have it
 
-	else   % Estimate smoothing parameters
+      h = zeros(c,k);
 
-		% Scale A such that its mean is shifted to the origin and 
-		% the variances of all features are scaled to 1. 
-		ws = scalem(a,'variance');
-		b = a*ws;  
+      if islabtype(a,'crisp')
+        s = sprintf('parzendc: smoothing per class ');
+        prwaitbar(c,s);
+        for j=1:c
+          prwaitbar(c,j,[s int2str(j)]);
+          bb = seldat(b,j); 				% BB consists of the j-th class only.
+          h(j,:) = repmat(parzenml(bb),1,k)./scale;
+        end
+        prwaitbar(0);
+      elseif islabtype(a,'soft')
+        h = parzenml(a);
+      end
+    end
 
-		% SCALE is basically [1/mean(A) 1/STD(A)] based on the properties of SCALEM.
-		scale = ws.data.rot;				
-		if (size(scale,1) ~= 1) % formally ws.data.rot stores a rotation matrix 
-			scale = diag(scale)'; % extract the diagonal if it does,
-		end                     % otherwise we already have it
-
-		h = zeros(c,k);
-		
-		if islabtype(a,'crisp')
-			s = sprintf('parzendc: smoothing per class ');
-			prwaitbar(c,s);
-			for j=1:c
-				prwaitbar(c,j,[s int2str(j)]);
-				bb = seldat(b,j); 				% BB consists of the j-th class only.
-				h(j,:) = repmat(parzenml(bb),1,k)./scale;
-			end
-			prwaitbar(0);
-		elseif islabtype(a,'soft')
-			h = parzenml(a);
-		end
-	end
-
-	W = prmapping('parzen_map','trained',{a,h,getprior(a)},getlablist(a),k,c);
-	W = setname(W,'ParzenD');
-	W = setcost(W,a);
+    W = prmapping('parzen_map','trained',{a,h,getprior(a)},getlablist(a),k,c);
+    W = setname(W,mapname);
+    W = setcost(W,a);
+    
+  end
 
 return;

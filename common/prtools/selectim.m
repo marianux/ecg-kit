@@ -1,4 +1,5 @@
 %SELECTIM Select one or more images in multiband image or dataset
+%         depeciated, use BANDSEL
 %
 % B = SELECTIM(A,N)
 % B = A*SELECTIM([],N)

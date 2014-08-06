@@ -22,7 +22,7 @@
 % Reduction by Weighted Pairwise Fisher Criteria, IEEE Trans. on
 % Pattern Analysis and Machine Intelligence, vol.23, no.7, 2001, 762-766.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, FISHERM, KLM, PCA
 
 % Copyright: M. Loog, R.P.W. Duin, duin@ph.tn.tudelft.nl

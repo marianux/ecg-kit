@@ -1,13 +1,19 @@
-%FEATSELI Individual feature selection for classification
+%FEATSELI Trainable mapping for individual feature selection
 % 
-% [W,R] = FEATSELI(A,CRIT,K,T)
+%   [W,R] = FEATSELI(A,CRIT,K,T)
+%   [W,R] = A*FEATSELI([],CRIT,K,T)
+%   [W,R] = A*FEATSELI(CRIT,K,T)
+%   [W,R] = FEATSELI(A,CRIT,K,N)
+%   [W,R] = A*FEATSELI([],CRIT,K,N)
+%   [W,R] = A*FEATSELI(CRIT,K,N)
 % 
 % INPUT	
 %   A    Training dataset
 %   CRIT Name of the criterion or untrained mapping
-%        (default: 'NN', i.e. the 1-Nearest Neighbor error)
+%        (default: 'NN', i.e. the LOO 1-Nearest Neighbor error)
 %   K    Number of features to select (default: sort all features)
 %   T    Tuning dataset (optional)
+%   N    Number of cross-validations (optional)
 %
 % OUTPUT
 %   W    Feature selection mapping
@@ -26,7 +32,7 @@
 % 	R(:,2) : criterion value
 % 	R(:,3) : added / deleted feature
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, FEATEVAL, FEATSELO, FEATSELB, FEATSELF,
 % FEATSEL, FEATSELP,FEATSELM
 
@@ -36,27 +42,16 @@
 
 % $Id: featseli.m,v 1.5 2009/07/01 07:48:05 davidt Exp $
 
-function [w,r] = featseli(a,crit,ksel,t)
+function [w,r] = featseli(varargin)
 
-		if (nargin < 2) | isempty(crit)
-    prwarning(2,'no criterion specified, assuming NN');
-		crit = 'NN'; 
-	end
-	if (nargin < 3 | isempty(ksel))
-		ksel = 0; 
-	end
-	if (nargin < 4)
-    prwarning(3,'no tuning set supplied (risk of overfit)');
-		t = [];     
-	end
-
-  % If no arguments are supplied, return an untrained mapping.
-
-	if (nargin == 0) | (isempty(a))
-		w = prmapping('featseli',{crit,ksel,t});
-		w = setname(w,'Individual FeatSel');
-		return
-	end
+  varargin = shiftargin(varargin,{'char','prmapping'});
+  argin = setdefaults(varargin,[],'NN',0,[]);
+  if mapping_task(argin,'definition')
+    w = define_mapping(argin,'untrained','Individual FeatSel');
+    return
+  end
+    
+  [a,crit,ksel,t] = deal(argin{:});
 
 	[m,k,c] = getsize(a); featlist = getfeatlab(a);
 
@@ -66,7 +61,7 @@ function [w,r] = featseli(a,crit,ksel,t)
 	
 	isvaldfile(a,1,2); % at least 1 object per class, 2 classes
 	a = testdatasize(a);
-	iscomdset(a,t);
+	if isdataset(t), iscomdset(a,t); end
 	
 	critval = zeros(k,1);
 	
@@ -74,16 +69,22 @@ function [w,r] = featseli(a,crit,ksel,t)
 
 	s = sprintf('Evaluation of %i features: ',k);
 	prwaitbar(k,s);
+  a = setprior(a,getprior(a));
 	if (isempty(t))
 		for j = 1:k
 			prwaitbar(k,j,[s int2str(j)]);
 			critval(j) = feateval(a(:,j),crit);
 		end
-	else
+  elseif isdataset(t)
 		for j = 1:k
 			prwaitbar(k,j,[s int2str(j)]);
 			critval(j) = feateval(a(:,j),crit,t(:,j));
-		end
+    end
+  else
+		for j = 1:k
+			prwaitbar(k,j,[s int2str(j)]);
+			critval(j) = feateval(a(:,j),crit,t);
+    end
 	end
 	prwaitbar(0);
 
@@ -94,6 +95,8 @@ function [w,r] = featseli(a,crit,ksel,t)
 
 	% Return the mapping found.
 	w = featsel(k,J);
+  w = setmapping_type(w,'trained');
+  w = setsize(w,[k length(J)]);
 	if ~isempty(featlist)
 		w = setlabels(w,featlist(J,:));
 	end

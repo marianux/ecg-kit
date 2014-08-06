@@ -7,5 +7,5 @@
 % feature labels, J is a cell array of indices, one for every label in
 % LABELS. If no feature labels match, J is empty.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, SETFEATLAB

@@ -13,7 +13,7 @@
 % format. Structure A is tested for existence of all the fields forming
 % particular dataset format. Prtools 3.x and 4.x formats are supported.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASET
 
 % $Id: primport.m,v 1.4 2007/08/24 13:49:59 davidt Exp $

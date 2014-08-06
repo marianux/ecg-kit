@@ -18,7 +18,7 @@
 % The global PRMEMORY is read for the maximum size of the internally declared 
 % matrix, default inf.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, PARZENC, TESTP
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

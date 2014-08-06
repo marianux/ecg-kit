@@ -13,7 +13,7 @@
 % they don't fit (non-numeric features, varying feature length) an error is
 % generated.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS
 
 function a = prarff(file)

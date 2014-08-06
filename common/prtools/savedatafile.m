@@ -42,7 +42,8 @@
 % useful in case preprocessing does not yield a proper dataset with the
 % same number of features for every object.
 %
-% SEE ALSO DATAFILES, DATASETS, CREATEDATAFILE
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATAFILES, DATASETS, CREATEDATAFILE
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
@@ -52,7 +53,8 @@ function c = savedatafile(dfile_in,featsize,dirr,nbits,filesize)
     
   if iscell(dfile_in)
     b = dfile_in{1};
-    [m,k] = size(b);
+    k = getsize(prdataset(b(1,:)),2);
+    m = getsize(b,1);
     for j=2:length(dfile_in(:))
       if size(dfile_in{j},1) ~= m
         error('Datafiles or datasets to be combined should have equal number of objects')
@@ -61,7 +63,8 @@ function c = savedatafile(dfile_in,featsize,dirr,nbits,filesize)
     end
   else
     b = dfile_in;
-    [m,k] = size(b);
+    k = getsize(prdataset(b(1,:)),2);
+    m = getsize(b,1);
   end
      
 	isvaldfile(b);
@@ -173,10 +176,10 @@ function c = savedatafile(dfile_in,featsize,dirr,nbits,filesize)
 	preproc.pars = {};
 	c.preproc = preproc;              % no preprocessing
 	c.postproc = prmapping([]);         % default postprocessing
-	featsize = getfeatsize(a);        % copy feature (image) size
+	featsize = getfeatsize(c);        % copy feature (image) size
 	c.postproc = setsize_in(c.postproc,featsize);  % set input and ...
 	c.postproc = setsize_out(c.postproc,featsize); % output size postprocessing
-	c.prdataset = setfeatsize(c.prdataset,getfeatsize(a)); % set size datafile
+	c.prdataset = setfeatsize(c.prdataset,getfeatsize(c)); % set size datafile
 	c.prdataset = setident(c.prdataset,file_index,'file_index'); % store file_index
 	%DXD give it the name of the directory, not the complete path:
 	%c.prdataset = setname(c.prdataset,dirr);

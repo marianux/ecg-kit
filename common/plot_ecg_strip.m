@@ -247,29 +247,51 @@ if( isa(ECG, 'ECGwrapper') )
     
 end
 
+% todo: Labels of the QRS annotations.
+
 if( isa(QRS_locations, 'ECGwrapper') )
     % parse ECGwrapper object
     % get the annotations from the wrapper.
+
+    task_names = {'QRS_corrector' 'QRS_detection'; 'PPG_ABP_corrector' 'PPG_ABP_detector'};
+
+    QRS_w = QRS_locations;
+    QRS_locations = {};
+    QRS_locations_names = {};
     
-    QRS_locations.ECGtaskHandle = 'QRS_corrector';
-    
-    cached_filenames = QRS_locations.GetCahchedFileName();
-    if( isempty(cached_filenames) )
-        warning('plot_ecg_strip:QRScorrectionNotFound', 'Delineation not found for this wrapper object.')
-        QRS_locations = [];
-    else
-        aux_annotations = load(cached_filenames{1});
-        fnames = fieldnames(aux_annotations);
-        aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'corrected_'))), fnames, 'UniformOutput', false)));
-        if( isempty(aux_idx) )
-            QRS_locations = [];
-        else
-            aux_val = length(aux_idx);
-            QRS_locations = cell(aux_val,1);
-            for ii = 1:aux_val
-                QRS_locations{ii} = aux_annotations.(fnames{aux_idx(ii)}).time;
-            end
+    for kk = 1:size(task_names,1)
+        
+        cached_filenames = QRS_w.GetCahchedFileName( task_names{kk,1} );
+        
+        if( isempty(cached_filenames) )
+            cached_filenames = QRS_w.GetCahchedFileName( task_names{kk,2} );
         end
+
+        if( isempty(cached_filenames) )
+        
+            for ii = 1:length(cached_filenames)
+                aux_annotations = load(cached_filenames{ii});
+                fnames = fieldnames(aux_annotations);
+                aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'corrected_'))), fnames, 'UniformOutput', false)));
+                if( isempty(aux_idx) )
+                    % no corrected annotations
+                    if( isfield(aux_annotations, 'series_quality') )
+                        [~, aux_idx] = max(aux_annotations.series_quality.ratios);
+                        QRS_locations_names = [QRS_locations_names aux_annotations.series_quality.AnnNames{aux_idx,1} ];
+                        QRS_locations = [QRS_locations {aux_annotations.(aux_annotations.series_quality.AnnNames{aux_idx,1}).(aux_annotations.series_quality.AnnNames{aux_idx,2})}];
+                    end
+                else
+                    aux_val = length(aux_idx);
+                    for kk = 1:aux_val
+                        QRS_locations_names = [QRS_locations_names fnames(aux_idx(kk)) ];
+                        QRS_locations = [QRS_locations {aux_annotations.(fnames{aux_idx(kk)}).time}];
+                    end
+                end
+            end
+
+
+        end
+        
     end
 end
 
@@ -279,7 +301,7 @@ if( isa(annotations, 'ECGwrapper') )
     
     cached_filenames = annotations.GetCahchedFileName();
     if( isempty(cached_filenames) )
-        warning('plot_ecg_strip:DelineationNotFound', 'Delineation not found for this wrapper object.')
+        cprintf('[1,0.5,0]', 'Delineation not found for this wrapper object.\n');
         annotations = [];
     else
         aux_annotations = load(cached_filenames{1});
@@ -296,7 +318,7 @@ if( isa(global_annotations, 'ECGwrapper') )
     
     cached_filenames = global_annotations.GetCahchedFileName();
     if( isempty(cached_filenames) )
-        warning('plot_ecg_strip:MultileadDelineationNotFound', 'Multilead delineation not found for this wrapper object.')
+        cprintf('[1,0.5,0]', 'Multilead delineation not found for this wrapper object.\n');
         global_annotations = [];
     else
         global_annotations = load(cached_filenames{1});
@@ -312,25 +334,47 @@ if( isa(hb_labels, 'ECGwrapper') )
     
     cached_filenames = hb_labels.GetCahchedFileName();
     if( isempty(cached_filenames) )
-        warning('plot_ecg_strip:HBclassificationNotFound', 'Heartbeat classification not found for this wrapper object.')
+        cprintf('[1,0.5,0]', 'Heartbeat classification not found for this wrapper object.\n\n');
         hb_labels = [];
     else
-        hb_labels = load(cached_filenames{1});
         
-        if( ~isempty(global_annotations) && length(global_annotations.qrs) == length(hb_labels.time) && length(hb_labels.time) == length(intersect(global_annotations.qrs, hb_labels.time)) )
-            % equal heartbeat locations.
-            hb_labels_idx = renumlab(hb_labels.anntyp, char(cBeatLabels) );
-        else
-            hb_labels_idx = [];
+        % match heartbeat classification with global_annotations.qrs time
+        % reference.
+        
+        hb_aux = load(cached_filenames{1});
+        
+        aux_time = sort(union(hb_aux.time, global_annotations.qrs));
+        aux_labels.time = aux_time;
+        aux_val2 = nan(size(aux_time));
+        aux_labels.anntyp = repmat('U',size(aux_time));
+        [~,~, aux_idx2] = intersect(hb_aux.time, aux_time);
+        aux_labels.anntyp(aux_idx2) = hb_aux.anntyp;
+        hb_labels = aux_labels;
+        
+        [~,~, aux_idx2] = intersect(global_annotations.qrs, aux_time);
+        
+        for fn = rowvec(fieldnames(global_annotations))
+            aux_val3 = aux_val2;
+            aux_val3(aux_idx2) = global_annotations.(fn{1});
+            aux_anns.(fn{1}) = aux_val3;
         end
+        aux_anns.qrs = aux_time;
+
+        hb_labels_idx = renumlab(hb_labels.anntyp, char(cBeatLabels) );
         
     end
 end
 
-if( ~all(isfield(hb_labels, cAnnotationsFieldNamesRequired )) )
-    hb_labels = [];
+if( isempty(hb_labels) )
     hb_labels_idx = [];
-    warning('plot_ecg_strip:HBclassificationStructProblem', disp_option_enumeration('Missing fields within structure:', cAnnotationsFieldNamesRequired ));
+else
+    if( all(isfield(hb_labels, cAnnotationsFieldNamesRequired )) )
+        hb_labels_idx = renumlab(hb_labels.anntyp, char(cBeatLabels) );
+    else
+        hb_labels = [];
+        hb_labels_idx = [];
+        cprintf('[1,0.5,0]', disp_option_enumeration('Missing fields within structure:', cAnnotationsFieldNamesRequired ) );
+    end
 end
 
 
@@ -379,7 +423,7 @@ end
 
 if( isempty(heasig) )
 %     warning('plot_ecg_strip:UnknownSamplingRate', 'Assuming sampling rate of 1000 Hz.')
-    fprintf(2, 'Assuming sampling rate of 1000 Hz.\n')
+    cprintf('[1,0.5,0]', 'Assuming sampling rate of 1000 Hz.\n')
     heasig.freq = 1000;
 end
 
@@ -487,13 +531,13 @@ cant_QRS_locations = cellfun(@(a)(length(a)), QRS_locations);
 
 if( ~isfield( heasig, 'adczero' ) )
 %     warning('plot_ecg_strip:UnknownADCzero', 'Assuming 0 ADC zero.')
-    fprintf(2,'Assuming 0 ADC zero.\n')
+    cprintf('[1,0.5,0]','Assuming 0 ADC zero.\n')
     heasig.adczero = zeros(cant_leads,1);
 end
 
 if( ~isfield( heasig, 'gain' ) )
 %     warning('plot_ecg_strip:UnknownADCgain', 'Assuming gain 1 uV/samp.')
-    fprintf(2,'Assuming gain 1 uV/samp.\n')
+    cprintf('[1,0.5,0]','Assuming gain 1 uV/samp.\n')
     heasig.gain = repmat(1, cant_leads,1);
 end
 
@@ -523,7 +567,7 @@ if( isfield( heasig, 'units' ) )
                 heasig.gain(ii) = heasig.gain(ii) / 1e6;
 
             otherwise
-                fprintf(2, 'Unknown units, assuming uV.\n')            
+                cprintf('[1,0.5,0]', 'Unknown units, assuming uV.\n')            
 
         end
     end
@@ -535,8 +579,9 @@ if( isfield( heasig, 'units' ) )
     
 else
 %     warning('plot_ecg_strip:UnknownADCunits', 'Assuming uV.')
-    fprintf(2, 'Unknown units, assuming uV.\n')   
+    cprintf('[1,0.5,0]', 'Unknown units, assuming uV.\n')   
     volt_idx = 1:cant_leads;
+    heasig.units = repmat('uV', cant_leads,1);
     
 end
 
@@ -556,9 +601,16 @@ if(sum(heasig.btime == ':') == 2 )
     formatIn = 'HH:MM:SS';
 elseif(sum(heasig.btime == ':') == 3 )
     formatIn = 'HH:MM:SS:FFF';
+else
+    formatIn = [];
+    cprintf('[1,0.5,0]', 'Unknown base time format %s.\n', heasig.btime);
 end
 
-base_time = (datenum( heasig.btime , formatIn) - datenum( '00:00:00' , 'HH:MM:SS')) * 60 * 60 * 24 * heasig.freq; % in samples
+if( isempty(formatIn) )
+    base_time = 1;
+else
+    base_time = (datenum( heasig.btime , formatIn) - datenum( '00:00:00' , 'HH:MM:SS')) * 60 * 60 * 24 * heasig.freq; % in samples
+end
 
 if( isempty(QRS_start_idx) )
     aux_idx = max(1,round(start_time * heasig.freq)):min(cant_samp, round(end_time * heasig.freq));
@@ -591,6 +643,11 @@ this_Xmargin = min(1*heasig.freq, round((aux_idx(end) - aux_idx(1))*0.1));
 
 aux_idx = max(1,aux_idx(1)-this_Xmargin):min(cant_samp, aux_idx(end)+this_Xmargin);
 
+aux_idx_downsample = max(1,aux_idx(1)-1*heasig.freq):min(cant_samp, aux_idx(end)+1*heasig.freq);
+
+
+
+
 kLinesAnns      = 1;
 kBackColourAnns = 2;
 
@@ -621,18 +678,8 @@ switch(strDetail)
         eDetailLevel  = kCloseDetailAll;
 end
 
-if( isempty(ECG) )
-    ECG = ECG_w.read_signal(aux_idx(1), aux_idx(end));
-    
-    [cant_samp, cant_leads] = size(ECG);
-    
-    %transform to real units
-    ECG = bsxfun( @rdivide, bsxfun( @minus, double(ECG), rowvec(double(heasig.adczero)) ), rowvec(double(heasig.gain)) ) ;
-else
-    %transform to real units
-    ECG = bsxfun( @rdivide, bsxfun( @minus, double(ECG(aux_idx,:)), rowvec(double(heasig.adczero)) ), rowvec(double(heasig.gain)) ) ;
-end
-
+% Also decimate the signal for report generation. Avoid vectoized reports
+% too heavy
 prev_units = get(fig_hdl, 'Units');
 set(fig_hdl, 'Units', 'centimeters');
 
@@ -641,8 +688,33 @@ paper_size = get(fig_hdl, 'Position');
 nsamp_target = paper_size(3) * target_res;
 set(fig_hdl, 'Units', prev_units);
 
-down_factor = max(1, ceil(cant_samp / nsamp_target));
-ECGd = resample(ECG, 1, down_factor);
+down_factor = max(1, ceil( (aux_idx(end)-aux_idx(1)+1) / nsamp_target));
+
+fir_coeffs = design_downsample_filter(down_factor);
+
+aux_idx_downsample_start = max(1, round((aux_idx(1) - aux_idx_downsample(1) + 1)/down_factor));
+aux_idx_downsample_end = length( aux_idx(1):down_factor:aux_idx(end) ) + aux_idx_downsample_start - 1;
+
+if( isempty(ECG) )
+    
+    ECGd = resample(double(ECG_w.read_signal(aux_idx_downsample(1), aux_idx_downsample(end))), 1, down_factor, fir_coeffs);
+    ECGd = ECGd(aux_idx_downsample_start:aux_idx_downsample_end,:);
+    ECG = ECG_w.read_signal(aux_idx(1), aux_idx(end));
+    
+    [cant_samp, cant_leads] = size(ECG);
+    
+    %transform to real units
+    ECG = bsxfun( @rdivide, bsxfun( @minus, double(ECG), rowvec(double(heasig.adczero)) ), rowvec(double(heasig.gain)) ) ;
+    ECGd = bsxfun( @rdivide, bsxfun( @minus, ECGd, rowvec(double(heasig.adczero)) ), rowvec(double(heasig.gain)) ) ;
+    
+else
+    %transform to real units
+    ECG = bsxfun( @rdivide, bsxfun( @minus, double(ECG(aux_idx,:)), rowvec(double(heasig.adczero)) ), rowvec(double(heasig.gain)) ) ;
+    
+    ECGd = resample( ECG(aux_idx_downsample,:), 1, down_factor, fir_coeffs );
+    ECGd = ECGd(aux_idx_downsample_start:aux_idx_downsample_end);
+    ECGd = bsxfun( @rdivide, bsxfun( @minus, double(ECGd), rowvec(double(heasig.adczero)) ), rowvec(double(heasig.gain)) ) ;
+end
 
 if(bFilterECG)
     if( isempty(ECG_signals_idx) )
@@ -675,8 +747,9 @@ end
 [ecg_range, ecg_min, ecg_max, ecg_median] = CalcECG_range(ECG);
 
 if( isempty(gains) )
-    gains = max(ecg_range)./ecg_range;
-%     gains = ones( cant_leads, 1);
+    gains = ones( cant_leads, 1);
+    bAux = ecg_range ~= 0;
+    gains(bAux) = max(ecg_range(bAux))./ecg_range(bAux);
 else
     % by the moment one gain for all
     if(length(gains) == 1 )
@@ -720,6 +793,8 @@ plotXmax = plotXmax + plot_rigth_margin_width * plotXrange;
 
 % Set the colormap
 ColorOrder = my_colormap( 12 );
+ColorOrder = repmat(ColorOrder, ceil(heasig.nsig/size(ColorOrder,1)), 1 );
+
 set(axes_hdl, 'ColorOrder', ColorOrder);
 
 hold(axes_hdl, 'on')
@@ -936,7 +1011,9 @@ else
 end
 
 set(axes_hdl, 'Xlim', [plotXmin plotXmax]); 
-set(axes_hdl, 'Ylim', [plotYmin plotYmax]); 
+if( plotYmin < plotYmax )
+    set(axes_hdl, 'Ylim', [plotYmin plotYmax]); 
+end
 
 % this_qrs_ploted = cellfun( @(a)( find(a >= plotXmin & a <= plotXmax) ), qrs_ploted, 'UniformOutput', false );
 
@@ -953,6 +1030,8 @@ else
 end
 
 update_axis_plot_ecg_strip( this_qrs_ploted );
+
+uistack(ECG_hdl, 'top');
 
 hold(axes_hdl, 'off');
 
@@ -975,11 +1054,14 @@ set(fig_hdl, 'UserData', user_data);
 % % set(fig_hdl,'WindowKeyPressFcn',@KeyPress);            
 % addlistener(fig_hdl,'WindowKeyPressEvent', @KeyPress);
 
+    set(fig_hdl,'CloseRequestFcn',@my_closefcn)
+
 set(fig_hdl, ...
     'WindowButtonDownFcn',      {@WindowButtonDownCallback2D}, ...
     'WindowButtonUpFcn',        {@WindowButtonUpCallback2D}, ...
     'WindowScrollWheelFcn',     {@WindowScrollWheelFcn2D}, ...
     'WindowKeyPressFcn',        {@WindowKeyPressCallback2D}, ...
+    'CloseRequestFcn',          {@my_closefcn}, ...
     'WindowKeyReleaseFcn',      {@WindowKeyReleaseCallback2D});
 
 if(~bPrettyPrint)
@@ -1064,7 +1146,11 @@ end
     
     UserChnageViewHdls = [UserChnageViewHdls; colvec(aux_hdl)];
     
-    aux_extent = cell2mat(get(aux_hdl, 'Extent'));
+    if( length(aux_hdl) > 1 )
+        aux_extent = cell2mat(get(aux_hdl, 'Extent'));
+    else
+        aux_extent = get(aux_hdl, 'Extent');
+    end
     
     if( size(aux_extent,1) > 1 && sum(aux_extent(:,4)) > plotYrange )
         % not enough room for all descriptions -> overlap
@@ -1075,7 +1161,11 @@ end
         
         if( size(aux_extent,1) > 2 )
             aux_val = cell2mat(get(aux_hdl, 'Position'));
-            aux_extent = cell2mat(get(aux_hdl, 'Extent'));
+            if( length(aux_hdl) > 1 )
+                aux_extent = cell2mat(get(aux_hdl, 'Extent'));
+            else
+                aux_extent = get(aux_hdl, 'Extent');
+            end
             aux_space = aux_extent(1,2) - (aux_extent(end,2)+aux_extent(end,4));
             each_weight = aux_extent(2:end-1,4);
             each_weight = each_weight ./ sum(each_weight);
@@ -1329,7 +1419,7 @@ end
             if( bAux )
 %                 PwaveHdls = [ PwaveHdls; PlotGlobalWaveMarks({'Pon' 'P' 'Poff'}, [ plotYmin + (0.1*plotYrange)  plotYmax - (0.05 * plotYrange) ], color_Pwave_global )];
                 for jj = ECG_signals_idx
-                    PwaveHdls = [ PwaveHdls; PlotWaveMarks(global_annotations, {'Pon' 'P' 'Poff'}, jj, 0.5*yTextOffset, PwaveColor ) ];
+                    PwaveHdls = [ PwaveHdls; PlotWaveMarks(global_annotations, {'Pon' 'P' 'Poff'}, jj, 0.5*yTextOffset, PwaveColor*0.95 ) ];
                 end
             end
         else
@@ -1384,7 +1474,7 @@ end
             if( bAux )
 %                 QRScplxHdls = [ QRScplxHdls; PlotGlobalWaveMarks({'QRSon' 'qrs' 'QRSoff'}, [ plotYmin + (0.08*plotYrange)  titleYposition - (0.1*plotYrange) ], color_QRScomplex_global)];
                 for jj = ECG_signals_idx
-                    QRScplxHdls = [ QRScplxHdls; PlotWaveMarks(global_annotations, {'QRSon' 'qrs' 'QRSoff'}, jj, 2*yTextOffset, QRScplxColor ) ];
+                    QRScplxHdls = [ QRScplxHdls; PlotWaveMarks(global_annotations, {'QRSon' 'qrs' 'QRSoff'}, jj, 2*yTextOffset, QRScplxColor*0.95 ) ];
                 end
             end
         else
@@ -1402,7 +1492,7 @@ end
             if( bAux )
 %                 TwaveHdls = [ TwaveHdls; PlotGlobalWaveMarks({'Ton' 'T' 'Toff'}, [ plotYmin + (0.09*plotYrange)  plotYmax - (0.07*plotYrange) ], color_Twave_global)];
                 for jj = ECG_signals_idx
-                    TwaveHdls = [ TwaveHdls; PlotWaveMarks(this_annotation, {'Ton' 'T' 'Toff'}, jj, yTextOffset, TwaveColor ) ];
+                    TwaveHdls = [ TwaveHdls; PlotWaveMarks(this_annotation, {'Ton' 'T' 'Toff'}, jj, yTextOffset, TwaveColor*0.95 ) ];
                 end
             end
         else
@@ -1431,7 +1521,7 @@ end
             UserChnageViewHdls = [UserChnageViewHdls; legend_hdl];
         end
         
-        for jj = ECG_signals_idx
+        for jj = 1:length(ECG_signals_idx)
 
             this_annotation = annotations(jj);
             
@@ -1440,7 +1530,7 @@ end
             if( isempty(PwaveGlblHdls{jj}) )
                 if( bAux )
 %                     PwaveGlblHdls{jj} = [ PwaveGlblHdls{jj}; PlotWaveMarks(this_annotation, {'Pon' 'P' 'Poff'}, jj, 0.5*yTextOffset, ColorOrder(jj,:) )];
-                    PwaveGlblHdls{jj} = [ PwaveGlblHdls{jj}; PlotWaveMarks(this_annotation, {'Pon' 'P' 'Poff'}, jj, 0.5*yTextOffset, PwaveColor )];
+                    PwaveGlblHdls{jj} = [ PwaveGlblHdls{jj}; PlotWaveMarks(this_annotation, {'Pon' 'P' 'Poff'}, ECG_signals_idx(jj), 0.5*yTextOffset, PwaveColor )];
                 end
             else
                 if( bAux )
@@ -1456,7 +1546,7 @@ end
             bAux = eDetailLevel ~= kNoDetail && ( ( eDetailLevel == kCloseDetailSL || eDetailLevel == kCloseDetailAll ) && plotXrange <= closeDetailSampSize);
             if( isempty(QRScplxGlblHdls{jj}) )
                 if( bAux )
-                    QRScplxGlblHdls{jj} = [ QRScplxGlblHdls{jj}; PlotWaveMarks(this_annotation, {'QRSon' 'qrs' 'QRSoff'}, jj, 2*yTextOffset, QRScplxColor)];
+                    QRScplxGlblHdls{jj} = [ QRScplxGlblHdls{jj}; PlotWaveMarks(this_annotation, {'QRSon' 'qrs' 'QRSoff'}, ECG_signals_idx(jj), 2*yTextOffset, QRScplxColor)];
                 end
             else
                 if( bAux )
@@ -1472,7 +1562,7 @@ end
             if( isempty(TwaveGlblHdls{jj}) )
                 if( bAux )
 %                     TwaveGlblHdls{jj} = [ TwaveGlblHdls{jj}; PlotWaveMarks(this_annotation, {'Ton' 'T' 'Toff'}, jj, yTextOffset, ColorOrder(jj,:) )];
-                    TwaveGlblHdls{jj} = [ TwaveGlblHdls{jj}; PlotWaveMarks(this_annotation, {'Ton' 'T' 'Toff'}, jj, yTextOffset, TwaveColor )];
+                    TwaveGlblHdls{jj} = [ TwaveGlblHdls{jj}; PlotWaveMarks(this_annotation, {'Ton' 'T' 'Toff'}, ECG_signals_idx(jj), yTextOffset, TwaveColor )];
                 end
             else
                 if( bAux )
@@ -1699,7 +1789,9 @@ end
         prev_Yrange = plotYrange;
         prev_Xrange = plotXrange;
 
-        set(axes_hdl, 'Ylim', [ plotYmin plotYmax]);
+        if( plotYmin < plotYmax )
+            set(axes_hdl, 'Ylim', [plotYmin plotYmax]); 
+        end
 
         aux_qrs_ploted = cellfun( @(a)( find(a >= plotXmin & a <= plotXmax) ), qrs_ploted, 'UniformOutput', false );
 
@@ -1720,6 +1812,13 @@ end
 
         update_axis_plot_ecg_strip( aux_qrs_ploted );
 
+        if( ishandle(ECG_hdl) )
+            uistack(ECG_hdl, 'top');
+        end
+        if( ishandle(ECGd_hdl) )
+            uistack(ECGd_hdl, 'top');
+        end
+        
         hold(axes_hdl, 'off')
 
 %         set(obj, 'UserData', user_data);
@@ -1768,6 +1867,12 @@ end
         plotYmin = min(colvec(ecg_min).*lead_gain - colvec(lead_offset) );
         plotYrange = plotYmax - plotYmin;
         % additional space for x axis
+        
+        if( plotYrange == 0 )
+            plotYmax = plotYmin + 0.1; 
+            plotYmin = plotYmin - 0.1;
+            plotYrange = plotYmax - plotYmin;
+        end
         
         plotYmin = plotYmin - plot_bottom_margin_width*plotYrange;
         plotYmax = plotYmax + plot_top_margin_width*plotYrange;
@@ -2159,7 +2264,7 @@ end
             update_title_efimero( ['Exported to ' report_filename], 5 );
 
         else
-            fprintf(2, 'Could not create report file: folder %s does not exist\n', report_path );
+            cprintf('[1,0.5,0]', 'Could not create report file: folder %s does not exist\n', report_path );
         end        
         
     end
@@ -2284,12 +2389,14 @@ end
         end
         
         % voltage scale
-        Vscale_y = mean(major_tick_voltage([2,3]));
-        Vscale_x = right_frame - 2*xTextOffset;
-        Vscale_arrow_x = right_frame - 1*xTextOffset;
-        paperModeHdl = [paperModeHdl; text( Vscale_x, Vscale_y , sprintf([ '%d ' voltage_major_tick_preffix 'V' ], voltage_major_tick), 'FontSize', 8, 'HorizontalAlignment', 'center', 'Rotation', 90, 'BackGroundColor', [1 1 1], 'EdgeColor', [1 1 1] )];
-        paperModeHdl = [paperModeHdl; arrow( [Vscale_arrow_x; major_tick_voltage(2)], [Vscale_arrow_x; major_tick_voltage(3)], 2, 1, [0 0 0], axes_hdl )];
-
+        if( length(major_tick_voltage) > 2 )
+            Vscale_y = mean(major_tick_voltage([2,3]));
+            Vscale_x = right_frame - 2*xTextOffset;
+            Vscale_arrow_x = right_frame - 1*xTextOffset;
+            paperModeHdl = [paperModeHdl; text( Vscale_x, Vscale_y , sprintf([ '%d ' voltage_major_tick_preffix 'V' ], voltage_major_tick), 'FontSize', 8, 'HorizontalAlignment', 'center', 'Rotation', 90, 'BackGroundColor', [1 1 1], 'EdgeColor', [1 1 1] )];
+            paperModeHdl = [paperModeHdl; arrow( [Vscale_arrow_x; major_tick_voltage(2)], [Vscale_arrow_x; major_tick_voltage(3)], 2, 1, [0 0 0], axes_hdl )];
+        end
+        
         % restore error status
         if(bRestoreErrorStatus)
             dbstop if caught error
@@ -3783,7 +3890,7 @@ end
             
             if( any(strcmpi(field_names, 'qrs')) )
                 
-                if( isempty(hb_labels) )
+                if( isempty(hb_labels_idx) )
                     this_edge_color = repmat({0.8*this_color}, length(aux_complete_idxx), 1 );
                 else
                     this_edge_color = colvec(cBeatLabelsColorCode(hb_labels_idx(aux_complete_idx2)));
@@ -3796,7 +3903,7 @@ end
             
         end
         
-        uistack(this_hdl, 'bottom');
+%         uistack(this_hdl, 'bottom');
         
     end
 %--------------------------------------------------------------------------
@@ -4003,9 +4110,14 @@ end
         
     end
 
+    function my_closefcn(obj,event_obj)
 
+        stop(my_timer)
+        delete(my_timer)
+        delete(fig_hdl)
+        
+    end
 
 end
 
 %--------------------------------------------------------------------------
-

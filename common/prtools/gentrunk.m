@@ -28,7 +28,7 @@
 % e = clevalf(a,nmc,[1:9 10:5:25 50:25:200],[5 5],25);
 % plote(e)
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, PRDATASETS
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

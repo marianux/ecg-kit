@@ -130,9 +130,16 @@ if ~isempty(font_swap)
     update = reshape(update(M), 1, []);
 end
 % Set paper size
-old_pos_mode = get(fig, 'PaperPositionMode');
-old_orientation = get(fig, 'PaperOrientation');
-set(fig, 'PaperPositionMode', 'auto', 'PaperOrientation', 'portrait');
+
+bUseDesktop = usejava('desktop');
+
+if(bUseDesktop)
+    old_pos_mode = get(fig, 'PaperPositionMode');
+    old_orientation = get(fig, 'PaperOrientation');
+
+    set(fig, 'PaperPositionMode', 'auto', 'PaperOrientation', 'portrait');
+end
+
 % MATLAB bug fix - black and white text can come out inverted sometimes
 % Find the white and black text
 white_text_handles = findobj(fig, 'Type', 'text');
@@ -162,8 +169,12 @@ print(fig, options{:}, name);
 set(black_text_handles, 'Color', [0 0 0]);
 set(white_text_handles, 'Color', [1 1 1]);
 set(white_line_handles, 'Color', [1 1 1]);
-% Reset paper size
-set(fig, 'PaperPositionMode', old_pos_mode, 'PaperOrientation', old_orientation);
+
+if(bUseDesktop)
+    % Reset paper size
+    set(fig, 'PaperPositionMode', old_pos_mode, 'PaperOrientation', old_orientation);
+end
+
 % Correct the fonts
 if ~isempty(font_swap)
     % Reset the font names in the figure

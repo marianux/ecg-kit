@@ -1,6 +1,8 @@
 %STUMPC Decision stump classifier
 % 
 %   W = STUMPC(A,CRIT,N)
+%   W = A*STUMPC([],CRIT,N)
+%   W = A*STUMPC(CRIT,N)
 % 
 % Computation of a decision tree classifier out of a dataset A using 
 % a binary splitting criterion CRIT:
@@ -17,32 +19,34 @@
 
 % $Id: stumpc.m,v 1.2 2009/07/10 11:19:20 duin Exp $
 
-function w = treec(a,crit,n)
+function w = stumpc(varargin)
+  
+	mapname = 'Decision Stump';
+  argin = shiftargin(varargin,{'char','integer'});
+  argin = shiftargin(argin,'integer',2);
+  argin = setdefaults(argin,[],'maxcrit',1);
+  
+  if mapping_task(argin,'definition')
+    w = define_mapping(argin,'untrained',mapname);
+    
+  elseif mapping_task(argin,'training')			% Train a mapping.
+  
+    [a,crit,n] = deal(argin{:});
+    islabtype(a,'crisp');
+    isvaldset(a,1,2); % at least 1 object per class, 2 classes
 
-	    if nargin < 3 | isempty(n), n = 1; end
-    if nargin < 2 | isempty(crit), crit = 'maxcrit'; end
-	% When no input data is given, an empty tree is defined:
-	if nargin == 0 | isempty(a)
-        w = prmapping(mfilename,{crit,n});
-        w = setname(w,'Decision Stump');
-        return
-    end
+    % First get some useful parameters:
+    [m,k,c] = getsize(a);
+    nlab = getnlab(a);
+    tree = maketree(+a,nlab,c,crit,n);
 
-	% Given some data, a tree can be trained
-	
-	islabtype(a,'crisp');
-	isvaldset(a,1,2); % at least 1 object per class, 2 classes
+    % Store the results:
+    w = prmapping('tree_map','trained',{tree,1},getlablist(a),k,c);
+    w = setname(w,mapname);
+    w = setcost(w,a);
+    
+  end
 
-	% First get some useful parameters:
-	[m,k,c] = getsize(a);
-	nlab = getnlab(a);
-	tree = maketree(+a,nlab,c,crit,n);
-	
-	% Store the results:
-	w = prmapping('tree_map','trained',{tree,1},getlablist(a),k,c);
-	w = setname(w,'Decision Tree');
-	w = setcost(w,a);
-	
 	return
 
 %MAKETREE General tree building algorithm
@@ -51,11 +55,8 @@ function w = treec(a,crit,n)
 % 
 % Constructs a binary decision tree using the criterion function
 % specified in the string crit ('maxcrit', 'fishcrit' or 'infcrit' 
-% (default)) for a set of objects A. stop is an optional argument 
-% defining early stopping according to the Chi-squared test as 
-% defined by Quinlan [1]. stop = 0 (default) gives a perfect tree 
-% (no pruning) stop = 3 gives a pruned version stop = 10 a heavily 
-% pruned version. 
+% (default)) for a set of objects A. stop is a counter for the number of
+% branches that are allowed below the present.
 % 
 % Definition of the resulting tree:
 % 

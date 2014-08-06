@@ -23,12 +23,16 @@ classdef ECGtask_do_nothing < ECGtask
         % if user = memory;
         % memory_constant is the fraction respect to user.MaxPossibleArrayBytes
         % which determines the maximum input data size.
-        memory_constant = 0.4;
+        memory_constant = realmax;
+        
+        started = false;
+        
     end
     
     properties
         progress_handle
         user_string
+        tmp_path
     end
 
     methods

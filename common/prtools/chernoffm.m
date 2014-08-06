@@ -22,7 +22,7 @@
 % Extension of LDA: The Chernoff Criterion, IEEE Transactions on pattern
 % analysis and machine intelligence, vol. PAMI-26, no. 6, 2004, 732-739.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, FISHERM, NLFISHERM, KLM, PCA
 
 % Copyright: M. Loog, marco@isi.uu.nl

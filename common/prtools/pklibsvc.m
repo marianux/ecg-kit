@@ -1,6 +1,8 @@
 %PKLIBSVC Automatic radial basis SVM, using nu_libsvc and the Parzen kernel
 %
 %   W = PKLIBSVC(A,ALF)
+%   W = A*PKLIBSVC([],A)
+%   W = A*PKLIBSVC(A)
 %
 % INPUT
 %   A   Dataset
@@ -16,24 +18,31 @@
 % kernel width used is ALF*3*SQRT(2)*SIGMA. This is much faster than the
 % gridsearch used by RBLIBSVC and performs about equal.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, LIBSVC, NULIBSVC, RBLIBSVC, PARZENC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 
-function w = pklibsvc(a,alf)
+function w = pklibsvc(varargin)
 
-if nargin < 2 | isempty(alf), alf = 1; end
-if nargin < 1 | isempty(a)
-	w = prmapping(mfilename,'untrained',alf);
-  w = setname(w,'PK-LIBSVM');
-	return
-end
+  checktoolbox('libsvm');
+	mapname = 'PK-LIBSVM';
+  argin = shiftargin(varargin,'scalar');
+  argin = setdefaults(argin,[],1);
+  
+  if mapping_task(argin,'definition')
+    w = define_mapping(argin,'untrained',mapname);
+    
+  elseif mapping_task(argin,'training')			% Train a mapping.
+  
+    [a,alf] = deal(argin{:});
 
-if size(a,1) <= 1000
-  [v,sig] = parzenc(a);
-else
-  [v,sig] = parzenc(gendat(a,1000));
-end
-w = nulibsvc(a,proxm([],'r',alf*3*sig*sqrt(2)));
+    if size(a,1) <= 1000
+      [v,sig] = parzenc(a);
+    else
+      [v,sig] = parzenc(gendat(a,1000));
+    end
+    w = nulibsvc(a,proxm([],'r',alf*3*sig*sqrt(2)));
+    
+  end
 

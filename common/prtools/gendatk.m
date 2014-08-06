@@ -1,6 +1,8 @@
 %GENDATK K-Nearest neighbor data generation
 % 
 %   B = GENDATK(A,N,K,S)
+%   B = A*GENDATK([],N,K,S)
+%   B = A*GENDATK(N,K,S)
 %
 % INPUT
 %   A  Dataset
@@ -28,35 +30,32 @@
 % If N is a vector of sizes, exactly N(I) objects are generated
 % for class I. Default N is 100 objects per class.
 %
-% SEE ALSO
-% DATASETS, GENDATP
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATASETS, MAPPINGS, GENDAT, GENDATP
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
-% Faculty EWI, Delft University of Technology
-% P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-% $Id: gendatk.m,v 1.4 2007/04/23 12:49:29 duin Exp $
+function B = gendatk(varargin)
 
-function B = gendatk(A,N,k,stdev)
+  argin = shiftargin(varargin,'vector');
+	argin = setdefaults(argin,[],[],1,1);
+  if mapping_task(argin,'definition')
+    B = define_mapping(argin,'generator','KNN generation');
+    return
+  end
+  
+  % execution
+  [A,N,k,stdev] = deal(argin{:});
 
-		if (nargin < 4) 		
-		prwarning(3,'Standard deviation of the added Gaussian noise is not specified, assuming 1.');
-		stdev = 1; 
-	end
-	if (nargin < 3) 
-		prwarning(3,'Number of nearest neighbors to be used is not specified, assuming 1.');
-		k = 1; 
-	end
-	if (nargin < 2)
-		prwarning(3,'Number of samples to generate is not specified, assuming 50.');
-		N = [];   % This happens some lines below.
-	end
-	if (nargin < 1)
-		error('No dataset found.');
-	end
+  if isdataset(A)
+    Adouble = false;
+    A = prdataset(A);
+    A = setlablist(A); % remove empty classes first
+  else
+    Adouble = true;
+    A = prdataset(A,1);
+  end
 
-	A = prdataset(A);
-	A = setlablist(A); % remove empty classes first
 	[m,n,c] = getsize(A);
 	prior = getprior(A);
 	if isempty(N), 
@@ -95,13 +94,11 @@ function B = gendatk(A,N,k,stdev)
 		labels = [labels; repmat(lablist(j,:),N(j),1)];
 	end
 
-	B = prdataset(B,labels,'prior',A.prior);
-	%B = set(B,'featlab',getfeatlab(A),'name',getname(A),'featsize',getfeatsize(A));
-	%DXD. Added this exception, because else it's going to complain
-	%     that the name is not a string.
-	B = set(B,'featlab',getfeatlab(A),'featsize',getfeatsize(A));
-	if ~isempty(getname(A))
-		B = setname(B,getname(A));
-	end
+  if Adouble
+    B = +B;
+  else
+    B = prdataset(B,labels,'prior',A.prior);
+    B = set(B,'featlab',getfeatlab(A),'name',getname(A),'featsize',getfeatsize(A));
+  end
 
 return;

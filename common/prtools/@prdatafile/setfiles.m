@@ -13,5 +13,5 @@
 % Set the filenames for a datafile. This constructs a new datafile,
 % except for the PREPROC and POSTPROC fields.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATAFILES

@@ -6,4 +6,5 @@
 % If STRING equals 'string' the label list is converted to characters,
 % which may be useful for display purposes and annotation of graphs.
 %
-% SEE ALSO MULTI_LABELING
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% MULTI_LABELING

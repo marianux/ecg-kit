@@ -6,6 +6,7 @@
 help prex_confmat
 
 delfigs
+randstate = randreset;
 echo on
                 % Load 8-class 2D problem
   randn('state',1);
@@ -33,6 +34,7 @@ echo on
   confmat(d);
 
 echo off
+randreset(randstate);
 showfigs
 c = num2str(gridsize);
 disp(' ')

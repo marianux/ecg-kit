@@ -1,16 +1,19 @@
-%FEATSELF Forward feature selection for classification
+%FEATSELF Trainable mapping for forward feature selection
 % 
-% [W,R] = FEATSELF(A,CRIT,K,T,FID)
-% [W,R] = FEATSELF(A,CRIT,K,N,FID)
+%   [W,R] = FEATSELF(A,CRIT,K,T)
+%   [W,R] = A*FEATSELF([],CRIT,K,T)
+%   [W,R] = A*FEATSELF(CRIT,K,T)
+%   [W,R] = FEATSELF(A,CRIT,K,N)
+%   [W,R] = A*FEATSELF([],CRIT,K,N)
+%   [W,R] = A*FEATSELF(CRIT,K,N)
 %
 % INPUT	
 %   A    Training dataset
 %   CRIT Name of the criterion or untrained mapping 
-%        (default: 'NN', i.e. the 1-Nearest Neighbor error)
+%        (default: 'NN', i.e. the LOO 1-Nearest Neighbor error)
 %   K    Number of features to select (default: K = 0, return optimal set)
 %   T    Tuning dataset (optional)
 %   N    Number of cross-validations (optional)
-%   FID  File ID to write progress to (default [], see PRPROGRESS)
 %
 % OUTPUT
 %   W    Output feature selection mapping
@@ -30,9 +33,9 @@
 % 	R(:,2) : criterion value
 % 	R(:,3) : added / deleted feature
 % 
-% SEE ALSO 
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>) 
 % MAPPINGS, DATASETS, FEATEVAL, FEATSELLR, FEATSEL,
-% FEATSELO, FEATSELB, FEATSELI, FEATSELP, FEATSELM, PRPROGRESS
+% FEATSELO, FEATSELB, FEATSELI, FEATSELP, FEATSELM
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl
 % Faculty of Applied Sciences, Delft University of Technology
@@ -40,32 +43,16 @@
 
 % $Id: featself.m,v 1.3 2007/04/21 23:06:46 duin Exp $
 
-function [w,r] = featself(a,crit,ksel,t,fid)
+function [w,r] = featself(varargin)
 		 
-  	
-  if (nargin < 2) | isempty(crit)
-    prwarning(2,'no criterion specified, assuming NN');
-    crit = 'NN';
+  varargin = shiftargin(varargin,{'char','prmapping'});
+  argin = setdefaults(varargin,[],'NN',0,[],[]);
+  if mapping_task(argin,'definition')
+    w = define_mapping(argin,'untrained','Forward FeatSel');
+    return
   end
-  if (nargin < 3) | isempty(ksel)
-    ksel = 0;
-  end
-  if (nargin < 4)
-    prwarning(3,'no tuning set supplied (risk of overfit)');
-    t = [];
-  end
-	if (nargin < 5)
-		fid = [];
-	end
-	
-	if nargin == 0 | isempty(a)
-		% Create an empty mapping:
-		w = prmapping(mfilename,{crit,ksel,t});
-	else
-		prprogress(fid,'\nfeatself : Forward Feature Selection')
-		[w,r] = featsellr(a,crit,ksel,1,0,t,fid);
-		prprogress(fid,'featself  finished\n')
-	end
-	w = setname(w,'Forward FeatSel');
+    
+  [a,crit,ksel,t,fid] = deal(argin{:});
+  [w,r] = featsellr(a,crit,ksel,1,0,t);
 
 return

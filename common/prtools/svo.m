@@ -1,4 +1,4 @@
-%SVO Support Vector Optimizer
+%SVO Support Vector Optimizer, low-level routine
 %
 %   [V,J,C,NU] = SVO(K,NLAB,C,OPTIONS)
 %
@@ -21,7 +21,7 @@
 %   V     Vector of weights for the support vectors
 %   J     Index vector pointing to the support vectors
 %   C     C which was actually used for optimization
-%   NU    NU parameter of SVC_NU algorithm, which gives the same classifier
+%   NU    NU parameter of NUSVC algorithm, which gives the same classifier
 %
 % DESCRIPTION
 % A low level routine that optimizes the set of support vectors for a 2-class
@@ -30,7 +30,7 @@
 % the two classes by +1 and -1. Optimization is done by a quadratic programming. 
 % If available, the QLD function is used, otherwise an appropriate Matlab routine.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % SVC
 
 % Copyright: D.M.J. Tax, D. de Ridder, R.P.W. Duin, duin@ph.tn.tudelft.nl

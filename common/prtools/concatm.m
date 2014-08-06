@@ -1,4 +1,4 @@
-%CONCATM Concatenate cell array of datasets or mappings
+%CONCATM Fixed-cell mapping concatenating cell array of datasets or mappings
 %
 %   W = V*CONCATM
 %   B = A*CONCATM
@@ -17,7 +17,7 @@
 % one by one by a mapping. This routine takes the entire cell array and
 % concatenates its elements.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

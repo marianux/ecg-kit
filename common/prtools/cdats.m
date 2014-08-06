@@ -24,7 +24,7 @@
 % If A has soft labels, B = A.
 % If A does not have labels but targets: C = 1, LABLIST = [], P = 1.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS
 
 function [a,c,lablist,p] = cdats(a,red)
@@ -40,6 +40,9 @@ function [a,c,lablist,p] = cdats(a,red)
 	else
 		if ~isvaldfile(a)
 			a = prdataset(a);
+      % we decided to allow doubles instead of datasets where possible.
+      % However, if the user calls cdats we assume he needs a dataset
+      % definitely.
 		end
 		c = getsize(a,3); 
 		if nargout > 3 % avoid unnecessary warnings

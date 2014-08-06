@@ -49,5 +49,5 @@
 % mat-file with the DATAFILE definition in DIRECTORY. If it is encountered, it 
 % is loaded avoiding a redefinition. 
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATAFILES, DATASETS, MAPPINGS, FILTM, SAVEDATAFILE, CREATEDATAFILE

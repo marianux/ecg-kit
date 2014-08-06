@@ -30,7 +30,8 @@
 % useful in case preprocessing does not yield a proper dataset with the
 % same number of features for every object.
 %
-% SEE ALSO DATAFILES, DATASETS, SAVEDATAFILE
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATAFILES, DATASETS, SAVEDATAFILE
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
@@ -78,34 +79,34 @@ function b = createdatafile(a,dirr,root,type,par1,par2)
     prwaitbar(m,s);
     n = 0;
     if ~isempty(subdirs)
-      for j=1:size(subdirs,1) % run over all classes
-        sname = deblank(subdirs(j,:));
+      for i=1:size(subdirs,1) % run over all classes
+        sname = deblank(subdirs(i,:));
         [success,mess] = mkdir(sname);
         if ~success
           error(mess);
         end
         cd(sname)
-        J = find(nlab==j);
-        p = floor(log10(length(J)))+1;
+        J = find(nlab==i);
+        p = floor(log10(m))+1;
         form = ['%' int2str(p) '.' int2str(p) 'i'];
         for j = 1:length(J)
           n = n+1;
           prwaitbar(m,n,[s int2str(n)]);
           im = data2im(a(J(j),:));
-          feval(cmd,im,['file_' num2str(j,form)],fmt);
+          feval(cmd,im,['file_' num2str(n,form) '.' fmt],fmt);
         end
         cd ..
       end
     end
     J = find(nlab == 0);
     if ~isempty(J)
-      p = floor(log10(length(J)))+1;
+      p = floor(log10(m))+1;
       form = ['%' int2str(p) '.' int2str(p) 'i'];
       for j = 1:length(J)
         n = n+1;
         prwaitbar(m,n,[s int2str(n)]);
         im = data2im(a(J(j),:));
-        feval(cmd,im,['file_' num2str(j,form)],fmt);
+        feval(cmd,im,['file_' num2str(n,form) '.' fmt],fmt);
       end
     end
     prwaitbar(0);
@@ -118,7 +119,6 @@ function b = createdatafile(a,dirr,root,type,par1,par2)
     b = setident(b,id);
     cd(dirr);
     save([dirr '.mat'],'b');
-    cd(actdir);
     
   elseif strcmp(type,'cell')
     %store datafiles in cells
@@ -133,9 +133,9 @@ function b = createdatafile(a,dirr,root,type,par1,par2)
   
 	                      % reorder datafile for faster retrieval
     file_index = getident(a.prdataset,'file_index');
-	  [jj,R] = sort(file_index(:,1)+file_index(:,2)/(max(file_index(:,2),[],1)+1));
+	  [dummy,R] = sort(file_index(:,1)+file_index(:,2)/(max(file_index(:,2),[],1)+1));
     a = a(R,:);
-		[RR,S] = sort(R); % to reconstruct order later
+		[dummy,S] = sort(R); % to reconstruct order later
 
     dirname = fullfile(root,dirr);
   
@@ -151,7 +151,7 @@ function b = createdatafile(a,dirr,root,type,par1,par2)
     prwaitbar(m,s)
 		prwaitbar(m,nobjects,[s int2str(nobjects)]);
     im = data2im(a(1,:));
-    imsize = prod(size(im));
+    imsize = numel(im);
     nfiles = 0;
     while (nobjects <= m)
       nfiles = nfiles+1;
@@ -164,7 +164,7 @@ function b = createdatafile(a,dirr,root,type,par1,par2)
 			prwaitbar(m,nobjects,[s int2str(nobjects)]);
       while (nobjects <= m) & sizefit
 		    im = data2im(a(nobjects,:)); % convert single object
-        imsize = prod(size(im));
+        imsize = numel(im);
         nobjects = nobjects+1;
         mm = mm+1;
         if (fsize+imsize < filesize) & (mm < m/50)
@@ -216,9 +216,9 @@ function b = createdatafile(a,dirr,root,type,par1,par2)
 		b = b(S,:);                      % reconstruct order of objects
 	  save(fullfile(dirname,dirr),'b'); % store the datafile as mat-file for fast retrieval
     prwaitbar(0);
-    cd(actdir);
   
   end
+  cd(actdir);
   
 return
 

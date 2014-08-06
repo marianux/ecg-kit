@@ -32,7 +32,7 @@
 % By default, PRPROGRESS is switched off. Interactive progress tracing can
 % be best following by PRWAITBAR
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PRWAITBAR
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

@@ -16,7 +16,7 @@
 % Buttons along axes allow for browsing through the dataset dimensions. 
 % Selected points are remembered when the plotted dimension changes.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % SCATTERD 
 
 % This script is based on the segmentgui of Cris Luengo 

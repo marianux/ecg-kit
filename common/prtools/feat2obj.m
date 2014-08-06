@@ -8,7 +8,7 @@
 % OUTPUT
 %   B     Dataset with features images
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, IM2OBJ, IM2FEAT, DATA2IM, OBJ2FEAT
 
 function b = feat2obj(a)

@@ -1,7 +1,9 @@
 %BAGC Bag classifier for classifying sets of object instances
 %
 %		[WBAG,WOBJ] = BAGC(A,OBJCLASSF,BAGINDEX,BAGCOMBC,BAGCLASSF,BAGLAB)
-%		D = B*WBAG
+%		 WBAG       = A*BAGC([],OBJCLASSF,BAGINDEX,BAGCOMBC,BAGCLASSF,BAGLAB)
+%		 WBAG       = A*BAGC(OBJCLASSF,BAGINDEX,BAGCOMBC,BAGCLASSF,BAGLAB)
+%		 D          = B*WBAG
 %
 % INPUT
 %   A          Training dataset with object labels and bag indices 
@@ -55,7 +57,7 @@
 % identical to B*(A*WOBJ)*BAGCC([],BAGCOMBC), provided that A has class
 % labels and B is labeled by its bag indices.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, MULTI_LABELING, BAGCC, LOSO,
 % DATASET/ADDLABELS, DATASET/CHANGELABLIST
 
@@ -63,100 +65,98 @@
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-function [out1,out2] = bagc(a,objclassf,bagindex,bagcombc,bagclassf,baglab)
+function [out1,out2] = bagc(varargin)
 
-if nargin < 6 | isempty(baglab),    baglab = []; end
-if nargin < 5 | isempty(bagclassf), bagclassf = []; end
-if nargin < 4 | isempty(bagcombc),  bagcombc  = votec; end
-if nargin < 3 | isempty(bagindex),  bagindex  = 2; end
-if nargin < 2 | isempty(objclassf),  objclassf  = qdc; end
+	argin = shiftargin(varargin,'prmapping');
+  argin = setdefaults(argin,[],qdc,2,votec,[],[]);
+  if mapping_task(argin,'definition')
+    out1 = define_mapping(argin,'untrained');
+    out1 = setname(out1,'Set classifier');
+  else
+    [a,objclassf,bagindex,bagcombc,bagclassf,baglab] = deal(argin{:});
+    if isuntrained(objclassf) | nargin > 2 | ~strcmp(getmapping_file(objclassf),mfilename)
+      % train the mapping (classifier)
 
-if nargin < 1 | isempty(a)
-	% define the mapping
-	wset = prmapping(mfilename,'untrained',{objclassf,bagindex,setcombc,bagclassf,baglab});
-	out1 = setname(wset,'Set classifier');
+      % we need datasets with at least 1 object per class and 2 classes
+      isvaldset(a,1,2);
 
-elseif isuntrained(objclassf) | nargin > 2 | ~strcmp(getmapping_file(objclassf),mfilename)
-	% train the mapping (classifier)
+      % if the object classifier is untrained, train it, else use it
+      if isuntrained(objclassf)
+        wobj = a*objclassf;
+      else
+        wobj = objclassf;
+      end
 
-	% we need datasets with at least 1 object per class and 2 classes
-	isvaldset(a,1,2);
-	
-	% if the object classifier is untrained, train it, else use it
-	if isuntrained(objclassf)
-		wobj = a*objclassf;
-	else
-		wobj = objclassf;
-	end
-	
-	if ismapping(bagclassf) & isuntrained(bagclassf)
-		
-		% if the bag labels are not given, 
-		% use the objcts labels for the bags too
-		if isempty(setlab), setlab = curlablist(a); end
-	
-		% classifiy the dataset and change labeling to bag index
-		x = changelablist(a*wobj,setindex);
-		
-		% avoid empty bags
-		x = setlablist(x);
-	
-		% combine object results to bag results
-		d = bagcc(x,bagcombc);
-	
-		% change to bag labels
-		d = changelablist(d,baglab);
-	
-		% train bag classifier
-		bagclassf = d*bagclassf;
-		
-		% get outputlabels
-		labels_out = getlabels(bagclassf);
-		
-	else
-		labels_out = getlabels(wobj);
-	end
-	
-	% store all what is needed for execution in the mapping
-	out1 = prmapping(mfilename,'trained',{wobj,bagcombc,bagclassf,bagindex,baglab}, ...
-		labels_out, size(a,2),size(labels_out,1));
-	
-	% prevent batch execution
-	out1 = setbatch(out1,0);
-	
-	% return the object classifier as well
-	out2 = wobj;
-	
-else % here we are for execution
-		
-	% the mapping is stored in objclassf
-	w = getdata(objclassf);
-	
-	% save current lablist
-	curlist = curlablist(a);
-	
-	% use the bag index for the test set if supplied
-	if ~isempty(w{4}), testset = changelablist(a,w{4}); end
-	
-	% classify test set by the object classifier
-	d = testset*w{1};
-		
-	% avoid empty bags
-	d = setlablist(d);
-	
-	% combine objects in the same bag
-	d = bagcc(d,w{2}); 
-	
-	% reset lablist for classification matrix
-	d = changelablist(d,curlist);
-	
-	% apply the set classifier, if defined
-	if ~isempty(w{3}), d = d*w{3}; end
-	
-	% that is it, define class labels as feature labels
-	out1 = setfeatlab(d,getlabels(objclassf));
-	
-end
+      if ismapping(bagclassf) & isuntrained(bagclassf)
+
+        % if the bag labels are not given, 
+        % use the objcts labels for the bags too
+        if isempty(setlab), setlab = curlablist(a); end
+
+        % classifiy the dataset and change labeling to bag index
+        x = changelablist(a*wobj,setindex);
+
+        % avoid empty bags
+        x = setlablist(x);
+
+        % combine object results to bag results
+        d = bagcc(x,bagcombc);
+
+        % change to bag labels
+        d = changelablist(d,baglab);
+
+        % train bag classifier
+        bagclassf = d*bagclassf;
+
+        % get outputlabels
+        labels_out = getlabels(bagclassf);
+
+      else
+        labels_out = getlabels(wobj);
+      end
+
+      % store all what is needed for execution in the mapping
+      out1 = prmapping(mfilename,'trained',{wobj,bagcombc,bagclassf,bagindex,baglab}, ...
+        labels_out, size(a,2),size(labels_out,1));
+
+      % prevent batch execution
+      out1 = setbatch(out1,0);
+
+      % return the object classifier as well
+      out2 = wobj;
+
+    else % here we are for execution
+
+      % the mapping is stored in objclassf
+      w = getdata(objclassf);
+
+      % save current lablist
+      curlist = curlablist(a);
+
+      % use the bag index for the test set if supplied
+      if ~isempty(w{4}), testset = changelablist(a,w{4}); end
+
+      % classify test set by the object classifier
+      d = testset*w{1};
+
+      % avoid empty bags
+      d = setlablist(d);
+
+      % combine objects in the same bag
+      d = bagcc(d,w{2}); 
+
+      % reset lablist for classification matrix
+      d = changelablist(d,curlist);
+
+      % apply the set classifier, if defined
+      if ~isempty(w{3}), d = d*w{3}; end
+
+      % that is it, define class labels as feature labels
+      out1 = setfeatlab(d,getlabels(objclassf));
+
+    end
+    
+  end
 	
 	
 	

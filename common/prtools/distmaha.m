@@ -20,7 +20,7 @@
 % matrix between all classes in A: the distance between the means,
 % relative to the average per-class covariance matrix.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DISTM, PROXM, MEANCOV
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

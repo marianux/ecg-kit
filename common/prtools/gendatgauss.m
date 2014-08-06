@@ -52,7 +52,7 @@
 %
 %      GENDATGAUSS(300,[0 0; 0 1; 1 1]*3,CAT(3,[2 1; 1 4],EYE(2),EYE(2)))
 %
-% SEE ALSO 
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>) 
 % DATASETS, PRDATASETS
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

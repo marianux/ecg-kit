@@ -19,7 +19,7 @@
 % For datafiles(sets) with soft or targets labels it is tested whether A 
 % has at least M objects.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % ISDATASET, ISMAPPING, ISDATAIM, ISFEATIM, ISCOMDSET, ISVALDSET
 
 function n = isvaldfile(a,m,c)

@@ -21,7 +21,7 @@
 % distributions. As a consequence, the possibility to output densities is
 % lost.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, LDC, UDC, QDC, MOGC, PARZENC, PARZENDC, NORMAL_MAP, PARZEN_MAP,
 % CLASSC
 

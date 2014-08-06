@@ -22,7 +22,7 @@
 % T, if given; else A is used for training. The default aggregating classifier
 % ACLASSF is MEANC. Default base classifier CLASSF is NMC.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, NMC, MEANC
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

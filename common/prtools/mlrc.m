@@ -34,7 +34,7 @@
 % 2. Dzeroski S, Zenko B. Is combining classifiers with stacking better
 % than selecting the best one? Machine Learning, 2004, 54(3): 255-273.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, STACKED, CLASSC, TESTD, LABELD
 
 % Copyright: Chunxia Zhang, R.P.W. Duin, r.p.w.duin@37steps.com

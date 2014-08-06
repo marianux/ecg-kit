@@ -120,7 +120,7 @@ end
 if ~isempty(files)
   for j=1:size(files,1)
     filename = deblank(files(j,:));
-    [~,~,ext] = fileparts(filename);
+    [dummy,dummy,ext] = fileparts(filename);
     if strcmp(ext,'.m')
       replacef(fullfile(dir,filename),s1,s2);
     end
@@ -210,7 +210,7 @@ end
 function [k,z] = grep(r,s)
 n = [0,find(r==newline)];
 m = strfind(r,s);
-[~,j] = sort([n,m]);
+[dummy,j] = sort([n,m]);
 q = [0,j(1:length(j)-1)]-j;
 k = j(q>0)-1;
 z = length(n)-1; % # of lines

@@ -24,7 +24,7 @@
 % Spatial and feature information can be combined by feeding E into
 % a class combiner, e.g: A*W*CLASSC*SPATM([],2)*MAXC
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, PREX_SPATM
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

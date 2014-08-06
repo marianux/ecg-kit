@@ -1,7 +1,8 @@
-%FINDCLASSES Find object indices of all classes
+%FINDCLASSES Fixed mapping for finding object indices of all classes
 %
 %	 C = FINDCLASSES(A,NAME)
 %	 C = A*FINDCLASSES([],NAME)
+%	 C = A*FINDCLASSES(NAME)
 %
 % INPUT
 %   A      Dataset
@@ -27,40 +28,52 @@
 % If A has N classes then C has N+1 cells. In the last cell the indices to
 % all unlabeled samples are collected.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, SELCLASS, CLASSNAMES, GETCLASSI, REMCLASS, GETLABLISTNAMES,
 % MULTI_LABELING
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 
-function b = findclasses(a,name)
+function b = findclasses(varargin)
   
-  if nargin < 2, name = []; end
-    if isempty(a), b = prmapping(mfilename,'fixed',name); return; end
-  
-  if ~isempty(name)
-    curn = curlablist(a);
-    a = changelablist(a,name);
-    b = feval(mfilename,a,clas);
+	argin = shiftargin(varargin,{'char','scalar'});
+  argin = setdefaults(argin,[],[]);
+  if mapping_task(argin,'definition')
+    b = define_mapping(argin,'fixed');
+    b = setname(b,'Image stretch');
   else
-    nlab = getnlab(a);
-    [m,k,c] = getsize(a);
-    b = cell(1,c+1);
-    n = [0 classsizes(a)];
-    n = [m-sum(n) n(2:c+1)];
-    s = zeros(1,c+1);
-    for j=1:c+1
-      b{j} = zeros(1,n(j));
-    end
+    [a,name] = deal(argin{:});
     
-    for j=1:m
-      p = nlab(j)+1;
-      s(p) = s(p)+1;
-      b{p}(s(p)) = j;
-    end
+    if ~isempty(name)
       
-    
-    b_unlabeld = b(1);
-    b(1:c) = b(2:c+1);
-    b(c+1) = b_unlabeld;
+      a = changelablist(a,name);
+      b = feval(mfilename,a,clas);
+      
+    else
+      
+      nlab = getnlab(a);
+      [m,k,c] = getsize(a);
+      b = cell(1,c+1);
+      n = [0 classsizes(a)];
+      n = [m-sum(n) n(2:c+1)];
+      s = zeros(1,c+1);
+      for j=1:c+1
+        b{j} = zeros(1,n(j));
+      end
+
+      for j=1:m
+        p = nlab(j)+1;
+        s(p) = s(p)+1;
+        b{p}(s(p)) = j;
+      end
+
+
+      b_unlabeld = b(1);
+      b(1:c) = b(2:c+1);
+      if isempty(b_unlabeld{1})
+        b = b(1:c);
+      else
+        b(c+1) = b_unlabeld;
+      end
+    end
   end

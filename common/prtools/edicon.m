@@ -19,7 +19,7 @@
 % REFERENCES
 % Devijver, P. and Kittler, J. "Pattern recognition", Prentice-Hall, 1982.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PRDATASET, KNNC, PROXM
 
 % Copyright: E. Pekalska and D. de Ridder, {E.Pekalska,D.deRidder}@ewi.tudelft.nl

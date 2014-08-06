@@ -27,12 +27,10 @@
 % basis of the numeric labels of the dataset A. L refers to the selected
 % objects and R to the deselected ones.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, GENDAT
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
-% Faculty EWI, Delft University of Technology
-% P.O. Box 5031, 2600 GA Delft, The Netherlands
 
 function [L,R] = gensubsets(input,S)
 

@@ -16,5 +16,5 @@
 % the feature sizes of datafiles might better be set to 0, unless the
 % objects are images of the same size.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATAFILES

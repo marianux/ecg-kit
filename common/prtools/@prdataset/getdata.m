@@ -42,5 +42,5 @@
 % IDENT returns the vector or cell array with the corresponding object
 % identifiers stored in the IDENT field os the dataset A.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS

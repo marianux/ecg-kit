@@ -16,7 +16,7 @@
 % LABLIST1 and LABLIST2 changes I! 
 % I(i) = 0 for labels appearing in LABLIST1 that are not in LABLIST2.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, RENUMLAB
 
 % Copyright: D.M.J. Tax davidt@ph.tn.tudelft.nl

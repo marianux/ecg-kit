@@ -12,12 +12,12 @@
 %
 % DESCRIPTION
 % Generation of a 2-dimensional 2-class dataset A of N objects with a
-% banana shaped distribution.  The data is uniformly distributed along the
+% banana shaped distribution. The data is uniformly distributed along the
 % bananas and is superimposed with a normal distribution with standard
 % deviation S in all directions. Class priors are P(1) = P(2) = 0.5.
 % Defaults: N = [50,50], S = 1.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, PRDATASETS
 
 % Copyright: A. Hoekstra, R.P.W. Duin, duin@ph.tn.tudelft.nl

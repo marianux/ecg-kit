@@ -1,8 +1,8 @@
-%NLABELD Return numeric labels of classified dataset
+%NLABELD Return numeric labels of classified dataset (c
 % 
 % 	NLABELS = NLABELD(Z)
 % 	NLABELS = Z*NLABELD
-%	NLABELS = NLABELD(A,W)
+%	  NLABELS = NLABELD(A,W)
 % 	NLABELS = A*W*NLABELD
 %
 % INPUT
@@ -10,16 +10,17 @@
 %		A,W      Dataset and classifier mapping
 %
 % OUTPUT
-%		NLABELS	vector of numeric labels
+%		NLABELS	 Column vector of numeric labels)
 %
 % DESCRIPTION 
-% Returns the numberic labels of the classified dataset Z (typically the result of a
-% mapping or classification A*W). For each object in Z (i.e. each row) the 
-% feature label or class label (i.e. the column label) of the maximum column 
-% value is returned. 
+% Returns the numberic labels of the classified dataset Z (typically the
+% result of a mapping or classification A*W). For each object in Z (i.e. 
+% each row) the feature label or class label (i.e. the column label) of the
+% maximum column value is returned. This corresponds with the classes
+% stored in W, which can be found by GETLABELS(W).
 % 
-% SEE ALSO
-% MAPPINGS, DATASETS, TESTC, PLOTC
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% MAPPINGS, DATASETS, TESTC, PLOTC, GETLABELS
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl
 % Faculty of Applied Sciences, Delft University of Technology

@@ -17,5 +17,5 @@
 % A datafile is empty if no files are found in the directory DIR
 % after a PRDATAFILE(DIR) definition.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATAFILE

@@ -25,7 +25,7 @@
 %
 % Examples in PREX_CONFMAT, PREX_PLOTC
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, SCATTERD, PLOTM, GRIDSIZE, SETBATCH, PRGLOBAL
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

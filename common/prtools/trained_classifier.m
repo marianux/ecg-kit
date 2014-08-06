@@ -16,7 +16,7 @@
 % everything should be stored needed for the execution of the mapping, 
 % either in a structure or by a cell array.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, PRMAPPING, TRAINED_MAPPING, DEFINE_MAPPING, MAPPING_TASK
 
 % Copyright: Robert P.W. Duin, prtools@rduin.nl

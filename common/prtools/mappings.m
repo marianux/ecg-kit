@@ -214,7 +214,7 @@
 % 		    listed in K are returned.
 %
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PRMAPPING, CLASSC, CNORMC, LABELD, 
 %
 % - Classifiers

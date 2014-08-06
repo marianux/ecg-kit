@@ -2,6 +2,7 @@
 % 
 % 	[I,F] = FEATRANK(A,CRIT,T)
 % 	  I   = A*FEATRANK([],CRIT,T)
+% 	  I   = A*FEATRANK(CRIT,T)
 % 
 % INPUT
 %   A      input dataset
@@ -19,7 +20,7 @@
 % the features are returned in decreasing performance. In F the 
 % corresponding values of feateval are given. Default: crit='NN'.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, FEATEVAL, FEATSELO, FEATSELB, FEATSELF,
 % FEATSELP, FEATSELM
 
@@ -28,8 +29,9 @@
 % P.O. Box 5046, 2600 GA Delft, The Netherlands
 
 function [I,F] = featrank(varargin)
-	
-argin = setdefaults(varargin,[],'NN',[]);
+
+argin = shiftargin(varargin,'char');
+argin = setdefaults(argin,[],'NN',[]);
 if mapping_task(argin,'definition')
   I = define_mapping(argin,'fixed');
 else

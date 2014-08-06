@@ -1,23 +1,31 @@
-%CMAPM Compute some special maps
+%CMAPM Compute some special fixed mappings
+%
+%    W = CMAPM(...)
+%    B = A*CMAPM(..)
 % 
 % INPUT
-%  Various
+%  Various, see below
 %
 % OUTPUT
 %  W  Mapping
+%  B  Dataset
 %
 % DESCRIPTION
 % CMAPM computes some special data-independent maps for scaling, selecting or 
 % rotating K-dimensional feature spaces.
 % 
 %  W = CMAPM(K,N)            Selects the features listed in the vector N
+%                            Deprecated, use FEATSEL(K,N)
 %  W = CMAPM(K,P)            Polynomial feature map. P should be an N*K matrix
 %                            in which each row defines the exponents for the
 %                            original features in a polynomial term. Note: for
 %                            N = 1 and/or K = 1, feature selection is applied!
 %  W = CMAPM(K,'EXP')        Exponential mapping. 
+%                            Deprecated, use MAPM('EXP')
 %  W = CMAPM(K,'NEXP')       Negative exponential mapping.
+%                            Deprecated, use MAPM('NEXP')
 %  W = CMAPM(K,'LOG')        Logarithmic mapping.
+%                            Deprecated, use MAPM('LOG')
 %  W = CMAPM(K,'RANDROT')    Defines a random K-dimensional rotation.
 %  W = CMAPM(F,'ROT')        The N*K matrix F defines N linear combinations 
 %                            to be computed by X*F'.
@@ -33,7 +41,10 @@
 % (x^2,y^2) and third (x^3,y^3) order. Another example is P = diag([0.5 0.5
 % 0.5]), defining 3 features to be the square roots of the original ones.
 %
-% SEE ALSO
+% Note that this is an old, complicated routine. For various options more
+% logical alternatives are available, e.g. using FEATSEL, FILTM or MAPM.
+%
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, SCALEM, FEATSELM, KLM
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -44,7 +55,7 @@
 
 function w = cmapm(arg1,arg2,par1,par2,par3)
 
-		if (nargin < 2)
+	if (nargin < 2)
 		error('insufficient arguments');
 	end
 
@@ -70,6 +81,7 @@ function w = cmapm(arg1,arg2,par1,par2,par3)
 					k = length(data);
 					w = affine(eye(k),-data);
 					w = setname(w,'Shift');
+          w = setlabels(w);           % avoid feature labels
 				case 'scale'									% Shift, scale & (optionally) clip.
 					if (iscell(data))	
 						% Extract and check parameters.
@@ -91,6 +103,7 @@ function w = cmapm(arg1,arg2,par1,par2,par3)
 						w = setname(w,'Scaling');
 					else
 						w = affine(1./scale,-shift./scale);
+            w = setlabels(w); % avoid feature labels
 					end
 				otherwise
 					error(['unknown option ' arg2])
@@ -125,7 +138,14 @@ function w = cmapm(arg1,arg2,par1,par2,par3)
 	else 
 
 		% Second form: ARG1 is a dataset, execute some fixed mappings
-		a = +arg1; [m,k] = size(a);					% Extract dataset.
+    if ~isdataset(arg1)
+      % we need a dataset here to avoid problems (RD)
+      a = arg1;
+      arg1 = prdataset(arg1);
+    else
+      a = +arg1; % Extract dataset.
+    end
+    [m,k] = size(a);					
 		type = arg2;
 		featlist = getfeatlab(arg1);
 

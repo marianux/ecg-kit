@@ -22,7 +22,7 @@
 % returned. L points to the window pixels, such that A(L,:) is a dataset
 % of the corresponding objects.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, IM2FEAT
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

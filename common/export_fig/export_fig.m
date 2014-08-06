@@ -232,6 +232,7 @@ switch options.renderer
     otherwise
         renderer = '-opengl'; % Default for bitmaps
 end
+
 % Do the bitmap formats first
 if isbitmap(options)
     % Get the background colour
@@ -414,6 +415,8 @@ if isvector(options)
     if ~options.crop
         p2eArgs = [p2eArgs {'-loose'}];
     end
+
+    
     try
         % Generate an eps
         print2eps(tmp_nam, fig, p2eArgs{:});
@@ -432,6 +435,8 @@ if isvector(options)
         delete(tmp_nam);
         rethrow(ex);
     end
+    
+    
     % Delete the eps
     delete(tmp_nam);
     if options.eps

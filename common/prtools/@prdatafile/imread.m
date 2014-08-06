@@ -8,4 +8,5 @@
 % If the index vector N is given, just these images are returned.
 % In case a single image is requested, IM is not a cell array but double.
 %
-% SEE ALSO DATA2IM
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATA2IM

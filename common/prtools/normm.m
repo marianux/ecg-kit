@@ -1,7 +1,8 @@
-%NORMM Apply Minkowski-P distance normalization map
+%NORMM Fixed mapping for Minkowski-P distance normalization
 % 
-%   B = A*NORMM(P)
 %   B = NORMM(A,P)
+%   B = A*NORMM([],P)
+%   B = A*NORMM(P)
 % 
 % INPUT
 %   A  Dataset or matrix
@@ -19,30 +20,24 @@
 % 
 % Note that NORMM(P) or NORMM([],P) is a fixed mapping.
 % 
-% SEE ALSO 
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>) 
 % MAPPINGS, DATASETS, CLASSC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
 
-% $Id: normm.m,v 1.4 2007/12/10 15:56:06 davidt Exp $
-
-function w = normm(a,p)
-
-		if (nargin == 0) | (isempty(a))
-		% No data, store the parameters of a fixed mapping.
-		if nargin<2, p=1; end;
-		w = prmapping(mfilename,'fixed',{p});
-		w = setname(w,'Normalization Mapping');
-	elseif (nargin == 2) & (isempty(a))
-		% No data, store the parameters of a fixed mapping.
-		w = prmapping(mfilename,'fixed',p);
-		w = setname(w,'Normalization Mapping');
-
-	elseif (nargin == 1 & (isa(a,'prdataset') | length(a) > 1)) | (nargin == 2)
-		% We have the case of either W = NORMM(A) or W = NORMM(A,P), 
-		% hence W is now a dataset A with normalized Minkowski-P distances.
+function w = normm(varargin)
+  
+	mapname = 'Normalization Mapping';
+  argin = shiftargin(varargin,'scalar');
+  argin = setdefaults(argin,[],1);
+  
+  if mapping_task(argin,'definition')
+    w = define_mapping(argin,'fixed',mapname);
+    
+  elseif mapping_task(argin,'training')			% Compute the mapping.
+    [a,p] = deal(argin{:});
 		[m,k] = size(a);
 	
 		if (k == 1) & isdataset(a)	
@@ -61,12 +56,7 @@ function w = normm(a,p)
 			else
 				a = setfeatlab(a,featlist(1:2,:));
 			end
-		end
-		
-		if (nargin == 1), 
-			prwarning(3,'Parameter P is not specified, 1 is assumed.');
-			p = 1; 
-		end
+    end
 
 		% Compute the Minkowski-P distances to the origin.
 		if (p == 1)
@@ -76,19 +66,12 @@ function w = normm(a,p)
 		end
 
 		% For non-zero distances, scale them to 1.
-		% Note that W is now a dataset with scaled Minkowski distances.
 		J = find(dist ~= 0);
 		w = a;
 		if ~isempty(J)
 			w(J,:) = +a(J,:)./repmat(dist(J,1),1,k);
-		end
-
-	elseif (nargin == 1) & isa(a,'double') & (length(a) == 1)
-		% We have the case W = NORMM(P), hence W is the mapping.
-		w = prmapping(mfilename,'fixed',a);
-		w = setname(w,'Normalization Mapping');
-	else
-		error('Operation undefined.')
+    end
+    
 	end
 	
 return;

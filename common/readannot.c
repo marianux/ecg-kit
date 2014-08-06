@@ -114,12 +114,12 @@ if (ferror(fid)) mexErrMsgTxt("Error reading annotation file");
 if( data[0] == 0 && data[1] == 0 )
 {
     fclose(fid);
-    // Empty output
+/*     Empty output */
     plhs[0] = mxCreateNumericArray(0,0,mxDOUBLE_CLASS,mxREAL);
 }
 else
 {
-    // mexPrintf (" %d %d\n",data[0],data[1]);
+/*      mexPrintf (" %d %d\n",data[0],data[1]); */
 
     /*******************Memory Allocation ***************************/
     time = (double*) mxCalloc(dim, sizeof(double));
@@ -234,7 +234,7 @@ else
     }
     i-=k;
 
-    // mexPrintf ("i = %d k = %d \n", i, k);
+/*     mexPrintf ("i = %d k = %d \n", i, k); */
 
     /****************** Create struct ******************/
     plhs[0] = mxCreateStructMatrix(1,1,6,field_names);

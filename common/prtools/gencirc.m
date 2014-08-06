@@ -15,7 +15,7 @@
 % radial noise with standard deviation S. N points are generated.
 % Defaults: N = 50, S = 0.1.
 % 
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, PRDATASETS
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

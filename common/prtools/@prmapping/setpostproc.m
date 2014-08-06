@@ -21,5 +21,5 @@
 % Mappings in A.POSTPROC are stored only and executed just 
 % after A is converted from a DATAFILE into a PRDATASET.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATAFILES, SETPREPROC, ADDPOSTPROC.

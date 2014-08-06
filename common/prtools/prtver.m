@@ -8,7 +8,7 @@ persistent PRTVERSION
 if ~isempty (PRTVERSION)
 	prtversion = PRTVERSION;
 else
-  [~,prtoolsname] = fileparts(fileparts(which('fisherc')));
+  [dummy,prtoolsname] = fileparts(fileparts(which('fisherc')));
   prtversion = {ver(prtoolsname) datestr(now)};
   PRTVERSION = prtversion;
 end

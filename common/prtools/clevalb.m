@@ -1,6 +1,6 @@
 %CLEVALB Classifier evaluation (learning curve), bootstrap version
 % 
-% 	E = CLEVALB(A,CLASSF,TRAINSIZES,N)
+% 	E = CLEVALB(A,CLASSF,TRAINSIZES,NREPS)
 %
 % INPUT
 %   A           Training dataset
@@ -33,7 +33,7 @@
 % EXAMPLES
 % See PREX_CLEVAL.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, CLEVALB, TESTC, PLOTE
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl
@@ -45,11 +45,11 @@
 function e = clevalb(a,classf,learnsizes,nreps,fid) 
   
   % use of fid is outdated
-  if (nargin < 4)
+  if (nargin < 4) || isempty(nreps)
 		prwarning(2,'number of repetitions not specified, assuming NREPS = 1');
 		nreps = 1; 
 	end;
-  if (nargin < 3)
+  if (nargin < 3) || isempty(learnsizes)
 		prwarning(2,'vector of training set class sizes not specified, assuming [2,3,5,7,10,15,20,30,50,70,100]');
  		learnsizes = [2,3,5,7,10,15,20,30,50,70,100]; 
 	end;
@@ -116,7 +116,7 @@ function e = clevalb(a,classf,learnsizes,nreps,fid)
 	% Store the seed, to reset the random generator later for different
 	% classifiers.
 
-  seed = rand('state');
+  seed = randreset;
 
 	% Loop over all classifiers (with index WI).
 
@@ -133,7 +133,7 @@ function e = clevalb(a,classf,learnsizes,nreps,fid)
 
 		% Take care that classifiers use same training set.
 
-  	rand('state',seed); seed2 = seed;
+  	randreset(seed); seed2 = seed;
 
 		% For NREPS repetitions...
 		s2 = sprintf('cleval: %i repetitions: ',nreps);
@@ -151,19 +151,19 @@ function e = clevalb(a,classf,learnsizes,nreps,fid)
 				
 				% Necessary for reproducable training sets: set the seed and store
 				% it after generation, so that next time we will use the previous one.
-  			rand('state',seed2);		
+  			randreset(seed2);		
 
   			R = ceil(rand(1,max(learnsizes))*length(JC));
   			JR(ci,:) = JC(R)';
 
-  			seed2 = rand('state'); 
+  			seed2 = randreset; 
   		end
 
   		li = 0;										% Index of training set.
 			nlearns = length(learnsizes);
 			s3 = sprintf('cleval: %i sizes: ',nlearns);
 			prwaitbar(nreps,s3);
-  		for j = nlearns
+  		for j = 1:nlearns
 				nj = learnsizes(j);
         prwaitbar(nlearns,j,[s3 int2str(j) ' (' int2str(nj) ')']);
         li = li + 1; 
@@ -172,7 +172,7 @@ function e = clevalb(a,classf,learnsizes,nreps,fid)
 
 				J = [];				
   			for ci = 1:c
-  				J = [J;JR(ci,1:j)']; 
+  				J = [J;JR(ci,1:nj)']; 
   			end;
 				
 				% Train classifier CLASSF{WI} on this training set and calculate

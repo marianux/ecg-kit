@@ -32,5 +32,5 @@
 % EXAMPLES
 % [DATA,NLAB] = GET(A,'data','nlab')
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, DATASET

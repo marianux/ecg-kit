@@ -12,8 +12,8 @@
 % Creates a plot of the GTM manifold in the original data space, but at
 % most in 3D.
 %
-% SEE ALSO
-% GTM, SOM, PLOTSOM
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% GTM, SOM, PRPLOTSOM
 
 % (c) Dick de Ridder, 2003
 % Information & Communication Theory Group

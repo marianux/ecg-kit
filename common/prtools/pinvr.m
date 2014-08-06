@@ -15,7 +15,7 @@
 %   W       Mapping
 %   J       Object identifiers of support objects		
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, PROXM
 
 % Copyright: S.Verzakov, s.verzakov@ewi.tudelft.nl 

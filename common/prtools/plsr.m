@@ -32,7 +32,7 @@
 % d.n = new_n;
 % w.data = d;
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PLS_TRAIN, PLS_TRANSFORM, PLS_APPLY
 
 % Copyright: S.Verzakov, s.verzakov@ewi.tudelft.nl 

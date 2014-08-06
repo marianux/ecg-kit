@@ -16,5 +16,5 @@
 % characters, or as a string array having as many rows as A has features. 
 % If given, LENGTH(K) should be equal to LENGTH(FEATLAB).
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, PRDATASET, GETFEATLAB

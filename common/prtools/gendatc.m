@@ -31,7 +31,7 @@
 %
 % Defaults: N = [50,50], K = 2, U = 0, LABTYPE = 'crisp'.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, PRDATASETS
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl

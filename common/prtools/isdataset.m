@@ -11,7 +11,7 @@
 % DESCRIPTION
 % The function ISDATASET test if A is a dataset object.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % ISMAPPING, ISDATAIM, ISFEATIM 
 
 % $Id: isdataset.m,v 1.3 2007/03/22 08:54:59 duin Exp $

@@ -12,12 +12,12 @@
 % DESCRIPTION	
 % All images stored as objects (rows) or as features (columns) of
 % dataset A are filtered with an NX*NY uniform filter and stored in
-% dataset B.  Image borders are mirrored before filtering. 
+% dataset B. Image borders are mirrored before filtering. 
 %
 % This command is deprecated, use IM_UNIF instead.
 %
-% SEE ALSO
-% DATASETS, DATAIM, IM2OBJ, IM2FEAT, DATGAUSS, DATFILT
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% DATASETS, DATAIM, IM2OBJ, IM2FEAT, DATGAUSS, DATFILT, IM_UNIF
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl
 % Faculty of Applied Sciences, Delft University of Technology

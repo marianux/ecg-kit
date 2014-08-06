@@ -15,7 +15,7 @@
 %
 % DESCRIPTION
 % If D = A*W, with A a test dataset and W a trained classifier, then an ROC
-% curve can be computed and plotted by ER = ROC(D,C), PLOTE(ER). C is the
+% curve can be computed and plotted by ER = PRROC(D,C), PLOTE(ER). C is the
 % desired class number for which the error is plotted along the horizontal 
 % axis.
 % The classifier W can be given any operating point along this curve by
@@ -29,8 +29,8 @@
 % A used for training the classifier that yielded D. The relation to LABEL
 % is LABEL = CLASSNAME(A,C); C = GETCLASSI(A,LABEL).
 %
-% SEE ALSO 
-% DATASETS, MAPPINGS, TESTC, ROC, PLOTE, CLASSNAMES, GETCLASSI
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>) 
+% DATASETS, MAPPINGS, TESTC, PRROC, PLOTE, CLASSNAMES, GETCLASSI
 
 function w = shiftop(d,e,n)
 
@@ -81,7 +81,7 @@ if isa(e,'char')
    end
 else
    d = seldat(d,n)*normm;
-   [~,L] = sort(+d(:,n));
+   [dummy,L] = sort(+d(:,n));
    k = floor(e*s(n));
    k = max(k,1);    % avoid k = 0
    alf = +(d(L(k),:)+d(L(k+1),:))/2;

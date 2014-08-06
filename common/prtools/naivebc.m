@@ -2,9 +2,11 @@
 % 
 % 	W = NAIVEBC(A,N)
 % 	W = A*NAIVEBC([],N)
+% 	W = A*NAIVEBC(N)
 %
 % 	W = NAIVEBC(A,DENSMAP)
 % 	W = A*NAIVEBC([],DENSMAP)
+% 	W = A*NAIVEBC(DENSMAP)
 % 
 % INPUT	
 %   A       Training dataset
@@ -34,7 +36,7 @@
 % used to estimate the densities per class and per features separately.
 % Examples are PARZENM and GAUSSM.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, PARZENM, GAUSSM, UDC, QDC, PARZENC, PARZENDC, REGOPTC
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -43,111 +45,111 @@
   
 % $Id: naivebc.m,v 1.5 2007/06/15 09:58:30 duin Exp $
 
-function w = naivebc(a,arg2)
+function w = naivebc(varargin)
 
-	if (nargin < 2)
-		prwarning (2,'number of bins not specified, assuming 10.');
-		arg2 = 10; 
-	end
-
-	% No arguments given: return untrained mapping.
-
-	if (nargin < 1) | (isempty(a))
-		w = prmapping(mfilename,{arg2});
-		w = setname(w,'NaiveBayes');
-		return
-	end
-
-	if (~ismapping(arg2))     % Second argument is not a mapping: training.
+  mapname = 'NaiveBayes';
+	argin = shiftargin(varargin,{'integer','prmapping'});
+  argin = setdefaults(argin,[],10);
+  
+  if mapping_task(argin,'definition')
+    
+    w = define_mapping(argin,'untrained',mapname);
+    
+  elseif mapping_task(argin,'training')			% Train a mapping.
+  
+    [a,arg2] = deal(argin{:});
+    
+    if ismapping(arg2) && isuntrained(arg2) % train given untrained mapping, e.g. parzen
 		
-		N = arg2;
+      [m,k,c] = getsize(a);
+      v = cell(c,k);
+      for i=1:c
+        b = seldat(a,i);
+        for j=1:k
+          v{i,j} = b(:,j)*arg2;
+        end
+      end
+      pars.dens = v;
+      pars.p0 = getprior(a);
+      w = prmapping(mfilename,'trained',pars,getlablist(a),k,c);
+      w = setname(w,'NaiveBayes');
+      w = setcost(w,a);
+    
+    else % construct histograms
+    
+      N = arg2; % number of bins
+
+      if isnan(N)             % optimize complexity parameter
+        defs = {10};
+        parmin_max = [2,50];
+        w = regoptc(a,mfilename,{N},defs,[1],parmin_max,testc([],'soft'),0);
+
+      else
+
+        islabtype(a,'crisp');
+        isvaldfile(a,1,2); % at least 2 object per class, 2 classes
+        a = testdatasize(a);
+
+        [m,k,c] = getsize(a); M = classsizes(a);
+
+        % Train the mapping. First, find the scale and offset of the data 
+        % and normalise (this is very non-robust, but ok...)
+
+        offset_a = min(a); maxa = max(a); scale_a = maxa - offset_a;
+
+        K = find(scale_a~=0);
+  % 			if(any(scale_a==0))
+  % 				prwarning (2,'one of the features has the same value for all data; scale change to realmin');
+  % 				scale_a(scale_a==0) = realmin;		
+  % 			end
+
+        a = a - repmat(offset_a,m,1);
+        a = a ./ repmat(scale_a,m,1);
+
+        % P will contain the probability per bin per class, P0 the probability
+        % per class. The highest and lowest bounds will not be used; the lowest
+        % bound will be used to store the missing values.
+
+        p  = zeros(N+1,k,c);
+
+        % Count the number of objects for each of the classes.
+
+        for i = 1:c
+
+          Ic = findnlab(a,i);											% Extract one class.
+          Ia = ceil(N*+(a(Ic,K)));								% Find out in which bin it falls.
+          Ia(Ia<1) = 1; Ia(Ia>N) = N;							% Sanity check.
+
+          for j=1:N
+            p(j,K,i) = sum(Ia==j);								% Count for all bins.
+          end
+
+          p(N+1,K,i) = sum(~isnan(+a(Ic,K))); 	% The missing values.
+
+          % Use Bayes estimators are used, like elsewhere in PRTools.
+
+          p(:,K,i) = (p(:,K,i)+1) / (M(i)+N); 						% Probabilities.
+          p(:,K,i) = p(:,K,i) ./ repmat(scale_a(K)/N,N+1,1); 	% Densities.
+
+        end
+
+        % Save all useful data.
+
+        pars.p0 = getprior(a); pars.p = p; pars.N = N;
+        pars.offset_a = offset_a; pars.scale_a = scale_a;
+        pars.feats = K;
+
+        w = prmapping(mfilename,'trained',pars,getlablist(a),k,c);
+        w = setname(w,'Naive Bayes');
+        w = setcost(w,a);
+
+      end
 		
-		if isnan(N)             % optimize complexity parameter
-			defs = {10};
-			parmin_max = [2,50];
-			w = regoptc(a,mfilename,{N},defs,[1],parmin_max,testc([],'soft'),0);
-		
-		else
-	
-			islabtype(a,'crisp');
-			isvaldfile(a,1,2); % at least 2 object per class, 2 classes
-			a = testdatasize(a);
-
-			[m,k,c] = getsize(a); M = classsizes(a);
-
-			% Train the mapping. First, find the scale and offset of the data 
-			% and normalise (this is very non-robust, but ok...)
-
-			offset_a = min(a); maxa = max(a); scale_a = maxa - offset_a;
-		
-			K = find(scale_a~=0);
-% 			if(any(scale_a==0))
-% 				prwarning (2,'one of the features has the same value for all data; scale change to realmin');
-% 				scale_a(scale_a==0) = realmin;		
-% 			end
-
-			a = a - repmat(offset_a,m,1);
-			a = a ./ repmat(scale_a,m,1);
-
-			% P will contain the probability per bin per class, P0 the probability
-			% per class. The highest and lowest bounds will not be used; the lowest
-			% bound will be used to store the missing values.
-
-			p  = zeros(N+1,k,c);
-
-			% Count the number of objects for each of the classes.
-
-			for i = 1:c
-
-				Ic = findnlab(a,i);											% Extract one class.
-				Ia = ceil(N*+(a(Ic,K)));								% Find out in which bin it falls.
-				Ia(Ia<1) = 1; Ia(Ia>N) = N;							% Sanity check.
-
-				for j=1:N
-					p(j,K,i) = sum(Ia==j);								% Count for all bins.
-				end
-
-				p(N+1,K,i) = sum(~isnan(+a(Ic,K))); 	% The missing values.
-			
-				% Use Bayes estimators are used, like elsewhere in PRTools.
-			
-				p(:,K,i) = (p(:,K,i)+1) / (M(i)+N); 						% Probabilities.
-				p(:,K,i) = p(:,K,i) ./ repmat(scale_a(K)/N,N+1,1); 	% Densities.
-
-			end
-
-			% Save all useful data.
-
-			pars.p0 = getprior(a); pars.p = p; pars.N = N;
-			pars.offset_a = offset_a; pars.scale_a = scale_a;
-			pars.feats = K;
-
-			w = prmapping(mfilename,'trained',pars,getlablist(a),k,c);
-			w = setname(w,'Naive Bayes');
-			w = setcost(w,a);
-			
-		end
-		
-	elseif isuntrained(arg2) % train given untrained mapping, e.g. parzen
-		
-		[m,k,c] = getsize(a);
-		v = cell(c,k);
-		for i=1:c
-			b = seldat(a,i);
-			for j=1:k
-				v{i,j} = b(:,j)*arg2;
-			end
-		end
-		pars.dens = v;
-		pars.p0 = getprior(a);
-		w = prmapping(mfilename,'trained',pars,getlablist(a),k,c);
-		w = setname(w,'NaiveBayes');
-		w = setcost(w,a);
-		
+    end
 
 	else                      % Second argument is a mapping: testing.
 
-		w = arg2;
+    [a,w] = deal(argin{1:2});
 		pars = getdata(w);		 	% Unpack the mapping.
 		[m,k] = size(a); 
 		

@@ -5,7 +5,7 @@
 % INPUT
 %   A         Dataset, possibly labeled
 %   W_CLUST   Cluster model mapping, untrained (default: nmc)
-%   K         Number of clusters (default: 2)
+%   K         Number of clusters (default: number of classes in A)
 %   LABTYPE   Label type: 'crisp' or 'soft' (default: label type of A)
 %   
 % OUTPUT
@@ -22,7 +22,8 @@
 % in LABELS. W_EM may be used for assigning new objects.
 %
 % If K is given, a random initialisation for K clusters is made and labels
-% of A are neglected. 
+% of A are neglected. If K is omitted the given labeling is used as
+% initailisation.
 %
 % LABTYPE determines the type of labeling: 'crisp' or 'soft'. Default: label
 % type of A. It is assumed W_CLUST can handle the LABTYPE requested.
@@ -30,8 +31,8 @@
 % In case LABTYPE is 'crisp' EMCLUST follows a generalised k-means
 % algorithm.
 %
-% SEE ALSO
-% MAPPINGS, DATASETS, KMEANS, PRPROGRESS
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+% MAPPINGS, DATASETS, PRKMEANS, PRPROGRESS
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
@@ -39,7 +40,7 @@
 
 % $Id: emclust.m,v 1.9 2009/02/03 21:07:26 duin Exp $
 
-function [new_lab,w_em] = emclust (a,w_clust,n,type,fid)
+function [new_lab,w_em] = emclust (a,w_clust,n,type)
 
 		n_ini		= 500;			% Maximum size of subset to use for initialisation.
 	epsilon = 1e-6;			% Stop when average labeling change drops below this.
@@ -174,7 +175,7 @@ function [new_lab,w_em] = emclust (a,w_clust,n,type,fid)
 				N = classsizes(a);
 				[Nmax,cmax] = max(N);        % find largest class
 				aa = seldat(a,cmax);         % select just that one
-				new_lab_aa = kmeans(aa,2);   % split it by kmeans
+				new_lab_aa = prkmeans(aa,2);   % split it by kmeans
 				N1 = sum(new_lab_aa == 1);   
 				N2 = sum(new_lab_aa == 2);
 				if (N1 > 1 & N2 > 1) % use it if both classes have more than one sample

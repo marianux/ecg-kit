@@ -83,7 +83,7 @@
 % T_new = X_new*R
 % Y_new = X_new*B
 %  
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PLS_APPLY, PLS_TRANSFORM
 
 % Copyright: S.Verzakov, s.verzakov@ewi.tudelft.nl 

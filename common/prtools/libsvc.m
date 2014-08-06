@@ -1,6 +1,8 @@
-%LIBSVC Support Vector Classifier by libsvm
+%LIBSVC Trainable classifier: LIBSVM
 % 
 % 	[W,J] = LIBSVC(A,KERNEL,C)
+% 	[W,J] = A*LIBSVC([],KERNEL,C)
+% 	[W,J] = A*LIBSVC(KERNEL,C)
 %
 % INPUT
 %   A	    Dataset
@@ -34,107 +36,116 @@
 % kernelmatrix (square). In this also a kernel matrix should be supplied at 
 % evaluation by B*W or PRMAP(B,W). However, the kernel has to be computed with 
 % respect to support objects listed in J (the order of objects in J does matter).
+%
+% EXAMPLE
+% a = gendatb;                     % generate banana classes
+% [w,J] = a*libsvc(proxm('p',3));  % compute svm with 3rd order polynomial
+% a*w*testc                        % show error on train set
+% scatterd(a)                      % show scatterplot
+% plotc(w)                         % plot classifier
+% hold on; 
+% scatterd(a(J,:),'o')             % show support objcts
 % 
 % REFERENCES
 % R.-E. Fan, P.-H. Chen, and C.-J. Lin. Working set selection using the second order 
 % information for training SVM. Journal of Machine Learning Research 6, 1889-1918, 2005
 %
-% SEE ALSO 
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>) 
 % MAPPINGS, DATASETS, SVC, PROXM
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
   
-function [W,J,u] = libsvc(a,kernel,C)
+function [W,J,u] = libsvc(varargin)
 		
-	libsvmcheck;
-	
-	if nargin < 3 
-		C = 1;
-	end
-	if nargin < 2 | isempty(kernel)
-		kernel = proxm([],'p',1);
-	end
+	checktoolbox('libsvm');
 
-	if nargin < 1 | isempty(a)
-		W = prmapping(mfilename,{kernel,C});
-		W = setname(W,'LIBSVM');
-		return;
-	end
+  mapname = 'LIBSVM';
+  argin = shiftargin(varargin,{'prmapping','char','cell'});
+  argin = setdefaults(argin,[],proxm([],'p',1),1,1);
+  
+  if mapping_task(argin,'definition')
+    
+    W = define_mapping(argin,'untrained',mapname);
+    
+	elseif mapping_task(argin,'training')			% Train a mapping.
 
-	opt = ['-s 0 -t 4 -b 1 -c ',num2str(C)];
-	%opt = ['-s 0 -t 4 -b 1 -e 1e-3 -c ',num2str(C), ' -q'];
-	if (~ismapping(kernel) | isuntrained(kernel)) % training
-	
-		islabtype(a,'crisp');
-		isvaldfile(a,1,2); % at least 1 object per class, 2 classes
-		a = testdatasize(a,'objects');
-		[m,k,c] = getsize(a);
-		nlab = getnlab(a); 
-	
-		K = compute_kernel(a,a,kernel);
-		K = min(K,K');   % make sure kernel is symmetric
-		K = [[1:m]' K];  % as libsvm wants it
-	                   % call libsvm
-		u = svmtrain(nlab,K,opt);
-		                 % Store the results:
-		J = full(u.SVs);
-		if isempty(J) | J == 0
-			aa = 0;
+    [a,kernel,C] = check_for_old_call(argin);
+    opt = ['-s 0 -t 4 -b 1 -e 1e-3 -c ',num2str(C), ' -q'];
+    
+
+    islabtype(a,'crisp');
+    isvaldfile(a,1,2); % at least 1 object per class, 2 classes
+    a = testdatasize(a,'objects');
+    [m,k,c] = getsize(a);
+    nlab = getnlab(a); 
+
+    K = compute_kernel(a,a,kernel);
+    K = min(K,K');   % make sure kernel is symmetric
+    K = [[1:m]' K];  % as libsvm wants it
+                     % call libsvm
+    u = svmtrain(nlab,K,opt);
+		if isempty(u)
+			prwarning(1,'libsvc: no solution for SVM, pseudo-inverse will be used')
+			W = lkc(prdataset(K(:,2:end),getlabels(a)),0);
+			J = [1:m]';
+			return
 		end
-		if isequal(kernel,0)
-			s = [];
-%			in_size = length(J);
-			in_size = 0; % to allow old and new style calls
-		else
-			s = a(J,:);
-			in_size = k;
-		end
+                     % Store the results:
+    J = full(u.SVs);
+    if isempty(J) | J == 0
+      % LIBSVM failed, use fisher
+      W = fisherc(a);
+      prwarning(1,'LIBSVC failed, Fisher used instead')
+      return
+    end
+    if isequal(kernel,0)
+      s = [];
+      in_size = 0; % to allow old and new style calls
+    else
+      s = a(J,:);
+      in_size = k;
+    end
 
-		lablist = getlablist(a);         
-		W = prmapping(mfilename,'trained',{u,s,kernel,J,opt},lablist(u.Label,:),in_size,c);
-		
-		W = setname(W,'LIBSVM Classifier');
-		W = setcost(W,a);
-		
-	else % execution
-		v = kernel;
-		w = +v;
-		m = size(a,1);
-	
-		u = w{1};
-		s = w{2};
-		kernel = w{3};
-		J = w{4};
-		opt = w{5};
-	
-		K = compute_kernel(a,s,kernel);
-		k = size(K,2);
-		if k ~= length(J)
-			if isequal(kernel,0)
-				if (k > length(J)) &  (k >= max(J))
-					% precomputed kernel; old style call
-					prwarning(2,'Old style execution call: The precomputed kernel was calculated on a test set and the whole training set!')  
-				else
-					error(['Inappropriate precomputed kernel!' newline ...
-							'For the execution the kernel matrix should be computed on a test set' ...
-							newline 'and the set of support objects']);
-				end  
-			else
-				error('Kernel matrix has the wrong number of columns');
-			end
-		else  
-			% kernel was computed with respect to the support objects
-			% we make an approprite correction in the libsvm structure
-			u.SVs = sparse((1:length(J))');
-		end  
-		K = [[1:m]' K];  % as libsvm wants it
-		%[lab,acc,d] = svmpredict(getnlab(a),K,u,' -b 1');
-		[lab,acc,d] = svmpredict(ones(m,1),K,u,' -b 1');
-		W = setdat(a,d,v);
-	end
-	
+    lablist = getlablist(a);         
+    W = prmapping(mfilename,'trained',{u,s,kernel,J,opt},lablist(u.Label,:),in_size,c);
+
+    W = setname(W,'LIBSVM Classifier');
+    W = setcost(W,a);
+
+  else % Evaluation
+
+    [a,W] = deal(argin{1:2});
+    [u,s,kernel,J,opt] = getdata(W);
+    m = size(a,1);
+
+    K = compute_kernel(a,s,kernel);
+    k = size(K,2);
+    if k ~= length(J)
+      if isequal(kernel,0)
+        if (k > length(J)) &  (k >= max(J))
+          % precomputed kernel; old style call
+          prwarning(2,'Old style execution call: The precomputed kernel was calculated on a test set and the whole training set!')  
+        else
+          error(['Inappropriate precomputed kernel!' newline ...
+              'For the execution the kernel matrix should be computed on a test set' ...
+              newline 'and the set of support objects']);
+        end  
+      else
+        error('Kernel matrix has the wrong number of columns');
+      end
+    else  
+      % kernel was computed with respect to the support objects
+      % we make an approprite correction in the libsvm structure
+      u.SVs = sparse((1:length(J))');
+    end  
+    K = [[1:m]' K];  % as libsvm wants it
+    %[lab,acc,d] = svmpredict(getnlab(a),K,u,' -b 1');
+    [lab,acc,d] = svmpredict(ones(m,1),K,u,' -b 1');
+    W = setdat(a,d,W);
+  end
+    
 return;
 
 function K = compute_kernel(a,s,kernel)
@@ -157,3 +168,11 @@ function K = compute_kernel(a,s,kernel)
 	K = +K;
 		
 return
+
+function [a,kernel,C] = check_for_old_call(argin)
+
+[a,kernel,C,par] = deal(argin{:});
+if ischar(kernel) && exist(kernel,'file') ~= 2
+  kernel = proxm(kernel,C);
+  C = par;
+end

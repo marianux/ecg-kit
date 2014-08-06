@@ -8,7 +8,13 @@ if ~usejava('jvm') & isunix
 	[stat,s] = unix(['wget -q -O - ' url]);
 	status = (stat == 0);
 else
-  [s,status] = urlread(url);
+  if verLessThan('matlab','8.0')
+    status = 0; % Cannot read if server is down
+  else
+    [s,status] = urlread(url,'TimeOut',5);
+  end
+  %[s,status] = urlread(url);
+  % needs updatating. s may contain a firewall message while status = 1
 end
 
 if ~status

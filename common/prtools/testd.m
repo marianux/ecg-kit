@@ -22,7 +22,7 @@
 % of the dataset. Labels found for the individual objects by the classifier
 % W may be retrieved by LABELD
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, TESTD, LABELD
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

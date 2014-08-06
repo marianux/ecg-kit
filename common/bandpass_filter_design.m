@@ -8,21 +8,42 @@ function Hd = bandpass_filter_design(Fs)
 % Generated on: 23-Apr-2013 18:34:23
 %
 
-Fstop1 = 0.001;  % First Stopband Frequency
-Fpass1 = 5;      % First Passband Frequency
-Fpass2 = 35;     % Second Passband Frequency
-Fstop2 = 50;     % Second Stopband Frequency
-Astop1 = 20;     % First Stopband Attenuation (dB)
-Apass  = 1;      % Passband Ripple (dB)
-Astop2 = 20;     % Second Stopband Attenuation (dB)
-% Fs     = 1000;   % Sampling Frequency
+% Fstop1 = 0.001;  % First Stopband Frequency
+% Fpass1 = 5;      % First Passband Frequency
+% Fpass2 = 35;     % Second Passband Frequency
+% Fstop2 = 50;     % Second Stopband Frequency
+% Astop1 = 20;     % First Stopband Attenuation (dB)
+% Apass  = 1;      % Passband Ripple (dB)
+% Astop2 = 20;     % Second Stopband Attenuation (dB)
+% % Fs     = 1000;   % Sampling Frequency
+% 
+% h = fdesign.bandpass('fst1,fp1,fp2,fst2,ast1,ap,ast2', Fstop1, Fpass1, ...
+%     Fpass2, Fstop2, Astop1, Apass, Astop2, Fs);
+% 
+% Hd = design(h, 'butter', ...
+%     'MatchExactly', 'stopband');
 
-h = fdesign.bandpass('fst1,fp1,fp2,fst2,ast1,ap,ast2', Fstop1, Fpass1, ...
-    Fpass2, Fstop2, Astop1, Apass, Astop2, Fs);
 
-Hd = design(h, 'butter', ...
-    'MatchExactly', 'stopband');
+N     = 100;  % Order
+Fpass = 35;   % Passband Frequency
+Fstop = 50;   % Stopband Frequency
+Wpass = 1;    % Passband Weight
+Wstop = 100;  % Stopband Weight
 
+% Calculate the coefficients using the FIRLS function.
+b  = firls(N, [0 Fpass Fstop Fs/2]/(Fs/2), [1 1 0 0], [Wpass Wstop]);
+Hd1 = dfilt.dffir(b);
 
+Fstop = 0.01;        % Stopband Frequency
+Fpass = 1;           % Passband Frequency
+Astop = 120;         % Stopband Attenuation (dB)
+Apass = 1;           % Passband Ripple (dB)
+match = 'stopband';  % Band to match exactly
+
+% Construct an FDESIGN object and call its BUTTER method.
+h  = fdesign.highpass(Fstop, Fpass, Astop, Apass, Fs);
+Hd2 = design(h, 'butter', 'MatchExactly', match);
+
+Hd = dfilt.cascade(Hd2,Hd2);
 
 % [EOF]

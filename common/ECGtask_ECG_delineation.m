@@ -7,6 +7,41 @@ classdef ECGtask_ECG_delineation < ECGtask
 % 
 % Abstract class for defining ECGtask interface
 % 
+% Adding user-defined QRS detectors:
+% A QRS detector that has the following interface can be added to the task:
+% 
+%     [positions_single_lead, position_multilead] = your_ECG_delineator( ECG_matrix, ECG_header, progress_handle, payload_in);
+% 
+% where the arguments are:
+%    + ECG_matrix, is a matrix size [ECG_header.nsamp ECG_header.nsig]
+%    + ECG_header, is a struct with info about the ECG signal, such as:
+%         .freq, the sampling frequency
+%         .desc, description about the signals.
+%    + progress_handle, is a handle to a waitbar object, that can be used
+%          to track the progress within your function. See the
+%          documentation about this class in this kit.
+%    + payload_in, is a user data variable allowed to be sent each call to
+%          your function. It is sent, via the payload property of this
+%          class, for example: 
+% 
+%         this_ECG_wrappers.ECGtaskHandle.payload = your_variable;
+%         this_ECG_wrappers.ECGtaskHandle.payload = {your_var1 your_var2};
+%         this_ECG_wrappers.ECGtaskHandle.payload = load(cached_filenames);
+% 
+%          In the context of delineation, it is thought to be a user
+%          corrected, or "gold quality" QRS location, in order to 
+%          improve the wave delineation quality. If "payload_in" is a
+%          struct, this function will automatically filter and time-shift
+%          all QRS detection fields started with the string "corrected_".
+%          For this purpose, QRScorrector task, automatically appends this
+%          string to eachm anually reviewed QRS location series. 
+% 
+% the output of your function must be:
+%    + positions_single_lead, a cell array size ECG_header.nsig with the
+%          QRS sample locations found in each lead.
+%    + position_multilead, a numeric vector with the QRS locations
+%          calculated using multilead rules.
+% 
 % 
 % Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
 % Version: 0.1 beta
@@ -17,6 +52,8 @@ classdef ECGtask_ECG_delineation < ECGtask
         name = 'ECG_delineation';
         target_units = 'ADCu';
         doPayload = true;
+        cAnnotationFields = { 'Pon' 'P' 'Poff' 'QRSon' 'qrs' 'Q' 'R' 'S' 'QRSoff' 'Ton' 'T' 'Toff' };
+        
     end
 
     properties( GetAccess = public, SetAccess = private)
@@ -24,6 +61,9 @@ classdef ECGtask_ECG_delineation < ECGtask
         % memory_constant is the fraction respect to user.MaxPossibleArrayBytes
         % which determines the maximum input data size.
         memory_constant = 0.3;
+        
+        started = false;
+        
     end
     
     properties( Access = private, Constant)
@@ -37,18 +77,21 @@ classdef ECGtask_ECG_delineation < ECGtask
         delineators2do
         bWFDBdelineators
         tmp_path_local
-        tmp_path
         command_sep
         WFDB_bin_path
+        lead_idx = [];
         
     end
     
     properties
         progress_handle
         user_string = '';
+        only_ECG_leads = false;
         delineators = 'all-delineators';
         wavedet_config
         CalculateArtificialDetections = true;
+        payload
+        tmp_path
     end
     
     methods
@@ -62,6 +105,13 @@ classdef ECGtask_ECG_delineation < ECGtask
         
         function Start(obj, ECG_header, ECG_annotations)
 
+            if( obj.only_ECG_leads )
+                obj.lead_idx = get_ECG_idx_from_header(ECG_header);
+            else
+%                 'all-leads'
+                obj.lead_idx = 1:ECG_header.nsig;
+            end
+            
             if( strcmpi('all-delineators', obj.delineators) )
                 obj.delineators2do = obj.cQRSdelineators(2:end);
             else
@@ -83,44 +133,44 @@ classdef ECGtask_ECG_delineation < ECGtask
                 end
                 obj.tmp_path = tempdir;
             else
-                obj.tmp_path_local = tempdir;
-                obj.tmp_path = tempdir;
-            end
-            
-        end
-        
-        function payload = Process(obj, ECG, ECG_start_offset, ECG_sample_start_end_idx, ECG_header, ECG_annotations, ECG_annotations_start_end_idx, payload_in  )
-            
-            payload = [];
-            
-            if( nargin < 8 )
-                payload_in = [];
-            else
-                % payload_in is used in this task to input an external QRS
-                % detector, or manually corrected detections.
-                if( isstruct(payload_in) )
-                    
-                    fnames = fieldnames(payload_in);
-                    aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'corrected_'))), fnames, 'UniformOutput', false)));
-                    if( isempty(aux_idx) )
-                        payload_in = [];
-                    else
-                        payload_in = payload_in.(fnames{aux_idx(1)}).time;
-                        payload_in = payload_in( payload_in >= ECG_sample_start_end_idx(1) & payload_in < ECG_sample_start_end_idx(2) );
-                    end
-                    
-                else
-                    payload_in = [];
+                if( isempty(obj.tmp_path) )
+                    obj.tmp_path = tempdir;
+                    obj.tmp_path_local = tempdir;
                 end
             end
             
-            % get signals indexes that actually are ECG
-            ECG_signals_idx = get_ECG_idx_from_header(ECG_header);
+            obj.started = true;
             
-            if( isempty(ECG_signals_idx) )
-                warning('ECGtask_delineation:NoECGsignals', disp_option_enumeration( 'No ECG signals found:', cellstr(ECG_header.desc) ) );
-                ECG_signals_idx = 1:ECG_header.nsig;
+        end
+        
+        function payload_out = Process(obj, ECG, ECG_start_offset, ECG_sample_start_end_idx, ECG_header, ECG_annotations, ECG_annotations_start_end_idx )
+            
+            payload_out = [];
+            
+            if( ~obj.started )
+                obj.Start(ECG_header);
+                if( ~obj.started )
+                    cprintf('*[1,0.5,0]', 'Task %s unable to be started for %s.\n', obj.name, ECG_header.recname);
+                    return
+                end
             end
+            
+            % payload property is used in this task to input an external QRS
+            % detector, or manually corrected detections.
+            if( isstruct(obj.payload) )
+
+                fnames = fieldnames(obj.payload);
+                aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'corrected_'))), fnames, 'UniformOutput', false)));
+                if( ~isempty(aux_idx) )
+                    for ii = rowvec(aux_idx)
+                        aux_val = obj.payload.(fnames{aux_idx(ii)}).time - ECG_start_offset + 1;
+                        aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val < ECG_sample_start_end_idx(2) );
+                        obj.payload.(fnames{aux_idx(ii)}).time = aux_val;
+                    end
+                end
+
+            end
+
             
             cant_QRSdelineators = length(obj.delineators2do);
             
@@ -128,7 +178,14 @@ classdef ECGtask_ECG_delineation < ECGtask
 
                 this_delineator = obj.delineators2do{ii};
 
-                fprintf(1, [ '\nProcessing ' this_delineator '\n\n' ] );
+                [this_delineator, this_delineator_name] = strtok(this_delineator, ':');
+                if( isempty(this_delineator_name) )
+                    this_delineator_name = this_delineator;
+                else
+                    this_delineator_name = this_delineator_name(2:end);
+                end
+                
+                cprintf( 'Blue', [ 'Processing ECG delineator ' this_delineator_name '\n' ] );
 
                 %% perform ECG delineation
 
@@ -137,14 +194,16 @@ classdef ECGtask_ECG_delineation < ECGtask
                     case 'wavedet'
                     %% Wavedet delineation
 
+                        obj.progress_handle.checkpoint(['Processing ' this_delineator])
+                    
                         try
 
-                            [position_multilead, positions_single_lead] = wavedet_interface(ECG, ECG_header, payload_in, ECG_signals_idx, obj.wavedet_config, ECG_sample_start_end_idx, ECG_start_offset, obj.progress_handle);
+                            [position_multilead, positions_single_lead] = wavedet_interface(ECG, ECG_header, obj.payload, obj.lead_idx, obj.wavedet_config, ECG_sample_start_end_idx, ECG_start_offset, obj.progress_handle);
 
-                            payload.wavedet_single_lead = positions_single_lead;
+                            payload_out.wavedet_single_lead = positions_single_lead;
                             
                             % QRS detections in milliseconds
-                            payload.wavedet_multilead = position_multilead;
+                            payload_out.wavedet_multilead = position_multilead;
 
                         catch aux_ME
 
@@ -156,10 +215,77 @@ classdef ECGtask_ECG_delineation < ECGtask
 
                         end
 
+                    case 'user'
+                        %% user-defined delineator
 
-%                     case XXXX
-                        %% Room for future delineators.
+                        obj.progress_handle.checkpoint(['Processing ' this_delineator_name])
+                        
+                        try
 
+                            if( exist(this_delineator_name) == 2 )
+                                
+                                ud_func_pointer = eval(['@' this_delineator_name]);
+
+                                obj.progress_handle.checkpoint([ 'User defined function: ' this_delineator_name])
+
+                                [positions_single_lead, position_multilead] = ud_func_pointer( double(ECG(:,obj.lead_idx)), trim_ECG_header(ECG_header, obj.lead_idx), obj.progress_handle, obj.payload);
+
+                                % filter and offset delineation
+                                for jj = 1:length(obj.lead_idx)
+                                    
+                                    % filter heartbeats within range
+                                    bAux = positions_single_lead(jj).qrs >= ECG_sample_start_end_idx(1) & positions_single_lead(jj).qrs <= ECG_sample_start_end_idx(2);
+
+                                    aux_struct = [];
+                                    for fn = rowvec(fieldnames(positions_single_lead(jj)))
+                                        aux_val = positions_single_lead(jj).(fn{1});
+                                        if( any(strcmpi(obj.cAnnotationFields, fn{1})) ) 
+                                            aux_struct.(fn{1}) = aux_val(bAux) + ECG_start_offset - 1;
+                                        else
+                                            aux_struct.(fn{1}) = aux_val;
+                                        end
+                                    end
+                                    
+                                    positions_single_lead(jj) = aux_struct;
+                                    
+                                end
+
+                                payload_out.( [ this_delineator_name '_single_lead' ] ) = positions_single_lead;
+                                
+                                if( ~isempty(position_multilead) )
+                                    
+                                    % filter heartbeats within range
+                                    bAux = position_multilead.qrs >= ECG_sample_start_end_idx(1) & position_multilead.qrs <= ECG_sample_start_end_idx(2);
+
+                                    aux_struct = [];
+                                    for fn = rowvec(fieldnames(position_multilead))
+                                        aux_val = position_multilead.(fn{1});
+                                        if( any(strcmpi(obj.cAnnotationFields, fn{1})) ) 
+                                            aux_struct.(fn{1}) = aux_val(bAux) + ECG_start_offset - 1;
+                                        else
+                                            aux_struct.(fn{1}) = aux_val;
+                                        end
+                                    end
+                                    
+                                    position_multilead = aux_struct;
+                                    
+                                    payload_out.( [ this_delineator_name '_multilead' ] ) = position_multilead;
+                                    
+                                end
+
+                            else
+                                disp_string_framed(2, sprintf('Function "%s" is not reachable in path.', this_delineator_name));
+                                fprintf(1, 'Make sure that exist(%s) == 2\n',this_delineator_name);
+                            end
+                            
+                        catch aux_ME
+
+                            disp_string_framed(2, sprintf('Delineator "%s" failed in recording %s lead %s', this_delineator_name, ECG_header.recname, ECG_header.desc(jj,:) ) );                                
+
+                            report = getReport(aux_ME);
+                            fprintf(2, 'Error report:\n%s', report);
+
+                        end
 
                 end
     
@@ -187,10 +313,19 @@ classdef ECGtask_ECG_delineation < ECGtask
                 for fn = rowvec(fieldnames(plA))
                     
                     if( isfield(plA, fn{1}) && isfield(plB, fn{1}) )
-                        payload.(fn{1}) = [ colvec(plA.(fn{1})); colvec(plB.(fn{1})) ];
-                    
-                    elseif( ~isfield(plA, fn{1}) && isfield(plB, fn{1}) )
-                        payload.(fn{1}) = colvec(plB.(fn{1}));
+                        lplA = length(plA.(fn{1}));
+                        if( lplA == length(plB.(fn{1})) )
+                            for ii = 1:lplA
+                                for fn2 = rowvec(fieldnames(colvec(plA.(fn{1}))))
+                                    payload.(fn{1})(ii).(fn2{1}) = [ colvec(plA.(fn{1})(ii).(fn2{1})); colvec(plB.(fn{1})(ii).(fn2{1})) ];
+                                end
+                            end
+                        else
+                            error('ECGtask_ECG_delineation:BadTMPfiles','Different amount of leads found in payloads. Try erasing tmp files and running again.')
+                        end
+                        
+                    else
+                        error('ECGtask_ECG_delineation:BadTMPfiles','Different structures found in payloads. Try erasing tmp files and running again.')
                     end
                     
                 end            
@@ -198,14 +333,17 @@ classdef ECGtask_ECG_delineation < ECGtask
             
 
         end
-
+        
         %% property restriction functions
         
         function set.delineators(obj,x)
-            if( (ischar(x) || iscellstr(x)) && ~isempty(intersect(obj.cQRSdelineators, cellstr(x))) )
-                obj.delineators = x;
+            if( (ischar(x) || iscellstr(x)) )
+                x = cellstr(x);
+                aux_val = colvec(intersect(obj.cQRSdelineators, x));
+                aux_idx = find(cellfun(@(a)(~isempty(strfind(a, 'user:'))), x));
+                obj.delineators = [aux_val; colvec(x(aux_idx)) ];
             else
-                warning('ECGtask_QRS_detection:BadArg', 'Invalid delineators.');
+                warning('ECGtask_ECG_delineation:BadArg', 'Invalid delineators.');
             end
         end
         
@@ -217,12 +355,12 @@ classdef ECGtask_ECG_delineation < ECGtask
                     if(mkdir(x))
                         obj.tmp_path_local = x;
                     else
-                        warning('ECGtask_QRS_detection:BadArg', ['Could not create ' x ]);
+                        warning('ECGtask_ECG_delineation:BadArg', ['Could not create ' x ]);
                     end
                 end
                 
             else
-                warning('ECGtask_QRS_detection:BadArg', 'tmp_path_local must be a string.');
+                warning('ECGtask_ECG_delineation:BadArg', 'tmp_path_local must be a string.');
             end
         end
         
@@ -234,12 +372,12 @@ classdef ECGtask_ECG_delineation < ECGtask
                     if(mkdir(x))
                         obj.tmp_path = x;
                     else
-                        warning('ECGtask_QRS_detection:BadArg', ['Could not create ' x ]);
+                        warning('ECGtask_ECG_delineation:BadArg', ['Could not create ' x ]);
                     end
                 end
                 
             else
-                warning('ECGtask_QRS_detection:BadArg', 'tmp_path_local must be a string.');
+                warning('ECGtask_ECG_delineation:BadArg', 'tmp_path_local must be a string.');
             end
         end
         

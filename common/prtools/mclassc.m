@@ -1,6 +1,8 @@
 %MCLASSC Computation of multi-class classifier from 2-class discriminants
 %
 %  W = MCLASSC(A,CLASSF,MODE)
+%  W = A*MCLASSC([],CLASSF,MODE)
+%  W = A*MCLASSC(CLASSF,MODE)
 %
 % INPUT
 %   A       Dataset
@@ -24,7 +26,7 @@
 % EXAMPLES
 % W = MCLASSC(GENDATM(100),QDC,'MULTI');
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MAPPINGS, MINC.
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com
@@ -33,19 +35,19 @@
 
 % $Id: mclassc.m,v 1.9 2009/08/18 23:09:01 duin Exp $
 
-function [w,varargout] = mclassc(a,classf,mode)
-	  
+function [w,varargout] = mclassc(varargin)
+
   varargout = repmat({[]},[1, max((nargout-1),0)]);
-	
-  if nargin < 3, mode = 'single'; end
-	if nargin < 2, classf = []; end
-	if nargin < 1 | isempty(a)
-    %fixed w=mclassc(dataset,ldc)
-    w = prmapping(mfilename,{classf,mode});
-		return
-	end
-	
-	if ~isa(classf,'prmapping') | ~isuntrained(classf)
+  argin = shiftargin(varargin,'prmapping');
+  argin = setdefaults(argin,[],[],'single');
+  
+  if mapping_task(argin,'definition')
+    w = define_mapping(argin,'untrained');
+    return
+  end
+    
+  [a,classf,mode] = deal(argin{:});	
+	if ~isa(classf,'prmapping') || ~isuntrained(classf)
 		error('Second parameter should be untrained mapping')
 	end
 

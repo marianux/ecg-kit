@@ -31,5 +31,5 @@
 % the call, it is found by processing the first object. This may take some
 % time.
 %
-% SEE ALSO 
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>) 
 % DATAFILES, SETPREPROC, ADDPOSTPROC, DATASETS

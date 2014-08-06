@@ -16,7 +16,7 @@
 % In case the objects in A should be interpreted as 1-dimensional object
 % images, use  A = SETFEATSIZE(A,[1 GETFEATSIZE(A)]) for conversion.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % ISDATASET, ISDATAIM, SETFEATSIZE, GETFEATSIZE
 
 % $Id: isobjim.m,v 1.5 2009/01/31 15:43:10 duin Exp $

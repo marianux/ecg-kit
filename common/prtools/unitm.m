@@ -15,7 +15,7 @@
 % This is a fixed unit mapping that maps any dataset on itself. There is
 % also a trainable unit mapping, named UNITTM.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, UNITTM
 
 % Copyright: R.P.W. Duin, r.p.w.duin@37steps.com

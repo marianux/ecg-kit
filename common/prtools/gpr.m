@@ -1,9 +1,11 @@
-%GPR Gaussian Process regression
+%GPR Trainable mapping for Gaussian Process regression
 %
 %     W = GPR(A,KERNEL,S_noise)
+%     W = A*GPR([],KERNEL,S_noise)
+%     W = A*GPR(KERNEL,S_noise)
 %
 %INPUT
-%  A        Dataset
+%  A        Dataset used for training
 %  KERNEL   Untrained mapping to compute kernel by A*(A*KERNEL)
 %           during training, or B*(A*KERNEL) during evaluation with
 %           dataset B
@@ -17,41 +19,42 @@
 %define kernel mapping KERNEL. For kernel definitions, have a look at
 %proxm.m.
 %
-%SEE ALSO
-% svmr, proxm, linearr, testr, plotr
+%SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
+%DATASETS, MAPPINGS, SVMR, PROXM, LINEARR, TESTR, PLOTR
 
 % Copyright: D.M.J. Tax, D.M.J.Tax@37steps.com
 % Faculty EWI, Delft University of Technology
 % P.O. Box 5031, 2600 GA Delft, The Netherlands
-function y = gpr(x,kernel,s_noise)
 
-if nargin<3
-	s_noise = 1;
-end
-if nargin<2
-	kernel = proxm([],'p',1);
-end
-if nargin<1 || isempty(x)
-	y = prmapping(mfilename,{kernel,s_noise});
-	y = setname(y,'Gaussian Proc. regression');
-	return
-end
+function y = gpr(varargin)
 
-if ~ismapping(kernel) || ~istrained(kernel) %training
-	[n,d] = size(x);
+	argin = shiftargin(varargin,'prmapping',1);
+	argin = shiftargin(argin,'scalar',2);
+  argin = setdefaults(argin,[],proxm([],'p',1),1);
+  
+  if mapping_task(argin,'definition')
+    y = define_mapping(argin,'untrained');
+    y = setname(y,'Gaussian Proc. regression');
+    
+  elseif mapping_task(argin,'training')			% Train a mapping.
+  
+    [x,kernel,s_noise] = deal(argin{:});
+    [n,d] = size(x);
     W.X = [+x ones(n,1)];
-	% train:
+  % train:
     W.K = W.X*kernel;
     L = chol(+(W.X*W.K) + s_noise*s_noise*eye(n));
     W.w = L\(L'\gettargets(x));
-	% store:
+  % store:
     W.kernel = kernel;
     y = prmapping(mfilename,'trained',W,1,d,1);
-	y = setname(y,'Gaussian Proc. regression');
-else
-	% evaluation
-	W = getdata(kernel);
+    y = setname(y,'Gaussian Proc. regression');
+    
+  else                                      % Evaluation
+    
+    [x,v] = deal(argin{1:2});
+    W = getdata(v);
     out = [+x ones(size(x,1),1)]*W.K*W.w;
     y = setdat(x,out);
 	
-end
+  end

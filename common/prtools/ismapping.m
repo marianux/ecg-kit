@@ -11,7 +11,7 @@
 % DESCRIPTION
 % True (1) if W is a mapping object and false (0), otherwise.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % ISDATASET, ISFEATIM, ISDATAIM
 
 % $Id: ismapping.m,v 1.2 2006/03/08 22:06:58 duin Exp $

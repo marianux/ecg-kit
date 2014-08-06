@@ -14,5 +14,5 @@
 % ISEMPTY(A) to test on an empty dataset, and
 % ISEMPTY(A,'prior') to test on an undefined PRIOR field
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % PRDATASET, SETPRIOR, GETPRIOR

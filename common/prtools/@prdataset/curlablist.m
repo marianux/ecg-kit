@@ -15,5 +15,5 @@
 % The number and name of the current label list are returned.
 % If T1<T0: no tergets (or soft labels) set for current label list.
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % DATASETS, MULTI_LABELING, ADDLABLIST, CHANGELABLIST

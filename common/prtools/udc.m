@@ -19,7 +19,7 @@
 % EXAMPLES
 % PREX_DENSITY
 %
-% SEE ALSO
+% SEE ALSO (<a href="http://37steps.com/prtools">PRTools Guide</a>)
 % MAPPINGS, DATASETS, NMC, NMSC, LDC, QDC, QUADRC, NORMAL_MAP
 
 % Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl
