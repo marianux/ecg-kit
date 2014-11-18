@@ -54,8 +54,9 @@ function text_arrow_handles = text_arrow( x, y, text_str, text_arrow_prop_vals, 
 
     aux_hdl = plot( x, y );
 
-    bStr = strcmpi('String', text_arrow_prop_vals(:,1));
-    set( aux_hdl, text_arrow_prop_vals(~bStr,1)', text_arrow_prop_vals(~bStr,2)' );
+    
+    [~, aux_idx] = setdiff(text_arrow_prop_vals(:,1), {'String' 'TextColor'});
+    set( aux_hdl, text_arrow_prop_vals(aux_idx,1)', text_arrow_prop_vals(aux_idx,2)' );
     this_colour = get(aux_hdl, 'Color');
     set( aux_hdl, 'MarkerEdgeColor', 1-this_colour );
     

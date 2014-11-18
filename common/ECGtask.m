@@ -1,17 +1,24 @@
-classdef ECGtask < handle
-
-% ECGtask for ECGwrapper (for Matlab)
-% ---------------------------------
+%% Defines the class interface for the ECGtask derived classes
 % 
 % Description:
-% 
 % Abstract class for defining ECGtask interface
 % 
+% Arguments: % 
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Output:
+% 
+% Examples:
+% 
+% 
+% See also ECGtask_QRS_detection, ECGtask_ECG_delineation
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
 % Version: 0.1 beta
-% Birthdate  : 18/2/2013
-% Last update: 18/2/2013
+% Last update: 14/5/2014
+% Birthdate  : 20/3/2012
+% Copyright 2008-2014
+% 
+classdef ECGtask < handle
        
     properties(Abstract = true, GetAccess = public, Constant)
         name

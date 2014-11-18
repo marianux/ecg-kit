@@ -161,9 +161,9 @@ if rmsecv
                 if k == 0
                     rewE2=sigmayykmaxrew_k-coeffk(1:j,1:q)'*sigmattkmaxrew_k*coeffk(1:j,1:q);
                     cen=zeros(q,1);
-                    resd(i,j)=sqrt(mahalanobis(residk_min_i(i,(j - 1)*q + 1:j*q),cen','cov',rewE2))'; %robust distances of residuals
+                    resd(i,j)=sqrt(libra_mahalanobis(residk_min_i(i,(j - 1)*q + 1:j*q),cen','cov',rewE2))'; %robust distances of residuals
                 else
-                    resd(i,j) = sqrt(mahalanobis(residk_min_i(i,(j - 1)*q + 1:j*q),zeros(q,1),'cov',resMcdregres.cov));
+                    resd(i,j) = sqrt(libra_mahalanobis(residk_min_i(i,(j - 1)*q + 1:j*q),zeros(q,1),'cov',resMcdregres.cov));
                 end
             else
                 if k == 0
@@ -476,7 +476,7 @@ if k == 0
         cen=zeros(q,1)';
         cov=sigmayykmaxrew_k - coeffk(1:j,1:q)'*sigmattkmaxrew_k*coeffk(1:j,1:q);
         [nn,pp]=size(residu(:,(j-1)*q+1:j*q));
-        resd = sqrt(mahalanobis(residu(:,(j-1)*q+1:j*q),cen,'cov',cov))';
+        resd = sqrt(libra_mahalanobis(residu(:,(j-1)*q+1:j*q),cen,'cov',cov))';
         weightsk(:,j) = (abs(resd)<=cutoffWeights);
     end
 else

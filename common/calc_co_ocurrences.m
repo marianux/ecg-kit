@@ -36,6 +36,9 @@ co_ocurrence = cell(1,cant_leads);
 % end
 
 aux_min = min(cell2mat(cellfun(@(a)(min(a)),hb_idx_matrix, 'UniformOutput', false)));
+if( isempty(aux_min) )
+    return;
+end
 aux_size = max(cell2mat(cellfun(@(a)(max(a)),hb_idx_matrix, 'UniformOutput', false))) - aux_min + 1;
 aux_mat = zeros( aux_size, cant_leads);
 aux_idx = cell2mat(cellfun(@(a,b)(colvec( (round(a) - aux_min + 1) + (b * aux_size)  ) ), colvec(hb_idx_matrix), num2cell((0:cant_leads-1)'), 'UniformOutput', false));

@@ -67,7 +67,9 @@ classdef ECGtask_PCA_proj_basis < ECGtask
             % calculation
             cant_QRS_sample = round(obj.time_sample / obj.time_heartbeat_window);
 
-            obj.QRS_sample_idx = sort(randsample(length(ECG_annotations.time), cant_QRS_sample));
+            cant_QRS = length(ECG_annotations.time);
+            
+            obj.QRS_sample_idx = sort(randsample(cant_QRS, min(cant_QRS,cant_QRS_sample)));
             
             obj.halfwin_samples = round( obj.time_heartbeat_window/2*ECG_header.freq);
             

@@ -1,6 +1,21 @@
-function ECG_hdl = plot_ecg_heartbeat(ECG, lead_idx, QRS_locations, ECG_start_idx, QRS_start_idx, cant_qrs, heasig, filtro, axes_hdl )
+%% (Internal) obsolete, use plot_ecg_strip
+% This function is used by the ECGtask related with QRS detection.
+%   
+% Example
+% 
+% Arguments:
+% 
+% Output:
+% 
+% See also plot_ecg_strip
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Last update: 14/5/2014
+% Birthdate  : 23/4/2013
+% Copyright 2008-2014
 
-% obsolete, use plot_ecg_strip.m
+function ECG_hdl = plot_ecg_heartbeat(ECG, lead_idx, QRS_locations, ECG_start_idx, QRS_start_idx, cant_qrs, heasig, filtro, axes_hdl )
 
 if( nargin < 7 )
     filtro = [];
@@ -23,9 +38,8 @@ lECG = size(ECG,1);
 cant_sig = length(lead_idx);
 
 if( isempty(QRS_locations) )
-    QRS_start_idx = 1;
-    cant_qrs = 3;
-    QRS_locations = linspace(1, heasig.nsamp, 10);
+    QRS_start_idx = [];
+    cant_qrs = [];
 end
 
 if( iscell(QRS_locations) )

@@ -106,7 +106,7 @@ if rmsecv
         Trob_min_i = (data_min_i - repmat(murob_min_i,n-1,1))*Prob_min_i;
         
         % Computing weights corresponding with the ROBPCA results. 
-        sdrob_min_i = sqrt(mahalanobis(Trob_min_i,zeros(1,size(Trob_min_i,2)),'invcov',1./Lrob_min_i))';
+        sdrob_min_i = sqrt(libra_mahalanobis(Trob_min_i,zeros(1,size(Trob_min_i,2)),'invcov',1./Lrob_min_i))';
         
         if k == 0
             cutoff.sd=sqrt(chi2inv(0.975,kmax));
@@ -213,7 +213,7 @@ if rmsecv
                 if q > 1
                     cov = rewE2;
                     cen=zeros(q,1);
-                    resd(i,j)=sqrt(mahalanobis(resid_min_i(i,(j-1)*q + 1:j*q),cen','cov',cov))'; %robust distances of residuals
+                    resd(i,j)=sqrt(libra_mahalanobis(resid_min_i(i,(j-1)*q + 1:j*q),cen','cov',cov))'; %robust distances of residuals
                 else
                     scale = sqrt(rewE2);
                     resd(i,j) = resid_min_i(i,(j-1)*q + 1:j*q)/scale;
@@ -277,7 +277,7 @@ resid_min_i = y(i,:) - Yhat_min_i;
 if q > 1
     cov = robpcareg.cov;
     cen=zeros(q,1);
-    resd=sqrt(mahalanobis(resid_min_i,cen','cov',cov))'; %robust distances of residuals
+    resd=sqrt(libra_mahalanobis(resid_min_i,cen','cov',cov))'; %robust distances of residuals
 else
     scale = sqrt(robpcareg.cov);
     resd = resid_min_i/scale;
@@ -401,7 +401,7 @@ if k == 0
         if q > 1
             cov = rewE2;
             cen=zeros(q,1);
-            resd = sqrt(mahalanobis(resid(:,(j-1)*q+1:j*q),cen','cov',cov))'; %robust distances of residuals
+            resd = sqrt(libra_mahalanobis(resid(:,(j-1)*q+1:j*q),cen','cov',cov))'; %robust distances of residuals
             weightsk(:,j) = (abs(resd)<=cutoffWeights);
         else
             scale = sqrt(rewE2);
@@ -416,7 +416,7 @@ else
     if q==1
         resd=outRobRegr.resids/sqrt(outRobRegr.cov); 
     else
-        resd=sqrt(mahalanobis(outRobRegr.resids,zeros(1,q),'cov',outRobRegr.cov))';
+        resd=sqrt(libra_mahalanobis(outRobRegr.resids,zeros(1,q),'cov',outRobRegr.cov))';
     end
     
     weightsk = (abs(resd)<=cutoffWeights);

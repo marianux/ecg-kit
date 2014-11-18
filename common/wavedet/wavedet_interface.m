@@ -38,10 +38,17 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
     rhythm_parameters = [];
     multilead_positions = [];
     single_lead_positions = [];
+    lead_processed_ok_idx = [];
     
     marks = cell(1,ECG_header.nsig);
 %        corresponding respectively to P onset, P peak, P end, QRS onset, QRS
 %        main peak, QRS end, T onset, T peak, T prima, T end
+
+    % empty output struct
+    for fn = cAnnotationOutputFields
+        single_lead_positions.(fn{1}) = [];
+    end
+    single_lead_positions = repmat(single_lead_positions, ECG_header.nsig, 1);
 
     lead_processed_ok = 0;
     
@@ -96,22 +103,16 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
             end
         end
         
-        if( lead_processed_ok == 0 )
-            single_lead_positions = aux_struct2;
-            lead_processed_ok_idx = ii;
-        else
-            single_lead_positions(lead_processed_ok+1) = aux_struct2;
-            lead_processed_ok_idx = [lead_processed_ok_idx; ii];
-        end
-        
-        marks{lead_processed_ok+1} = aux_marks;
-        
         lead_processed_ok = lead_processed_ok + 1;
+    
+        single_lead_positions(lead_processed_ok) = aux_struct2;
+        marks{lead_processed_ok} = aux_marks;
+        lead_processed_ok_idx = [lead_processed_ok_idx; ii];
         
     end
 
     if( lead_processed_ok == 0 )
-        warning('wavedet_cardiolund:DelineationImpossible', [ 'Delineation not possible.\n'])
+        warning('wavedet_cardiolund:DelineationImpossible', 'Delineation not possible.\n')
         return
     end
         
@@ -152,24 +153,13 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
         
         % in case user want multilead, and not possible.
         if( length(lead_to_delineate) >= 3 )
-            fprintf(2, [ 'Delineation not possible in several leads. Using the delineation of lead ' lead_names(lead_processed_ok_idx(1),:) '. Consider reviewing the delineation.\n'])
+            fprintf(2, [ 'Delineation not possible in several leads. Using the delineation of lead ' strtrim(lead_names(lead_processed_ok_idx(1),:)) '. Consider reviewing the delineation.\n'])
         else
-            fprintf(1, [ 'No multilead strategy used, instead using the delineation of lead ' lead_names(lead_processed_ok_idx(1),:) '.\n'])
+            fprintf(1, [ 'No multilead strategy used, instead using the delineation of lead ' strtrim(lead_names(lead_processed_ok_idx(1),:)) '.\n'])
         end
-
-        aux_marks = marks{1};
-
-        multilead_positions.Pon = round(aux_marks(:,1));
-        multilead_positions.P = round(aux_marks(:,2));
-        multilead_positions.Poff = round(aux_marks(:,3));
-        multilead_positions.QRSon = round(aux_marks(:,4));
-        multilead_positions.qrs = round(aux_marks(:,5));
-        multilead_positions.QRSoff = round(aux_marks(:,6));
-        multilead_positions.Ton = round(aux_marks(:,7));
-        multilead_positions.T = round(aux_marks(:,8));
-        multilead_positions.Tprima = round(aux_marks(:,9));
-        multilead_positions.Toff = round(aux_marks(:,10));        
             
+        multilead_positions = single_lead_positions(lead_processed_ok_idx(1));
+        
     end
     
     if( nargout > 2 )

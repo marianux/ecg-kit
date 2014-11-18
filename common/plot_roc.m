@@ -16,7 +16,7 @@ if( nargin < 5 || isempty(fig_hdl) )
     fig_hdl = figure();
 else
     fig_hdl = figure(fig_hdl);
-    clf(fig_hdl );
+%     clf(fig_hdl );
 end
 
 if( isstruct(roc_array) )
@@ -26,14 +26,14 @@ elseif(~iscell(roc_array))
 end
 
 rocs2plot = length(roc_array);
-colors = my_colormap(rocs2plot);
+colors = my_colormap(max(10,rocs2plot));
 Xvalues = [ ];
 Yvalues = [ ];
 
 for ii = 1:rocs2plot
     this_roc = roc_array{ii};
-    Xvalues = [ Xvalues colvec(this_roc.error) ];
-    Yvalues = [ Yvalues 1-colvec(this_roc.xvalues) ];
+    Xvalues = [ Xvalues 1-colvec(this_roc.specificity) ];
+    Yvalues = [ Yvalues colvec(this_roc.sensitivity) ];
 end
 
 axes_hdl = gca;

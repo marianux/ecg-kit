@@ -248,7 +248,7 @@ end
 if (-log(det(mcd_res.cov))/m) > 50
    mcdreg.rd='singularity';
 else
-   mcdreg.rd=sqrt(mahalanobis(mcdreg.x,rewcenmcd(1:p),'cov',rewcovmcd(1:p,1:p)))';
+   mcdreg.rd=sqrt(libra_mahalanobis(mcdreg.x,rewcenmcd(1:p),'cov',rewcovmcd(1:p,1:p)))';
 end
 
 % Robust residual distances (resd) needed in diagnostic regression plot 
@@ -259,7 +259,7 @@ if q>1
    else
       cen=zeros(q,1)';
       [nn,pp]=size(rewresidrew);
-      mcdreg.resd=sqrt(mahalanobis(rewresidrew,cen,'cov',mcdreg.cov))'; %robust distances of residuals
+      mcdreg.resd=sqrt(libra_mahalanobis(rewresidrew,cen,'cov',mcdreg.cov))'; %robust distances of residuals
   end
 else
     mcdreg.covarRes=sqrt(mcdreg.cov);

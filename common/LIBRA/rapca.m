@@ -192,7 +192,7 @@ out.h=options.h;
 
 % Computing distances 
 % Robust score distances in robust PCA subspace
-out.sd=sqrt(mahalanobis(out.T,zeros(size(out.T,2),1),'cov',out.L))';
+out.sd=sqrt(libra_mahalanobis(out.T,zeros(size(out.T,2),1),'cov',out.L))';
 out.cutoff.sd=sqrt(chi2inv(0.975,out.k));
 % Orthogonal distances to robust PCA subspace
 XRc=data-repmat(out.M,n,1);
@@ -217,7 +217,7 @@ if options.classic==1
     out.classic.k=out.k;
     % Mahalanobis distance in classical PCA subspace
     Tclas=centerX*loads(:,1:out.k);
-    out.classic.sd=sqrt(mahalanobis(Tclas,zeros(size(Tclas,2),1),'cov',out.classic.L))';
+    out.classic.sd=sqrt(libra_mahalanobis(Tclas,zeros(size(Tclas,2),1),'cov',out.classic.L))';
     out.classic.cutoff.sd=sqrt(chi2inv(0.975,out.k));
     % Orthogonal distances to classical PCA subspace
     Xtilde=Tclas*loads(:,1:out.k)';

@@ -45,7 +45,7 @@ function artificial_annotations = combine_anns(time_serie, estimated_labs, heade
         % avoid annotations very close each other.
         aux_time_serie = aux_val{ii};
         aux_time_serie(find( diff(sort(aux_time_serie)) <= round(0.15 * header.freq) ) +1) = [];
-        artificial_annotations(ii).time = aux_time_serie;
+        artificial_annotations(ii).time = colvec(aux_time_serie);
     end
     
 function start_end_aux = findStartEnd( bAux )

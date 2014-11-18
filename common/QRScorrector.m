@@ -121,6 +121,7 @@ function ann_output = QRScorrector(varargin)
     ECG_axes_hdl = [];
     RRserie_selection_hdl = [];
     RRscatter_selection_hdl = [];
+    copy_paste_buffer = [];
     
     % Dont know why this variable uses a lot of bytes to store at disk.
     clear p
@@ -148,7 +149,7 @@ function ann_output = QRScorrector(varargin)
             disp_string_framed('*[1,0.5,0]', 'No annotations provided' );
         else
             if( isstruct(ECG_annotations) )
-                if( isfield(ECG_annotations, cAnnotationsFieldNamesRequired ) )
+                if( any(isfield(ECG_annotations, cAnnotationsFieldNamesRequired )) )
                     % only one ann struct provided
                     ECG_struct.provided_anns = ECG_annotations;
                 else
@@ -315,6 +316,7 @@ function ann_output = QRScorrector(varargin)
     
     all_annotations_selected = [];
     all_annotations_selected_serie_location = [];
+    serie_location_mask = [];
     
     bFirstLoad = [];
     bSeriesChange = true;
@@ -650,30 +652,42 @@ function ann_output = QRScorrector(varargin)
     function Redraw()
 
         % update only the one that can be edited
-        all_annotations_selected(1) = {anns_under_edition};
-        
+
         if( bSeries )
-            aux_val = ECG_struct.(AnnNames{AnnNames_idx,1}).(AnnNames{AnnNames_idx,2});
-            aux_RR = aux_val(:,2);
+            aux_val = all_annotations_selected_serie_location{1};
+            % update the series values
+            aux_RR = (aux_val - anns_under_edition) / ECG_struct.header.freq;
+
+            all_annotations_selected(1) = {anns_under_edition};
             
             this_all_anns = all_annotations_selected_serie_location;
+            aux_val = this_all_anns{1};
+            aux_val(serie_location_mask) = nan;
+            this_all_anns{1} = aux_val;
+            
+            RR_idx(1) = { find( isnan(anns_under_edition) | anns_under_edition >= start_idx &  anns_under_edition <= end_idx ) } ;
+            
         else
+            
             if( length(anns_under_edition) < 2 )
                 aux_RR = [];
                 this_all_anns = [];
             else
                 aux_RR = colvec(diff(anns_under_edition));
                 aux_RR = [aux_RR(1); aux_RR] * 1/ECG_struct.header.freq;          
-
+                
+                all_annotations_selected(1) = {anns_under_edition};
                 this_all_anns = all_annotations_selected;
             end
+            
+            RR_idx(1) = { find( anns_under_edition >= start_idx &  anns_under_edition <= end_idx ) } ;
+            
         end
-        RRserie(1) = {aux_RR};
         
-        RR_idx(1) = { find( anns_under_edition >= start_idx &  anns_under_edition <= end_idx ) } ;
+        RRserie(1) = {aux_RR};
         anns_under_edition_idx = RR_idx{1};
         
-        if( isempty(aux_RR) )
+        if( isempty(aux_RR) || all(isnan(aux_RR)) )
             limits = [0.6 0.7];
         else        
             limits = prctile(aux_RR(anns_under_edition_idx), [1 99]);
@@ -787,15 +801,18 @@ function ann_output = QRScorrector(varargin)
             this_ylims = y_lims_RRserie;
         else
             if( isempty(aux_RR) )
-                this_xlims = [0 1];
+                x_max = 1;
+                x_min = 0;
                 this_ylims = [0.3 2];
             else
                 ylim(RRserie_axes_hdl, limits);
                 this_ylims = limits;
-                x_range = anns_under_edition(anns_under_edition_idx(end)) - anns_under_edition(anns_under_edition_idx(1));
-                xlim(RRserie_axes_hdl, [ anns_under_edition(anns_under_edition_idx(1)) - 0.05 * x_range anns_under_edition(anns_under_edition_idx(end)) + 0.05 * x_range ]);
-                this_xlims = [ anns_under_edition(anns_under_edition_idx(1)) anns_under_edition(anns_under_edition_idx(end)) ];
+                x_max = max(anns_under_edition(anns_under_edition_idx));
+                x_min = min(anns_under_edition(anns_under_edition_idx));
+                x_range = x_max - x_min;
+                xlim(RRserie_axes_hdl, [ x_min - 0.05 * x_range x_max + 0.05 * x_range ]);
             end
+            this_xlims = [ x_min x_max ];
         end
         
         % red box around
@@ -809,7 +826,7 @@ function ann_output = QRScorrector(varargin)
         
         if( length(aux_RR) > 5 )
             cant_ticks = 5;
-            aux_idx = round(linspace(anns_under_edition(anns_under_edition_idx(1)), anns_under_edition(anns_under_edition_idx(end)), cant_ticks));
+            aux_idx = round(linspace(x_min, x_max, cant_ticks));
             set(RRserie_axes_hdl, 'XTick', rowvec(aux_idx) );
             aux_str = cellstr(Seconds2HMS((aux_idx+base_start_time-1)*1/ECG_struct.header.freq));    
             set(RRserie_axes_hdl, 'XTickLabel', char(aux_str) );
@@ -1090,6 +1107,9 @@ function ann_output = QRScorrector(varargin)
 
                 if( bSeries )
                     this_all_anns = all_annotations_selected_serie_location;
+                    aux_val = this_all_anns{1};
+                    aux_val(serie_location_mask) = nan;
+                    this_all_anns{1} = aux_val;
                 else
                     this_all_anns = all_annotations_selected;
                 end
@@ -1223,7 +1243,11 @@ function ann_output = QRScorrector(varargin)
 
             PushUndoAction();
 
-            anns_under_edition(hb_idx) = [];
+            if( bSeries )
+                anns_under_edition(hb_idx) = nan;
+            else
+                anns_under_edition(hb_idx) = [];
+            end
 
             selected_hb_idx = [];
 
@@ -1267,14 +1291,17 @@ function ann_output = QRScorrector(varargin)
                 cant_hb_idx = max(selected_hb_idx) - min_hb_idx + 1;
 
                 if( (anns_under_edition(anns_under_edition_idx(max_hb_idx)) - anns_under_edition(anns_under_edition_idx(min_hb_idx))) <= (10*ECG_struct.header.freq) )
-                    
+
                     if( bSeries )
                         this_all_anns = all_annotations_selected_serie_location;
+                        aux_val = this_all_anns{1};
+                        aux_val(serie_location_mask) = nan;
+                        this_all_anns{1} = aux_val;
                     else
                         this_all_anns = all_annotations_selected;
                     end
-                    
-                    ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(min_hb_idx) , cant_hb_idx, ECG_struct.header, filtro, ECG_axes_hdl);    
+
+                    ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);
                     set(ECG_hdl,'ButtonDownFcn',@inspect_ECG);            
                 end
                 
@@ -1318,11 +1345,14 @@ function ann_output = QRScorrector(varargin)
 
                 if( bSeries )
                     this_all_anns = all_annotations_selected_serie_location;
+                    aux_val = this_all_anns{1};
+                    aux_val(serie_location_mask) = nan;
+                    this_all_anns{1} = aux_val;
                 else
                     this_all_anns = all_annotations_selected;
                 end
                 
-                ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window , ECG_struct.header, filtro, ECG_axes_hdl);    
+                ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);
 
                 if( length(lead_idx) > 1 )
                     aux_str = rowvec(colvec([repmat(',', length(lead_idx), 1) ECG_struct.header.desc(lead_idx,:) ]'));
@@ -1362,8 +1392,12 @@ function ann_output = QRScorrector(varargin)
 
             PushUndoAction();
 
-            anns_under_edition(anns_under_edition_idx(hb_idx)) = [];
-
+            if( bSeries )
+                serie_location_mask(anns_under_edition_idx(hb_idx)) = true;
+            else
+                anns_under_edition(anns_under_edition_idx(hb_idx)) = [];
+            end
+            
             selected_hb_idx( selected_hb_idx > length(anns_under_edition_idx) | selected_hb_idx == hb_idx ) = [];
 
             if( isempty(anns_under_edition) )
@@ -1388,13 +1422,26 @@ function ann_output = QRScorrector(varargin)
             
             PushUndoAction();
 
-            aux_val = round(point(1));
+            if( bSeries )
+                % only modify the location, not adding allowed.
+                aux_val = all_annotations_selected_serie_location{1};
+                
+                [~, hb_idx] = min(abs( point(1) - aux_val(anns_under_edition_idx)));
 
-            anns_under_edition = sort([anns_under_edition; aux_val ]);
+                % refine the point, and enable it.
+                aux_val(anns_under_edition_idx(hb_idx)) = round(point(1));
+                serie_location_mask(anns_under_edition_idx(hb_idx)) = false;
 
-            selected_hb_idx = find(aux_val == anns_under_edition(anns_under_edition_idx), 1);
-            hb_idx = selected_hb_idx;
-
+                all_annotations_selected_serie_location{1} = aux_val;
+                
+            else
+                % add a regular event when the anns are not series.
+                aux_val = round(point(1));
+                anns_under_edition = sort([anns_under_edition; aux_val ]);
+                selected_hb_idx = find(aux_val == anns_under_edition(anns_under_edition_idx), 1);
+                hb_idx = selected_hb_idx;
+            end
+            
             Redraw();
 
             bAnnsEdited = true;
@@ -1419,7 +1466,7 @@ function ann_output = QRScorrector(varargin)
 
             plot_ecg_strip(ECG_struct.signal, ...
                             'ECG_header', ECG_struct.header, ...
-                            'QRS_annotations', anns_under_edition, ...
+                            'QRS_locations', anns_under_edition, ...
                             'Start_time', aux_val/ECG_struct.header.freq - 1 , ...
                             'End_time', aux_val/ECG_struct.header.freq + 1 );
 
@@ -1461,7 +1508,13 @@ function ann_output = QRScorrector(varargin)
                 else
                     hb_idx = find(anns_under_edition < anns_under_edition(hb_idx), 1, 'first'  );
                 end
-                anns_under_edition(anns_under_edition_idx(selected_hb_idx)) = [];
+                
+                if( bSeries )
+                    anns_under_edition(anns_under_edition_idx(selected_hb_idx)) = nan;
+                else
+                    anns_under_edition(anns_under_edition_idx(selected_hb_idx)) = [];
+                end
+                
                 selected_hb_idx = [];
                 Redraw();
             end
@@ -1571,7 +1624,7 @@ function ann_output = QRScorrector(varargin)
 
         elseif ( ~isempty(event_obj.Modifier) && strcmp(event_obj.Key,'g') && strcmp(event_obj.Modifier,'control'))
 
-            if(bAnnsEdited)
+            if(bRecEdited)
             
                 update_annotations();
                 
@@ -1611,12 +1664,15 @@ function ann_output = QRScorrector(varargin)
 
             if( bSeries )
                 this_all_anns = all_annotations_selected_serie_location;
+                aux_val = this_all_anns{1};
+                aux_val(serie_location_mask) = nan;
+                this_all_anns{1} = aux_val;
             else
                 this_all_anns = all_annotations_selected;
             end
-            
-            ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window , ECG_struct.header, filtro, ECG_axes_hdl);    
 
+            ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);
+            
             if( length(lead_idx) > 1 )
                 aux_str = rowvec(colvec([repmat(',', length(lead_idx), 1) ECG_struct.header.desc(lead_idx,:) ]'));
                 title(ECG_axes_hdl, ['Heartbeat ' num2str(hb_idx) ' : Leads ' aux_str(2:end) ] )
@@ -1802,11 +1858,14 @@ function ann_output = QRScorrector(varargin)
                     
                     if( bSeries )
                         this_all_anns = all_annotations_selected_serie_location;
+                        aux_val = this_all_anns{1};
+                        aux_val(serie_location_mask) = nan;
+                        this_all_anns{1} = aux_val;
                     else
                         this_all_anns = all_annotations_selected;
                     end
-                    
-                    ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(min_hb_idx) , cant_hb_idx, ECG_struct.header, filtro, ECG_axes_hdl);    
+
+                    ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);
                     set(ECG_hdl,'ButtonDownFcn',@inspect_ECG);            
                 end
 
@@ -1868,11 +1927,18 @@ function ann_output = QRScorrector(varargin)
 
             if( bSeries )
                 this_all_anns = all_annotations_selected_serie_location;
+                aux_val = this_all_anns{1};
+                aux_val(serie_location_mask) = nan;
+                this_all_anns{1} = aux_val;
             else
                 this_all_anns = all_annotations_selected;
             end
             
-            ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx), hb_detail_window , ECG_struct.header, filtro, ECG_axes_hdl);    
+            if( isempty(anns_under_edition_idx) )
+                ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, [] , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);    
+            else
+                ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);    
+            end
 
             if( length(lead_idx) > 1 )
                 aux_str = rowvec(colvec([repmat(',', length(lead_idx), 1) ECG_struct.header.desc(lead_idx,:) ]'));
@@ -2068,79 +2134,89 @@ function ann_output = QRScorrector(varargin)
             
             aux_RR = RRserie{1};
             aux_idx = find( anns_under_edition(anns_under_edition_idx) >= (anns_under_edition(anns_under_edition_idx(hb_idx)) - round(win_size_zoom/2*ECG_struct.header.freq)) & anns_under_edition(anns_under_edition_idx) <= (anns_under_edition(anns_under_edition_idx(hb_idx)) + round(win_size_zoom/2*ECG_struct.header.freq)) );
-            if(length(aux_idx) == 1 )
-                aux_idx = max(1, hb_idx - 1 ):min( length(anns_under_edition_idx), hb_idx + 1 );
+            if(length(aux_idx) < 3 )
+                min_idx = find(~isnan(anns_under_edition(anns_under_edition_idx)),1);
+                max_idx = find(~isnan(anns_under_edition(anns_under_edition_idx)),1, 'last');
+                aux_idx = max(min_idx, hb_idx - 1 );
+                aux_idx = aux_idx:min( max_idx, max(hb_idx, aux_idx) + 1 );
+            else
+                hb_detail_window = round( length(aux_idx) / 2 );
             end
-            hb_detail_window = round( length(aux_idx) / 2 );
-
+            
             aux_idx2 = cellfun( @(this_anns)( find( this_anns >= anns_under_edition(anns_under_edition_idx(aux_idx(1))) &  this_anns <= anns_under_edition(anns_under_edition_idx(aux_idx(end))) ) ), all_annotations_selected, 'UniformOutput', false);
 
-    %         RRserie2 = cellfun( @(this_anns)( colvec(diff(this_anns)) ), all_annotations_selected, 'UniformOutput', false);
-    %         RRserie2 = cellfun( @(this_rr_serie)( [this_rr_serie(1); this_rr_serie] ), RRserie, 'UniformOutput', false);
-
+            aux_idx3 = find(~all(cellfun( @(a)(isempty(a)), aux_idx2)));
+            
             cla(RRserie_zoom_axes_hdl, 'reset');
-            hold(RRserie_zoom_axes_hdl, 'on')
-            RRserie_zoom_hdl = cellfun( @(this_anns, this_rr_serie, this_idx, ii)( plot(RRserie_zoom_axes_hdl, this_anns(this_idx) , this_rr_serie(this_idx), 'LineStyle', ':', 'Marker', all_markers{ii}, 'MarkerEdgeColor', ColorOrder(ii,:), 'Color', ColorOrder(ii,:) )  ), all_annotations_selected, RRserie, aux_idx2, num2cell((1:length(aux_idx2))') );
+                
+            if( ~isempty(aux_idx3) )
+            
+        %         RRserie2 = cellfun( @(this_anns)( colvec(diff(this_anns)) ), all_annotations_selected, 'UniformOutput', false);
+        %         RRserie2 = cellfun( @(this_rr_serie)( [this_rr_serie(1); this_rr_serie] ), RRserie, 'UniformOutput', false);
 
-            this_ylims = get(RRserie_axes_hdl, 'Ylim' );
-            this_xlims_orig = get(RRserie_zoom_axes_hdl, 'Xlim' );
+                hold(RRserie_zoom_axes_hdl, 'on')
+                RRserie_zoom_hdl = cellfun( @(this_anns, this_rr_serie, this_idx, ii)( plot(RRserie_zoom_axes_hdl, this_anns(this_idx) , this_rr_serie(this_idx), 'LineStyle', ':', 'Marker', all_markers{ii}, 'MarkerEdgeColor', ColorOrder(ii,:), 'Color', ColorOrder(ii,:) )  ), all_annotations_selected(aux_idx3), RRserie(aux_idx3), aux_idx2(aux_idx3), num2cell(colvec(aux_idx3)) );
 
-            set(RRserie_zoom_axes_hdl, 'Ylim', this_ylims );
+                this_ylims = get(RRserie_axes_hdl, 'Ylim' );
+                this_xlims_orig = get(RRserie_zoom_axes_hdl, 'Xlim' );
 
-            % blue box around
-            this_xlims = this_xlims_orig + 0.01*[ diff(this_xlims_orig) -diff(this_xlims_orig) ];
-            this_ylims = this_ylims + 0.015*[ diff(this_ylims) -diff(this_ylims) ];
+                set(RRserie_zoom_axes_hdl, 'Ylim', this_ylims );
 
-            set(fig_hdl,'CurrentAxes', RRserie_zoom_axes_hdl);
-            aux_hdl = patch([this_xlims(1) this_xlims(1) this_xlims(2) this_xlims(2) this_xlims(1) ], [this_ylims(1) this_ylims(2) this_ylims(2) this_ylims(1) this_ylims(1)], [1 1 1], 'EdgeColor', [0 0 1], 'LineWidth', 1.5, 'ButtonDownFcn', @inspect_RRserie );
-            set(aux_hdl, 'FaceColor', 'none')
-            uistack(aux_hdl, 'bottom');
+                % blue box around
+                this_xlims = this_xlims_orig + 0.01*[ diff(this_xlims_orig) -diff(this_xlims_orig) ];
+                this_ylims = this_ylims + 0.015*[ diff(this_ylims) -diff(this_ylims) ];
 
-            if( isempty(RRserie_zoom_zoombars_hdl) || ~ishandle(RRserie_zoom_zoombars_hdl) )
-                set(fig_hdl, 'CurrentAxes', RRserie_axes_hdl);
-                RRserie_zoom_zoombars_hdl = patch([this_xlims(1) this_xlims(1) this_xlims(2) this_xlims(2) this_xlims(1) ], [this_ylims(1) this_ylims(2) this_ylims(2) this_ylims(1) this_ylims(1)], [190 238 238]/255, 'EdgeColor', [0 0 1], 'LineWidth', 0.5, 'ButtonDownFcn', @inspect_RRserie);
-                uistack(RRserie_zoom_zoombars_hdl, 'bottom');
-            else
-                set(RRserie_zoom_zoombars_hdl, 'Xdata', [this_xlims(1) this_xlims(1) this_xlims(2) this_xlims(2) this_xlims(1) ]);
-            end
+                set(fig_hdl,'CurrentAxes', RRserie_zoom_axes_hdl);
+                aux_hdl = patch([this_xlims(1) this_xlims(1) this_xlims(2) this_xlims(2) this_xlims(1) ], [this_ylims(1) this_ylims(2) this_ylims(2) this_ylims(1) this_ylims(1)], [1 1 1], 'EdgeColor', [0 0 1], 'LineWidth', 1.5, 'ButtonDownFcn', @inspect_RRserie );
+                set(aux_hdl, 'FaceColor', 'none')
+                uistack(aux_hdl, 'bottom');
 
-            if( ~isempty(aux_RR) )
-                [~, aux_idx2] = intersect(selected_hb_idx, aux_idx);
-                RRserie_zoom_hdl = [RRserie_zoom_hdl; colvec(plot(RRserie_zoom_axes_hdl, anns_under_edition(anns_under_edition_idx(selected_hb_idx(aux_idx2))), aux_RR(anns_under_edition_idx(selected_hb_idx(aux_idx2))), 'og' ))];
-            end
-
-            if( ~isempty(aux_RR) && hb_idx < length(aux_RR) )
-                RRserie_zoom_hdl = [RRserie_zoom_hdl; colvec(plot(RRserie_zoom_axes_hdl, anns_under_edition(anns_under_edition_idx(hb_idx)), aux_RR(anns_under_edition_idx(hb_idx)), 'or' ))];
-            end
-
-            set(RRserie_zoom_axes_hdl, 'Xlim', this_xlims_orig );
-
-            hold(RRserie_zoom_axes_hdl, 'off');
-
-            xlabel(RRserie_zoom_axes_hdl, 'Time');
-            ylabel(RRserie_zoom_axes_hdl, 'Serie value');
-
-            set(RRserie_zoom_axes_hdl,'ButtonDownFcn',@inspect_RRserie);  
-            set(RRserie_zoom_hdl, 'ButtonDownFcn', @inspect_RRserie);  
-
-            aux_hb_idx = find(hb_idx == aux_idx);
-
-            if( length(aux_idx) > 5 )
-                cant_ticks = 5;
-                if( isempty(aux_hb_idx) )
-                    aux_idx = round(linspace(aux_idx(1), aux_idx(end), cant_ticks));
+                if( isempty(RRserie_zoom_zoombars_hdl) || ~ishandle(RRserie_zoom_zoombars_hdl) )
+                    set(fig_hdl, 'CurrentAxes', RRserie_axes_hdl);
+                    RRserie_zoom_zoombars_hdl = patch([this_xlims(1) this_xlims(1) this_xlims(2) this_xlims(2) this_xlims(1) ], [this_ylims(1) this_ylims(2) this_ylims(2) this_ylims(1) this_ylims(1)], [190 238 238]/255, 'EdgeColor', [0 0 1], 'LineWidth', 0.5, 'ButtonDownFcn', @inspect_RRserie);
+                    uistack(RRserie_zoom_zoombars_hdl, 'bottom');
                 else
-                    cant_ticks = cant_ticks - 1;
-                    aux_idx = sort(unique([ round(linspace(aux_idx(1), aux_idx(end), cant_ticks)) aux_idx(aux_hb_idx) ]));
-                    aux_hb_idx = find(hb_idx == aux_idx);
+                    set(RRserie_zoom_zoombars_hdl, 'Xdata', [this_xlims(1) this_xlims(1) this_xlims(2) this_xlims(2) this_xlims(1) ]);
                 end
-            end
 
-            set(RRserie_zoom_axes_hdl, 'XTick', rowvec(anns_under_edition(anns_under_edition_idx(aux_idx))) );
-            aux_str = cellstr(num2str(colvec(anns_under_edition_idx(aux_idx))));
-            if( ~isempty(anns_under_edition) && hb_idx <= length(anns_under_edition_idx) )
-                aux_str{aux_hb_idx} = [aux_str{aux_hb_idx} ' (' Seconds2HMS((anns_under_edition(anns_under_edition_idx(hb_idx)) + base_start_time - 1)*1/ECG_struct.header.freq) ')'];
-                set(RRserie_zoom_axes_hdl, 'XTickLabel', char(aux_str) );
+                if( ~isempty(aux_RR) )
+                    [~, aux_idx2] = intersect(selected_hb_idx, aux_idx);
+                    RRserie_zoom_hdl = [RRserie_zoom_hdl; colvec(plot(RRserie_zoom_axes_hdl, anns_under_edition(anns_under_edition_idx(selected_hb_idx(aux_idx2))), aux_RR(anns_under_edition_idx(selected_hb_idx(aux_idx2))), 'og' ))];
+                end
+
+                if( ~isempty(aux_RR) && hb_idx < length(aux_RR) )
+                    RRserie_zoom_hdl = [RRserie_zoom_hdl; colvec(plot(RRserie_zoom_axes_hdl, anns_under_edition(anns_under_edition_idx(hb_idx)), aux_RR(anns_under_edition_idx(hb_idx)), 'or' ))];
+                end
+
+                set(RRserie_zoom_axes_hdl, 'Xlim', this_xlims_orig );
+
+                hold(RRserie_zoom_axes_hdl, 'off');
+
+                xlabel(RRserie_zoom_axes_hdl, 'Time');
+                ylabel(RRserie_zoom_axes_hdl, 'Serie value');
+
+                set(RRserie_zoom_axes_hdl,'ButtonDownFcn',@inspect_RRserie);  
+                set(RRserie_zoom_hdl, 'ButtonDownFcn', @inspect_RRserie);  
+
+                aux_hb_idx = find(hb_idx == aux_idx);
+
+                if( length(aux_idx) > 5 )
+                    cant_ticks = 5;
+                    if( isempty(aux_hb_idx) )
+                        aux_idx = round(linspace(aux_idx(1), aux_idx(end), cant_ticks));
+                    else
+                        cant_ticks = cant_ticks - 1;
+                        aux_idx = sort(unique([ round(linspace(aux_idx(1), aux_idx(end), cant_ticks)) aux_idx(aux_hb_idx) ]));
+                        aux_hb_idx = find(hb_idx == aux_idx);
+                    end
+                end
+
+                set(RRserie_zoom_axes_hdl, 'XTick', rowvec(anns_under_edition(anns_under_edition_idx(aux_idx))) );
+                aux_str = cellstr(num2str(colvec(anns_under_edition_idx(aux_idx))));
+                if( ~isempty(anns_under_edition) && ~isnan(anns_under_edition(anns_under_edition_idx(hb_idx))) && hb_idx <= length(anns_under_edition_idx) )
+                    aux_str{aux_hb_idx} = [aux_str{aux_hb_idx} ' (' Seconds2HMS((anns_under_edition(anns_under_edition_idx(hb_idx)) + base_start_time - 1)*1/ECG_struct.header.freq) ')'];
+                    set(RRserie_zoom_axes_hdl, 'XTickLabel', char(aux_str) );
+                end
             end
         end
         
@@ -2173,8 +2249,7 @@ function ann_output = QRScorrector(varargin)
                 aux_idx(ann_idx) = [];
                 AnnNames = AnnNames(aux_idx,:);
                 ratios = ratios(aux_idx);
-                cant_anns = cant_anns -1;
-                set(annotation_list_control, 'Value', 1);
+                annotations_ranking = annotations_ranking(aux_idx);
 
                 cant_anns = size(AnnNames,1);
                 aux_str = repmat( ' - ',cant_anns,1);
@@ -2183,12 +2258,19 @@ function ann_output = QRScorrector(varargin)
                 set(annotation_under_edition_label, 'string', [ 'Annotation under edition: ' char(AnnNames( AnnNames_idx ,1)) ' (' num2str(ratios(AnnNames_idx)) ')' ])
 
                 AnnNames_idx = 1;
+                set(annotation_list_control, 'Value', AnnNames_idx);
                 anns_under_edition = unique(round(colvec( ECG_struct.(AnnNames{AnnNames_idx,1}).(AnnNames{AnnNames_idx,2}) )));
 
             end
 
+            if( isfield(ECG_struct, 'series_quality' ) ) 
+                ECG_struct.series_quality.AnnNames = AnnNames;
+                ECG_struct.series_quality.ratios = ratios;
+            end
+            
             undo_buffer_idx = 1;
 
+            bRecEdited = true;
             bAnnsEdited = false;
 
             selected_hb_idx = [];        
@@ -2270,6 +2352,9 @@ function ann_output = QRScorrector(varargin)
 
                 if( bSeries )
                     this_all_anns = all_annotations_selected_serie_location;
+                    aux_val = this_all_anns{1};
+                    aux_val(serie_location_mask) = nan;
+                    this_all_anns{1} = aux_val;
                 else
                     this_all_anns = all_annotations_selected;
                 end
@@ -2294,6 +2379,9 @@ function ann_output = QRScorrector(varargin)
 
                 if( bSeries )
                     this_all_anns = all_annotations_selected_serie_location;
+                    aux_val = this_all_anns{1};
+                    aux_val(serie_location_mask) = nan;
+                    this_all_anns{1} = aux_val;
                 else
                     this_all_anns = all_annotations_selected;
                 end
@@ -2319,18 +2407,51 @@ function ann_output = QRScorrector(varargin)
     end
     
     function update_annotations()
+        
+        corrected_prefix = 'corrected_';
+        
+        if( bSeries )
+            aux_val = all_annotations_selected_serie_location{1};
+            aux_val(serie_location_mask) = nan;
+            aux_val = ( aux_val - anns_under_edition) / ECG_struct.header.freq;
+            aux_val = [anns_under_edition aux_val];
+        else
+            aux_val = unique(round(colvec( anns_under_edition )));
+        end
 
-        ECG_struct.(AnnNames{AnnNames_idx,1}).(AnnNames{AnnNames_idx,2}) = unique(round(colvec( anns_under_edition )));
+        if( isempty(strfind(AnnNames{AnnNames_idx,1}, corrected_prefix )) )
+            % modifying an original annotation, duplicate annotation
+            
+            ii = 1;
+            while( isfield(ECG_struct, [ corrected_prefix AnnNames{AnnNames_idx,1}]) )
+                corrected_prefix = [corrected_prefix 'v' num2str(ii) '_' ];
+                ii = ii+1;
+            end
+            
+            ECG_struct.([ corrected_prefix AnnNames{AnnNames_idx,1}]).(AnnNames{AnnNames_idx,2}) = aux_val;
+%             ECG_struct.([ corrected_prefix AnnNames{AnnNames_idx,1}]) = ECG_struct.(AnnNames{AnnNames_idx,1});
+%             ECG_struct = rmfield(ECG_struct, AnnNames{AnnNames_idx,1});
 
-        if( isempty(strfind(AnnNames{AnnNames_idx,1}, 'corrected_' )) )
-            ECG_struct.([ 'corrected_' AnnNames{AnnNames_idx,1}]) = ECG_struct.(AnnNames{AnnNames_idx,1});
-            ECG_struct = rmfield(ECG_struct, AnnNames{AnnNames_idx,1});
 
-            AnnNames{ AnnNames_idx ,1} = [ 'corrected_' AnnNames{AnnNames_idx,1}];
+            % add it to the ann list
+%             AnnNames( AnnNames_idx , : ) = { [ corrected_prefix AnnNames{AnnNames_idx,1}] AnnNames{AnnNames_idx,2} };
+            AnnNames = [{ [ corrected_prefix AnnNames{AnnNames_idx,1}] AnnNames{AnnNames_idx,2} }; AnnNames];
+            ratios = [ ratios(AnnNames_idx); ratios ];
+            AnnNames_idx = 1;
+            annotations_ranking = [ 1; colvec(annotations_ranking+1) ];
+
+            cant_anns = size(AnnNames,1);
+            aux_str = repmat( ' - ',cant_anns,1);
+            set(annotation_list_control, 'string', [ char(cellstr(num2str((1:cant_anns)'))) aux_str char(AnnNames(:,1)) repmat( ' (',cant_anns,1) num2str(round(colvec(ratios * 1000))) aux_str num2str(colvec(annotations_ranking))  repmat( ')',cant_anns,1)  ] );
 
             if( isfield(ECG_struct, 'series_quality' ) ) 
                 ECG_struct.series_quality.AnnNames = AnnNames;
+                ECG_struct.series_quality.ratios = ratios;
             end
+            
+        else
+            % updating an already corrected ann.
+            ECG_struct.(AnnNames{AnnNames_idx,1}).(AnnNames{AnnNames_idx,2}) = aux_val;
         end            
 
     end
@@ -2442,18 +2563,30 @@ function ann_output = QRScorrector(varargin)
                 bAnnsEdited = false;
 
                 selected_hb_idx = [];
-                
-                if( bSeries )
-                    [anns_under_edition, aux_idx ]= unique(round(colvec( aux_val(:,1) )));
-                    RRserie = { aux_val(aux_idx,2) };
-                    
-                    % absolute position
-                    all_annotations_selected_serie_location = {anns_under_edition + round( aux_val(aux_idx,2) * ECG_struct.header.freq) };
-                else
-                    anns_under_edition = unique(round(colvec( aux_val )));
 
-                    RRserie = colvec(diff(anns_under_edition));
-                    RRserie = {[RRserie(1); RRserie] * 1/ECG_struct.header.freq};
+                if( isempty(aux_val) )
+
+                    anns_under_edition = [];
+                    RRserie = {[]};
+                    all_annotations_selected_serie_location = [];
+                    serie_location_mask = [];
+                    
+                else
+                
+                    if( bSeries )
+                        [anns_under_edition, aux_idx ]= unique(round(colvec( aux_val(:,1) )));
+                        RRserie = { aux_val(aux_idx,2) };
+
+                        % absolute position
+                        all_annotations_selected_serie_location = {anns_under_edition + round( aux_val(aux_idx,2) * ECG_struct.header.freq) };
+                        serie_location_mask = false(size(anns_under_edition));
+                    else
+                        anns_under_edition = unique(round(colvec( aux_val )));
+
+                        RRserie = colvec(diff(anns_under_edition));
+                        RRserie = {[RRserie(1); RRserie] * 1/ECG_struct.header.freq};
+                    end
+                
                 end
                 
                 all_annotations_selected = {anns_under_edition};

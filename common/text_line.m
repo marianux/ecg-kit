@@ -20,8 +20,6 @@ function text_line_handles = text_line( x, y, text_str, text_line_prop_vals, axe
         text_line_handles = [];
     else
         text_line_handles = text_arrow(x(1), y(1), '', text_line_prop_vals, axes_hdl);
-        
-        set( text_line_handles, text_line_prop_vals(:,1)', text_line_prop_vals(:,2)' );
     end
     
     hold(axes_hdl, 'on');
@@ -30,8 +28,9 @@ function text_line_handles = text_line( x, y, text_str, text_line_prop_vals, axe
 
     hold(axes_hdl, 'off');
     
-    bStr = strcmpi('String', text_line_prop_vals(:,1)) | strcmpi('TextColor', text_line_prop_vals(:,1))  | strcmpi('HeadWidth', text_line_prop_vals(:,1)) | strcmpi('HeadLength', text_line_prop_vals(:,1)) ;
-    set( aux_hdl, text_line_prop_vals(~bStr,1)', text_line_prop_vals(~bStr,2)' );
+    [~, aux_idx] = setdiff(text_line_prop_vals(:,1), {'String' 'TextColor'});
+    
+    set( aux_hdl, text_line_prop_vals(aux_idx,1)', text_line_prop_vals(aux_idx,2)' );
     this_colour = get(aux_hdl, 'Color');
     set( aux_hdl, {'Marker' 'MarkerSize' 'MarkerFaceColor' 'MarkerEdgeColor' }, {'diamond' 2 this_colour this_colour} );
 

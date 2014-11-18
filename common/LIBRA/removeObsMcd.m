@@ -45,7 +45,7 @@ j = inputH0.j;
 data_min_i = removal(data,i,0);
 
 [upS,upT] = updatecov(data(H0,:),Sfull,Tfull,0,[j],0);
-mahdist = mahalanobis(data_min_i,upT,'cov',upS);
+mahdist = libra_mahalanobis(data_min_i,upT,'cov',upS);
 sortmahdist = sort(mahdist);
 factor=sortmahdist(h-1)/chi2inv((h-1)/(n-1),p/2); % adapted factor
 

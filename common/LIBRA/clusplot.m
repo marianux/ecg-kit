@@ -110,7 +110,7 @@ for i=1:k
         elseif (span==0)
             B(i,:) = mean(x1);
             A(:,:,i) = cov(x1);
-            D(i) = sqrt(max(mahalanobis(x1,B(i,:),'cov',A(:,:,i))));
+            D(i) = sqrt(max(libra_mahalanobis(x1,B(i,:),'cov',A(:,:,i))));
             D(i) = D(i)+0.01*D(i);
         end
     elseif (rank(cov(x1))~=2)

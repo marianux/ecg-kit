@@ -272,9 +272,9 @@ switch options.misclassif
         misclas=-ones(1,length(lev)); 
         for i=1:size(validx,1)
             if strmatch(options.method,'quadratic','exact')
-                dist(i) = mahalanobis(validx(i,:), result1.center(vj(i),:),'invcov',result1.invcov{vj(i)});
+                dist(i) = libra_mahalanobis(validx(i,:), result1.center(vj(i),:),'invcov',result1.invcov{vj(i)});
             else
-                dist(i) = mahalanobis(validx(i, :), result1.center(vj(i),:),'invcov',result1.invcov);
+                dist(i) = libra_mahalanobis(validx(i, :), result1.center(vj(i),:),'invcov',result1.invcov);
             end
         end
         weightsvalid=zeros(1,length(dist));
@@ -331,9 +331,9 @@ if ~isempty(options.predictset)
     for i=1:size(options.predictset,1) 
         for j = 1:ng
             if strmatch(options.method,'quadratic','exact') 
-                distpredict(i,j) = mahalanobis(options.predictset(i,:), result1.center(j,:),'invcov',result1.invcov{j});	
+                distpredict(i,j) = libra_mahalanobis(options.predictset(i,:), result1.center(j,:),'invcov',result1.invcov{j});	
             else 
-                distpredict(i,j) = mahalanobis(options.predictset(i, :), result1.center(j,:),'invcov',result1.invcov);
+                distpredict(i,j) = libra_mahalanobis(options.predictset(i, :), result1.center(j,:),'invcov',result1.invcov);
             end
         end
     end
@@ -412,7 +412,7 @@ case 'linear' %equal covariances supposed
     group.center = group.center + repmat(zmcdcenter,size(group.center,1),1);    
     dist=zeros(n,1);
     for j=1:length(gun)
-        dist(g==gun(j))=mahalanobis(x(g==gun(j),:),group.center(j,:),'invcov',inv(zmcd.cov));
+        dist(g==gun(j))=libra_mahalanobis(x(g==gun(j),:),group.center(j,:),'invcov',inv(zmcd.cov));
     end
     weights=zeros(n,1); 
     weights(dist <= chi2inv(0.975,p))=1;
@@ -433,7 +433,7 @@ case 'quadratic'
         xmcdweights(g==gun(j))=raw{j}.wt;
     end  
     for i=1:n
-        xdist(i)=mahalanobis(x(i,:), group.center(gj(i),:), 'invcov',group.invcov{gj(i)});
+        xdist(i)=libra_mahalanobis(x(i,:), group.center(gj(i),:), 'invcov',group.invcov{gj(i)});
     end
     weights=xmcdweights;
     result.cov=group.cov; %per group

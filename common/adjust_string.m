@@ -4,7 +4,8 @@ function adjusted_str = adjust_string(str2trimm, target_width, where2trimm )
        where2trimm = 'center';
     end
 
-    if( nargin < 2 || isempty(target_width) || target_width < 7 )
+%     if( nargin < 2 || isempty(target_width) || target_width < 7 )
+    if( nargin < 2 || isempty(target_width) )
        target_width = 20;
     end
 
@@ -38,6 +39,16 @@ function adjusted_str = adjust_string(str2trimm, target_width, where2trimm )
         switch(lower(where2trimm))
             case 'pad'
                 adjusted_str = [str2trimm repmat(' ', 1, target_width - lstr2trimm)];
+                
+            case 'center'
+                aux_val = floor((target_width - lstr2trimm)/2);
+                adjusted_str = [repmat(' ', 1, aux_val ) str2trimm repmat(' ', 1, target_width - lstr2trimm - aux_val )];
+                
+            case 'right'
+                adjusted_str = [repmat(' ', 1, target_width - lstr2trimm) str2trimm ];
+                
+            case 'left'
+                adjusted_str = [str2trimm repmat(' ', 1, target_width - lstr2trimm) ];
                 
             otherwise
                 adjusted_str = str2trimm;

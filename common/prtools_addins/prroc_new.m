@@ -77,7 +77,7 @@ function e = prroc_new(a,w,clas,n)
 	name = [];
 	num_w = 1;
 	compute = 0;
-	if isa(w,'double') | isempty(w)
+	if isa(w,'double') || isempty(w)
 		n = clas; 
 		clas = w;
 		b = a;
@@ -174,12 +174,30 @@ function e = prroc_new(a,w,clas,n)
 		% Split the cases where ERRS = 1 into cases for CLAS (E1) and all 
 		% other classes (E2).
 
+		TP = sum(~errs(find(nlab==clas),:),1);
+		FP = sum(errs(find(nlab~=clas),:),1);
+		TN = sum(~errs(find(nlab~=clas),:),1);
+		FN = sum(errs(find(nlab==clas),:),1);
+		
+        Se = TP./(TP+FN);
+        Sp = TN./(TN+FP);
+        
+		% Fill results in the ROC structure.
+		e.sensitivity(j,:) = Se;
+		e.specificity(j,:) = Sp;
+		
+        e.TP(j,:) = TP;
+		e.TN(j,:) = TN;
+		e.FN(j,:) = FN;
+		e.FP(j,:) = FP;
+        
 		e1 = [mean(errs(find(nlab==clas),:),1)];
 		e2 = [mean(errs(find(nlab~=clas),:),1)];
 		
 		% Fill results in the ROC structure.
 		e.error(j,:)   = e2;
 		e.xvalues(j,:) = e1;
+        
         e.thr = thr;
         
 	end

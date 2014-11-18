@@ -1,12 +1,15 @@
-function [ ratio, estimated_labs ]= CalcRRserieRatio(time_serie, ECG_header, start_end)
-
-% Description: 
+%% Estimate the quality of QRS complex detections 
+% Calculate the quality of QRS detections based on the the likelihood of
+% measurements from RR interval series with respect to a trained model. See
+% for further details. See 'A Pattern-Recognition Approach for
+% Lead-Selection in Heartbeat Detection' CINC 2014.
+%   
+% Example
 % 
-% Calculates the quality of the QRS complex detections in time_serie. 
+%   [ ratio, estimated_labs ] = CalcRRserieRatio(time_serie, ECG_header, start_end, ECG_type)
 % 
 % Arguments:
-%     
-%     +time_serie: [cell] REQUIRED
+%      +time_serie: [cell] REQUIRED
 %           
 %           Cell array of size [nsig 1] with the detections
 %           performed for each lead.
@@ -23,23 +26,33 @@ function [ ratio, estimated_labs ]= CalcRRserieRatio(time_serie, ECG_header, sta
 %               -nsamp: Number of ECG samples. (size(ECG,1))
 %                 
 %     +start_end: [numeric] OPTIONAL. Vector of size [2 1] with the start
-%                           and end indexes.
+%                           and end samples.
 %     
+%     +ECG_type: [numeric] OPTIONAL. Char indicating if you know something
+%                          about the ECG recording type a priori. Possible
+%                          values are: 'stress' 'arrhythmia' 'longterm' 'sinus'
 % 
-% Limits and Known bugs:
-%   Probably a lot :( ... but dont panic! send me feedback if you need help.
+% Output:
+%     + ratio: a measure of quality of the QRS detections
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+%     + estimated_labs: a label for each heartbeat: {TP, FP and FN}
+% 
+% See also ECGtask_QRS_detection
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
 % Version: 0.1 beta
 % Last update: 14/5/2014
 % Birthdate  : 23/4/2013
-
-    
+% Copyright 2008-2014
+function [ ratio, estimated_labs ] = CalcRRserieRatio(time_serie, ECG_header, start_end, ECG_type)
+   
     %% constants
 
     min_pattern_separation = 350;  % ms
     max_pattern_separation = 1500; % ms
-
+    cECGtypes = {'stress' 'arrhythmia' 'longterm' 'sinus'};
+    
+    
     %% start
 
     if( nargin < 2 || isempty(time_serie) || isempty(ECG_header) )
@@ -51,6 +64,10 @@ function [ ratio, estimated_labs ]= CalcRRserieRatio(time_serie, ECG_header, sta
         start_end = [1 ECG_header.nsamp];
     end
 
+    if( nargin < 4 || ~any(strcmpi(ECG_type, cECGtypes)) )
+        ECG_type = 'stress';
+    end
+    
     start_sample = start_end(1);
     end_sample = start_end(2);
 
@@ -58,12 +75,16 @@ function [ ratio, estimated_labs ]= CalcRRserieRatio(time_serie, ECG_header, sta
 
     % co_ocurrences respect other leads
     co_ocurrence = calc_co_ocurrences(time_serie);
+    
+    if( isempty(co_ocurrence) )
+        return
+    end
 
     dummy = prdataset([]);
     dummy = prmapping([]);
     
     % load the trained classifier.
-    aux_load = load('tc_qrs_q.mat');
+    aux_load = load([ 'QRS_q_' ECG_type '.mat']);
 
     w_lablist = cellstr(getlabels(aux_load.wTrained_Classifier));
     FN_lab = find(strcmpi(w_lablist, 'FN'));
@@ -107,7 +128,6 @@ function [ ratio, estimated_labs ]= CalcRRserieRatio(time_serie, ECG_header, sta
             ds_result = prdataset(aux_fm) * aux_load.wTrained_Classifier;
 
             estimated_labs{ii} = renumlab(ds_result * labeld, char(w_lablist) );
-            
 
             aux_val = sum(estimated_labs{ii} == TP_lab | estimated_labs{ii} == FN_lab);
             if( aux_val == 0 )
@@ -125,6 +145,7 @@ function [ ratio, estimated_labs ]= CalcRRserieRatio(time_serie, ECG_header, sta
 
             this_q = (2*this_se + this_pp)/3;
             ratio(ii) = k_gaps * this_q;
+            
         end
 
         pb.end_loop();

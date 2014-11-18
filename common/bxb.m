@@ -1,23 +1,35 @@
 function [C, TP_ann_idx, TP_det_idx, FN_idx, FP_idx] = bxb( ann, test_qrs_idx, heasig, strDBformat)
 
+% constants
+win_in_samples = round(0.15*heasig.freq);
+
+
 if( nargin < 4 || isempty(strDBformat) )
     strDBformat = 'MIT';
 end
-    
-AAMI_anntypes =  ('NSVFQ')';
+
+if( isstruct(test_qrs_idx) && isfield(ann, 'time') )
+    test_qrs_idx = test_qrs_idx.time;
+end
 
 %filtramos las anotaciones que son latidos
+if( isfield(ann, 'anntyp') )
+    ann = AnnotationFilterConvert(ann, strDBformat, 'AAMI');
+end
 
-ann = AnnotationFilterConvert(ann, strDBformat, 'AAMI');
-ann.anntyp = AAMI_anntypes(ann.anntyp);
+
+% AHA database special case: just annotated a small part of each recording.
+if( strcmpi(strDBformat, 'AHA') )
+    test_qrs_idx = test_qrs_idx(test_qrs_idx >= (ann.time(1) - win_in_samples) & test_qrs_idx <= (ann.time(end) + win_in_samples));
+end
+
 
 [test_qrs_idx, test_qrs_idx2] = sort(test_qrs_idx);
 
 %find matchs now
-lRefBeats = length(ann.anntyp);
+lRefBeats = length(ann.time);
 lDetectedBeats = length(test_qrs_idx);
 Ref_idx = 1;
-win_in_samples = round(0.15*heasig.freq);
 TP_idx = [];
 FN_idx = [];
 

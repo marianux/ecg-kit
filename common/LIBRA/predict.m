@@ -60,7 +60,7 @@ result.res=Y-result.fitted;
 if strcmp(inmodel.class,'RPCR')
     XRc=X-repmat(inmodel.robpca.M,n,1);
     result.T=XRc*inmodel.robpca.P;
-    result.sd=sqrt(mahalanobis(result.T,zeros(size(result.T,2),1),'cov',inmodel.robpca.L))';
+    result.sd=sqrt(libra_mahalanobis(result.T,zeros(size(result.T,2),1),'cov',inmodel.robpca.L))';
     Xtilde=result.T*inmodel.robpca.P';
     Rdiff=XRc-Xtilde;
     for i=1:n
@@ -69,7 +69,7 @@ if strcmp(inmodel.class,'RPCR')
 
     if q >1
         cen=zeros(q,1)';
-        result.resd=sqrt(mahalanobis(result.res,cen,'cov',inmodel.mcdreg.cov))';
+        result.resd=sqrt(libra_mahalanobis(result.res,cen,'cov',inmodel.mcdreg.cov))';
     else
         result.resd=result.res/inmodel.lts.scale; 
     end
@@ -86,7 +86,7 @@ if strcmp(inmodel.class,'RPCR')
 elseif strcmp(inmodel.class,'RSIMPLS')
     XRc=X-repmat(inmodel.robpca.M(1:p),n,1);
     result.T=XRc*inmodel.weights.r;
-    result.sd=sqrt(mahalanobis(result.T,inmodel.Tcenter,'cov',inmodel.Tcov))';
+    result.sd=sqrt(libra_mahalanobis(result.T,inmodel.Tcenter,'cov',inmodel.Tcov))';
     Xtilde=result.T*inmodel.weights.p';
     Rdiff=XRc-Xtilde;
     for i=1:n
@@ -94,7 +94,7 @@ elseif strcmp(inmodel.class,'RSIMPLS')
     end
     if q >1
         cen=zeros(q,1)';
-        result.resd=sqrt(mahalanobis(result.res,cen,'cov',inmodel.cov))';
+        result.resd=sqrt(libra_mahalanobis(result.res,cen,'cov',inmodel.cov))';
     else
         result.resd=result.res/sqrt(inmodel.cov);
     end
@@ -133,7 +133,7 @@ if isstruct(inmodel.classic) && strcmp(inmodel.class,'RPCR')
     result.classic.res=Y-result.classic.fitted; 
     XRc=X-repmat(inmodel.classic.cpca.M,n,1);
     result.classic.T=XRc*inmodel.classic.cpca.P;
-    result.classic.sd=sqrt(mahalanobis(result.classic.T,zeros(size(result.classic.T,2),1),'cov',inmodel.classic.cpca.L))';
+    result.classic.sd=sqrt(libra_mahalanobis(result.classic.T,zeros(size(result.classic.T,2),1),'cov',inmodel.classic.cpca.L))';
     Xtilde=result.classic.T*inmodel.classic.cpca.P';
     Rdiff=XRc-Xtilde;
     for i=1:n
@@ -141,7 +141,7 @@ if isstruct(inmodel.classic) && strcmp(inmodel.class,'RPCR')
     end
     if q >1
         cen=zeros(q,1)';
-        result.classic.resd=sqrt(mahalanobis(result.classic.res,cen,'cov',inmodel.classic.cov))';
+        result.classic.resd=sqrt(libra_mahalanobis(result.classic.res,cen,'cov',inmodel.classic.cov))';
     else
         result.classic.resd=result.classic.res/sqrt(inmodel.classic.cov);
     end
@@ -173,7 +173,7 @@ elseif isstruct(inmodel.classic) && strcmp(inmodel.class,'RSIMPLS')
     result.classic.res=Y-result.classic.fitted;
     XRc=X-repmat(inmodel.classic.M(1:p),size(X,1),1);
     result.classic.T=XRc*inmodel.classic.weights.r;
-    result.classic.sd=sqrt(mahalanobis(result.classic.T,zeros(size(result.classic.T,2),1),'cov',inmodel.classic.Tcov))';
+    result.classic.sd=sqrt(libra_mahalanobis(result.classic.T,zeros(size(result.classic.T,2),1),'cov',inmodel.classic.Tcov))';
     Xtilde=result.classic.T*inmodel.classic.weights.p';
     Rdiff=XRc-Xtilde;
     for i=1:n
@@ -181,7 +181,7 @@ elseif isstruct(inmodel.classic) && strcmp(inmodel.class,'RSIMPLS')
     end
     if q >1
         cen=zeros(q,1)';
-        result.classic.resd=sqrt(mahalanobis(result.classic.res,cen,'cov',inmodel.classic.cov))';
+        result.classic.resd=sqrt(libra_mahalanobis(result.classic.res,cen,'cov',inmodel.classic.cov))';
     else
         result.classic.resd=result.classic.res/sqrt(inmodel.classic.cov);
     end

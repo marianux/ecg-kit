@@ -665,7 +665,7 @@ n = size(X2,1);
 rot=rot(:,1:k);
 % first apply c-step with h points from first step,i.e. those that
 % determine the covariance matrix after the c-steps have converged.
-mah=mahalanobis(X2,zeros(size(X2,2),1),'cov',L(1:k));
+mah=libra_mahalanobis(X2,zeros(size(X2,2),1),'cov',L(1:k));
 oldobj=prod(L(1:k));
 P4=eye(k); 
 korig=k;
@@ -677,7 +677,7 @@ for j=1:niter
     X2=(X2-repmat(clmX,n,1))*P;
     center=center+clmX*rot';
     rot=rot*P;
-    mah=mahalanobis(X2,zeros(size(X2,2),1),'cov',diag(L));
+    mah=libra_mahalanobis(X2,zeros(size(X2,2),1),'cov',diag(L));
     P4=P4*P;
     if ((r3==k) && (abs(oldobj-obj) < 1.e-12))
         break;
@@ -708,7 +708,7 @@ else
     mah = mah/factor;
     weights = mah <= chi2inv(cutoff,k);
     [center_noMCD,cov_noMCD] = weightmecov(X2,weights);
-    mah = mahalanobis(X2,center_noMCD,'cov',cov_noMCD);
+    mah = libra_mahalanobis(X2,center_noMCD,'cov',cov_noMCD);
     z.flag = (mah <= chi2inv(cutoff,k));
     z.center = center_noMCD;
     z.cov = cov_noMCD;
@@ -791,7 +791,7 @@ skew=out.skew;
 % Robust score distances in robust PCA subspace
 if robpcamcd
     if skew==0
-        out.sd=sqrt(mahalanobis(out.T,zeros(size(out.T,2),1),'cov',out.L))';
+        out.sd=sqrt(libra_mahalanobis(out.T,zeros(size(out.T,2),1),'cov',out.L))';
         out.cutoff.sd=sqrt(chi2inv(cutoff,out.k));
     else
         out.sd=out.AO;
@@ -829,7 +829,7 @@ end
 if options.classic==1
     % Mahalanobis distance in classical PCA subspace
     Tclas=classic.Xc*classic.P(:,1:out.k);
-    out.classic.sd=sqrt(mahalanobis(Tclas,zeros(size(Tclas,2),1),'invcov',1./classic.L(1:out.k)))';
+    out.classic.sd=sqrt(libra_mahalanobis(Tclas,zeros(size(Tclas,2),1),'invcov',1./classic.L(1:out.k)))';
     % Orthogonal distances to classical PCA subspace
     Xtilde=Tclas*classic.P(:,1:out.k)';
     Cdiff=classic.Xc-Xtilde;

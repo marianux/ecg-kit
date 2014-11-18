@@ -133,7 +133,7 @@ for k = 1:kmax
     
     for i =1:n
         % defining the sd for the observation that is left:
-        sdk(i,k) = sqrt(mahalanobis(Tk(i,:),zeros(1,k),'cov',diag(Lk)));
+        sdk(i,k) = sqrt(libra_mahalanobis(Tk(i,:),zeros(1,k),'cov',diag(Lk)));
     
         % defining the od for the observation that is left:
         if k~=r

@@ -8,7 +8,11 @@
 #include 	"mex.h"
 #include        <stdio.h>
 #include        <string.h>
-#include        <tmwtypes.h>
+#ifdef HAVE_OCTAVE
+	#include <stdint.h>
+#else
+	#include        <tmwtypes.h>
+#endif
 
  void mexFunction(
 	int	nlhs,

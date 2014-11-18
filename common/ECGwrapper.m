@@ -1,50 +1,94 @@
-classdef ECGwrapper < handle
-
-% ECGwrapper for Matlab
-% ---------------------
+%% Allow acces to ECG recordings of arbitrary format and length.
 % 
 % Description:
-% 
+% ECG wrapper is a class to allow the access to cardiovascular signal
+% recordings of several formats (MIT, ISHNE, AHA, HES, MAT) and lengths,
+% from minutes to days. Also it can be plugged to an ECGtask object to
+% perform several tasks, such as QRS detection and ECG delineation among
+% others. 
 % 
 % Arguments: (specified as ECGwrapper('arg_name1', arg_val1, ... , 'arg_nameN', arg_valN) )
 % 
-%     a. ECG specification:
+%           + recording_name : (char) the full filename of the ECG
+%                recording. 
 % 
-%         a.1 Recording filename where ECG is stored in a valid format.
+%           + recording_format : (char) the format of the ECG recording. By
+%                default or if not specified, the wrapper will attemp to
+%                auto-detect the format.
 % 
-%           + recording_name: ECG recording to be classified.
-%           + recording_format : Valid ECG format. (MIT, ISHNE, AHA, HES, MAT)
+%           + this_pid : (char) In case working in a multiprocess
+%                environment, this value will identify the current process.
+%                Can be a numeric value, or a string of the form 'N/M'.
+%                This pid is N and the total amount of pid's to divide the
+%                whole work is M.
 % 
-%     b. Operating modes
+%           + tmp_path: (char) path to store the temp files. By default
+%                will be the output of tempdir function.
 % 
-%       
-%     c. Modifiers
+%           + output_path: (char) path to store the result files. By default
+%                will be the same path of the recordings.
+% 
+%           + ECGtaskHandle: (char || ECGtask) The task to perform, can be
+%                the name of the task, or an ECGtask object. Available
+%                ECGtasks can be listed with list_all_ECGtask() command. 
+% 
+%           + overlapping_time: (numeric) Time in seconds of overlapp among
+%                consequtive segments. This segment is useful for ensuring
+%                transitory responses of systems to be finished. Default is
+%                30 seconds.
+% 
+%           + partition_mode: (numeric) The way that this object will
+%                partition lengthy signals:
+%              - 'ECG_contiguous' no overlapp between segments
+%              - 'ECG_overlapped' overlapp 'overlapping_time' between
+%                 segments. Default.
+%              - 'QRS' do the partition based on the annotations in
+%                 ECG_annotations.time property. Typically but not
+%                 necessary are QRS annotations.
+% 
+%           + cacheResults: (logical) To save intermediate results to
+%             recover in case of failure. Default is true.
+% 
+%           + syncSlavesWithMaster: (logical) In multiprocess environments
+%             sometimes it is useful to terminate all pid's together in
+%             orther to do further tasks later. Default is false.
+% 
+%           + repetitions: (numeric) In case the ECGtask is not
+%             deterministic, the repetition property allows to repeat the
+%             task several times. Default value is 1.
 % 
 % 
 % Output:
+% The constructed object.
 % 
 % Examples:
-% 
 % 
 %       you can also check 'examples.m' in the same folder of this file.
 % 
 % 
-% Limits and Known bugs:
-%   Probably a lot :( ... but dont panic! send me feedback if you need
-%   help.
+% See also ECGtask
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
 % Version: 0.1 beta
+% Last update: 14/5/2014
 % Birthdate  : 20/3/2012
-% Last update: 20/3/2012
+% Copyright 2008-2014
+% 
+classdef ECGwrapper < handle
        
     properties(GetAccess = private, Constant)
         
-        cKnownFormats = {'MIT' 'ISHNE', 'AHA', 'HES', 'MAT', 'Mortara'};
+        % all ECG formats that ECGkit can handle
+        cKnownFormats = {'MIT' 'ISHNE', 'AHA', 'HES', 'MAT', 'Mortara', 'auto'};
+        % The fields required in the ECGheader property
         cHeaderFieldNamesRequired = {'freq' 'nsamp' 'nsig' 'gain' 'adczero' };
+        % Possible Partitions modes 
         cPartitionModes = {'ECG_contiguous' 'ECG_overlapped' 'QRS'};
+        % The fields required in the ECGannotations property
         cAnnotationsFieldNamesRequired = {'time'};
+        % The methods required for an ECGtask object
         cObjMethodsRequired = {'Process' 'Start' 'Concatenate'};
+        % The properties required for an ECGtask object
         cObjPropsRequired = {'progress_handle' 'name' 'tmp_path'};
 
         % maxQRSxIter: Maximum amount of heartbeats in ECG recordings of 2 leads
@@ -60,60 +104,94 @@ classdef ECGwrapper < handle
         % maximum debugging email report file size
         max_report_filesize = 4 * 1024^2; % bytes
         % Maximum time to wait for other PIDs finishing their work.
-        Time2WaitPIDs = 15 * 60; % seconds.
+        Time2WaitPIDs = 2 * 60; % seconds.
         
     end
     
     properties ( Access = private )
+        % private
         rec_filename
+        % private
         rec_path
+        % private
         common_path
+        % private
         bHaveUserInterface
+        % private
         Loops2io
+        % private
         MaxNodesReading
+        % private
         MaxNodesWriting
+        % private
         bQRSlocations
+        % private
         QRS_locations
+        % private
         bArgChanged = true;
+        % private
         bECG_rec_changed = true;
+        % private
         bCreated = false;
         % maxECGxIter: Maximum samples ECG
         maxECGxIter
-        
         %list of handles in the toolbox
         cKnownECGtasksHdl
+        % private
         cKnownECGtasks
-        
+        % private
         ErrorReport = [];
         
         
     end
     
     properties (SetAccess = private, GetAccess = public)  
-        %read-only 
+        % The filename generated as a result of the processing of the
+        % ECGtask
         Result_files = []; 
+        % Flag check if the task generates a file payload as a result
         doPayload = true;
     end
 
     properties
-        %read-write
+        % The ECGtask generated any error ?
         Error
+        % Was the ECGtask processed ?
         Processed
+        % Had this pid work to do ?
+        NoWork2Do
+        % temporary path
         tmp_path
+        % output path
         output_path
+        % the full filename of the ECG recording
         recording_name
+        % recording file format
         recording_format
+        % annotations performed in the ECG (in MIT format)
         ECG_annotations 
+        % information about the ECG recording
         ECG_header        
+        % total amount of pid's
         cant_pids
+        % identification of this pid
         this_pid
+        % number of times to repeat the ECGtask
         repetitions
+        % handle to the ECGtask object
         ECGtaskHandle
+        % partition mode chosen
         partition_mode
+        % time of overlapp among signal segments
         overlapping_time
+        % is this caching ?
         cacheResults
+        % are all pid's finishing the ECGtask together ?
         syncSlavesWithMaster
+        % ECGannotations label format for heartbeat types.
         class_labeling = 'AAMI'
+        % user string to individualize each run
+        user_string
         
     end
     
@@ -121,7 +199,9 @@ classdef ECGwrapper < handle
     methods 
         
         function obj = ECGwrapper(varargin)
-
+        %%
+        % object constructor: parse arguments, check if user interface is
+        % available
             %% Constants and definitions
 
             %Java user interface is started. Not started in clusters for example.
@@ -141,20 +221,7 @@ classdef ECGwrapper < handle
             end
 
             % discover available ECG tasks installed
-            obj.common_path = fileparts(mfilename('fullpath'));
-            obj.common_path = [obj.common_path filesep ];
-            
-            ECGt_filenames = dir([obj.common_path 'ECGtask*.m' ]);
-            ECGt_filenames = {ECGt_filenames(:).name};
-            
-            if( isempty(ECGt_filenames) )
-                error('ECGwrapper:NoTasks', 'Could not find any ECGtask in %s', obj.common_path );
-            else
-                % avoid the abstract class
-                ECGt_filenames = ECGt_filenames(~strcmpi(ECGt_filenames, 'ECGtask.m'));
-                obj.cKnownECGtasksHdl = cellfun(@(a)( eval(a(1:end-2)) ) , ECGt_filenames, 'UniformOutput', false);
-                obj.cKnownECGtasks    = arrayfun(@(a)( a{1}.name ) , obj.cKnownECGtasksHdl, 'UniformOutput', false);
-            end            
+            [obj.cKnownECGtasks, obj.cKnownECGtasksHdl ] = list_all_ECGtask();
             
             %% Argument parsing
 
@@ -164,6 +231,7 @@ classdef ECGwrapper < handle
             p.addParamValue('recording_format', [], @(x)( ischar(x) && any(strcmpi(x,obj.cKnownFormats))) || isempty(x) );
             p.addParamValue('this_pid', 1, @(x)(ischar(x) || (isnumeric(x) && all(x > 0) ) ) );
             p.addParamValue('tmp_path', [], @(x)(ischar(x)) );
+            p.addParamValue('user_string', [], @(x)(ischar(x)) );
             p.addParamValue('output_path', [], @(x)(ischar(x)) );
             p.addParamValue('repetitions', 1, @(x)(isnumeric(x) && x > 0 ) );
             p.addParamValue('ECGtaskHandle', ECGtask_do_nothing, @(x)( isobject(x) || ischar(x) ) );
@@ -194,17 +262,23 @@ classdef ECGwrapper < handle
             clear p
             
             obj.bCreated = true;
+            obj.Processed = false;
+            obj.NoWork2Do = false;
+            obj.Error = false;
             
         end
         
         function result_payload = Run(obj)
+        % Prepare and execute the ECGtask, creating a payload as a result      
 
             result_payload = [];
             result_files = {};
             repeat_idx = 1;
-            obj.Error = false;
             obj.ErrorReport = [];
-            obj.Processed = true;
+            obj.Processed = false;
+            obj.NoWork2Do = false;
+            obj.Error = false;
+            
 
             if( obj.bArgChanged )
                 obj = CheckArguments(obj);
@@ -228,6 +302,7 @@ classdef ECGwrapper < handle
                 
                 if( ~isempty(files_this_pid) )
                     obj.Processed = true;
+                    obj.NoWork2Do = true;
                     obj.Result_files = strcat(obj.output_path, {files_this_pid(:).name});
                     cellfun(@(a)(cprintf('[1,0.5,0]','Cached results found in %s.\n', a)), obj.Result_files);
                     return
@@ -423,6 +498,7 @@ classdef ECGwrapper < handle
                             if( exist(aux_filename, 'file')  )
                                 payload_files = [ payload_files; cellstr(aux_filename)];
                                 start_iter = 2;
+                                obj.NoWork2Do = true;
                                 cprintf('*[1,0.5,0]', 'All work done. Exiting.\n');
                             end
                         end
@@ -471,8 +547,17 @@ classdef ECGwrapper < handle
                                 this_iter_ECG_start_idx = max(1, ECG_start_idx - 1 + iter_starts(this_iter) - overlapping_samples);
                                 this_iter_ECG_end_idx = min(obj.ECG_header.nsamp, ECG_start_idx - 1 + iter_ends(this_iter) + overlapping_samples);
 
-                                %No annotations provided in this mode
-                                this_ann = [];
+                                % create an annotation struct for this
+                                % iteration.
+                                this_ann = obj.ECG_annotations;
+                                bAux = this_ann.time > this_iter_ECG_start_idx & this_ann.time < this_iter_ECG_end_idx;
+                                for field_names = rowvec(fieldnames(this_ann))
+                                    if( ~isempty( this_ann.(field_names{1}) ) )
+                                        aux_val = this_ann.(field_names{1});
+                                        this_ann.(field_names{1}) = aux_val( bAux );
+                                    end
+                                end
+                                this_ann.time = this_ann.time - this_iter_ECG_start_idx + 1;
 
                                 %Sample where the ECG starts. Useful for
                                 %overlapped mode.
@@ -643,6 +728,7 @@ classdef ECGwrapper < handle
                                                     bContinue = false;
                                                     break
                                                 else
+%                                                     fprintf(2,'%s not found\n', [obj.output_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(ii) '_*.mat' ]);
                                                     error('ECGwrapper:PIDnotFinished', 'Handled error');
                                                 end
                                             end
@@ -751,7 +837,8 @@ classdef ECGwrapper < handle
 
                                         if( strfind(ME.identifier, 'ECGwrapper') )
                                             if( obj.cant_pids == 1 || toc(Start2Wait) > obj.Time2WaitPIDs )
-                                                error('ECGwrapper:PIDnotFinished', 'Timeout. Master give up waitng Slaves.');
+%                                                 fprintf(2, 'Timeout. Master give up waitng Slaves.\n');
+                                                error('ECGwrapper:PIDnotFinished', 'Mater give up waiting for PID %d iteration %d\n', ii, jj);
                                             end
                                             pause(30);
                                         else
@@ -892,6 +979,7 @@ classdef ECGwrapper < handle
                         disp_string_framed('*Blue', 'Work done!');
                     end
                 else
+                    obj.NoWork2Do = true;
                     disp_string_framed('[1,0.5,0]', 'Nothing to do here');
                 end
                 
@@ -907,9 +995,10 @@ classdef ECGwrapper < handle
                     elseif( cant_iteraciones_this_pid == 1 )
                         result_payload = load(obj.Result_files{1});
                     else
-                        result_payload = [];
+                        clear result_payload
                     end
                 else
+                    clear result_payload
                     fprintf(1, '\n');
                     cprintf( 'Blue', disp_option_enumeration( 'Results saved in', obj.Result_files));
                     fprintf(1, '\n');
@@ -922,7 +1011,9 @@ classdef ECGwrapper < handle
         end
         
         function ECG = read_signal(obj, ECG_start_idx, ECG_end_idx)
-            
+        % in case using the this object just as an I/O interface, this
+        % method can read the samples of a recording.
+        
             if( obj.bArgChanged )
                 obj = CheckArguments(obj);
                 obj.bArgChanged = false;
@@ -941,7 +1032,9 @@ classdef ECGwrapper < handle
         end
         
         function result_files = GetCahchedFileName(obj, task_names)
-           
+        % this method is useful to check if there are cached work already
+        % created from an ECGtask
+            
             if( nargin < 2 || isempty(task_names) )
                 task_names = {obj.ECGtaskHandle};
             end
@@ -971,10 +1064,10 @@ classdef ECGwrapper < handle
                     aux_user_prefix= [prev_ECGtaskHandle.user_string '_'];
                 end
 
-                files_this_pid = dir([obj.output_path obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name '*.mat']);
+                files_this_pid = dir([obj.output_path obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name '.mat']);
 
                 if( ~isempty(files_this_pid) )
-                    result_files = [ result_files; strcat(obj.output_path, {files_this_pid(:).name}) ];
+                    result_files = [ result_files; strcat(obj.output_path, colvec({files_this_pid(:).name})) ];
                 end
 
             end
@@ -990,7 +1083,8 @@ classdef ECGwrapper < handle
         end
         
         function obj = CheckECGrecording(obj)
-
+        % internal method to check the correctness of the user input.
+        
             if( isempty(obj.recording_name) )
                 error( 'ECGwrapper:ArgCheck:InvalidECGarg', 'Please provide an ECG recording as described in the documentation, help(''ECGwrapper'') maybe could help you.\n' );
             else
@@ -1003,9 +1097,14 @@ classdef ECGwrapper < handle
                     obj.rec_path = [obj.rec_path filesep];
                     
                 else
+                    
                     [obj.rec_path, obj.rec_filename] = fileparts(obj.recording_name);
                     
                     obj.rec_path = [obj.rec_path filesep];
+                    
+                    if( ~exist(obj.rec_path, 'dir') )
+                        obj.rec_path = [pwd filesep obj.rec_path];
+                    end
                     
                     aux_files = dir([obj.rec_path obj.rec_filename '.*' ]);
                     
@@ -1037,18 +1136,24 @@ classdef ECGwrapper < handle
 
                 if( strcmp(obj.recording_format, 'MIT') )
                     strAnnExtension = {'ari' 'atr' 'ecg'};
+                    annFileName = {};
                     bAnnotationFound = false;
                     for ii = 1:length(strAnnExtension)
-                        annFileName = [obj.recording_name(1:end-3) strAnnExtension{ii}];
-                        if( exist(annFileName, 'file') )
+                        aux_str = [obj.recording_name(1:end-3) strAnnExtension{ii}];
+                        if( exist(aux_str, 'file') )
+                            annFileName = [ annFileName aux_str ];
                             bAnnotationFound = true;
-                            break
                         end
                     end
                     if(~bAnnotationFound)
                         ann_aux = [];
                     else
-                        ann_aux = readannot(annFileName);
+                        for aux_str = annFileName
+                            ann_aux = readannot(aux_str{1});
+                            if( ~isempty(ann_aux) )
+                                break;                                
+                            end
+                        end
                     end
 
                     obj.ECG_header = readheader([obj.recording_name(1:end-3) 'hea']);
@@ -1108,7 +1213,9 @@ classdef ECGwrapper < handle
             else
                 % discard non-beats and finish annotations parsing.
                 obj.bQRSlocations = true;
-                ann_aux = AnnotationFilterConvert(ann_aux, obj.recording_format, obj.class_labeling);
+                if( isfield(ann_aux, 'anntyp') )
+                    ann_aux = AnnotationFilterConvert(ann_aux, obj.recording_format, obj.class_labeling);
+                end
                 obj.QRS_locations = ann_aux.time;
                 obj.ECG_annotations = ann_aux;
             end
@@ -1118,7 +1225,8 @@ classdef ECGwrapper < handle
         end
 
         function ReportErrors(obj)
-
+        % error reporting method.
+        
             if( obj.Processed )
                 if( obj.Error )
                     
@@ -1136,32 +1244,44 @@ classdef ECGwrapper < handle
         end
         
         function disp(obj)
-            tab_size = 60;
+        % this method produces a pretty-printed description about the
+        % information stored in the object
             
             for this_obj = rowvec(obj)
                 
                 if( this_obj.bCreated )
-                    if( isobject(this_obj.ECGtaskHandle) )
-                        task_name = this_obj.ECGtaskHandle.name;
-                    else
-                        task_name = 'Undef';
-                    end
 
                     disp_string_framed( '*Blue', 'ECGwrapper object config' );
+
+                    fprintf(1, '+ECG recording: ');
+                    
+                    if( isempty(this_obj.recording_name) )
+                        cprintf('*Red', 'None selected\n', this_obj.recording_name, this_obj.recording_format);                    
+                    else
+                        cprintf('*Blue', '%s (%s)\n', this_obj.recording_name, this_obj.recording_format);                    
+                    end
+                    
                     fprintf(1,[ ...
-                                '+ECG recording: %s (%s)\n' ... 
                                 '+PID: %d/%d\n' ... 
-                                '+Function name: %s\n' ...
                                 '+Repetitions: %d\n' ...
                                 '+Partition mode: %s\n'], ... 
-                                adjust_string(this_obj.recording_name, tab_size-23), ...
-                                this_obj.recording_format, ...
                                 this_obj.this_pid, ...
                                 this_obj.cant_pids, ...
-                                adjust_string(task_name, tab_size-16), ...
                                 this_obj.repetitions, ...
-                                adjust_string(this_obj.partition_mode, tab_size));
+                                this_obj.partition_mode);
 
+                    fprintf(1, '+Function name: ');
+                    if( isobject(this_obj.ECGtaskHandle) )
+                        
+                        if( strcmpi( this_obj.ECGtaskHandle.name, 'Null task' ) )
+                            cprintf('*Red', '%s\n', this_obj.ECGtaskHandle.name);                    
+                        else
+                            fprintf(1, '%s\n', this_obj.ECGtaskHandle.name);
+                        end
+                    else
+                        cprintf('*Red', 'Task not defined\n');                    
+                    end
+                            
                     fprintf(1, '+Processed: ');                    
                     if( this_obj.Processed)
                         cprintf('*Magenta', 'true\n');                    
@@ -1169,18 +1289,24 @@ classdef ECGwrapper < handle
                         cprintf('*Red', 'false\n');                    
                     end
 
-                    fprintf(1, '+TMP: %s\n', adjust_string(this_obj.tmp_path, 20) );
+                    if( ~isempty(this_obj.tmp_path) )
+                        fprintf(1, '+TMP: %s\n', adjust_string(this_obj.tmp_path, 20) );
+                    end
 
-                    if( this_obj.Processed)
+                    if( this_obj.Processed )
                         fprintf(1, disp_option_enumeration( '+Result files:', this_obj.Result_files));
                     end
 
+                    fprintf(1, '\n');
+                    
                 else
                     fprintf(1, 'Object not created yet.');
                 end
                 
             end
         end
+
+        %% property access methods.
         
         function set.tmp_path(obj,value)
             
@@ -1197,6 +1323,19 @@ classdef ECGwrapper < handle
                 warning('ECGwrapper:BadArg', 'tmp_path must be a string.');
             end
             
+        end
+        
+        function set.user_string(obj,value)
+            if( isempty(value) )
+                obj.user_string = value;
+                
+            elseif(ischar(value) ) 
+
+                obj.user_string = value;
+                
+            else
+                warning('ECGwrapper:BadArg', 'user_string must be a string.');
+            end
         end
         
         function set.output_path(obj,value)
@@ -1225,7 +1364,7 @@ classdef ECGwrapper < handle
         end
         
         function set.recording_name(obj,value)
-            if( ischar(value) )
+            if( ischar(value) || isempty(value) )
                 obj.recording_name = value;
                 obj.bArgChanged = true;
                 obj.bECG_rec_changed = true;
@@ -1235,13 +1374,13 @@ classdef ECGwrapper < handle
         end
 
         function set.recording_format(obj,value)
-            if( ischar(value) )
+            if( isempty(value) )
+                obj.recording_format = 'auto';
+                obj.bArgChanged = true;
+            elseif( ischar(value) )
                 obj.recording_format = value;
                 obj.bArgChanged = true;
                 obj.bECG_rec_changed = true;
-            elseif( isempty(value) )
-                obj.recording_format = 'auto';
-                obj.bArgChanged = true;
             else
                 warning('ECGwrapper:BadArg', 'recording_format must be a string.');
             end
@@ -1323,17 +1462,21 @@ classdef ECGwrapper < handle
         end
 
         function set.ECGtaskHandle(obj,value)
-            if( isobject(value) )
+            if( isa(value, 'ECGtask') )
                 obj.ECGtaskHandle = value;
                 obj.bArgChanged = true;
+                
             elseif( ischar(value) )
+                
                 aux_idx = find(strcmpi(obj.cKnownECGtasks, value));
                 if( isempty(aux_idx) )
-                    fprintf(2, 'Invalid ECGtask name. ECGtaskHandle must be one of these strings:\n');
-                    cellfun(@(a)(fprintf(2, ' + %s\n', a)), obj.cKnownECGtasks);
+                    cprintf( 'Red', disp_option_enumeration( 'Invalid ECGtask name. ECGtaskHandle must be one of these strings:', obj.cKnownECGtasks ));
                     obj.ECGtaskHandle = ECGtask_do_nothing();
                 else
                     obj.ECGtaskHandle = obj.cKnownECGtasksHdl{aux_idx};
+                    if( ~isempty(obj.user_string) )
+                        obj.ECGtaskHandle.user_string = obj.user_string;
+                    end
                     obj.bArgChanged = true;
                 end
             elseif( isempty(value) )

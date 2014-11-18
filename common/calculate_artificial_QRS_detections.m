@@ -5,9 +5,7 @@ function all_detections = calculate_artificial_QRS_detections(all_detections, EC
     end
     % attemp to build a better detection from single-lead detections.
 
-    [AnnNames, all_annotations] = getAnnNames(all_detections);
-
-    cant_anns = size(AnnNames,1);
+    [~, all_annotations] = getAnnNames(all_detections);
 
     [ ratios, estimated_labs ] = CalcRRserieRatio(all_annotations, ECG_header, start_end_this_segment);
 
@@ -18,8 +16,8 @@ function all_detections = calculate_artificial_QRS_detections(all_detections, EC
     artificial_annotations = combine_anns(all_annotations(aux_idx), estimated_labs(aux_idx), ECG_header );
 
     for ii = 1:length(artificial_annotations)
-        aux_str = ['artificial_' num2str(ii)];
-        all_detections.(aux_str) = colvec(artificial_annotations(ii));
+        aux_str = ['mixartif_ECGmix' num2str(ii)];
+        all_detections.(aux_str) = artificial_annotations(ii);
     end
 
     [AnnNames, all_annotations] = getAnnNames(all_detections);
@@ -33,22 +31,4 @@ function all_detections = calculate_artificial_QRS_detections(all_detections, EC
     all_detections.series_quality.AnnNames = AnnNames(best_detections_idx,:); %#ok<STRNU>
 
 
-function [AnnNames, all_annotations] = getAnnNames(aux_struct)
 
-    AnnNames = [];
-
-    for fname = rowvec(fieldnames(aux_struct))
-        if( isfield(aux_struct.(fname{1}), 'time') )
-            AnnNames = [AnnNames; cellstr(fname{1}) cellstr('time')];
-        end
-        if( isfield(aux_struct.(fname{1}), 'qrs') )
-            AnnNames = [AnnNames; cellstr(fname{1}) cellstr('qrs')];
-        end
-    end
-
-    cant_anns = size(AnnNames,1);
-
-    all_annotations = cell(cant_anns,1);
-    for ii = 1:cant_anns
-        all_annotations{ii} = aux_struct.(AnnNames{ii,1}).(AnnNames{ii,2});
-    end

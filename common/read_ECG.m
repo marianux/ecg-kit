@@ -3,7 +3,7 @@ function [ECG heasig ann recording_format] = read_ECG(recording_name, ECG_start_
 ECG = [];
 heasig = [];
 ann = [];
-cKnownFormats = {'MIT' 'ISHNE', 'HES', 'MAT', 'Mortara'};
+cKnownFormats = {'MIT' 'AHA' 'ISHNE', 'HES', 'MAT', 'Mortara'};
 
 if( nargin < 4 || isempty(recording_format) || ~any(strcmpi( recording_format, cKnownFormats)) )
     %Try guessing the ECG format

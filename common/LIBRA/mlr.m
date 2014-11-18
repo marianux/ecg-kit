@@ -95,7 +95,7 @@ if nargin>2
 end
 %%%%%%%%%Main part%%%%%%%
 if q==1 
-    result=ols(x,y,'intercept', options.intercept,'plots',options.plots);
+    result=libra_ols(x,y,'intercept', options.intercept,'plots',options.plots);
 else
     cmean=mean(geg); 
     ccovar=cov(geg);
@@ -119,9 +119,9 @@ else
         res.md='singularity';
         res.resd='singularity';
     else
-        res.md=sqrt(mahalanobis(x,cmean(1:p),'cov',covarx))';
+        res.md=sqrt(libra_mahalanobis(x,cmean(1:p),'cov',covarx))';
         cen=zeros(q,1)';
-        res.resd=sqrt(mahalanobis(res.residuals,cen,'cov',res.cov))'; 
+        res.resd=sqrt(libra_mahalanobis(res.residuals,cen,'cov',res.cov))'; 
     end
     
     %cutoff values 

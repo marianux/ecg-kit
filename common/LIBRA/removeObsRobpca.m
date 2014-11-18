@@ -84,7 +84,7 @@ else
     T2tilde = T2tilde(:,1:k);
 end
 
-mah = mahalanobis(T2tilde,zeros(1,k),'invcov',1./diag(LH0_min_i(1:k,1:k)));
+mah = libra_mahalanobis(T2tilde,zeros(1,k),'invcov',1./diag(LH0_min_i(1:k,1:k)));
 oldobj = prod(diag(LH0_min_i(1:k,1:k)));P4 = eye(k);
 
 if csteps.value    
@@ -97,7 +97,7 @@ if csteps.value
         T2tilde = (T2tilde - repmat(clmX,n-1,1))*P;    
         center = center + clmX*rot';   
         rot = rot*P;      
-        mah = mahalanobis(T2tilde,zeros(1,size(T2tilde,2)),'invcov',1./L);      
+        mah = libra_mahalanobis(T2tilde,zeros(1,size(T2tilde,2)),'invcov',1./L);      
         P4 = P4*P;    
         if abs(oldobj - obj) > 1.e-12      
             oldobj = obj;    
@@ -145,7 +145,7 @@ else
     mah = mah/factor;  
     weights = mah <= chi2inv(0.975,size(T2tilde,2)); 
     [center_noMCD,cov_noMCD] = weightmecov(T2tilde,weights);  
-    mah = mahalanobis(T2tilde,center_noMCD,'cov',cov_noMCD);  
+    mah = libra_mahalanobis(T2tilde,center_noMCD,'cov',cov_noMCD);  
     z.flag = (mah <= chi2inv(0.975,size(T2tilde,2)));   
     z.center = center_noMCD;  
     z.cov = cov_noMCD;

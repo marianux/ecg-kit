@@ -1,0 +1,1234 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Example of how to use the ECGkit</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-16"><meta name="DC.source" content="examples.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Example of how to use the ECGkit</h1><!--introduction--><p>This script exemplifies the use of the <a href="matlab:web('https://code.google.com/p/ecg-kit/','-browser')"><b>ECGkit</b></a> in a multimodal cardiovascular recording which includes arterial blood pressure (ABP), plethysmographic (PPG) and electrocardiogram signals. The following tasks will be performed in this example:</p><div><ul><li>Heartbeat/QRS detection</li><li>ABP/PPG pulse detection</li><li>ECG wave delineation</li><li>Heartbeat classification</li><li>Report generation</li></ul></div><p>Each automatic step is followed by a manual verification step in order to verify the algorithm's results. The script is prepared to run locally without arguments, as well as in a cluster environment by using "pid_str" argument. The pid_str argument is a char with format 'N/M', being N &lt;= M with default value '1/1'. You can partition a big job into M pieces in cluster architecture, by starting M processes with N ranging from 1 to M.</p><p>You can watch a typical run of this script for small, local ECG recording <a href="matlab:web('http://youtu.be/7pzb-3YE7C4','-browser')">in this link</a> or for several big recordings <a href="matlab:web('http://youtu.be/7pzb-3YE7C4','-browser')">in this other link</a>.</p><p><b>Example</b> of how to run this script</p><pre class="language-matlab">examples()
+</pre><p>Lazy users can use the default values. <a href="matlab:examples()">Run!</a></p><pre class="language-matlab">examples(<span class="string">'1/1'</span>, <span class="string">'C:\Your_preferred_local_path\'</span>, <span class="string">'arbitrary_string'</span>)
+</pre><pre class="language-matlab">examples(<span class="string">'1/10'</span>, <span class="string">'/Your_preferred_path_in_cluster/'</span>, <span class="string">'arbitrary_string'</span>)
+</pre><p>See also ECGwrapper, ECGtask</p><p><b>Author</b>: Mariano Llamedo Soria <a href="matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser')">(email)</a> <b>Version</b>: 0.1 beta <b>Birthdate</b>: 11/2/2014 <b>Last update</b>: 18/7/2014 <b>Copyright</b> 2008-2014</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Function prototype</a></li><li><a href="#4">Argument parsing</a></li><li><a href="#6">QRS automatic detection</a></li><li><a href="#9">QRS visual inspection and correction</a></li><li><a href="#12">PPG/ABP pulse detection</a></li><li><a href="#14">PPG/ABP waves visual inspection and correction</a></li><li><a href="#17">ECG automatic delineation</a></li><li><a href="#19">Visual inspection of the detection/delineation</a></li><li><a href="#21">Automatic Heartbeat classification</a></li><li><a href="#25">Visual inspection of the signal</a></li><li><a href="#30">Other user-defined tasks ...</a></li></ul></div><h2>Function prototype<a name="1"></a></h2><pre class="codeinput"><span class="keyword">function</span> examples(pid_str, examples_path, user_str)
+</pre><p><i>examples</i> accepts three <i>optional</i> arguments:</p><div><ul><li><b><i>pid_str</i></b> (optional) string identifier for this work instance in a cluster computing or multitask environment. The identifier follows the form 'N/M', being N a number which  identifies this execution instance and M the total amount of instances. Default value '1/1'</li><li><b><i>examples_path</i></b> (optional) string of the path with ECG recordings. Default value <tt>['.' filesep 'example_recordings' filesep ]</tt>;</li><li><b><i>user_str</i></b> (optional) string to identify this run or experiment.</li></ul></div><h2>Argument parsing<a name="4"></a></h2><p>Simple and straight forward.</p><pre class="codeinput">    <span class="keyword">if</span>( nargin &lt; 1 || ~ischar(pid_str) )
+        <span class="comment">% single PID run</span>
+        pid_str = <span class="string">'1/1'</span>;
+    <span class="keyword">end</span>
+
+    <span class="keyword">if</span>( nargin &lt; 2 || ~exist(examples_path, <span class="string">'dir'</span>) )
+        <span class="comment">% inspect ECG files in rootpath\example_recordings\ folder</span>
+        root_path = fileparts(mfilename(<span class="string">'fullpath'</span>));
+        <span class="comment">% default folder to look at</span>
+        examples_path = [root_path filesep <span class="string">'example_recordings'</span> filesep ];
+        <span class="keyword">if</span>(~exist(examples_path, <span class="string">'dir'</span>))
+            disp_string_framed(2, <span class="string">'Please provide a valid path with ECG recordings'</span>);
+            <span class="keyword">return</span>
+        <span class="keyword">end</span>
+    <span class="keyword">else</span>
+        <span class="keyword">if</span>( examples_path(end) ~= filesep )
+            examples_path = [examples_path filesep];
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    <span class="keyword">if</span>( nargin &lt; 3  )
+        user_str = <span class="string">''</span>;
+    <span class="keyword">end</span>
+
+<span class="comment">% Explore the *examples_path* for ECG recordings.</span>
+
+    filenames = dir(examples_path);
+    recnames = {filenames(:).name};
+
+<span class="comment">% In this case I hardcoded only one recording</span>
+    recnames = {<span class="string">'ex_ABP_PPG_Registro_01M'</span>};
+
+<span class="comment">% But you can use this to iterate for all of them.</span>
+<span class="comment">%     [~,recnames] = cellfun(@(a)(fileparts(a)), recnames, 'UniformOutput', false);</span>
+<span class="comment">%     recnames = unique(recnames);</span>
+<span class="comment">%     recnames = setdiff(recnames, {'' '.' '..' 'results' 'condor' });</span>
+<span class="comment">%     recnames = recnames(1)</span>
+    lrecnames = length(recnames);
+
+    <span class="comment">% In case of running in a user-assisted fashion.</span>
+    bUseDesktop = usejava(<span class="string">'desktop'</span>);
+
+    <span class="keyword">if</span>( bUseDesktop )
+        tmp_path = tempdir;
+        output_path = [ examples_path <span class="string">'results'</span> filesep ];
+    <span class="keyword">else</span>
+        <span class="comment">% For cluster or distributed environment processing.</span>
+
+        InstallECGkit();
+
+        <span class="comment">% this is a local path, usually faster to reach than output_path</span>
+        tmp_path = <span class="string">'/scratch/'</span>;
+
+        <span class="comment">% distributed or cluster-wide accesible path</span>
+        output_path = [ examples_path <span class="string">'results'</span> filesep ];
+    <span class="keyword">end</span>
+
+<span class="comment">% just for debugging, keep it commented.</span>
+<span class="comment">%     bUseDesktop = false</span>
+</pre><h2>QRS automatic detection<a name="6"></a></h2><p>In this example the first step is the location of each heartbeat, or QRS complexes detection. To achieve this, the kit includes the following algorithms:</p><div><ul><li>Wavedet</li><li>Pan &amp; Tompkins</li><li>gqrs</li><li>sqrs</li><li>wqrs</li><li>ecgpuwave</li></ul></div><p>The way of performing QRS detection (or almost any other task in this ECGkit) is through an <a href="matlab:doc('ECGwrapper')">ECGwrapper</a> object. The objective of this object is to abstract or sepparate any algorithm from the particular details of the ECG signal. This object is able to invoque any kind of algorithm through the interface provided of other object, called <a href="matlab:doc('ECGwrapper')">ECGtask</a> obejcts.</p><p>The <i>ECGtask</i> obejcts actually perform specific task on the ECG signal, in this case, the QRS complex detection. Each task have general properties such as <i>user_string</i>, <i>progress_handle</i> (see <a href="matlab:edit('ECGtask.m')">ECGtask</a> class for more details) and other specific for a  certain task, such as <i>detectors</i>, <i>only_ECG_leads</i>, <i>wavedet_config</i>, <i>gqrs_config_filename</i> (see others in <a href="matlab:edit('ECGtask_QRS_detection.m')">QRS detection</a> task source).</p><pre class="codeinput">    <span class="comment">% go through all files</span>
+
+    ECG_all_wrappers = [];
+    jj = 1;
+
+    <span class="keyword">for</span> ii = 1:lrecnames
+
+        rec_filename = [examples_path recnames{ii}];
+
+        <span class="comment">% task name,</span>
+<span class="comment">%         ECGt_QRSd = 'QRS_detection';</span>
+        <span class="comment">% or create an specific handle to have more control</span>
+        ECGt_QRSd = ECGtask_QRS_detection();
+<span class="comment">%         % select an specific algorithm. Default: Run all detectors</span>
+<span class="comment">%         ECGt_QRSd.detectors = 'wavedet'; % Wavedet algorithm based on</span>
+<span class="comment">%         ECGt_QRSd.detectors = 'pantom';  % Pan-Tompkins alg.</span>
+<span class="comment">%         ECGt_QRSd.detectors = 'gqrs';    % WFDB gqrs algorithm.</span>
+<span class="comment">%         ECGt_QRSd.detectors = 'user:example_worst_ever_QRS_detector';    % Example of how you can add your own QRS detector.</span>
+<span class="comment">%         ECGt_QRSd.detectors = 'user:your_QRS_detector_func_name';    %</span>
+<span class="comment">%         "your_QRS_detector_func_name" can be your own detector.</span>
+        ECGt_QRSd.detectors = {<span class="string">'wavedet'</span> <span class="string">'gqrs'</span> <span class="string">'wqrs'</span> <span class="string">'user:example_worst_ever_QRS_detector'</span>};
+
+        <span class="comment">% you can individualize each run of the QRS detector with an</span>
+        <span class="comment">% external string</span>
+        ECGt_QRSd.user_string = user_str;
+        <span class="comment">% or group by the config used</span>
+<span class="comment">%         ECGt_QRSd.user_string = ECGt_QRSd.detectors;</span>
+
+
+<span class="comment">%         ECGt_QRSd.only_ECG_leads = false;    % consider all signals ECG</span>
+        ECGt_QRSd.only_ECG_leads = true;    <span class="comment">% Identify ECG signals based on their header description.</span>
+
+        ECG_w = ECGwrapper( <span class="string">'recording_name'</span>, rec_filename, <span class="keyword">...</span>
+                            <span class="string">'this_pid'</span>, pid_str, <span class="keyword">...</span>
+                            <span class="string">'tmp_path'</span>, tmp_path, <span class="keyword">...</span>
+                            <span class="string">'output_path'</span>, output_path, <span class="keyword">...</span>
+                            <span class="string">'ECGtaskHandle'</span>, ECGt_QRSd);
+
+        <span class="keyword">try</span>
+
+            <span class="comment">% process the task</span>
+            ECG_w.Run;
+
+            <span class="comment">% collect object if were recognized as ECG recordings.</span>
+            <span class="keyword">if</span>( jj == 1)
+                ECG_all_wrappers = ECG_w;
+            <span class="keyword">else</span>
+                ECG_all_wrappers(jj) = ECG_w;
+            <span class="keyword">end</span>
+            jj = jj + 1;
+
+        <span class="keyword">catch</span> MException
+
+            <span class="keyword">if</span>( strfind(MException.identifier, <span class="string">'ECGwrapper:ArgCheck:InvalidFormat'</span>) )
+                disp_string_framed(<span class="string">'*Red'</span>, sprintf( <span class="string">'Could not guess the format of %s'</span>, ECG_w.recording_name) );
+            <span class="keyword">else</span>
+                <span class="comment">% report just in case</span>
+                report = getReport(MException);
+                fprintf(2, <span class="string">'\n%s\n'</span>, report);
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+
+    <span class="keyword">end</span>
+
+    <span class="comment">% recognized recordings</span>
+    lrecnames = length(ECG_all_wrappers);
+
+    <span class="comment">% at the end, report problems if happened.</span>
+    <span class="keyword">for</span> ii = 1:lrecnames
+        ECG_all_wrappers(ii).ReportErrors;
+    <span class="keyword">end</span>
+</pre><h2>QRS visual inspection and correction<a name="9"></a></h2><p>This part of the example uses a graphical user interface (GUI) to allow the user correcting mistakes that the previous automatic algorithm eventually makes.</p><p>As can be seen in the following code, the first step is checking that the previous QRS detection task finished without problems. Then if no errors, the corrector will use as starting point the result of this same task, in case the user would like to edit a previously edited result, or if not available the result of the QRS detection task.</p><pre class="codeinput">    <span class="keyword">if</span>( bUseDesktop )
+
+        <span class="comment">% other task can be performed on the same objects</span>
+        <span class="keyword">for</span> ii = 1:lrecnames
+
+            <span class="comment">% last worker is the responsible of the visual correction.</span>
+            <span class="keyword">if</span>( ECG_all_wrappers(ii).this_pid == ECG_all_wrappers(ii).cant_pids)
+
+                <span class="comment">% if there are not any previous error.</span>
+                <span class="keyword">if</span>( ECG_all_wrappers(ii).Processed &amp;&amp; ~ECG_all_wrappers(ii).Error )
+
+                    <span class="comment">% this is to use previous saved results as starting point,</span>
+                    <span class="comment">% if any available</span>
+                    cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName({<span class="string">'QRS_corrector'</span> <span class="string">'QRS_detection'</span>});
+
+                    <span class="comment">% if no previous correction work, try the automatic</span>
+                    <span class="comment">% detection task</span>
+
+                    <span class="comment">% if any, do the correction</span>
+                    <span class="keyword">if</span>( ~isempty(cached_filenames) )
+
+                        <span class="comment">% this is to use previous saved results as starting point,</span>
+                        <span class="comment">% if any available</span>
+                        ECG_all_wrappers(ii).ECGtaskHandle = <span class="string">'QRS_corrector'</span>;
+
+                        <span class="comment">% This task is supposed to be supervised, so only one pid is enough.</span>
+                        ECG_all_wrappers(ii).this_pid = <span class="string">'1/1'</span>;
+
+                        <span class="comment">% user provided name to individualize each run</span>
+                        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+
+                        <span class="comment">% to avoid loading cached results and exit, this flag</span>
+                        <span class="comment">% allows the re-editing of the current state of the</span>
+                        <span class="comment">% detections.</span>
+                        ECG_all_wrappers(ii).cacheResults = false;
+
+                        <span class="comment">% maybe in your application you should run this for</span>
+                        <span class="comment">% all files.</span>
+                        ECG_all_wrappers(ii).ECGtaskHandle.payload = load(cached_filenames{1});
+
+                        <span class="comment">% process the task</span>
+                        ECG_all_wrappers(ii).Run;
+
+                        <span class="comment">% restore the original pids configuration</span>
+                        ECG_all_wrappers(ii).this_pid = pid_str;
+
+                        <span class="comment">% As we changed for "QRS correction" task, we have to enable this</span>
+                        <span class="comment">% value again in order to avoid performing the following tasks every time.</span>
+                        <span class="comment">% If you want to recalculate any task, change it to false</span>
+                        ECG_all_wrappers(ii).cacheResults = true;
+
+                    <span class="keyword">end</span>
+
+
+                <span class="keyword">end</span>
+
+            <span class="keyword">end</span>
+
+        <span class="keyword">end</span>
+
+        <span class="comment">% at the end, report problems if happened.</span>
+        <span class="keyword">for</span> ii = 1:lrecnames
+            ECG_all_wrappers(ii).ReportErrors;
+        <span class="keyword">end</span>
+
+    <span class="keyword">end</span>
+</pre><p>Then the task invoked by the wrapper object is changed to <a href="matlab:edit('ECGtask_QRS_corrector.m')">QRS corrector task</a> and the GUI is presented to the user.</p><p><img vspace="5" hspace="5" src="QRS corrector.PNG" alt=""> </p><p>In this example, the GUI have four plots to represent the RR interval series, the two in the top-left show the RR interval versus time at different time windows. The bigger in the top-right, shows a <i>Poincar&eacute;</i> plot, that is the current RR interval versus the following in the serie. The plot in the bottom shows the selected signal/s versus time. Then the user can interact with the plots according to the <a href="matlab:doc('ECGtask_QRS_corrector')">QRS corrector documentation</a></p><h2>PPG/ABP pulse detection<a name="12"></a></h2><p>In case the recording includes pulsatile signals, such as plethysmographic (PPG) or arterial blood pressure (ABP), this kit includes the <a href="matlab:doc('ECGtask_PPG_ABP_detector')">PPG/ABP automatic detector task</a> which allows the use of two algorithms to perform peak detection, <a href="matlab:doc('PPG_pulses_detector')">WavePPG</a> and <a href="matlab:web('http://www.physionet.org/physiotools/wag/wabp-1.htm','-browser')">Physionet's wabp</a>.</p><p>other task can be performed on the same objects</p><pre class="codeinput">    <span class="keyword">for</span> ii = 1:lrecnames
+
+        <span class="comment">% set the delineator task name and run again.</span>
+        ECG_all_wrappers(ii).ECGtaskHandle = <span class="string">'PPG_ABP_detector'</span>;
+
+        <span class="comment">% user provided name to individualize each run</span>
+        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+
+        <span class="comment">% process the task</span>
+        ECG_all_wrappers(ii).Run;
+
+    <span class="keyword">end</span>
+
+    <span class="comment">% at the end, report problems if happened.</span>
+    <span class="keyword">for</span> ii = 1:lrecnames
+        ECG_all_wrappers(ii).ReportErrors;
+    <span class="keyword">end</span>
+</pre><h2>PPG/ABP waves visual inspection and correction<a name="14"></a></h2><p>The same manual verification made for automatic QRS detection algorithms can be performed with pulsatile signals. The <a href="matlab:doc('ECGtask_PPG_ABP_corrector')">PPG/ABP corrector task</a> was designed to allow users the verification and correction of automatic detections through the same GUI.</p><p><img vspace="5" hspace="5" src="PPG-ABP corrector.PNG" alt=""> </p><p>The following code shows how to use this task. As you can note, the interface is almost the same used for the QRS correction task.</p><pre class="codeinput">    <span class="keyword">if</span>( bUseDesktop )
+
+        <span class="comment">% other task can be performed on the same objects</span>
+        <span class="keyword">for</span> ii = 1:lrecnames
+
+            <span class="comment">% last worker is the responsible of the visual correction.</span>
+            <span class="keyword">if</span>( ECG_all_wrappers(ii).this_pid == ECG_all_wrappers(ii).cant_pids)
+
+                <span class="comment">% if there are not any previous error.</span>
+                <span class="keyword">if</span>( ECG_all_wrappers(ii).Processed &amp;&amp; ~ECG_all_wrappers(ii).Error )
+
+                    <span class="comment">% this is to use previous saved results as starting point,</span>
+                    <span class="comment">% if any available</span>
+                    cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName({<span class="string">'PPG_ABP_corrector'</span> <span class="string">'PPG_ABP_detector'</span>});
+
+                    <span class="comment">% if no previous correction work, try the automatic</span>
+                    <span class="comment">% detection task</span>
+
+                    <span class="comment">% if any, do the correction</span>
+                    <span class="keyword">if</span>( ~isempty(cached_filenames) )
+
+                        <span class="comment">% this is to use previous saved results as starting point,</span>
+                        <span class="comment">% if any available</span>
+                        ECG_all_wrappers(ii).ECGtaskHandle = <span class="string">'PPG_ABP_corrector'</span>;
+
+                        <span class="comment">% This task is supposed to be supervised, so only one pid is enough.</span>
+                        ECG_all_wrappers(ii).this_pid = <span class="string">'1/1'</span>;
+
+                        <span class="comment">% user provided name to individualize each run</span>
+                        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+
+                        <span class="comment">% to avoid loading cached results and exit, this flag</span>
+                        <span class="comment">% allows the re-editing of the current state of the</span>
+                        <span class="comment">% detections.</span>
+                        ECG_all_wrappers(ii).cacheResults = false;
+
+                        <span class="comment">% maybe in your application you should run this for</span>
+                        <span class="comment">% all files.</span>
+                        ECG_all_wrappers(ii).ECGtaskHandle.payload = load(cached_filenames{1});
+
+                        <span class="comment">% process the task</span>
+                        ECG_all_wrappers(ii).Run;
+
+                        <span class="comment">% restore the original pids configuration</span>
+                        ECG_all_wrappers(ii).this_pid = pid_str;
+
+                        <span class="comment">% As we changed for "QRS correction" task, we have to enable this</span>
+                        <span class="comment">% value again in order to avoid performing the following tasks every time.</span>
+                        <span class="comment">% If you want to recalculate any task, change it to false</span>
+                        ECG_all_wrappers(ii).cacheResults = true;
+
+                    <span class="keyword">end</span>
+
+
+                <span class="keyword">end</span>
+
+            <span class="keyword">end</span>
+
+        <span class="keyword">end</span>
+
+        <span class="comment">% at the end, report problems if happened.</span>
+        <span class="keyword">for</span> ii = 1:lrecnames
+            ECG_all_wrappers(ii).ReportErrors;
+        <span class="keyword">end</span>
+
+    <span class="keyword">end</span>
+</pre><h2>ECG automatic delineation<a name="17"></a></h2><p>Once the QRS complexes were detected, each heartbeat can be segmented or delineated into P-QRS-T waves. To achieve this the kit includes an <a href="matlab:doc('ECGtask_ECG_delineation')">ECG delineation task</a> to interface with the <a href="matlab:web('http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=1275572','-browser')">wavedet</a> and others user-defined algorithms, as described in the <a href="matlab:doc('ECGtask_ECG_delineation')">task help</a>. The interface follows the same guidelines described before, as is shown in the following code.</p><p>other task can be performed on the same objects</p><pre class="codeinput">    <span class="keyword">for</span> ii = 1:lrecnames
+
+        <span class="comment">% this is to use previous cached results as starting point</span>
+        cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName(<span class="string">'QRS_corrector'</span>);
+
+        <span class="comment">% if corrected QRS detections are not available, wavedet</span>
+        <span class="comment">% performs automatic QRS detection.</span>
+        <span class="keyword">if</span>( ~isempty(cached_filenames) )
+            <span class="comment">% this is to use previous result from the automatic QRS</span>
+            <span class="comment">% detection</span>
+            ECG_all_wrappers(ii).ECGtaskHandle.payload = load(cached_filenames{1});
+
+        <span class="keyword">end</span>
+
+        <span class="comment">% set the delineator task name and run again.</span>
+        ECG_all_wrappers(ii).ECGtaskHandle = <span class="string">'ECG_delineation'</span>;
+
+        <span class="comment">% user provided name to individualize each run</span>
+        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+
+        <span class="comment">% Identify ECG signals based on their header description and</span>
+        <span class="comment">% perform delineation in those leads.</span>
+        ECG_all_wrappers(ii).ECGtaskHandle.only_ECG_leads = true;
+
+<span class="comment">%         ECGt_QRSd.detectors = 'wavedet'; % Wavedet algorithm based on</span>
+<span class="comment">%         ECGt_QRSd.detectors = 'user:example_worst_ever_ECG_delineator';</span>
+<span class="comment">%         % Example of how you can add your own ECG delineator.</span>
+<span class="comment">%         ECGt_QRSd.detectors = 'user:your_ECG_delineator_func_name';</span>
+<span class="comment">%         "your_ECG_delineator_func_name" can be your own delineator.</span>
+        ECG_all_wrappers(ii).ECGtaskHandle.delineators = {<span class="string">'wavedet'</span> <span class="string">'user:example_worst_ever_ECG_delineator'</span>};
+
+        <span class="comment">% process the task</span>
+        ECG_all_wrappers(ii).Run;
+
+    <span class="keyword">end</span>
+
+    <span class="comment">% at the end, report problems if happened.</span>
+    <span class="keyword">for</span> ii = 1:lrecnames
+        ECG_all_wrappers(ii).ReportErrors;
+    <span class="keyword">end</span>
+</pre><h2>Visual inspection of the detection/delineation<a name="19"></a></h2><p>The same manual verification made for all the previous automatic tasks is repeated for ECG delineation. The <a href="matlab:doc('ECGtask_ECG_delineation_corrector')">ECG delineation corrector task</a> was designed to allow users the verification and correction of automatic delineation through the same GUI. The only difference with respect to the behaviour of the QRS or PPG/ABP correction GUI, is that addition of new events to the P-QRS-T series is not allowed, in order to keep the assosiation of a wave fiducial point to a heartbeat.</p><p><img vspace="5" hspace="5" src="ECG delineator corrector.png" alt=""> </p><pre class="codeinput">    <span class="keyword">if</span>( bUseDesktop )
+
+        <span class="comment">% other task can be performed on the same objects</span>
+        <span class="keyword">for</span> ii = 1:lrecnames
+
+            <span class="comment">% last worker is the responsible of the visual correction.</span>
+            <span class="keyword">if</span>( ECG_all_wrappers(ii).this_pid == ECG_all_wrappers(ii).cant_pids)
+
+                <span class="comment">% if there are not any previous error.</span>
+                <span class="keyword">if</span>( ECG_all_wrappers(ii).Processed &amp;&amp; ~ECG_all_wrappers(ii).Error )
+
+                    <span class="comment">% this is to use previous saved results as starting point,</span>
+                    <span class="comment">% if any available</span>
+                    cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName( {<span class="string">'ECG_delineation_corrector'</span> <span class="string">'ECG_delineation'</span>} );
+
+                    <span class="comment">% if no previous correction work, try the automatic</span>
+                    <span class="comment">% detection task</span>
+
+                    <span class="comment">% if any, do the correction</span>
+                    <span class="keyword">if</span>( ~isempty(cached_filenames) )
+
+                        <span class="comment">% this is to use previous saved results as starting point,</span>
+                        <span class="comment">% if any available</span>
+                        ECG_all_wrappers(ii).ECGtaskHandle = <span class="string">'ECG_delineation_corrector'</span>;
+
+                        <span class="comment">% This task is supposed to be supervised, so only one pid is enough.</span>
+                        ECG_all_wrappers(ii).this_pid = <span class="string">'1/1'</span>;
+
+                        <span class="comment">% user provided name to individualize each run</span>
+                        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+
+                        <span class="comment">% to avoid loading cached results and exit, this flag</span>
+                        <span class="comment">% allows the re-editing of the current state of the</span>
+                        <span class="comment">% detections.</span>
+                        ECG_all_wrappers(ii).cacheResults = false;
+
+                        <span class="comment">% maybe in your application you should run this for</span>
+                        <span class="comment">% all files.</span>
+                        ECG_all_wrappers(ii).ECGtaskHandle.payload = load(cached_filenames{1});
+
+                        <span class="comment">% process the task</span>
+                        ECG_all_wrappers(ii).Run;
+
+                        <span class="comment">% restore the original pids configuration</span>
+                        ECG_all_wrappers(ii).this_pid = pid_str;
+
+                        <span class="comment">% As we changed for "QRS correction" task, we have to enable this</span>
+                        <span class="comment">% value again in order to avoid performing the following tasks every time.</span>
+                        <span class="comment">% If you want to recalculate any task, change it to false</span>
+                        ECG_all_wrappers(ii).cacheResults = true;
+
+                    <span class="keyword">end</span>
+
+                <span class="keyword">end</span>
+
+            <span class="keyword">end</span>
+
+        <span class="keyword">end</span>
+
+        <span class="comment">% at the end, report problems if happened.</span>
+        <span class="keyword">for</span> ii = 1:lrecnames
+            ECG_all_wrappers(ii).ReportErrors;
+        <span class="keyword">end</span>
+
+    <span class="keyword">end</span>
+</pre><h2>Automatic Heartbeat classification<a name="21"></a></h2><p>The last task described in this example is the classification of heartbeats according to the <a href="matlab:web('http://marketplace.aami.org/eseries/scriptcontent/docs/Preview%20Files/EC57_1212_preview.pdf','-browser')">EC-57 AAMI recommendation</a>. To achieve this task, the kit includes a <a href="matlab:doc('ECGtask_heartbeat_classifier')">Heartbeat classification task</a> that interfaces with the <a href="matlab:web('https://code.google.com/p/a2hbc/','-browser')">Argentino-Aragon&eacute;s heartbeat classifier (a2hbc)</a> project in order to classify heartbeats into the following classes:</p><div><ul><li><b>N</b> normal</li><li><b>S</b> supraventricular</li><li><b>V</b> ventricular</li><li><b>F</b> fusion of normal and ventricular</li></ul></div><p>The <i>a2hbc</i> algorithm can opperate automatically or assisted by the user, for more details check the <a href="matlab:doc('a2hbc')">a2hbc documentation</a>.</p><pre class="codeinput">    <span class="keyword">for</span> ii = 1:lrecnames
+
+        <span class="comment">% this is to use previous cached results as starting point</span>
+        cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName({<span class="string">'QRS_corrector'</span> <span class="string">'QRS_detection'</span>});
+        <span class="comment">% if corrected QRS detections are not available, wavedet</span>
+        <span class="comment">% performs automatic QRS detection.</span>
+
+        <span class="keyword">if</span>( ~isempty(cached_filenames) )
+
+            ECG_all_wrappers(ii).ECGtaskHandle = <span class="string">'ECG_heartbeat_classifier'</span>;
+
+            <span class="comment">% the heartbeat classifier uses the QRS detection performed</span>
+            <span class="comment">% before, if available the task will use the corrected</span>
+            <span class="comment">% detections.</span>
+            ECG_all_wrappers(ii).ECGtaskHandle.payload = load(cached_filenames{1});
+
+            <span class="comment">% modes of operation of the a2hbc algorithm</span>
+            ECG_all_wrappers(ii).ECGtaskHandle.mode = <span class="string">'auto'</span>;
+<span class="comment">%             ECG_all_wrappers(ii).ECGtaskHandle.mode = 'slightly-assisted';</span>
+<span class="comment">%             ECG_all_wrappers(ii).ECGtaskHandle.mode = 'assisted';</span>
+
+            <span class="comment">% user provided name to individualize each run</span>
+            ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+
+            <span class="comment">% process the task</span>
+            ECG_all_wrappers(ii).Run;
+
+        <span class="keyword">end</span>
+
+    <span class="keyword">end</span>
+
+    <span class="comment">% at the end, report problems if happened.</span>
+    <span class="keyword">for</span> ii = 1:lrecnames
+        ECG_all_wrappers(ii).ReportErrors;
+    <span class="keyword">end</span>
+</pre><h2>Visual inspection of the signal<a name="25"></a></h2><p>Finaly a report is generated with the results of the previous tasks, either in a pdf document or several images. The report generated can be customized with the interface described in the <a href="matlab:doc('reportECG')">documentation</a>. The following are just three examples of a longer report:</p><p><img vspace="5" hspace="5" src="ex_ABP_PPG_Registro_01M_full_Pagina_01.png" alt=""> </p><p>A snapshot of the center</p><p><img vspace="5" hspace="5" src="ex_ABP_PPG_Registro_01M_full_Pagina_05.png" alt=""> </p><p>And finaly a snapshot of the last part of the recording.</p><p><img vspace="5" hspace="5" src="ex_ABP_PPG_Registro_01M_full_Pagina_10.png" alt=""> </p><p>This is the code used to create a PDF report.</p><pre class="codeinput">    filename = []; <span class="comment">% default setting. Let the report function decide.</span>
+<span class="comment">%     filename = 'container_filename'; % to put everything in one big file.</span>
+
+    <span class="comment">% other winlengths can be added to the array in order to further</span>
+    <span class="comment">% explore the recordings, and the algorithm results.</span>
+<span class="comment">%     winlengths = []; % default setting</span>
+    winlengths = [ 7 ]; <span class="comment">%seconds</span>
+
+    <span class="comment">% go through all files</span>
+    <span class="keyword">for</span> ii = 1:lrecnames
+
+        <span class="keyword">if</span>( ECG_all_wrappers(ii).this_pid == ECG_all_wrappers(ii).cant_pids)
+
+            <span class="comment">% last worker is the responsible of the reporting.</span>
+            <span class="keyword">if</span>( ECG_all_wrappers(ii).this_pid == ECG_all_wrappers(ii).cant_pids)
+
+                <span class="keyword">try</span>
+
+                    reportECG(ECG_all_wrappers(ii), <span class="string">'LowDetail'</span>, <span class="string">'full'</span>, winlengths, <span class="string">'pdf'</span>, filename );
+
+                <span class="keyword">catch</span> MException
+
+                    report = getReport(MException);
+
+                    fprintf(2, <span class="string">'\n%s\n'</span>, report);
+
+                <span class="keyword">end</span>
+
+            <span class="keyword">end</span>
+
+        <span class="keyword">end</span>
+
+    <span class="keyword">end</span>
+</pre><h2>Other user-defined tasks ...<a name="30"></a></h2><p>Maybe the most important and useful aspect of the kit, is that you can add your own algorithms. This can be done by following the interface documented through the several examples included above. The <a href="matlab:doc('ECGtask_QRS_detection')">QRS detection</a> and <a href="matlab:doc('ECGtask_ECG_delineation')">ECG delineation</a> tasks already include a way to interface your own algorithms through the <b>user:function_name</b> method. Check the above sections for more details.</p><pre class="codeinput">    <span class="keyword">if</span>( ~bUseDesktop )
+
+        UnInstallECGkit();
+
+    <span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Example of how to use the ECGkit
+% This script exemplifies the use of the
+% <matlab:web('https://code.google.com/p/ecg-kit/','-browser') *ECGkit*> in a
+% multimodal cardiovascular recording which includes arterial blood
+% pressure (ABP), plethysmographic (PPG) and electrocardiogram signals. The
+% following tasks will be performed in this example: 
+% 
+% * Heartbeat/QRS detection
+% * ABP/PPG pulse detection
+% * ECG wave delineation
+% * Heartbeat classification
+% * Report generation
+% 
+% Each automatic step is followed by a manual verification step in order to
+% verify the algorithm's results.
+% The script is prepared to run locally without arguments, as well as in
+% a cluster environment by using "pid_str" argument. The pid_str
+% argument is a char with format 'N/M', being N <= M with default value
+% '1/1'. You can partition a big job into M pieces in cluster
+% architecture, by starting M processes with N ranging from 1 to M.
+% 
+% You can watch a typical run of this script for small, local ECG
+% recording <matlab:web('http://youtu.be/7pzb-3YE7C4','-browser') in this
+% link> or for several big recordings
+% <matlab:web('http://youtu.be/7pzb-3YE7C4','-browser') in this other
+% link>. 
+% 
+% *Example* of how to run this script
+% 
+%   examples() 
+% 
+% Lazy users can use the default values. <matlab:examples() Run!> 
+% 
+%   examples('1/1', 'C:\Your_preferred_local_path\', 'arbitrary_string')
+% 
+%   examples('1/10', '/Your_preferred_path_in_cluster/', 'arbitrary_string')
+% 
+% See also ECGwrapper, ECGtask
+% 
+% *Author*: Mariano Llamedo Soria
+% <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
+% *Version*: 0.1 beta
+% *Birthdate*: 11/2/2014
+% *Last update*: 18/7/2014
+% *Copyright* 2008-2014
+% 
+
+%% Function prototype
+% 
+function examples(pid_str, examples_path, user_str)
+%%
+% _examples_ accepts three _optional_ arguments:
+% 
+% * *_pid_str_* (optional) string identifier for this work instance in a cluster
+% computing or multitask environment. The identifier follows the form
+% 'N/M', being N a number which  identifies this execution instance and M
+% the total amount of instances. Default value '1/1'
+% * *_examples_path_* (optional) string of the path with ECG recordings.
+% Default value |['.' filesep 'example_recordings' filesep ]|;
+% * *_user_str_* (optional) string to identify this run or experiment. 
+% 
+%%
+%% Argument parsing
+% Simple and straight forward.
+%%
+    if( nargin < 1 || ~ischar(pid_str) )
+        % single PID run
+        pid_str = '1/1';
+    end
+    
+    if( nargin < 2 || ~exist(examples_path, 'dir') )
+        % inspect ECG files in rootpath\example_recordings\ folder
+        root_path = fileparts(mfilename('fullpath'));
+        % default folder to look at
+        examples_path = [root_path filesep 'example_recordings' filesep ];
+        if(~exist(examples_path, 'dir'))
+            disp_string_framed(2, 'Please provide a valid path with ECG recordings');
+            return
+        end
+    else
+        if( examples_path(end) ~= filesep )
+            examples_path = [examples_path filesep];
+        end
+    end
+    
+    if( nargin < 3  )
+        user_str = '';
+    end
+    
+% Explore the *examples_path* for ECG recordings.    
+    
+    filenames = dir(examples_path);
+    recnames = {filenames(:).name};
+   
+% In this case I hardcoded only one recording
+    recnames = {'ex_ABP_PPG_Registro_01M'};
+    
+% But you can use this to iterate for all of them.
+%     [~,recnames] = cellfun(@(a)(fileparts(a)), recnames, 'UniformOutput', false);
+%     recnames = unique(recnames);
+%     recnames = setdiff(recnames, {'' '.' '..' 'results' 'condor' });
+%     recnames = recnames(1)
+    lrecnames = length(recnames);
+
+    % In case of running in a user-assisted fashion.
+    bUseDesktop = usejava('desktop');
+
+    if( bUseDesktop )
+        tmp_path = tempdir;
+        output_path = [ examples_path 'results' filesep ];
+    else
+        % For cluster or distributed environment processing.
+        
+        InstallECGkit();
+        
+        % this is a local path, usually faster to reach than output_path
+        tmp_path = '/scratch/'; 
+        
+        % distributed or cluster-wide accesible path
+        output_path = [ examples_path 'results' filesep ];
+    end
+    
+% just for debugging, keep it commented.      
+%     bUseDesktop = false
+
+%% QRS automatic detection
+% In this example the first step is the location of each heartbeat, or QRS
+% complexes detection. To achieve this, the kit includes the following
+% algorithms: 
+%%
+% * Wavedet
+% * Pan & Tompkins
+% * gqrs
+% * sqrs
+% * wqrs
+% * ecgpuwave
+% 
+% The way of performing QRS detection (or almost any other task in this
+% ECGkit) is through an <matlab:doc('ECGwrapper') ECGwrapper> object.
+% The objective of this object is to abstract or sepparate any algorithm
+% from the particular details of the ECG signal. This object is able to
+% invoque any kind of algorithm through the interface provided of other
+% object, called <matlab:doc('ECGwrapper') ECGtask> obejcts.  
+% 
+% The _ECGtask_ obejcts actually perform specific task on the ECG signal,
+% in this case, the QRS complex detection. Each task have general
+% properties such as _user_string_, _progress_handle_ (see
+% <matlab:edit('ECGtask.m') ECGtask> class for more details) and other
+% specific for a  certain task, such as _detectors_, _only_ECG_leads_, _wavedet_config_,
+% _gqrs_config_filename_ (see others in
+% <matlab:edit('ECGtask_QRS_detection.m') QRS detection> task source).
+% 
+%%
+    
+    % go through all files
+    
+    ECG_all_wrappers = [];
+    jj = 1;
+    
+    for ii = 1:lrecnames
+        
+        rec_filename = [examples_path recnames{ii}];
+        
+        % task name, 
+%         ECGt_QRSd = 'QRS_detection';
+        % or create an specific handle to have more control
+        ECGt_QRSd = ECGtask_QRS_detection(); 
+%         % select an specific algorithm. Default: Run all detectors
+%         ECGt_QRSd.detectors = 'wavedet'; % Wavedet algorithm based on
+%         ECGt_QRSd.detectors = 'pantom';  % Pan-Tompkins alg.
+%         ECGt_QRSd.detectors = 'gqrs';    % WFDB gqrs algorithm.
+%         ECGt_QRSd.detectors = 'user:example_worst_ever_QRS_detector';    % Example of how you can add your own QRS detector.
+%         ECGt_QRSd.detectors = 'user:your_QRS_detector_func_name';    %
+%         "your_QRS_detector_func_name" can be your own detector.
+        ECGt_QRSd.detectors = {'wavedet' 'gqrs' 'wqrs' 'user:example_worst_ever_QRS_detector'};    
+
+        % you can individualize each run of the QRS detector with an
+        % external string
+        ECGt_QRSd.user_string = user_str;
+        % or group by the config used
+%         ECGt_QRSd.user_string = ECGt_QRSd.detectors;
+        
+        
+%         ECGt_QRSd.only_ECG_leads = false;    % consider all signals ECG
+        ECGt_QRSd.only_ECG_leads = true;    % Identify ECG signals based on their header description.
+        
+        ECG_w = ECGwrapper( 'recording_name', rec_filename, ...
+                            'this_pid', pid_str, ...
+                            'tmp_path', tmp_path, ...
+                            'output_path', output_path, ...
+                            'ECGtaskHandle', ECGt_QRSd);
+        
+        try
+            
+            % process the task
+            ECG_w.Run;
+            
+            % collect object if were recognized as ECG recordings.
+            if( jj == 1)
+                ECG_all_wrappers = ECG_w;
+            else
+                ECG_all_wrappers(jj) = ECG_w;
+            end
+            jj = jj + 1;
+            
+        catch MException
+            
+            if( strfind(MException.identifier, 'ECGwrapper:ArgCheck:InvalidFormat') )
+                disp_string_framed('*Red', sprintf( 'Could not guess the format of %s', ECG_w.recording_name) );
+            else
+                % report just in case 
+                report = getReport(MException);
+                fprintf(2, '\n%s\n', report);
+            end
+        end
+    
+    end
+    
+    % recognized recordings
+    lrecnames = length(ECG_all_wrappers);
+    
+    % at the end, report problems if happened.
+    for ii = 1:lrecnames
+        ECG_all_wrappers(ii).ReportErrors;
+    end
+   
+%% QRS visual inspection and correction
+% This part of the example uses a graphical user interface (GUI) to allow
+% the user correcting mistakes that the previous automatic algorithm
+% eventually makes.
+% 
+% As can be seen in the following code, the first step is checking that the
+% previous QRS detection task finished without problems. Then if no errors,
+% the corrector will use as starting point the result of this same task, in
+% case the user would like to edit a previously edited result, or if not
+% available the result of the QRS detection task. 
+% 
+
+%%
+    if( bUseDesktop )
+        
+        % other task can be performed on the same objects
+        for ii = 1:lrecnames
+
+            % last worker is the responsible of the visual correction.
+            if( ECG_all_wrappers(ii).this_pid == ECG_all_wrappers(ii).cant_pids)
+
+                % if there are not any previous error.
+                if( ECG_all_wrappers(ii).Processed && ~ECG_all_wrappers(ii).Error ) 
+
+                    % this is to use previous saved results as starting point,
+                    % if any available
+                    cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName({'QRS_corrector' 'QRS_detection'});
+
+                    % if no previous correction work, try the automatic
+                    % detection task
+                    
+                    % if any, do the correction
+                    if( ~isempty(cached_filenames) )
+
+                        % this is to use previous saved results as starting point,
+                        % if any available
+                        ECG_all_wrappers(ii).ECGtaskHandle = 'QRS_corrector';
+                        
+                        % This task is supposed to be supervised, so only one pid is enough.
+                        ECG_all_wrappers(ii).this_pid = '1/1';
+
+                        % user provided name to individualize each run
+                        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+                        
+                        % to avoid loading cached results and exit, this flag
+                        % allows the re-editing of the current state of the
+                        % detections.
+                        ECG_all_wrappers(ii).cacheResults = false;
+
+                        % maybe in your application you should run this for
+                        % all files.
+                        ECG_all_wrappers(ii).ECGtaskHandle.payload = load(cached_filenames{1});
+
+                        % process the task
+                        ECG_all_wrappers(ii).Run;
+
+                        % restore the original pids configuration
+                        ECG_all_wrappers(ii).this_pid = pid_str;
+
+                        % As we changed for "QRS correction" task, we have to enable this
+                        % value again in order to avoid performing the following tasks every time.
+                        % If you want to recalculate any task, change it to false
+                        ECG_all_wrappers(ii).cacheResults = true;
+                        
+                    end
+
+
+                end
+
+            end
+
+        end
+
+        % at the end, report problems if happened.
+        for ii = 1:lrecnames
+            ECG_all_wrappers(ii).ReportErrors;
+        end
+
+    end
+    
+%%
+% Then the task invoked by the wrapper object is changed to
+% <matlab:edit('ECGtask_QRS_corrector.m') QRS corrector task> and the GUI
+% is presented to the user. 
+% 
+% <<QRS corrector.PNG>>
+%
+% In this example, the GUI have four plots to represent the RR interval
+% series, the two in the top-left show the RR interval versus time at different
+% time windows. The bigger in the top-right, shows a _Poincaré_ plot, that
+% is the current RR interval versus the following in the serie. The plot in
+% the bottom shows the selected signal/s versus time. Then the user can
+% interact with the plots according to the <matlab:doc('ECGtask_QRS_corrector') QRS
+% corrector documentation> 
+% 
+%% PPG/ABP pulse detection
+% In case the recording includes pulsatile signals, such as
+% plethysmographic (PPG) or arterial blood pressure (ABP), this kit
+% includes the <matlab:doc('ECGtask_PPG_ABP_detector') PPG/ABP automatic
+% detector task> which allows the use of two algorithms to perform peak
+% detection, <matlab:doc('PPG_pulses_detector') WavePPG> and
+% <matlab:web('http://www.physionet.org/physiotools/wag/wabp-1.htm','-browser')
+% Physionet's wabp>.
+% 
+
+%%
+    % other task can be performed on the same objects
+    for ii = 1:lrecnames
+
+        % set the delineator task name and run again.
+        ECG_all_wrappers(ii).ECGtaskHandle = 'PPG_ABP_detector';
+
+        % user provided name to individualize each run
+        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+
+        % process the task
+        ECG_all_wrappers(ii).Run;
+        
+    end
+
+    % at the end, report problems if happened.
+    for ii = 1:lrecnames
+        ECG_all_wrappers(ii).ReportErrors;
+    end
+    
+%% PPG/ABP waves visual inspection and correction
+% The same manual verification made for automatic QRS detection algorithms
+% can be performed with pulsatile signals. The
+% <matlab:doc('ECGtask_PPG_ABP_corrector') PPG/ABP corrector task> was 
+% designed to allow users the verification and correction of automatic
+% detections through the same GUI.
+% 
+% 
+% <<PPG-ABP corrector.PNG>>
+% 
+%%
+% The following code shows how to use this task. As you can note, the 
+% interface is almost the same used for the QRS correction task.
+% 
+%%
+    if( bUseDesktop )
+        
+        % other task can be performed on the same objects
+        for ii = 1:lrecnames
+
+            % last worker is the responsible of the visual correction.
+            if( ECG_all_wrappers(ii).this_pid == ECG_all_wrappers(ii).cant_pids)
+
+                % if there are not any previous error.
+                if( ECG_all_wrappers(ii).Processed && ~ECG_all_wrappers(ii).Error ) 
+
+                    % this is to use previous saved results as starting point,
+                    % if any available
+                    cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName({'PPG_ABP_corrector' 'PPG_ABP_detector'});
+
+                    % if no previous correction work, try the automatic
+                    % detection task
+                    
+                    % if any, do the correction
+                    if( ~isempty(cached_filenames) )
+
+                        % this is to use previous saved results as starting point,
+                        % if any available
+                        ECG_all_wrappers(ii).ECGtaskHandle = 'PPG_ABP_corrector';
+                        
+                        % This task is supposed to be supervised, so only one pid is enough.
+                        ECG_all_wrappers(ii).this_pid = '1/1';
+
+                        % user provided name to individualize each run
+                        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+                        
+                        % to avoid loading cached results and exit, this flag
+                        % allows the re-editing of the current state of the
+                        % detections.
+                        ECG_all_wrappers(ii).cacheResults = false;
+
+                        % maybe in your application you should run this for
+                        % all files.
+                        ECG_all_wrappers(ii).ECGtaskHandle.payload = load(cached_filenames{1});
+
+                        % process the task
+                        ECG_all_wrappers(ii).Run;
+
+                        % restore the original pids configuration
+                        ECG_all_wrappers(ii).this_pid = pid_str;
+
+                        % As we changed for "QRS correction" task, we have to enable this
+                        % value again in order to avoid performing the following tasks every time.
+                        % If you want to recalculate any task, change it to false
+                        ECG_all_wrappers(ii).cacheResults = true;
+                        
+                    end
+
+
+                end
+
+            end
+
+        end
+
+        % at the end, report problems if happened.
+        for ii = 1:lrecnames
+            ECG_all_wrappers(ii).ReportErrors;
+        end
+
+    end
+        
+%% ECG automatic delineation
+% Once the QRS complexes were detected, each heartbeat can be segmented or
+% delineated into P-QRS-T waves. To achieve this the kit includes an
+% <matlab:doc('ECGtask_ECG_delineation') ECG delineation task> to
+% interface with the
+% <matlab:web('http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=1275572','-browser') 
+% wavedet> and others user-defined algorithms, as described in the
+% <matlab:doc('ECGtask_ECG_delineation') task help>. The
+% interface follows the same guidelines described before, as is shown in
+% the following code.
+% 
+%%
+    % other task can be performed on the same objects
+    for ii = 1:lrecnames
+        
+        % this is to use previous cached results as starting point
+        cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName('QRS_corrector');
+        
+        % if corrected QRS detections are not available, wavedet
+        % performs automatic QRS detection.
+        if( ~isempty(cached_filenames) )
+            % this is to use previous result from the automatic QRS
+            % detection
+            ECG_all_wrappers(ii).ECGtaskHandle.payload = load(cached_filenames{1});
+
+        end
+
+        % set the delineator task name and run again.
+        ECG_all_wrappers(ii).ECGtaskHandle = 'ECG_delineation';
+
+        % user provided name to individualize each run
+        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+        
+        % Identify ECG signals based on their header description and
+        % perform delineation in those leads.
+        ECG_all_wrappers(ii).ECGtaskHandle.only_ECG_leads = true;
+
+%         ECGt_QRSd.detectors = 'wavedet'; % Wavedet algorithm based on
+%         ECGt_QRSd.detectors = 'user:example_worst_ever_ECG_delineator';
+%         % Example of how you can add your own ECG delineator. 
+%         ECGt_QRSd.detectors = 'user:your_ECG_delineator_func_name';    
+%         "your_ECG_delineator_func_name" can be your own delineator.
+        ECG_all_wrappers(ii).ECGtaskHandle.delineators = {'wavedet' 'user:example_worst_ever_ECG_delineator'};
+        
+        % process the task
+        ECG_all_wrappers(ii).Run;
+        
+    end
+
+    % at the end, report problems if happened.
+    for ii = 1:lrecnames
+        ECG_all_wrappers(ii).ReportErrors;
+    end
+    
+%% Visual inspection of the detection/delineation
+% The same manual verification made for all the previous automatic tasks is
+% repeated for ECG delineation. The
+% <matlab:doc('ECGtask_ECG_delineation_corrector') ECG delineation
+% corrector task> was designed to allow users the verification and
+% correction of automatic delineation through the same GUI. The only
+% difference with respect to the behaviour of the QRS or PPG/ABP correction
+% GUI, is that addition of new events to the P-QRS-T series is not allowed,
+% in order to keep the assosiation of a wave fiducial point to a heartbeat. 
+% 
+% 
+% <<ECG delineator corrector.png>>
+%
+
+%%
+    if( bUseDesktop )
+
+        % other task can be performed on the same objects
+        for ii = 1:lrecnames
+
+            % last worker is the responsible of the visual correction.
+            if( ECG_all_wrappers(ii).this_pid == ECG_all_wrappers(ii).cant_pids)
+
+                % if there are not any previous error.
+                if( ECG_all_wrappers(ii).Processed && ~ECG_all_wrappers(ii).Error ) 
+
+                    % this is to use previous saved results as starting point,
+                    % if any available
+                    cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName( {'ECG_delineation_corrector' 'ECG_delineation'} );
+
+                    % if no previous correction work, try the automatic
+                    % detection task
+                    
+                    % if any, do the correction
+                    if( ~isempty(cached_filenames) )
+
+                        % this is to use previous saved results as starting point,
+                        % if any available
+                        ECG_all_wrappers(ii).ECGtaskHandle = 'ECG_delineation_corrector';
+                        
+                        % This task is supposed to be supervised, so only one pid is enough.
+                        ECG_all_wrappers(ii).this_pid = '1/1';
+
+                        % user provided name to individualize each run
+                        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+                        
+                        % to avoid loading cached results and exit, this flag
+                        % allows the re-editing of the current state of the
+                        % detections.
+                        ECG_all_wrappers(ii).cacheResults = false;
+
+                        % maybe in your application you should run this for
+                        % all files.
+                        ECG_all_wrappers(ii).ECGtaskHandle.payload = load(cached_filenames{1});
+
+                        % process the task
+                        ECG_all_wrappers(ii).Run;
+
+                        % restore the original pids configuration
+                        ECG_all_wrappers(ii).this_pid = pid_str;
+
+                        % As we changed for "QRS correction" task, we have to enable this
+                        % value again in order to avoid performing the following tasks every time.
+                        % If you want to recalculate any task, change it to false
+                        ECG_all_wrappers(ii).cacheResults = true;
+                        
+                    end
+
+                end
+
+            end
+
+        end
+
+        % at the end, report problems if happened.
+        for ii = 1:lrecnames
+            ECG_all_wrappers(ii).ReportErrors;
+        end
+
+    end
+    
+%% Automatic Heartbeat classification
+% The last task described in this example is the classification of
+% heartbeats according to the
+% <matlab:web('http://marketplace.aami.org/eseries/scriptcontent/docs/Preview%20Files/EC57_1212_preview.pdf','-browser')
+% EC-57 AAMI recommendation>. To achieve this task, the kit includes a
+% <matlab:doc('ECGtask_heartbeat_classifier') Heartbeat classification
+% task> that interfaces with the
+% <matlab:web('https://code.google.com/p/a2hbc/','-browser')
+% Argentino-Aragonés heartbeat classifier (a2hbc)> project in order to
+% classify heartbeats into the following classes:
+% 
+%% 
+% 
+% * *N* normal 
+% * *S* supraventricular 
+% * *V* ventricular 
+% * *F* fusion of normal and ventricular
+% 
+%%
+% The _a2hbc_ algorithm can opperate automatically or assisted by the user,
+% for more details check the <matlab:doc('a2hbc') a2hbc documentation>.
+% 
+%%
+    for ii = 1:lrecnames
+        
+        % this is to use previous cached results as starting point
+        cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName({'QRS_corrector' 'QRS_detection'});
+        % if corrected QRS detections are not available, wavedet
+        % performs automatic QRS detection.
+        
+        if( ~isempty(cached_filenames) )
+            
+            ECG_all_wrappers(ii).ECGtaskHandle = 'ECG_heartbeat_classifier';
+
+            % the heartbeat classifier uses the QRS detection performed
+            % before, if available the task will use the corrected
+            % detections.
+            ECG_all_wrappers(ii).ECGtaskHandle.payload = load(cached_filenames{1});
+        
+            % modes of operation of the a2hbc algorithm
+            ECG_all_wrappers(ii).ECGtaskHandle.mode = 'auto';
+%             ECG_all_wrappers(ii).ECGtaskHandle.mode = 'slightly-assisted';
+%             ECG_all_wrappers(ii).ECGtaskHandle.mode = 'assisted';
+
+            % user provided name to individualize each run
+            ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+
+            % process the task
+            ECG_all_wrappers(ii).Run;
+
+        end
+
+    end
+
+    % at the end, report problems if happened.
+    for ii = 1:lrecnames
+        ECG_all_wrappers(ii).ReportErrors;
+    end
+    
+%% Visual inspection of the signal
+% Finaly a report is generated with the results of the previous tasks,
+% either in a pdf document or several images. The report generated can be
+% customized with the interface described in the <matlab:doc('reportECG')
+% documentation>. The following are just three examples of a longer report:
+%    
+% 
+% <<ex_ABP_PPG_Registro_01M_full_Pagina_01.png>>
+%
+%%
+% A snapshot of the center
+% 
+% <<ex_ABP_PPG_Registro_01M_full_Pagina_05.png>>
+%
+%%
+% And finaly a snapshot of the last part of the recording.
+% 
+% <<ex_ABP_PPG_Registro_01M_full_Pagina_10.png>>
+%
+%%
+% This is the code used to create a PDF report.
+% 
+
+%%
+    filename = []; % default setting. Let the report function decide.
+%     filename = 'container_filename'; % to put everything in one big file.
+    
+    % other winlengths can be added to the array in order to further
+    % explore the recordings, and the algorithm results.
+%     winlengths = []; % default setting
+    winlengths = [ 7 ]; %seconds
+
+    % go through all files
+    for ii = 1:lrecnames
+
+        if( ECG_all_wrappers(ii).this_pid == ECG_all_wrappers(ii).cant_pids)
+
+            % last worker is the responsible of the reporting.
+            if( ECG_all_wrappers(ii).this_pid == ECG_all_wrappers(ii).cant_pids)
+
+                try
+                    
+                    reportECG(ECG_all_wrappers(ii), 'LowDetail', 'full', winlengths, 'pdf', filename );
+                    
+                catch MException
+
+                    report = getReport(MException);
+
+                    fprintf(2, '\n%s\n', report);
+
+                end
+
+            end
+
+        end
+        
+    end
+    
+%% Other user-defined tasks ...
+% Maybe the most important and useful aspect of the kit, is that you can
+% add your own algorithms. This can be done by following the interface
+% documented through the several examples included above. The
+% <matlab:doc('ECGtask_QRS_detection') QRS detection> and
+% <matlab:doc('ECGtask_ECG_delineation') ECG delineation> tasks already 
+% include a way to interface your own algorithms through the
+% *user:function_name* method. Check the above sections for more details.
+%             
+%% 
+    if( ~bUseDesktop )
+    
+        UnInstallECGkit();
+        
+    end
+    
+##### SOURCE END #####
+--></body></html>

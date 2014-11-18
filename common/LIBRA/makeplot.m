@@ -51,7 +51,7 @@ function makeplot(out,varargin)
 %          makeplot(outmcd,'labmcd',6)
 %          makeplot(outmcd,'labmcd',4,'nameplot','dd')
 %
-%          outls=ols(x,y);
+%          outls=libra_ols(x,y);
 %          makeplot(outls)
 %
 % This function is part of the Matlab Library for Robust Analysis (LIBRA),

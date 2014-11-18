@@ -1,13 +1,14 @@
-function [ ECG_hdl axes_hdl fig_hdl anns_hdl all_yranges ] = plot_ecg_mosaic( ECG, varargin )
-
-%%
-% Description: 
+%% Plots multidimentional signal in mosaic style
 % This function plots several subplots in the same figure in order to do a
 % mosaic with the different leads available in ECG. Annotations can be
 % provided to each or for all the mosaic.
+%   
+% Prototype
+% 
+%   [ ECG_hdl axes_hdl fig_hdl all_yranges ] = plot_ecg_mosaic( ECG, varargin )
 % 
 % Arguments:
-%     
+% 
 %     +ECG: [numeric or cell] REQUIRED
 %           
 %           [numeric]: signal matrix of dimension [sig_length sig_size
@@ -73,10 +74,17 @@ function [ ECG_hdl axes_hdl fig_hdl anns_hdl all_yranges ] = plot_ecg_mosaic( EC
 %     +ECG_annotations: [cell] OPTIONAL. Default values enclosed in ()
 %               Annotations to be included in the mosaic. The funcion
 %               accepts 2 type of annotations: points and lines. 
-%             
 % 
-% Limits and Known bugs:
-%   Probably a lot :( ... but dont panic! send me feedback if you need help.
+% Output:
+% 
+%     + ECG_hdl: handle to the plotted signals.
+% 
+%     + axes_hdl: handle to the axes.
+% 
+%     + fig_hdl: handle to fig.
+% 
+%     + all_yranges: vertical ranges of the plotted signals.
+% 
 % 
 % Example:
 % 
@@ -111,43 +119,46 @@ function [ ECG_hdl axes_hdl fig_hdl anns_hdl all_yranges ] = plot_ecg_mosaic( EC
 % a_line = cell(sig_size,7);
 % 
 % h_line(:,1) = {'line'};
-% h_line(:,2) = { [ { 'String'                    'HeadWidth' 'HeadLength' 'LineStyle' 'LineWidth' 'Color' 'TextColor' }; ...
-%                   { 'horizontal line text'      5           5            '--'         1.5         'r'     'r'        } ]'}; 
+% h_line(:,2) = { [ { 'String'                     'LineStyle' 'LineWidth' 'Color' 'TextColor' }; ...
+%                   { 'horizontal line text'       '--'         1.5         'r'     'r'        } ]'}; 
 % h_line(1:sig_size, [6 7]) = num2cell( repmat(-0.5,sig_size,2) );
 % 
 % h2_line(:,1) = {'line'};
-% h2_line(:,2) = { [ { 'String'           'HeadWidth' 'HeadLength' 'LineStyle' 'LineWidth' 'Color' 'TextColor' }; ...
-%                   { 'other h-line'      5           5            '--'         1.5         'm'     'm'        } ]'}; 
+% h2_line(:,2) = { [ { 'String'           'LineStyle' 'LineWidth' 'Color' 'TextColor' }; ...
+%                   { 'other h-line'      '--'         1.5         'm'     'm'        } ]'}; 
 % h2_line(1:sig_size, 4:7) = num2cell( [ repmat(60,sig_size,1) repmat(70,sig_size,1) repmat(0.5,sig_size,2) ] );
 % 
 % v_line(:,1) = {'line'};
-% v_line(:,2) = { [ { 'String'             'HeadWidth' 'HeadLength' 'LineStyle' 'LineWidth' 'Color' 'TextColor' }; ...
-%                   { 'vertical line text' 5           5            '--'         1.5         'g'     'g'        } ]'}; 
+% v_line(:,2) = { [ { 'String'             'LineStyle' 'LineWidth' 'Color' 'TextColor' }; ...
+%                   { 'vertical line text' '--'         1.5         'g'     'g'        } ]'}; 
 % v_line(1:sig_size, [4 5]) = num2cell( repmat(20,sig_size,2) );
 % 
 % v2_line(:,1) = {'line'};
-% v2_line(:,2) = { [ { 'String'      'HeadWidth' 'HeadLength' 'LineStyle' 'LineWidth' 'Color' 'TextColor' }; ...
-%                   { 'other v-line' 5           5            '--'         1.5         'b'     'b'        } ]'}; 
+% v2_line(:,2) = { [ { 'String'      'LineStyle' 'LineWidth' 'Color' 'TextColor' }; ...
+%                   { 'other v-line' '--'         1.5         'b'     'b'        } ]'}; 
 % v2_line(1:sig_size, 4:7) = num2cell( [ repmat(80,sig_size,2) repmat(-0.8,sig_size,1) repmat(-0.3,sig_size,1) ] );
 % 
 % point(:,1) = {'point'};
-% point(:,2) = { [ { 'String'    'HeadWidth' 'HeadLength' 'Color'       'TextColor'   }; ...
-%                  { 'one-point' 5            5           [0.2 0.3 0.4] [0.2 0.3 0.4] } ]'}; 
+% point(:,2) = { [ { 'String'    'Color'       'TextColor'   }; ...
+%                  { 'one-point' [0.2 0.3 0.4] [0.2 0.3 0.4] } ]'}; 
 % point(1:sig_size,4) = num2cell( repmat(50,sig_size,1) );
 % 
 % a_line(:,1) = {'line'};                    
-% a_line(:,2) = { [ { 'String'    'HeadWidth' 'HeadLength' 'LineStyle' 'LineWidth' 'Color' 'TextColor' }; ...
-%                   { 'line text' 5           5            '--'         1.5         'k'     'k'        } ]'}; 
+% a_line(:,2) = { [ { 'String'    'LineStyle' 'LineWidth' 'Color' 'TextColor' }; ...
+%                   { 'line text' '--'         1.5         'k'     'k'        } ]'}; 
 % a_line(1:sig_size,4:7) = num2cell( [ repmat(30,sig_size,1) repmat(40,sig_size,1) repmat(0.5,sig_size,1) repmat(-0.5,sig_size,1) ] );
 %        
 % aux_anns = cat(3,h_line,v_line,h2_line,v2_line,point,a_line);
 % 
 % plot_ecg_mosaic(mean(x_packed,3), 'ECG_annotations', aux_anns );
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
-% Version: 0.1 beta
-% Last update: 14/5/2014
+% See also plot_ecg_strip
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Last update: 19/10/2014
 % Birthdate  : 16/2/2012
+% Copyright 2008-2014
+function [ ECG_hdl axes_hdl fig_hdl all_yranges ] = plot_ecg_mosaic( ECG, varargin )
 
     %% constants
 

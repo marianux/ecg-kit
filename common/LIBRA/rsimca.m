@@ -588,7 +588,7 @@ k = out.k;
 
 % Computing distances 
 % Robust score distances 
-out.sd=sqrt(mahalanobis(out.T,zeros(size(out.T,2),1),'cov',out.L))';
+out.sd=sqrt(libra_mahalanobis(out.T,zeros(size(out.T,2),1),'cov',out.L))';
 out.cutoff.sd=sqrt(chi2inv(0.975,out.k));
 % Orthogonal distances 
 XRc=data-repmat(out.M,n,1);

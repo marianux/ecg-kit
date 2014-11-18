@@ -1,4 +1,35 @@
-function [x new_header] = ADC2units(x, header, target_units)
+%% Convert adimentional sample values to target voltage units
+% Convert adimentional sample values to target voltage units. The gain and
+% zero-offset is included in the header structure.
+% 
+% Example
+% 
+%   [x, new_header] = ADC2units(x, header, target_units)
+% 
+%   where:
+%     *x is a matrix with signals in the columns
+%     *header is a structure (ECG_header prop. in ECGwrapper object)
+%        describing the signal. Mandatory fields for this function are:
+%        units, gain and zero. 
+%     *target_units is a string to convert the ADC sample values to. See
+%        cTypicalUnits below.
+% 
+% See also ADC2realunits, ECGwrapper
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Birthdate: 01/01/2012
+% Last update: 18/10/2014
+% Copyright 2008-2014% Version: 0.1 beta
+% Birthdate: 01/01/2012
+% Last update: 18/10/2014
+% Copyright 2008-2014
+function [x, new_header] = ADC2units(x, header, target_units)
+
+if( nargin < 3 || isempty(target_units) )
+   target_units = 'MICROVOLTIOS';
+end
+
 cTypicalUnits = { ... 
                 'NV', 'NANOVOLTS' , 'NANOVOLTIOS' ;...
                 'UV', 'MICROVOLTS' , 'MICROVOLTIOS'; ...

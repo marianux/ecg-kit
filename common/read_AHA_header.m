@@ -42,4 +42,10 @@ if( fidECG > 0 )
     heasig.freq = 250;
     heasig.gain = repmat(400,1,heasig.nsig);
     heasig.adczero = zeros(1,heasig.nsig);
+    % hardcoded fields
+    [~, heasig.recname ] = fileparts(filename);
+    heasig.btime = '00:00:00';
+    heasig.bdate = '01/01/2000';
+    heasig.desc = char(strcat(repmat({'ECG'}, heasig.nsig,1), cellstr(num2str(colvec(1:heasig.nsig))) ));
+    
 end

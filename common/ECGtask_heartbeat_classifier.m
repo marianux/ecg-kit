@@ -64,14 +64,24 @@ classdef ECGtask_heartbeat_classifier < ECGtask
         
         function Start(obj, ECG_header, ECG_annotations)
 
+            obj.started = true;
+            
         end
         
         function payload_out = Process(obj, ECG, ECG_start_offset, ECG_sample_start_end_idx, ECG_header, ECG_annotations, ECG_annotations_start_end_idx )
             
             payload_out = [];
             
+            if( ~obj.started )
+                obj.Start(ECG_header);
+                if( ~obj.started )
+                    cprintf('*[1,0.5,0]', 'Task %s unable to be started for %s.\n', obj.name, ECG_header.recname);
+                    return
+                end
+            end
+            
             aux_val = ECG_sample_start_end_idx + ECG_start_offset - 1;
-            disp_string_title(1, sprintf( 'Classifying from %d to %d', aux_val(1), aux_val(2) ) );
+%             disp_string_title(1, sprintf( 'Classifying from %d to %d', aux_val(1), aux_val(2) ) );
             
             if( isempty(obj.payload) )
                 Ann_struct = ECG_annotations;
@@ -102,7 +112,9 @@ classdef ECGtask_heartbeat_classifier < ECGtask
                 Ann_struct.time = obj.payload(bAux);
             end
             
-            [aux_val, ~, lablist ] = a2hbc('ECG', ECG, ...
+            [lead_idx, ECG_header ] = get_ECG_idx_from_header(ECG_header);
+            
+            [aux_val, ~, lablist ] = a2hbc('ECG', ECG(:,lead_idx), ...
                             'ECG_header', ECG_header, ...
                             'ECG_annotations', Ann_struct, ...
                             'op_mode', obj.mode );

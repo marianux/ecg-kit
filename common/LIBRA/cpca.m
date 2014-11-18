@@ -96,7 +96,7 @@ out.L=L(1:out.k)';
 
 % Mahalanobis distance in classical PCA subspace
 Tclas=Xc*out.P;
-out.sd=sqrt(mahalanobis(Tclas,zeros(size(Tclas,2),1),'cov',out.L'));
+out.sd=sqrt(libra_mahalanobis(Tclas,zeros(size(Tclas,2),1),'cov',out.L'));
 out.cutoff.sd=sqrt(chi2inv(0.975,out.k));
 
 % Orthogonal distances to classical PCA subspace

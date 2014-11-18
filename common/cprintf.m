@@ -127,7 +127,6 @@ function count = cprintf(style,format,varargin)
 
   % The following is for debug use only:
   %global docElement txt el
-  if ~exist('el','var') || isempty(el),  el=handle([]);  end  %#ok mlint short-circuit error ("used before defined")
   if nargin<1, showDemo(majorVersion,minorVersion); return;  end
   if isempty(style),  return;  end
   if all(ishandle(style)) && length(style)~=3
@@ -142,13 +141,16 @@ function count = cprintf(style,format,varargin)
 
   % In compiled mode
   try useDesktop = usejava('desktop'); catch, useDesktop = false; end
-  if isdeployed | ~useDesktop %#ok<OR2> - for Matlab 6 compatibility
+  if isdeployed || ~useDesktop %#ok<OR2> - for Matlab 6 compatibility
       % do not display any formatting - use simple fprintf()
       % See: http://undocumentedmatlab.com/blog/bold-color-text-in-the-command-window/#comment-103035
       % Also see: https://mail.google.com/mail/u/0/?ui=2&shva=1#all/1390a26e7ef4aa4d
       % Also see: https://mail.google.com/mail/u/0/?ui=2&shva=1#all/13a6ed3223333b21
       count1 = fprintf(format,varargin{:});
   else
+      
+      if ~exist('el','var') || isempty(el),  el=handle([]);  end  %#ok mlint short-circuit error ("used before defined")
+      
       % Else (Matlab desktop mode)
       % Get the normalized style name and underlining flag
       [underlineFlag, boldFlag, style] = processStyleInfo(style);

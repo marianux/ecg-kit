@@ -1,27 +1,32 @@
-function [ ECG BaselineWander ] = BaselineWanderRemovalSplines( ECG, QRS_locations, sampling_rate)
-
-% Description:
+%% Remove baseline wandering with the median estimation method
 % Performs baseline wander removal with cubic splines method. Estimates the
 % baseline wander in the PQ silence segment and then substract it from ECG.
+%  
+%  Sörnmo L, Laguna P. Bioelectrical Signal Processing in Cardiac
+%  and Neurological Applications. Elsevier, 2005. ISBN
+%  0-12-437552-9. Page 457.
+%   
+% Example
+% 
+%   [ ECG BaselineWander ] = BaselineWanderRemovalSplines( ECG, QRS_locations, sampling_rate)
 % 
 % Arguments:
-%   + ECG: signal to be cleaned.
+%   + ECG: signal matrix, with the signals in columns.
+%   + QRS_locations: sample location of the QRS complexes.
 %   + sampling_rate: sampling rate of the ECG.
 % 
 % Output:
-%   + ECG: clean ECG.
+%   + ECG: clean ECG matrix.
+%   + BaselineWander: estimation of the baseline wander signal.
 % 
-% References:
+% See also BaselineWanderRemovalMedian
 % 
-% Sï¿½rnmo L, Laguna P. Bioelectrical Signal Processing in Cardiac
-% and Neurological Applications. Elsevier, 2005. ISBN
-% 0-12-437552-9. Page 457.
-% 
-% Limits and Known bugs:
-% 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
-% Birthdate  : 23/8/2011
-% Last update: 23/8/2011
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Birthdate: 01/01/2006
+% Last update: 18/10/2014
+% Copyright 2008-2014
+function [ ECG BaselineWander ] = BaselineWanderRemovalSplines( ECG, QRS_locations, sampling_rate)
 
 [ECG_size ECG_leads] = size(ECG);
 

@@ -1,8 +1,13 @@
 function [ECG_idx, ECG_header ]= get_ECG_idx_from_header(ECG_header)
     
     ECG_idx = [];
-    
-    str_12_leads_desc = {'I' 'II' 'III' 'AVR' 'AVL' 'AVF' 'V1' 'V2' 'V3' 'V4' 'V5' 'V6' 'MLII' 'MLI' 'MLIII' 'MV1' 'MV2' 'MV3' 'MV4' 'MV5' 'MV6' 'X' 'Y' 'Z' 'VX' 'VY' 'VZ' };
+
+    str_12_leads_desc = {'I' 'II' 'III' 'AVR' 'AVL' 'AVF' 'V1' 'V2' 'V3' 'V4' 'V5' 'V6' ... %Standard leads.
+                         'MLII' 'MLI' 'MLIII' 'MV1' 'MV2' 'MV3' 'MV4' 'MV5' 'MV6' ... % Modifyied leads.
+                         'X' 'Y' 'Z' 'VX' 'VY' 'VZ' ... % Orthogonal leads
+                         'E-S' 'A-S' 'A-I' ... % Easy leads
+                         };
+                     
     % add ECG patterns to be matched in ECG_header.desc
     ECG_pattern_desc = {'ECG' 'BIPOLAR' 'LEAD'};
 
@@ -26,6 +31,8 @@ function [ECG_idx, ECG_header ]= get_ECG_idx_from_header(ECG_header)
 %                 warning('get_ECG_idx_from_header:SignalsDiscarded', disp_option_enumeration('Some signal/s present are not ECG:', cellstr(ECG_header.desc(Not_ECG_idx,:)) ))
             end
         end
+        
+        ECG_idx = sort(ECG_idx);
         
     else
         % all leads are standard ECG leads

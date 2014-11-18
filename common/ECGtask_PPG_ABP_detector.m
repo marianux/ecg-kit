@@ -52,7 +52,6 @@ classdef ECGtask_PPG_ABP_detector < ECGtask
         PPG_ABP_idx = [];
         gqrs_config_filename = [];
         wavedet_config
-        CalculateArtificialDetections = true;
     end
     
     methods
@@ -64,13 +63,17 @@ classdef ECGtask_PPG_ABP_detector < ECGtask
         function Start(obj, ECG_header, ECG_annotations)
             
             if( strcmpi('all-leads', obj.lead_config) )
+                obj.lead_config = 'all-leads';
                 obj.PPG_ABP_idx = 1:ECG_header.nsig;
             elseif( strcmpi('PPG-ABP-only', obj.lead_config) )
                 obj.PPG_ABP_idx = get_PPG_ABP_idx_from_header(ECG_header);
             else
                 if( isempty(obj.PPG_ABP_idx) || ~isnumeric(obj.PPG_ABP_idx) || ~(all(obj.PPG_ABP_idx > 0) && all(obj.PPG_ABP_idx <= ECG_header.nsig)) )
                     warning('ECGtask_QRS_detection:BadArg', 'Invalid lead indexes. Indexes between 1 and %d\n', ECG_header.nsig);
+                    obj.lead_config = 'all-leads';
                     obj.PPG_ABP_idx = 1:ECG_header.nsig;
+                else
+                    obj.lead_config = 'User-defined-leads';
                 end
             end
             
@@ -267,14 +270,8 @@ classdef ECGtask_PPG_ABP_detector < ECGtask
     
             end
             
-            % calculate artificial leads
-            if( obj.CalculateArtificialDetections )
-                fn = fieldnames(payload);
-                % more than one ECG signal
-                if( length(fn) > 1 )
-                    payload = calculate_artificial_QRS_detections(payload, ECG_header, [1 ECG_header.nsamp] + ECG_start_offset - 1 );
-                end
-            end
+            % Add QRS detections quality metrics, Names, etc.
+            payload = calculateSeriesQuality(payload, ECG_header, [1 ECG_header.nsamp] + ECG_start_offset - 1 );
             
             % delete intermediate tmp files
             if(obj.bWFDBdetectors)
@@ -286,7 +283,7 @@ classdef ECGtask_PPG_ABP_detector < ECGtask
         
         function payload = Finish(obj, payload, ECG_header)
   
-            if( obj.CalculateArtificialDetections )
+            if( isfield(payload, 'series_quality') && isfield(payload.series_quality, 'ratios') )
                 payload.series_quality.ratios = mean(payload.series_quality.ratios, 2);
             end
             

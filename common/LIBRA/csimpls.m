@@ -168,7 +168,7 @@ out.class='CSIMPLS';
 
 %calculating classical distances in x-space
 out.Tcov=cov(t);
-out.sd=sqrt(mahalanobis(t,zeros(1,out.k),'cov',out.Tcov))';
+out.sd=sqrt(libra_mahalanobis(t,zeros(1,out.k),'cov',out.Tcov))';
 out.cutoff.sd=sqrt(chi2inv(0.975,out.k));
 
 %calculating classical orthogonal distances
@@ -192,7 +192,7 @@ if q1>1
         out.resd='singularity';
     else
        cen=zeros(q1,1);
-       out.resd=sqrt(mahalanobis(out.res,cen','cov',out.covar))';
+       out.resd=sqrt(libra_mahalanobis(out.res,cen','cov',out.covar))';
    end
 else    %here q==1
     out.resd=out.stdres; %standardized residuals

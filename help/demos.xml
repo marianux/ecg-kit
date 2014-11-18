@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<demos>
+    <name>ECGkit</name>
+    <type>toolbox</type>
+    <icon>HelpIcon.DEMOS</icon>
+    <description>Examples of the ECGkit toolbox.</description>
+    <website><a href="https://code.google.com/p/ecg-kit/">Link to ECGkit site</a></website>
+
+    <demosection>
+        <label>First Section</label>
+        <demoitem>
+            <label>My Example Title</label>
+            <type>M-file</type>
+            <source>example</source>
+        </demoitem>
+    </demosection>
+
+    <demosection>
+        <label>Second Section</label>
+        <demoitem>
+            <label>My Video (5 min, 21 sec)</label>
+            <type>video</type>
+            <callback>
+              web('http://youtu.be/7pzb-3YE7C4','-browser');
+            </callback>
+        </demoitem>
+    </demosection>
+
+</demos>

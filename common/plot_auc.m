@@ -20,7 +20,7 @@ if( nargin < 6 || isempty(fig_hdl) )
     fig_hdl = figure();
 else
     fig_hdl = figure(fig_hdl);
-    clf(fig_hdl);
+%     clf(fig_hdl);
 end
 
 
@@ -52,10 +52,10 @@ else
 end
 
 axes_hdl = gca();
-cla(axes_hdl);
+% cla(axes_hdl);
 
 xlim([0 (box_dist*areas2plot)+box_dist])
-ylim([areas_min - 0.1*areas_range  areas_max + 0.2*areas_range ])
+% ylim([areas_min - 0.1*areas_range  areas_max + 0.2*areas_range ])
 
 hold on
 

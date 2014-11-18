@@ -130,7 +130,7 @@ if q>1
         out.resd='singularity';
     else
        cen=zeros(q,1);
-       out.resd=sqrt(mahalanobis(out.res,cen','cov',Se))';
+       out.resd=sqrt(libra_mahalanobis(out.res,cen','cov',Se))';
    end
 else % q==1
     out.resd=out.stdres; %standardized residuals 

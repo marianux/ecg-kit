@@ -1,0 +1,7 @@
+/* Overrides for Installed Doc Center in the Product */
+/* Languages */
+html body { font-family: Arial, Gulim, sans-serif; }
+
+/* Expand - Collapse: Reveal */
+.reveal .more_results p:after { content:"more"; }
+.reveal .expanded .more_results p:after { content:"less"; }

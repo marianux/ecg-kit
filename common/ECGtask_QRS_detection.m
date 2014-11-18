@@ -57,7 +57,7 @@ classdef ECGtask_QRS_detection < ECGtask
     
     properties( Access = private, Constant)
         
-        cQRSdetectors = {'all-detectors' 'wavedet' 'pantom' 'gqrs' };
+        cQRSdetectors = {'all-detectors' 'wavedet' 'pantom' 'aristotle' 'gqrs' 'sqrs' 'wqrs' 'ecgpuwave' };
         
     end
     
@@ -69,6 +69,7 @@ classdef ECGtask_QRS_detection < ECGtask
         WFDB_bin_path
         WFDB_cmd_prefix_str 
         lead_idx = [];
+        lead_names = [];
         
     end
     
@@ -81,7 +82,7 @@ classdef ECGtask_QRS_detection < ECGtask
         gqrs_config_filename = [];
         wavedet_config
         payload
-        CalculateArtificialDetections = true;
+        CalculatePerformance = false;
     end
     
     methods
@@ -115,7 +116,28 @@ classdef ECGtask_QRS_detection < ECGtask
                 end
             end
 
-            obj.bWFDBdetectors = any(strcmpi('gqrs', obj.detectors2do));
+            % lead names desambiguation
+            str_aux = regexprep(cellstr(ECG_header.desc), '\W*(\w+)\W*', '$1');
+            obj.lead_names = regexprep(str_aux, '\W', '_');
+
+            [str_aux2, ~ , aux_idx] = unique( obj.lead_names );
+            aux_val = length(str_aux2);
+            
+            if( aux_val ~= ECG_header.nsig )
+                for ii = 1:aux_val
+                    bAux = aux_idx==ii;
+                    aux_matches = sum(bAux);
+                    if( sum(bAux) > 1 )
+                        obj.lead_names(bAux) = strcat( obj.lead_names(bAux), repmat({'v'}, aux_matches,1), cellstr(num2str((1:aux_matches)')) );
+                    end
+                end
+            end
+            
+            obj.lead_names = regexprep(obj.lead_names, '\W*(\w+)\W*', '$1');
+            obj.lead_names = regexprep(obj.lead_names, '\W', '_');
+            
+            
+            obj.bWFDBdetectors = ~isempty(intersect({'aristotle' 'gqrs' 'sqrs' 'wqrs' 'ecgpuwave'}, obj.detectors2do));
             
             % local path required to avoid network bottlenecks in distributed filesystems 
             if( isunix() && exist('/scratch/', 'dir') )
@@ -156,7 +178,8 @@ classdef ECGtask_QRS_detection < ECGtask
             if(obj.bWFDBdetectors)
                 % MIT conversion is needed for WFDB detectors.
                 
-                ECG_header.recname(ECG_header.recname == ' ') = '_';
+                ECG_header.recname = regexprep(ECG_header.recname, '\W*(\w+)\W*', '$1');
+                ECG_header.recname = regexprep(ECG_header.recname, '\W', '_');
                 
                 MIT_filename = [ECG_header.recname '_' num2str(ECG_start_offset) '_' num2str(ECG_header.nsamp+ECG_start_offset-1) ];
                 ECG_header.recname = MIT_filename;
@@ -209,10 +232,9 @@ classdef ECGtask_QRS_detection < ECGtask
 
                             [position_multilead, positions_single_lead] = wavedet_interface(ECG, ECG_header, [], obj.lead_idx, obj.wavedet_config, ECG_sample_start_end_idx, ECG_start_offset, obj.progress_handle);
 
-                            for jj = 1:length(obj.lead_idx)
+                            for jj = rowvec(obj.lead_idx)
                                 % QRS detections in milliseconds
-                                str_aux = strrep(strtrim(ECG_header.desc(obj.lead_idx(jj),:)), ' ', '_' );
-                                payload_out.(['wavedet_' str_aux ]).time = colvec(positions_single_lead(jj).qrs);
+                                payload_out.(['wavedet_' obj.lead_names{jj} ]).time = colvec(positions_single_lead(jj).qrs);
                             end
                             
                             % QRS detections in milliseconds
@@ -243,9 +265,8 @@ classdef ECGtask_QRS_detection < ECGtask
                                 % filter and offset
                                 aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) &  aux_val <= ECG_sample_start_end_idx(2) ) + ECG_start_offset - 1;
                                 
-                                str_aux = strrep(strtrim(ECG_header.desc(jj,:)), ' ', '_' );
                                 % QRS detections in milliseconds
-                                payload_out.(['pantom_' str_aux ]).time = colvec(aux_val);
+                                payload_out.(['pantom_' obj.lead_names{jj} ]).time = colvec(aux_val);
                                 
                             catch aux_ME
                                 
@@ -260,87 +281,119 @@ classdef ECGtask_QRS_detection < ECGtask
 
                         end
                         
-                    case 'gqrs'
+                    case { 'aristotle' 'gqrs' 'sqrs' 'wqrs' 'ecgpuwave'}
                     %% WFDB_comp_interface (sqrs, wqrs, aristotle, ecgpuwave)
+
+                        [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -h' ]);
                         
-                        % QRS detection.                        
-                        for jj = rowvec(obj.lead_idx)
+                        if( status ~= 0 )
+                            disp_string_framed(2, sprintf('Could not execute "%s" QRS detector.', this_detector));  
+                        else
+                            % QRS detection.                        
+                            for jj = rowvec(obj.lead_idx)
 
-                            file_name_orig =  [obj.tmp_path_local ECG_header.recname '.' this_detector num2str(jj) ];
-
-                            try
-
-                                if( exist(obj.gqrs_config_filename, 'file') )
-                                    % using the configuration file to
-                                    % post-process
-                                    [status, ~] = system([ obj.WFDB_cmd_prefix_str 'gqrs -c ' obj.gqrs_config_filename ' -r ' ECG_header.recname ' -s ' num2str(jj-1)]);
-                                    if( status ~= 0 ); error('ECGtask_QRS_detection:WFDB_error', 'Error calling WFDB function.'); end
-                                    
-                                    [status, ~] = system([ obj.WFDB_cmd_prefix_str 'gqpost -c ' obj.gqrs_config_filename ' -r ' ECG_header.recname ' -o ' this_detector num2str(jj) ]);
-                                    if( status ~= 0 ); error('ECGtask_QRS_detection:WFDB_error', 'Error calling WFDB function.'); end
-                                    
-                                    delete([obj.tmp_path_local ECG_header.recname '.qrs' ]);
+                                if( any(strcmpi( 'sqrs', this_detector ) ) )
+                                    file_name_orig =  [obj.tmp_path_local ECG_header.recname '.qrs' ];
+                                elseif( any(strcmpi( 'wqrs' , this_detector ) ) )
+                                    file_name_orig =  [obj.tmp_path_local ECG_header.recname '.wqrs' ];
                                 else
-                                    % run only gqrs
-                                    [status, ~] = system([ obj.WFDB_cmd_prefix_str  'gqrs -r ' ECG_header.recname ' -o ' this_detector num2str(jj) ' -s ' num2str(jj-1)]);
-                                    if( status ~= 0 ); error('ECGtask_QRS_detection:WFDB_error', 'Error calling WFDB function.'); end
+                                    file_name_orig =  [obj.tmp_path_local ECG_header.recname '.' this_detector num2str(jj) ];
                                 end
 
-                            catch aux_ME
-                                
-
-                                strAux = sprintf( '%s failed in recording %s lead %d\n', this_detector, ECG_header.recname, jj);
-
-                                report = getReport(aux_ME);
-                                fprintf(2, '%s\nError report:\n%s', strAux, report);
-
-                            end
-
-                            if( exist(file_name_orig, 'file') )
-                                % reference comparison
-                                anns_test = [];                    
                                 try
-                                    anns_test = readannot(file_name_orig);
+
+                                    if( any(strcmpi( {'sqrs' 'wqrs'} , this_detector ) ) )
+                                        % wqrs tiene una interface diferente
+                                        [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header.recname ' -s ' num2str(jj-1)]);
+                                        if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header.recname, ECG_header.desc(jj,:) ) ); end
                                     
-                                    if( isempty(anns_test) )
-
-                                        str_aux = strrep(strtrim(ECG_header.desc(jj,:)), ' ', '_' );
-                                        payload_out.([this_detector '_' str_aux ]).time = [];
-
+                                    elseif( any(strcmpi( 'ecgpuwave', this_detector ) ) )
+                                        [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header.recname ' -a ' this_detector num2str(jj) ' -s ' num2str(jj-1)]);
+                                        if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header.recname, ECG_header.desc(jj,:) ) ); end
+                                        
                                     else
                                         
-                                        anns_test = AnnotationFilterConvert(anns_test, 'MIT', 'AAMI');
+                                        if( strcmpi( 'qqrs', this_detector ) && exist(obj.gqrs_config_filename, 'file') )
+                                            % using the configuration file to
+                                            % post-process
+                                            [status, ~] = system([ obj.WFDB_cmd_prefix_str 'gqrs -c ' obj.gqrs_config_filename ' -r ' ECG_header.recname ' -s ' num2str(jj-1)]);
+                                            if( status == 0 )
+                                                [status, ~] = system([ obj.WFDB_cmd_prefix_str 'gqpost -c ' obj.gqrs_config_filename ' -r ' ECG_header.recname ' -o ' this_detector num2str(jj) ]);
+                                                if( status ~= 0 )
+                                                    disp_string_framed(2, sprintf('gqpost failed in recording %s lead %s', ECG_header.recname, ECG_header.desc(jj,:) ) );
+                                                end
+                                            else
+                                                disp_string_framed(2, sprintf('gqrs failed in recording %s lead %s', ECG_header.recname, ECG_header.desc(jj,:) ) );
+                                            end
 
-                                        % filter and offset
-                                        bAux = anns_test.time >= ECG_sample_start_end_idx(1) & anns_test.time <= ECG_sample_start_end_idx(2);
-                                        for fname = rowvec(fieldnames(anns_test) )
-                                            aux_val = anns_test.(fname{1});
-                                            anns_test.(fname{1}) = aux_val( bAux );
+                                            delete([obj.tmp_path_local ECG_header.recname '.qrs' ]);
+                                        else
+                                            % run only WFDB compatible detector
+                                            [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header.recname ' -o ' this_detector num2str(jj) ' -s ' num2str(jj-1)]);
+                                            if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header.recname, ECG_header.desc(jj,:) ) ); end
                                         end
-                                        anns_test.time = anns_test.time + ECG_start_offset - 1;
-                                        
-                                        str_aux = strrep(strtrim(ECG_header.desc(jj,:)), ' ', '_' );
-                                        payload_out.([this_detector '_' str_aux ]).time = colvec(anns_test.time);
 
                                     end
-                                    
+
                                 catch aux_ME
-                                    
-                                    
-                                    if( strcmpi(aux_ME.identifier, 'MATLAB:nomem') )
-                                        payload_out.([this_detector '_' num2str(jj)]).time = [];
-                                    else
-                                        strAux = sprintf( '%s failed in recording %s lead %s\n', this_detector, ECG_header.recname, ECG_header.desc(jj,:) );
 
-                                        report = getReport(aux_ME);
-                                        fprintf(2, '%s\nError report:\n%s', strAux, report);
+
+                                    strAux = sprintf( '%s failed in recording %s lead %d\n', this_detector, ECG_header.recname, jj);
+
+                                    report = getReport(aux_ME);
+                                    fprintf(2, '%s\nError report:\n%s', strAux, report);
+
+                                end
+
+                                if( exist(file_name_orig, 'file') )
+                                    % reference comparison
+
+                                    anns_test = [];                    
+
+                                    try
+
+                                        anns_test = readannot(file_name_orig);
+
+                                        if( isempty(anns_test) )
+
+                                            payload_out.([this_detector '_' obj.lead_names{jj} ]).time = [];
+
+                                        else
+
+                                            anns_test = AnnotationFilterConvert(anns_test, 'MIT', 'AAMI');
+
+                                            % filter and offset
+                                            anns_test.time = anns_test.time(anns_test.time >= ECG_sample_start_end_idx(1) & anns_test.time <= ECG_sample_start_end_idx(2)) + ECG_start_offset - 1;
+
+                                            payload_out.([this_detector '_' obj.lead_names{jj} ]).time = colvec(anns_test.time);
+
+                                        end
+
+                                    catch aux_ME
+
+                                        if( strcmpi(aux_ME.identifier, 'MATLAB:nomem') )
+                                            payload_out.([this_detector '_' obj.lead_names{jj} ]).time = [];
+                                        else
+                                            strAux = sprintf( '%s failed in recording %s lead %s\n', this_detector, ECG_header.recname, ECG_header.desc(jj,:) );
+
+                                            report = getReport(aux_ME);
+                                            error('ECGtask_QRS_detection:WFDB', '%s\nError report:\n%s', strAux, report);
+
+                                        end
+
                                     end
+
+                                    delete(file_name_orig);
+                                    
+                                else
+                                    
+                                    payload_out.([this_detector '_' obj.lead_names{jj} ]).time = [];
+
                                 end
 
                             end
-
                         end
-
+                        
                     case 'user'
                         %% user-defined QRS detector
 
@@ -352,7 +405,9 @@ classdef ECGtask_QRS_detection < ECGtask
 
                                 obj.progress_handle.checkpoint([ 'User defined function: ' this_detector_name])
 
-                                [positions_single_lead, position_multilead] = ud_func_pointer( double(ECG(:,obj.lead_idx)), trim_ECG_header(ECG_header, obj.lead_idx), obj.progress_handle, obj.payload);
+                                ECG_header_aux = trim_ECG_header(ECG_header, obj.lead_idx);
+                                
+                                [positions_single_lead, position_multilead] = ud_func_pointer( double(ECG(:,obj.lead_idx)), ECG_header_aux, obj.progress_handle, obj.payload);
 
                                 for jj = 1:length(obj.lead_idx)
 
@@ -360,9 +415,8 @@ classdef ECGtask_QRS_detection < ECGtask
                                     % filter and offset
                                     aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) &  aux_val <= ECG_sample_start_end_idx(2) ) + ECG_start_offset - 1;
 
-                                    str_aux = strrep(strtrim(ECG_header.desc(obj.lead_idx(jj),:)), ' ', '_' );
                                     % QRS detections in milliseconds
-                                    payload_out.([ this_detector_name '_' str_aux ]).time = colvec(aux_val);
+                                    payload_out.([ this_detector_name '_' obj.lead_names{jj} ]).time = colvec(aux_val);
 
                                 end
 
@@ -389,75 +443,46 @@ classdef ECGtask_QRS_detection < ECGtask
                 end
     
             end
-            
-            % calculate artificial leads
-            if( obj.CalculateArtificialDetections )
-                fn = fieldnames(payload_out);
-                % more than one ECG signal
-                if( length(fn) > 1 )
-                    payload_out = calculate_artificial_QRS_detections(payload_out, ECG_header, [1 ECG_header.nsamp] + ECG_start_offset - 1 );
-                end
-            end
+
+            % Add QRS detections quality metrics, Names, etc.
+            payload_out = calculateSeriesQuality(payload_out, ECG_header, [1 ECG_header.nsamp] + ECG_start_offset - 1 );
             
             % delete intermediate tmp files
             if(obj.bWFDBdetectors)
                 delete([obj.tmp_path_local ECG_header.recname '.*' ]);
             end
             
+            % calculate performance
+            if( obj.CalculatePerformance )
+                AnnNames = payload_out.series_quality.AnnNames(:,1);
+                cant_lead_name = size(AnnNames,1);
+                payload_out.series_performance.conf_mat = zeros(2,2,cant_lead_name);
+                
+                if(isempty(ECG_annotations)) 
+                    disp_string_framed(2, sprintf('Trusted references not found for %s', ECG_header.recname) );
+                else
+                    % offset refs, produced anns were already shifted
+                    ECG_annotations.time = ECG_annotations.time + ECG_start_offset - 1;
+                    for kk = 1:cant_lead_name
+                        payload_out.series_performance.conf_mat(:,:,kk) = bxb(ECG_annotations, payload_out.(AnnNames{kk}).time, ECG_header );
+                    end            
+                end
+
+            end
             
         end
         
         function payload = Finish(obj, payload, ECG_header)
             
-            if( obj.CalculateArtificialDetections )
+            if( isfield(payload, 'series_quality') && isfield(payload.series_quality, 'ratios') )
                 payload.series_quality.ratios = mean(payload.series_quality.ratios, 2);
             end
                 
         end
         
         function payload = Concatenate(obj, plA, plB)
-
-            if( isempty(plA) )
-                
-                payload = plB;
-                
-            else
-                
-                fields = rowvec(unique( [rowvec(fieldnames(plA)) rowvec(fieldnames(plB))] ));
-                
-                diff_fields = setdiff(fields, {'series_quality'});
-                
-                for fn = diff_fields
-                    
-                    if( isfield(plA, fn{1}) && isfield(plB, fn{1}) )
-                        payload.(fn{1}).time = [ colvec(plA.(fn{1}).time); colvec(plB.(fn{1}).time) ];
-                    
-                    elseif( ~isfield(plA, fn{1}) && isfield(plB, fn{1}) )
-                        payload.(fn{1}).time = colvec(plB.(fn{1}).time);
-                    end
-                    
-                end
-                
-                aux_idx = find(strcmpi(fields, 'series_quality'));
-                
-                if( ~isempty(aux_idx) )
-                    
-                    if( isfield(plA, 'series_quality') && isfield(plB, 'series_quality') )
-                        if( size(plA.series_quality.ratios,1) == size(plB.series_quality.ratios,1) )
-                            payload.series_quality.ratios = [plA.series_quality.ratios plB.series_quality.ratios];
-                            payload.series_quality.estimated_labs = cellfun(@(a,b)( [colvec(a);colvec(b)] ) , plA.series_quality.estimated_labs, plB.series_quality.estimated_labs, 'UniformOutput', false);
-                            payload.series_quality.AnnNames = plA.series_quality.AnnNames;
-                        else
-                            payload.series_quality.ratios = plA.series_quality.ratios;
-                            payload.series_quality.estimated_labs = plA.series_quality.estimated_labs;
-                            payload.series_quality.AnnNames = plA.series_quality.AnnNames;
-                        end
-                    end
-
-                end
-                
-            end
             
+            payload = ConcatenateQRSdetectionPayloads(obj, plA, plB);
 
         end
 

@@ -285,7 +285,7 @@ else
 end
 
 if classic
-    res.classic=ols(x,y,'plots',0);
+    res.classic=libra_ols(x,y,'plots',0);
 else 
     res.classic=0;
 end

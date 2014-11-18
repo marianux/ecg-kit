@@ -103,7 +103,7 @@ if( nargin < 2 || ~any(strcmpi(cDetails, detailLevel)) )
 end
 
 if( nargin < 4 || isempty(win_lengths) || ~isnumeric(win_lengths) )
-    win_lengths = [60*60 30*60 60 10]; % seconds
+    win_lengths = [60*60 30*60 60 7]; % seconds
 end
 
 if( ~isobject(ECG_w) || ~isa(ECG_w, 'ECGwrapper') )
@@ -162,12 +162,9 @@ try
             else
 
                 plot_ecg_strip(ECG_w, 'PrettyPrint', true, ... 
-                                      'Heartbeat_classification', ECG_w, ...
-                                      'QRS_locations', ECG_w, ...
-                                      'ECG_delineation_single_lead', ECG_w, ...
-                                      'ECG_delineation_multilead', ECG_w, ...
                                       'Figure_handle', fig_hdl, ...
-                                      'Start_time', start_time, 'End_time', start_time + win_length);
+                                      'Start_time', start_time, ...
+                                      'End_time', start_time + win_length);
             end
 
             set(fig_hdl, 'Visible', 'off');

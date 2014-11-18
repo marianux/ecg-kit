@@ -80,6 +80,7 @@ classdef ECGtask_ECG_delineation < ECGtask
         command_sep
         WFDB_bin_path
         lead_idx = [];
+        lead_names
         
     end
     
@@ -112,6 +113,26 @@ classdef ECGtask_ECG_delineation < ECGtask
                 obj.lead_idx = 1:ECG_header.nsig;
             end
             
+            % lead names desambiguation
+            str_aux = regexprep(cellstr(ECG_header.desc), '\W*(\w+)\W*', '$1');
+            obj.lead_names = regexprep(str_aux, '\W', '_');
+
+            [str_aux2, ~ , aux_idx] = unique( obj.lead_names );
+            aux_val = length(str_aux2);
+            
+            if( aux_val ~= ECG_header.nsig )
+                for ii = 1:aux_val
+                    bAux = aux_idx==ii;
+                    aux_matches = sum(bAux);
+                    if( sum(bAux) > 1 )
+                        obj.lead_names(bAux) = strcat( obj.lead_names(bAux), repmat({'v'}, aux_matches,1), cellstr(num2str((1:aux_matches)')) );
+                    end
+                end
+            end
+            
+            obj.lead_names = regexprep(obj.lead_names, '\W*(\w+)\W*', '$1');
+            obj.lead_names = regexprep(obj.lead_names, '\W', '_');
+                        
             if( strcmpi('all-delineators', obj.delineators) )
                 obj.delineators2do = obj.cQRSdelineators(2:end);
             else
@@ -161,16 +182,34 @@ classdef ECGtask_ECG_delineation < ECGtask
 
                 fnames = fieldnames(obj.payload);
                 aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'corrected_'))), fnames, 'UniformOutput', false)));
-                if( ~isempty(aux_idx) )
-                    for ii = rowvec(aux_idx)
-                        aux_val = obj.payload.(fnames{aux_idx(ii)}).time - ECG_start_offset + 1;
+                if( isempty(aux_idx) )
+
+                    if( isfield(obj.payload, 'series_quality') )
+                        [~, aux_idx] = sort(obj.payload.series_quality.ratios, 'descend');
+                        aux_val = obj.payload.(obj.payload.series_quality.AnnNames{aux_idx(1),1}).(obj.payload.series_quality.AnnNames{aux_idx(1),2}) - ECG_start_offset + 1;
                         aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val < ECG_sample_start_end_idx(2) );
-                        obj.payload.(fnames{aux_idx(ii)}).time = aux_val;
+                        obj.payload = aux_val;
+                        
+                    else
+                        for fname = rowvec(fnames)
+                            if( isfield(obj.payload.(fname{1}), 'time') )
+                                aux_val = obj.payload.(fname{1}).time - ECG_start_offset + 1;
+                                aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val < ECG_sample_start_end_idx(2) );
+                                obj.payload = aux_val;
+                                break
+                            end
+                        end
+                    end
+                else
+                    
+                    for ii = rowvec(aux_idx)
+                        aux_val = obj.payload.(fnames{ii}).time - ECG_start_offset + 1;
+                        aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val < ECG_sample_start_end_idx(2) );
+                        obj.payload = aux_val;
                     end
                 end
 
             end
-
             
             cant_QRSdelineators = length(obj.delineators2do);
             
@@ -200,10 +239,11 @@ classdef ECGtask_ECG_delineation < ECGtask
 
                             [position_multilead, positions_single_lead] = wavedet_interface(ECG, ECG_header, obj.payload, obj.lead_idx, obj.wavedet_config, ECG_sample_start_end_idx, ECG_start_offset, obj.progress_handle);
 
-                            payload_out.wavedet_single_lead = positions_single_lead;
+                            for jj = 1:length(obj.lead_idx)
+                                payload_out.wavedet.(obj.lead_names{obj.lead_idx(jj)}) = positions_single_lead(jj);
+                            end
                             
-                            % QRS detections in milliseconds
-                            payload_out.wavedet_multilead = position_multilead;
+                            payload_out.wavedet.multilead = position_multilead;
 
                         catch aux_ME
 
@@ -246,11 +286,9 @@ classdef ECGtask_ECG_delineation < ECGtask
                                         end
                                     end
                                     
-                                    positions_single_lead(jj) = aux_struct;
+                                    payload_out.(this_delineator_name).(obj.lead_names{obj.lead_idx(jj)}) = aux_struct;
                                     
                                 end
-
-                                payload_out.( [ this_delineator_name '_single_lead' ] ) = positions_single_lead;
                                 
                                 if( ~isempty(position_multilead) )
                                     
@@ -269,7 +307,7 @@ classdef ECGtask_ECG_delineation < ECGtask
                                     
                                     position_multilead = aux_struct;
                                     
-                                    payload_out.( [ this_delineator_name '_multilead' ] ) = position_multilead;
+                                    payload_out.(this_delineator_name).multilead = position_multilead;
                                     
                                 end
 
@@ -290,6 +328,9 @@ classdef ECGtask_ECG_delineation < ECGtask
                 end
     
             end
+            
+            
+            
             
         end
         

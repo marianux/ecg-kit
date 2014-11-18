@@ -519,7 +519,7 @@ if h==n
     raw.center=clmean;
     raw.cov=clcov;
     raw.objective=det(clcov);
-    mah=mahalanobis(data,clmean,'cov',clcov);
+    mah=libra_mahalanobis(data,clmean,'cov',clcov);
     rew.mahalanobis=sqrt(mah);
     raw.rd=rew.mahalanobis;
     weights= mah <= cutoff.rd^2;
@@ -543,7 +543,7 @@ if h==n
         [rew.cov,rew.center]=trafo(rew.cov,rew.center,med,mad,p);
         rew.rd=raw.rd;
     else
-        mah=mahalanobis(data,rew.center,'cov',rew.cov);
+        mah=libra_mahalanobis(data,rew.center,'cov',rew.cov);
         weights = mah <= cutoff.md^2;
         [raw.cov,raw.center]=trafo(raw.cov,raw.center,med,mad,p);
         [rew.cov,rew.center]=trafo(rew.cov,rew.center,med,mad,p);
@@ -1096,7 +1096,7 @@ while final~=2
 end % while loop
 
 [P,T,L,r,centerX,cX] = classSVD(data(bestset,:));
-mah=mahalanobis((data - repmat(cX,n,1))*P,zeros(size(P,2),1),'cov',L);
+mah=libra_mahalanobis((data - repmat(cX,n,1))*P,zeros(size(P,2),1),'cov',L);
 sortmah=sort(mah);
 
 [sortset,indbestset] = sort(mah(bestset));
@@ -1149,12 +1149,12 @@ if prod(sqrt(L)) < exp(-50*p)
     rew.flag=weights;
     rew.rd=raw.rd;
 else
-    mah=mahalanobis(data,rew.center,'cov',rew.cov);
+    mah=libra_mahalanobis(data,rew.center,'cov',rew.cov);
     rew.flag=(mah <= cutoff.md^2);
     rew.rd=sqrt(mah);
 end
 
-rew.mahalanobis=sqrt(mahalanobis(data,clmean,'cov',clcov));
+rew.mahalanobis=sqrt(libra_mahalanobis(data,clmean,'cov',clcov));
 rawo=raw;
 reso=rew;
 if options.classic==1
@@ -1364,13 +1364,13 @@ function mahsort=mahal(dat,meanvct,covmat,part,fine,final,k,obsingroup,group,min
 % Orders the observations according to the mahalanobis distances.
 
 if ~part | final
-    [dis,ind]=sort(mahalanobis(dat,meanvct,'cov',covmat));
+    [dis,ind]=sort(libra_mahalanobis(dat,meanvct,'cov',covmat));
     mahsort=ind;
 elseif fine
-    [dis,ind]=sort(mahalanobis(dat(obsingroup{end},:),meanvct,'cov',covmat));
+    [dis,ind]=sort(libra_mahalanobis(dat(obsingroup{end},:),meanvct,'cov',covmat));
     mahsort=obsingroup{end}(ind);
 else
-    [dis,ind]=sort(mahalanobis(dat(obsingroup{k},:),meanvct,'cov',covmat));
+    [dis,ind]=sort(libra_mahalanobis(dat(obsingroup{k},:),meanvct,'cov',covmat));
     mahsort=obsingroup{k}(ind);
 end
 
@@ -1382,13 +1382,13 @@ function [dis,mahsort]=mahal2(score,sca,part,fine,final,k,obsingroup)
 % covariance matrix and zero mean. sca contains the squareroot of the diagonal elements.
 
 if ~part | final
-    [dis,ind]=sort(mahalanobis(score,zeros(size(score,2),1),'cov',sca.^2));
+    [dis,ind]=sort(libra_mahalanobis(score,zeros(size(score,2),1),'cov',sca.^2));
     mahsort=ind;
 elseif fine
-    [dis,ind]=sort(mahalanobis(score,zeros(size(score,2),1),'cov',sca.^2));
+    [dis,ind]=sort(libra_mahalanobis(score,zeros(size(score,2),1),'cov',sca.^2));
     mahsort=obsingroup{end}(ind);
 else
-    [dis,ind]=sort(mahalanobis(score,zeros(size(score,2),1),'cov',sca.^2));
+    [dis,ind]=sort(libra_mahalanobis(score,zeros(size(score,2),1),'cov',sca.^2));
     mahsort=obsingroup{k}(ind);
 end
 

@@ -158,7 +158,7 @@ if isfield(heasig,'nsegm')
         if ~strcmp(segname{i}(1),'~')
             hsig{i} = readheader([hea_path filesep segname{i}]);
             for k = 1:hsig{i}.nsig
-                desc{j} = deblank(strtrim(hsig{i}.desc(k,:)));
+                desc{j} = strtrim(hsig{i}.desc(k,:));
                 j = j+1;
             end
         else
@@ -284,54 +284,76 @@ else
             end
         end
         
-        if isfield(heasig,'gain')
+        if isnan(heasig.gain(i))
+            heasig.gain(i) = 200;
+        else
             if heasig.gain(i) == 0
                 heasig.gain(i) = 200;
             end
             if ~isempty(deblank(s))
+                s_aux = s;
                 [s1,s] = strtok(s,pp);
                 heasig.adcres(i) = str2double(s1); % ADC resolution (bits) [optional]
-                if (heasig.adcres(i) == 0) || isempty(heasig.adcres(i))
+                if isnan(heasig.adcres(i))
+                    % failed to parse this field
+                    s = s_aux ;
+                    heasig.adcres(i) = 12;
+                elseif (heasig.adcres(i) == 0)
                     heasig.adcres(i) = 12;
                 end
+                
             end
-            if isfield(heasig,'adcres')
+            if ~isnan(heasig.adcres(i))
                 if ~isempty(deblank(s))
+                    s_aux = s;
                     [s1,s] = strtok(s,pp);
-                    heasig.adczero(i) = str2double(s1); % ADC zero [optional]
-                    if isempty(heasig.adczero(i))
-                        heasig.adczero(i) = 0;
+                    heasig.adczero(i) = str2double(s1); % initial value [optional]
+                    if isnan(heasig.adczero(i))
+                        % failed to parse this field
+                        s = s_aux ;
                     end
                 end
             end
-            if isfield(heasig,'adczero')
+            
+            if ~isnan(heasig.adczero(i))
                 if ~isempty(deblank(s))
+                    s_aux = s;
                     [s1,s] = strtok(s,pp);
                     heasig.initval(i) = str2double(s1); % initial value [optional]
-                    if isempty(heasig.initval(i))
-                        heasig.initval(i) = 0;
+                    if isnan(heasig.initval(i))
+                        % failed to parse this field
+                        s = s_aux ;
                     end
                 end
             end
-            if isfield(heasig,'initval')
+            if ~isnan(heasig.initval(i))
                 if ~isempty(deblank(s))
-                    [s1,s] =  strtok(s,pp);
-                    heasig.cksum(i) = str2double(s1); % cheksum [optional]
-                end
-            end
-            if isfield(heasig,'cksum')
-                if ~isempty(deblank(s))
+                    s_aux = s;
                     [s1,s] = strtok(s,pp);
-                    heasig.bsize(i) = str2double(s1); % block size [optional]
+                    heasig.cksum(i) = str2double(s1); % initial value [optional]
+                    if isnan(heasig.cksum(i))
+                        % failed to parse this field
+                        s = s_aux ;
+                    end
+                    
                 end
             end
-            if isfield(heasig,'bsize')
+            if ~isnan(heasig.cksum(i))
                 if ~isempty(deblank(s))
+                    s_aux = s;
+                    [s1,s] = strtok(s,pp);
+                    heasig.bsize(i) = str2double(s1); % initial value [optional]
+                    if isnan(heasig.bsize(i))
+                        % failed to parse this field
+                        s = s_aux ;
+                    end
+                end
+            end
+            if  ~isnan(heasig.bsize(i))
+                if ~isempty(strtrim(s))
                     heasig.desc(i,1:length(s))=s; % description [optional]
                 end
             end
-        else
-            heasig.gain(i) = 200;
         end
         
     end

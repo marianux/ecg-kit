@@ -2,7 +2,7 @@ function recording_format = ECGformat(recording_name)
     
     recording_format = [];
 
-    cKnownFormats = {'MIT' 'ISHNE', 'HES', 'MAT', 'Mortara'};
+    cKnownFormats = {'MIT' 'ISHNE', 'AHA', 'HES', 'MAT', 'Mortara'};
     lcKnownFormats = length(cKnownFormats);
 
     [rec_filepath, rec_filename, rec_fileExt] = fileparts(recording_name);
@@ -39,6 +39,8 @@ function recording_format = ECGformat(recording_name)
         % ISHNE and AHA first
         fg_idx = find(strcmp(cKnownFormats, 'ISHNE'));
         aux_idx = [fg_idx aux_idx(aux_idx~=fg_idx)];
+        fg_idx = find(strcmp(cKnownFormats, 'AHA'));
+        aux_idx = [fg_idx aux_idx(aux_idx~=fg_idx)];
     elseif( strcmpi(rec_fileExt, '.mat' ) )
         % Matlab first
         fg_idx = find(strcmp(cKnownFormats, 'MAT'));
@@ -65,6 +67,13 @@ function recording_format = ECGformat(recording_name)
         elseif( strcmp(cKnownFormats{ii}, 'ISHNE') )
             
             if(isISHNEformat(recording_name))
+                recording_format = cKnownFormats{ii};
+                return
+            end
+
+        elseif( strcmp(cKnownFormats{ii}, 'AHA') )
+            
+            if(isAHAformat(recording_name))
                 recording_format = cKnownFormats{ii};
                 return
             end

@@ -12,7 +12,36 @@ classdef ECGtask_QRS_corrector < ECGtask
 % Version: 0.1 beta
 % Birthdate  : 18/2/2013
 % Last update: 18/2/2013
-       
+%%
+% Then the task invoked by the wrapper object is changed to
+% <matlab:edit('ECGtask_QRS_corrector.m') QRS corrector task> and the GUI
+% is presented to the user. 
+% 
+% <<QRS corrector.PNG>>
+%
+% In this example, the GUI have four plots to represent the RR interval
+% series, the two in the top-left show the RR interval versus time at different
+% time windows. The bigger in the top-right, shows a _Poincaré_ plot, that
+% is the current RR interval versus the following in the serie. The plot in
+% the bottom shows the selected signal/s versus time. Then the user can
+% interact with the *upper-left* plots according to the following mouse
+% behaviour: 
+% 
+%%
+% 
+% * Left:  Center the window in this heartbeat
+% * Right (click and drag): modify the windows size 
+% * Center (click or click and drag): select and focus on heartbeats
+% 
+%%
+% The lower plot allows the user to add or remove heartbeats:
+%%
+% 
+% * Left:  Add a QRS complex location
+% * Right: Remove the closest QRS complex location
+% * Center : View the actual raw signal.
+% 
+%        
     properties(GetAccess = public, Constant)
         name = 'QRS_corrector';
         % Require the parent Wrapper object to this task
