@@ -1,4 +1,4 @@
-function heasig = read_Mortara_header( filename )
+%% Reads ECG header in Mortara format. 
 % Reads ECG header in Mortara format. 
 % 
 % Arguments:
@@ -13,10 +13,16 @@ function heasig = read_Mortara_header( filename )
 % performance reasons. You can disable this limit by doing:
 % MaxIOread = Inf; %megabytes
 % 
-% Author: Mariano Llamedo Soria (llamedom at {unizar.es;electron.frba.utn.edu.ar}
-% Birthdate: 29/05/2014
-% Last update: 29/05/2014
+% See also read_Mortara_format, read_ECG, ECGwrapper
 % 
+% Author: Mariano Llamedo Soria
+% <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
+% Version: 0.1 beta
+% Birthdate: 29/05/2014
+% Last update: 19/11/2014
+% Copyright 2008-2014
+% 
+function heasig = read_Mortara_header( filename )
 
 heasig.freq = 1000; %Hz
 heasig.desc = char({'I','II','V1','V2','V3','V4','V5','V6'});

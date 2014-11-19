@@ -1,3 +1,62 @@
+%% Reads an ECG recording
+% This function is the main I/O interface with ECG recordings. It can read
+% several formats, such as 'MIT' 'AHA' 'ISHNE', 'HES', 'MAT' and 'Mortara'.
+% Also has the feature of "auto-detect" file format.
+% 
+% Example
+% 
+%   [ECG heasig ann recording_format] = read_ECG(recording_name, ECG_start_idx, ECG_end_idx, recording_format)
+% 
+% Arguments: (specified as ECGwrapper('arg_name1', arg_val1, ... , 'arg_nameN', arg_valN) )
+% 
+%           + recording_name : (char) the full filename of the ECG
+%                recording. 
+% 
+%           + ECG_start_idx : (number) the sample to start reading. Empty
+%                             or 1 to start at the begining.
+% 
+%           + ECG_end_idx : (number) the sample to end reading. Empty to
+%                           read all.
+% 
+%           + recording_format: (char) recording format of "recording_name"
+%                 file. You can check the following links regarding file
+%                 formats: 
+% 
+%                   - AHA: http://physionet.org/physiotools/old/dbpg/dbu_84.htm
+%                   - ISHNE: http://thew-project.org/THEWFileFormat.html
+%                   - MIT: http://physionet.org/physiotools/wag/signal-5.htm
+% 
+%                 HES and mortara are propietary formats and no
+%                 information is distributed with the kit. You may need
+%                 SuperECG from mortara in order con extract the binary
+%                 files required to read this kind of files. MAT format
+%                 requieres a typical "*.mat" matlab file with the
+%                 following variables inside:
+% 
+%                   - signal: the signal matrix of size [ header.nsamp header.nsig ]
+%                   - header: A struct with all signal properties. See the
+%                       example recording included with the kit
+%                       \recordings\example_recording.mat for an example of
+%                       this struct format, and Physionet documentation for
+%                       further details:
+%                       http://physionet.org/physiotools/wag/header-5.htm  
+%                   - ann: Annotations struct included with the signal in MIT
+%                       format as the one returned by "readannot" function.
+%                       The "time" field must be present, being this a
+%                       numeric vector with the sample indexes of the
+%                       annotations. For the "type" and "subtype" fields, see
+%                       the MIT format documentation in Physionet:
+%                    http://www.physionet.org/physiobank/annotations.shtml
+% 
+% See also ECGwrapper, ECGformat, read_AHA_format, read_ishne_format, read_HES_format, read_Mortara_format
+% 
+% Author: Mariano Llamedo Soria
+% <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
+% Version: 0.1 beta
+% Birthdate: 5/01/2014
+% Last update: 19/11/2014
+% Copyright 2008-2014
+% 
 function [ECG heasig ann recording_format] = read_ECG(recording_name, ECG_start_idx, ECG_end_idx, recording_format)
 
 ECG = [];
@@ -23,9 +82,9 @@ end
 
 if( strcmp(recording_format, 'ISHNE') )
     if( nargout > 1 )
-        [ECG heasig ann] = read_ishne(recording_name, ECG_start_idx, ECG_end_idx );
+        [ECG heasig ann] = read_ishne_format(recording_name, ECG_start_idx, ECG_end_idx );
     else
-        ECG = read_ishne(recording_name, ECG_start_idx, ECG_end_idx );
+        ECG = read_ishne_format(recording_name, ECG_start_idx, ECG_end_idx );
     end        
 elseif( strcmp(recording_format, 'MAT') )
     

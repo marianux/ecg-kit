@@ -1,4 +1,4 @@
-function [ECG heasig ann last_sample] = read_AHA_format( filename, start_sample, end_sample )
+%% Reads ECG recording in AHA format
 % Reads ECG recordings in AHA format. Implements the documentation
 % available in the help of the application provided with the database.
 % 
@@ -17,10 +17,17 @@ function [ECG heasig ann last_sample] = read_AHA_format( filename, start_sample,
 % performance reasons. You can disable this limit by doing:
 % MaxIOread = Inf; %megabytes
 % 
-% Author: Mariano Llamedo Soria (llamedom at {unizar.es;electron.frba.utn.edu.ar}
-% Birthdate: 17/12/2010
-% Last update: 17/12/2010
+% See also read_AHA_ann, read_AHA_header, read_ECG, ECGwrapper
 % 
+% Author: Mariano Llamedo Soria
+% <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
+% Version: 0.1 beta
+% Birthdate: 17/12/2010
+% Last update: 19/11/2014
+% Copyright 2008-2014
+% 
+function [ECG heasig ann last_sample] = read_AHA_format( filename, start_sample, end_sample )
+
 ann = [];
 heasig = [];
 ECG = [];

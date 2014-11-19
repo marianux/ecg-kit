@@ -1,3 +1,33 @@
+%% Write an ECG header in MIT format
+% This function receives a "header" struct with ECG signal propeties and
+% writes [header.name '.hea'] file into "header_path".
+% 
+% Example
+% 
+%         MIT_filename  = 'your_filename';
+%         MIT_path = ['.' filesep];
+%         ECG_header.recname = MIT_filename;
+%         ECG_header.nsig = 8;
+%         ECG_header.nsamp = 9978;
+%         ECG_header.freq = 1000; %Hz
+%         ECG_header.desc = char({'I','II','V1','V2','V3','V4','V5','V6'});
+%         ECG_header.adczero = zeros(ECG_header.nsig,1);
+%         ECG_header.gain = ones(ECG_header.nsig,1);
+%         ECG_header.units = repmat('uV',ECG_header.nsig,1);
+%         ECG_header.btime = '00:00:00';
+%         ECG_header.bdate = '01/01/2000';
+% 
+%         writeheader(MIT_path, ECG_header);
+% 
+% See also read_ECG, ECGwrapper
+% 
+% Author: Salvador Olmos, Juan Pablo Martínez and/or Juan Bolea
+% adapted to ECGkit by: Mariano Llamedo Soria
+% <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
+% Version: 0.1 beta
+% Birthdate: 5/01/2014
+% Last update: 19/11/2014
+% 
 function writeheader(header_path, header)
 %
 % WRITHEAD function writes header file for signal data struct in directory header_path

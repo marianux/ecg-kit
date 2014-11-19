@@ -1,0 +1,23 @@
+<!-- ECGkit start -->
+
+  <binding name="ECGwrapper" ctype="SUBFUN">	
+    <arg argn="1" ctype="SUBFUN" value="recording_name"/>
+    <arg argn="2" ctype="FILE" />
+    <arg argn="3:2:11" ctype="SUBFUN" value="recording_name recording_format this_pid tmp_path output_path ECGtaskHandle overlapping_time partition_mode cacheResults syncSlavesWithMaster repetitions"/>
+    <arg previous="tmp_path" ctype="DIR"/>
+    <arg previous="output_path" ctype="DIR"/>
+    <arg previous="recording_format" ctype="SUBFUN" value="MIT ISHNE AHA HES MAT Mortara auto" />
+    <arg previous="partition_mode" ctype="SUBFUN" value="ECG_contiguous ECG_overlapped QRS" />
+    <arg previous="ECGtaskHandle" ctype="SUBFUN" value="ECG_delineation ECG_delineation_corrector PPG_ABP_corrector PPG_ABP_detector QRS_corrector QRS_detection QRS_detections_post_process ECG_heartbeat_classifier" />
+  </binding>
+
+  <binding name="plot_ecg_strip" ctype="SUBFUN">	
+    <arg argn="1" ctype="VAR"/>
+    <arg argn="2:2:11" ctype="SUBFUN" value="ECG_header QRS_locations Start_time End_time QRS_start_index QRS_complexes Figure_handle Lead_offset Lead_gain Heartbeat_classification ECG_delineation_single_lead ECG_delineation_multilead Title LinkedHandle DetailLevel PrettyPrint OnlyECG FilterECG ReportFilename"/>
+    <arg previous="DetailLevel" ctype="SUBFUN" value="all single-lead multilead none" />
+  </binding>
+
+<!-- ECGkit end -->
+
+</TC>
+

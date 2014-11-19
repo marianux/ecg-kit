@@ -1,6 +1,6 @@
-function heasig = read_ishne_header(filename)
-
-% Reads ECG headers in ISHNE format from THEW databases. Implements the documentation available in:
+%% Reads ECG header from ISHNE format
+% Reads ECG recordings in ISHNE format from THEW databases. Implements the
+% documentation available in: 
 % 
 % http://thew-project.org/THEWFileFormat.html
 % 
@@ -10,17 +10,17 @@ function heasig = read_ishne_header(filename)
 % Output:
 %   + heasig: header with the ECG properties. 
 % 
-% Limits:
-% This routine identifies ECG leads as described in the documentation
-% available in the THEW web page. Whereas, the author is not sure after
-% reading this documentation that the leads aVL and aVR are identified
-% correctly (See lead_transformation). Any feedback is very welcome.
 % 
-% Author: Mariano Llamedo Soria (llamedom at {unizar.es;electron.frba.utn.edu.ar}
+% See also read_ishne_ann, read_ishne_format, read_ECG, ECGwrapper
+% 
+% Author: Mariano Llamedo Soria
+% <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
+% Version: 0.1 beta
 % Birthdate: 21/7/2010
-% Last update: 18/2/2013
+% Last update: 19/11/2014
+% Copyright 2008-2014
 % 
-
+function heasig = read_ishne_header(filename)
 
 lead_transformation =   { ...
                         'Unknown'; ...

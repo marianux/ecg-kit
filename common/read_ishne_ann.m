@@ -1,6 +1,6 @@
-function ann = read_ishne_ann( ann_filename )
-
-% Reads ECG annotations in ISHNE format from THEW databases. Implements the documentation available in:
+%% Reads ECG annotations from ISHNE format
+% Reads ECG recordings in ISHNE format from THEW databases. Implements the
+% documentation available in: 
 % 
 % http://thew-project.org/THEWFileFormat.html
 % 
@@ -10,13 +10,16 @@ function ann = read_ishne_ann( ann_filename )
 % Output:
 %   + ann: structure of annotations. 
 % 
-% Limits:
-% This routine discard timeout annotations after compensating posterior annotations.
+% See also read_ishne_ann, read_ishne_header, read_ECG, ECGwrapper
 % 
-% Author: Mariano Llamedo Soria (llamedom at {unizar.es;electron.frba.utn.edu.ar}
+% Author: Mariano Llamedo Soria
+% <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
+% Version: 0.1 beta
 % Birthdate: 21/7/2010
-% Last update: 18/2/2013
+% Last update: 19/11/2014
+% Copyright 2008-2014
 % 
+function ann = read_ishne_ann( ann_filename )
 
 ann = [];
 fid = fopen(ann_filename);

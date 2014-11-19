@@ -1,3 +1,28 @@
+%% Reads ECG annotations in HES format
+% Reads ECG annotations in HES (Biosigna) format. Implements the documentation
+% available in the help of the application provided with the database (not
+% available with the ECHkit). 
+% 
+% Arguments:
+%   + filename: recording to be read.
+% 
+% Output:
+%   + ann: annotations for the ECG recordings.
+% 
+% Limits:
+% This routine is limited to read blocks smaller than 200 Mbytes for
+% performance reasons. You can disable this limit by doing:
+% MaxIOread = Inf; %megabytes
+% 
+% See also read_HES_format, read_HES_header, read_ECG, ECGwrapper
+% 
+% Author: Mariano Llamedo Soria
+% <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
+% Version: 0.1 beta
+% Birthdate: 17/12/2010
+% Last update: 19/11/2014
+% Copyright 2008-2014
+% 
 function ann = read_HES_ann(filename)
 
 % La traduccion se termina haciendo en LoadDatabaseCustomization.m

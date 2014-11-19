@@ -1,22 +1,23 @@
-function heasig = read_HES_header(filename)
-
+%% Reads ECG header in HES format
 % Reads ECG headers in HES (Biosigna's) format. Implements the documentation
-% provided with Biosignas database.
+% provided with Biosignas database (not available with the ECHkit).
 % 
 % Arguments:
-%   + filename: recording to extract header block.
+%   + filename: recording to be read.
 % 
 % Output:
-%   + heasig: header with the ECG properties. 
+%   + ann: annotations for the ECG recordings.
 % 
-% Limits:
-% Unknown. Any feedback is very welcome.
+% See also read_HES_format, read_HES_ann, read_ECG, ECGwrapper
 % 
-% Author: Mariano Llamedo Soria (llamedom at {unizar.es;electron.frba.utn.edu.ar}
-% Birthdate: 7/1/2011
-% Last update: 7/1/2011
+% Author: Mariano Llamedo Soria
+% <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
+% Version: 0.1 beta
+% Birthdate: 17/12/2010
+% Last update: 19/11/2014
+% Copyright 2008-2014
 % 
-
+function heasig = read_HES_header(filename)
 
 heasig = [];
 

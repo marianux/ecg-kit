@@ -1,5 +1,7 @@
-function heasig = read_AHA_header(filename)
-
+%% Reads ECG header in AHA format
+% Reads ECG annotations in AHA format. Implements the documentation
+% available in the help of the application provided with the database.
+% 
 % Reads ECG headers in AHA format. Implements the documentation
 % available in the help of the application provided with the database.
 % 
@@ -9,16 +11,17 @@ function heasig = read_AHA_header(filename)
 % Output:
 %   + heasig: header with the ECG properties. 
 % 
-% Limits:
-% This routine identifies ECG leads as described in the documentation
-% available in the THEW web page. Whereas, the author is not sure after
-% reading this documentation that the leads aVL and aVR are identified
-% correctly (See lead_transformation). Any feedback is very welcome.
 % 
-% Author: Mariano Llamedo Soria (llamedom at {unizar.es;electron.frba.utn.edu.ar}
+% See also read_AHA_format, read_AHA_ann, read_ECG, ECGwrapper
+% 
+% Author: Mariano Llamedo Soria
+% <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
+% Version: 0.1 beta
 % Birthdate: 17/12/2010
-% Last update: 17/12/2010
+% Last update: 19/11/2014
+% Copyright 2008-2014
 % 
+function heasig = read_AHA_header(filename)
 
 heasig = [];
 

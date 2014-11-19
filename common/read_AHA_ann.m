@@ -1,4 +1,4 @@
-function [ ann last_sample] = read_AHA_ann( filename, start_sample, end_sample )
+%% Reads ECG annotations in AHA format
 % Reads ECG annotations in AHA format. Implements the documentation
 % available in the help of the application provided with the database.
 % 
@@ -10,15 +10,18 @@ function [ ann last_sample] = read_AHA_ann( filename, start_sample, end_sample )
 % Output:
 %   + ann: annotations for the ECG recordings.
 % 
-% Limits:
-% This routine is limited to read blocks smaller than 200 Mbytes for
-% performance reasons. You can disable this limit by doing:
-% MaxIOread = Inf; %megabytes
 % 
-% Author: Mariano Llamedo Soria (llamedom at {unizar.es;electron.frba.utn.edu.ar}
+% See also read_AHA_format, read_AHA_header, read_ECG, ECGwrapper
+% 
+% Author: Mariano Llamedo Soria
+% <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
+% Version: 0.1 beta
 % Birthdate: 17/12/2010
-% Last update: 17/8/2011
+% Last update: 19/11/2014
+% Copyright 2008-2014
 % 
+function [ ann last_sample] = read_AHA_ann( filename, start_sample, end_sample )
+
 ann = [];
 last_sample = [];
 

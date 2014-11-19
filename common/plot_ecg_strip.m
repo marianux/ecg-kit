@@ -23,10 +23,14 @@
 % 
 % Arguments:
 %     
-%     +ECG: [numeric] REQUIRED. Signal matrix of dimension [nsamp nsig] where:
+%     +ECG: [numeric | char | ECGwrapper] REQUIRED. 
+%           Signal matrix of dimension [nsamp nsig] where:
 % 
 %             - nsamp: time length in samples
 %             - nsig: number of ECG leads or number of signals.
+% 
+%           Recording filename or ECGwrapper object of the ECG recording
+%           are also accepted.
 % 
 %     +ECG_header: [struct] OPTIONAL. 
 % 
@@ -101,6 +105,7 @@
 % 
 % Example:
 % 
+%   plot_ecg_strip([ ECGkitrootpath '\recordings\example_recording.mat'])
 % 
 %   plot_ecg_strip(ECG)
 % 
@@ -147,10 +152,12 @@
 % See also plot_ecg_strip
 % 
 % Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
-% Last update: 14/5/2014
+% Last update: 19/11/2014
 % Birthdate  : 15/8/2012
 % Copyright 2008-2014
-function ECG_hdl = plot_ecg_strip( ECG, varargin )
+function returned_handles = plot_ecg_strip( ECG, varargin )
+
+returned_handles = [];
 
 %% Constants
 
@@ -180,7 +187,7 @@ min_cant_samp_seconds = 0.1; % seconds
 
 %% argument definition
 p = inputParser;   % Create instance of inputParser class.
-addRequired(p,  'ECG', @(x)(~isempty(x) && (isnumeric(x) || isa(x, 'ECGwrapper') ) ) );
+addRequired(p,  'ECG', @(x)(~isempty(x) && (isnumeric(x) || ischar(x) || isa(x, 'ECGwrapper') ) ) );
 p.addParamValue('ECG_header', [], @(x)(isstruct(x)) );
 p.addParamValue('QRS_locations', [], @(x)( isnumeric(x) && all(x > 0) || iscell(x) || isa(x, 'ECGwrapper') ));
 p.addParamValue('Start_time', [], @(x)( isnumeric(x) && x >= 0 ) );
@@ -241,7 +248,22 @@ cLinespecs = cLinespecs.cLinespecs;
 ECG_w = [];
 bWrapper_provided = false;
 
-if( isa(ECG, 'ECGwrapper') )
+if( ischar(ECG) )
+    
+    if( exist(ECG, 'file') )
+        ECG_w = ECGwrapper( 'recording_name', ECG);
+        bWrapper_provided = true;
+
+        if( isempty(heasig) )
+            heasig = ECG_w.ECG_header;
+        end
+
+        ECG = [];  
+    else
+        error('plot_ecg_strip:FileNotFound', 'File %s not found\n', ECG )
+    end
+    
+elseif( isa(ECG, 'ECGwrapper') )
     % parse ECGwrapper object
     ECG_w = ECG;
     bWrapper_provided = true;
@@ -331,7 +353,9 @@ if( ~isempty(annotations_wrapper) )
     
     cached_filenames = annotations_wrapper.GetCahchedFileName();
     if( isempty(cached_filenames) )
-        cprintf('[1,0.5,0]', 'Delineation not found for this wrapper object.\n');
+        if( ~isempty(annotations) )
+            cprintf('[1,0.5,0]', 'Delineation not found for this wrapper object.\n');
+        end
         annotations = [];
     else
         annotations = load(cached_filenames{1});
@@ -371,7 +395,9 @@ if( ~isempty(global_annotations_wrapper) )
     
     cached_filenames = global_annotations_wrapper.GetCahchedFileName();
     if( isempty(cached_filenames) )
-        cprintf('[1,0.5,0]', 'Multilead/global Delineation not found for this wrapper object.\n');
+        if( ~isempty(global_annotations) )
+            cprintf('[1,0.5,0]', 'Multilead/global Delineation not found for this wrapper object.\n');
+        end
         global_annotations = [];
     else
         global_annotations = load(cached_filenames{1});
@@ -419,8 +445,11 @@ if( ~isempty(hb_labels_wrapper) )
     
     cached_filenames = hb_labels_wrapper.GetCahchedFileName();
     if( isempty(cached_filenames) )
-        cprintf('[1,0.5,0]', 'Heartbeat classification not found for this wrapper object.\n\n');
+        if( ~isempty(hb_labels) )
+            cprintf('[1,0.5,0]', 'Heartbeat classification not found for this wrapper object.\n\n');
+        end
         hb_labels = [];
+        hb_labels_idx = [];
     else
         
         hb_aux = load(cached_filenames{1});
@@ -1164,6 +1193,12 @@ if(~bPrettyPrint)
     disp('[plot_ecg_strip]: Press ''h'' for help.')
 end
 
+if( nargout > 1 )
+    returned_handles = ECG_hdl;
+else
+    clear returned_handles
+end
+
 %==========================================================================
 
 %--------------------------------------------------------------------------
@@ -1483,69 +1518,6 @@ end
             
         end
         
-        if( bAux && ~isempty(hb_labels_idx) )
-            
-            if(bWaveLegendPlotted)
-                left_hb_legend = left_legend - 1.3*width_legend;
-            else
-                left_hb_legend = left_legend - 0.05*width_legend;
-            end
-
-            width_hb_legend = 1.1*width_legend;
-            height_hb_legend = 1.1*height_legend;
-            bottom_hb_legend = bottom_legend - 0.05*height_legend;
-            
-            bHBclassLegendPlotted = true;
-            
-            % Heartbeats class frame
-            legend_hdl = patch([left_hb_legend left_hb_legend [left_hb_legend left_hb_legend]+width_hb_legend left_hb_legend ], [bottom_hb_legend [bottom_hb_legend bottom_hb_legend]+height_hb_legend bottom_hb_legend bottom_hb_legend], [1 1 1], 'EdgeColor', [0 0 0]);
-            lcBeatLabels = length(cBeatLabels);
-            for jj = 1:lcBeatLabels
-                legend_hdl = [legend_hdl; text( left_hb_legend + jj*width_hb_legend/(lcBeatLabels+1), bottom_hb_legend + height_hb_legend/2, cBeatLabels{jj}, 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', QRScplxColor, 'EdgeColor', cBeatLabelsColorCode{jj} ) ];
-            end
-            UserChnageViewHdls = [UserChnageViewHdls; legend_hdl];
-        end
-        
-        
-        if( bAux && ~isempty(qrs_ploted_names) )
-            
-            cant_qrs_names = length(qrs_ploted_names);
-            
-            if(bWaveLegendPlotted)
-                left_qrs_names_legend = left_legend;
-                width_qrs_names_legend = width_legend;
-                height_qrs_names_legend = height_legend * cant_qrs_names;
-                bottom_qrs_names_legend = bottom_legend - 0.5*height_legend - height_qrs_names_legend;
-            elseif(bHBclassLegendPlotted)
-                left_qrs_names_legend = left_hb_legend;
-                width_qrs_names_legend = width_hb_legend;
-                height_qrs_names_legend = height_hb_legend * cant_qrs_names;
-                bottom_qrs_names_legend = bottom_hb_legend - 0.5*height_hb_legend - height_qrs_names_legend;
-            else
-                left_qrs_names_legend = left_legend ;
-                width_qrs_names_legend = width_legend;
-                height_qrs_names_legend = height_legend * cant_qrs_names;
-                bottom_qrs_names_legend = bottom_legend + height_legend - height_qrs_names_legend;
-            end
-            
-            % QRS names frame
-            legend_hdl = patch([left_qrs_names_legend left_qrs_names_legend [left_qrs_names_legend left_qrs_names_legend]+width_qrs_names_legend left_qrs_names_legend ], [bottom_qrs_names_legend [bottom_qrs_names_legend bottom_qrs_names_legend]+height_qrs_names_legend bottom_qrs_names_legend bottom_qrs_names_legend], [1 1 1], 'EdgeColor', [0 0 0]);
-            for jj = 1:cant_qrs_names
-                aux_ls = cLinespecs{jj};
-                legend_hdl = [legend_hdl; text( left_qrs_names_legend + 0.1*width_qrs_names_legend, bottom_qrs_names_legend + height_qrs_names_legend * (jj)/(cant_qrs_names+1), adjust_string( qrs_ploted_names{jj}, 15 ), ...
-                                                'FontSize', 8, ...
-                                                'VerticalAlignment', 'middle', ...
-                                                'HorizontalAlignment', 'left', ...
-                                                'Interpreter', 'none', ...
-                                                'Color', 1-aux_ls{4}, ...
-                                                'BackgroundColor', aux_ls{4}, ... 
-                                                'EdgeColor', aux_ls{5} ) ... 
-                                ];
-            end
-            UserChnageViewHdls = [UserChnageViewHdls; legend_hdl];
-        end
-                
-        
         aux_seq = cellfun( @(a)({1:length(a)}), qrs2plot );
         
         % when annotations are provided
@@ -1661,6 +1633,72 @@ end
 
     end
 
+    bAux = eDetailLevel ~= kNoDetail && ( (eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) && plotXrange <= closeDetailSampSize );
+    
+    % QRS class labels
+    if( bAux && ~isempty(hb_labels_idx) )
+
+        if(bWaveLegendPlotted)
+            left_hb_legend = left_legend - 1.3*width_legend;
+        else
+            left_hb_legend = left_legend - 0.05*width_legend;
+        end
+
+        width_hb_legend = 1.1*width_legend;
+        height_hb_legend = 1.1*height_legend;
+        bottom_hb_legend = bottom_legend - 0.05*height_legend;
+
+        bHBclassLegendPlotted = true;
+
+        % Heartbeats class frame
+        legend_hdl = patch([left_hb_legend left_hb_legend [left_hb_legend left_hb_legend]+width_hb_legend left_hb_legend ], [bottom_hb_legend [bottom_hb_legend bottom_hb_legend]+height_hb_legend bottom_hb_legend bottom_hb_legend], [1 1 1], 'EdgeColor', [0 0 0]);
+        lcBeatLabels = length(cBeatLabels);
+        for jj = 1:lcBeatLabels
+            legend_hdl = [legend_hdl; text( left_hb_legend + jj*width_hb_legend/(lcBeatLabels+1), bottom_hb_legend + height_hb_legend/2, cBeatLabels{jj}, 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', QRScplxColor, 'EdgeColor', cBeatLabelsColorCode{jj} ) ];
+        end
+        UserChnageViewHdls = [UserChnageViewHdls; legend_hdl];
+    end
+
+    bAux = eDetailLevel ~= kNoDetail && ( (eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) );
+    
+    % QRS annotations labels
+    if( bAux && ~isempty(qrs_ploted_names) )
+
+        cant_qrs_names = length(qrs_ploted_names);
+
+        if(bWaveLegendPlotted)
+            left_qrs_names_legend = left_legend;
+            width_qrs_names_legend = width_legend;
+            height_qrs_names_legend = height_legend * cant_qrs_names;
+            bottom_qrs_names_legend = bottom_legend - 0.5*height_legend - height_qrs_names_legend;
+        elseif(bHBclassLegendPlotted)
+            left_qrs_names_legend = left_hb_legend;
+            width_qrs_names_legend = width_hb_legend;
+            height_qrs_names_legend = height_hb_legend * cant_qrs_names;
+            bottom_qrs_names_legend = bottom_hb_legend - 0.5*height_hb_legend - height_qrs_names_legend;
+        else
+            left_qrs_names_legend = left_legend ;
+            width_qrs_names_legend = width_legend;
+            height_qrs_names_legend = height_legend * cant_qrs_names;
+            bottom_qrs_names_legend = bottom_legend + height_legend - height_qrs_names_legend;
+        end
+
+        % QRS names frame
+        legend_hdl = patch([left_qrs_names_legend left_qrs_names_legend [left_qrs_names_legend left_qrs_names_legend]+width_qrs_names_legend left_qrs_names_legend ], [bottom_qrs_names_legend [bottom_qrs_names_legend bottom_qrs_names_legend]+height_qrs_names_legend bottom_qrs_names_legend bottom_qrs_names_legend], [1 1 1], 'EdgeColor', [0 0 0]);
+        for jj = 1:cant_qrs_names
+            aux_ls = cLinespecs{jj};
+            legend_hdl = [legend_hdl; text( left_qrs_names_legend + 0.1*width_qrs_names_legend, bottom_qrs_names_legend + height_qrs_names_legend * (jj)/(cant_qrs_names+1), adjust_string( qrs_ploted_names{jj}, 15 ), ...
+                                            'FontSize', 8, ...
+                                            'VerticalAlignment', 'middle', ...
+                                            'HorizontalAlignment', 'left', ...
+                                            'Interpreter', 'none', ...
+                                            'Color', 1-aux_ls{4}, ...
+                                            'BackgroundColor', aux_ls{4}, ... 
+                                            'EdgeColor', aux_ls{5} ) ... 
+                            ];
+        end
+        UserChnageViewHdls = [UserChnageViewHdls; legend_hdl];
+    end    
 
     %% single-lead annotations
     
@@ -3041,7 +3079,7 @@ end
                 precision = 3;
             end
             
-            set(mPointerCross.htext(cant_leads+1), 'String', Seconds2HMS( (acx + base_time )/heasig.freq, precision));
+            set(mPointerCross.htext(cant_leads+1), 'String', Seconds2HMS( (acx + start_sample - 1 + base_time )/heasig.freq, precision));
             
             % each lead
             for jj = 1:cant_leads
@@ -3049,7 +3087,7 @@ end
             end
             % time
             extents = get(mPointerCross.htext(cant_leads+1), 'Extent');
-            set(mPointerCross.htext(cant_leads+1), 'Position', [acx + 0.5*extents(3) this_ylim(1)] );
+            set(mPointerCross.htext(cant_leads+1), 'Position', [acx + start_sample - 1 + 0.5*extents(3) this_ylim(1)] );
             
             uistack(mPointerCross.htext,'top');
             
@@ -4209,13 +4247,13 @@ end
                 '      ''a''                         : Toggle the annotations graph mode\n' ... 
                 '      ''0''                         : Set default axes (reset to original view)\n' ... 
                 '      ''c''                         : On/Off pointer in crosshair mode\n' ... 
-                '      ''g''                         : If pressed and holding, change lead gain with scroll\n' ... 
-                '      ''o''                         : If pressed and holding, change lead offset with scroll\n' ... 
-                '      ''x''                         : If pressed and holding, zoom and drag works only for X axis\n' ... 
-                '      ''y''                         : If pressed and holding, zoom and drag works only for Y axis\n' ... 
+                '      ''g''                         : Change lead gain with scroll\n' ... 
+                '      ''o''                         : Change lead offset with scroll\n' ... 
+                '      ''x''                         : Zoom and drag works only for X axis\n' ... 
+                '      ''y''                         : Zoom and drag works only for Y axis\n' ... 
                 '      ''m''                         : If pressed and holding, Magnifier mode on\n' ... 
                 '      ''p''                         : On/Off paper mode\n' ... 
-                '      ''r''                         : Export format (PDF/PNG)\n' ... 
+                '      ''r''                         : Format of the exported file (PDF/PNG)\n' ... 
                 '      ''s''                         : Export current view\n' ... 
                     ] );
                

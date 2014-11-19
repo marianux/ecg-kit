@@ -1,18 +1,39 @@
-function recording_format = ECGformat(recording_name)
+%% Gets the format of an ECG recording filename
+% This function tries to get the "fingerprints" of several ECG formats in
+% order to do format "auto-detection"
+% 
+% Example
+% 
+%   recording_format = ECGformat(recording_filename)
+% 
+% See also read_ECG, ECGwrapper
+% 
+% Author: Mariano Llamedo Soria
+% <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
+% Version: 0.1 beta
+% Birthdate: 5/01/2014
+% Last update: 19/11/2014
+% Copyright 2008-2014
+% 
+function recording_format = ECGformat(recording_filename)
     
     recording_format = [];
 
     cKnownFormats = {'MIT' 'ISHNE', 'AHA', 'HES', 'MAT', 'Mortara'};
     lcKnownFormats = length(cKnownFormats);
 
-    [rec_filepath, rec_filename, rec_fileExt] = fileparts(recording_name);
+    if( nargin < 0 || ~ischar(recording_filename) )
+        error('ECGformat:UnknownDataFormat', 'recording_filename must be a char array.\n')
+    end
+    
+    [rec_filepath, rec_filename, rec_fileExt] = fileparts(recording_filename);
 
     aux_idx = 1:lcKnownFormats;
 
     % Mortara format is a folder with predefined files inside named
     % HourXXRawData.bin
-    if( isdir(recording_name) )
-        rec_path = recording_name;
+    if( isdir(recording_filename) )
+        rec_path = recording_filename;
         hours_files = dir([rec_path filesep 'Hour*.bin' ]);
         if( isempty(hours_files) )
             % empty folder, not Mortara
@@ -22,7 +43,7 @@ function recording_format = ECGformat(recording_name)
             return
         end
     else
-        [~, rec_name] = fileparts(recording_name);
+        [~, rec_name] = fileparts(recording_filename);
         if( length(rec_name) > 7 && strcmpi( rec_name(1:4), 'Hour') && strcmpi( rec_name(end-6:end), 'RawData') )
             recording_format = 'Mortara';
             return
@@ -66,21 +87,21 @@ function recording_format = ECGformat(recording_name)
 
         elseif( strcmp(cKnownFormats{ii}, 'ISHNE') )
             
-            if(isISHNEformat(recording_name))
+            if(isISHNEformat(recording_filename))
                 recording_format = cKnownFormats{ii};
                 return
             end
 
         elseif( strcmp(cKnownFormats{ii}, 'AHA') )
             
-            if(isAHAformat(recording_name))
+            if(isAHAformat(recording_filename))
                 recording_format = cKnownFormats{ii};
                 return
             end
 
         elseif( strcmp(cKnownFormats{ii}, 'HES') )
 
-            if(isHESformat(recording_name))
+            if(isHESformat(recording_filename))
                 recording_format = cKnownFormats{ii};
                 return
             end
@@ -88,7 +109,7 @@ function recording_format = ECGformat(recording_name)
         elseif( strcmp(cKnownFormats{ii}, 'MAT') )
 
             try
-                aux_load = load(recording_name, 'header');
+                aux_load = load(recording_filename, 'header');
                 recording_format = cKnownFormats{ii};
                 return
             

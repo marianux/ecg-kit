@@ -1,6 +1,7 @@
-function [ECG heasig ann last_sample] = read_HES_format( filename, start_sample, end_sample )
+%% Reads ECG recording in HES format
 % Reads ECG recordings in HES (Biosigna) format. Implements the documentation
-% available in the help of the application provided with the database.
+% available in the help of the application provided with the database (not
+% available with the ECHkit). 
 % 
 % Arguments:
 %   + filename: recording to be read.
@@ -17,10 +18,17 @@ function [ECG heasig ann last_sample] = read_HES_format( filename, start_sample,
 % performance reasons. You can disable this limit by doing:
 % MaxIOread = Inf; %megabytes
 % 
-% Author: Mariano Llamedo Soria (llamedom at {unizar.es;electron.frba.utn.edu.ar}
-% Birthdate: 17/12/2010
-% Last update: 18/2/2013
+% See also read_HES_ann, read_HES_header, read_ECG, ECGwrapper
 % 
+% Author: Mariano Llamedo Soria
+% <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
+% Version: 0.1 beta
+% Birthdate: 17/12/2010
+% Last update: 19/11/2014
+% Copyright 2008-2014
+% 
+function [ECG heasig ann last_sample] = read_HES_format( filename, start_sample, end_sample )
+
 ann = [];
 heasig = [];
 ECG = [];
