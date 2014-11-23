@@ -38,8 +38,8 @@ function first_simple_example()
     examples_path = [root_path filesep 'recordings' filesep ];
 
     % the filename of the recording
-%     example_filename = '208.hea';
-    example_filename = '800.hea';
+    example_filename = '208.hea';
+%     example_filename = '800.hea';
 %     example_filename = 'example_recording.mat';
 
     % user-defined string to customize the experiment
