@@ -57,12 +57,13 @@
 % Last update: 19/11/2014
 % Copyright 2008-2014
 % 
-function [ECG heasig ann recording_format] = read_ECG(recording_name, ECG_start_idx, ECG_end_idx, recording_format)
+function [ECG heasig ann recording_format end_sample] = read_ECG(recording_name, ECG_start_idx, ECG_end_idx, recording_format)
 
 ECG = [];
 heasig = [];
 ann = [];
 cKnownFormats = {'MIT' 'AHA' 'ISHNE', 'HES', 'MAT', 'Mortara'};
+end_sample = [];
 
 if( nargin < 4 || isempty(recording_format) || ~any(strcmpi( recording_format, cKnownFormats)) )
     %Try guessing the ECG format
@@ -82,7 +83,7 @@ end
 
 if( strcmp(recording_format, 'ISHNE') )
     if( nargout > 1 )
-        [ECG heasig ann] = read_ishne_format(recording_name, ECG_start_idx, ECG_end_idx );
+        [ECG heasig ann end_sample] = read_ishne_format(recording_name, ECG_start_idx, ECG_end_idx );
     else
         ECG = read_ishne_format(recording_name, ECG_start_idx, ECG_end_idx );
     end        
@@ -108,17 +109,17 @@ elseif( strcmp(recording_format, 'MAT') )
     
 elseif( strcmp(recording_format, 'Mortara') )
     
-    [ECG heasig ] = read_Mortara(recording_name, ECG_start_idx, ECG_end_idx );
+    [ECG heasig end_sample] = read_Mortara_format(recording_name, ECG_start_idx, ECG_end_idx );
     
 elseif( strcmp(recording_format, 'AHA') )
     if( nargout > 1 )
-        [ECG heasig ann] = read_AHA_format(recording_name, ECG_start_idx, ECG_end_idx );
+        [ECG heasig ann end_sample] = read_AHA_format(recording_name, ECG_start_idx, ECG_end_idx );
     else
         ECG = read_AHA_format(recording_name, ECG_start_idx, ECG_end_idx );
     end
 elseif( strcmp(recording_format, 'HES') )
     if( nargout > 1 )
-        [ECG heasig ann] = read_HES_format(recording_name, ECG_start_idx, ECG_end_idx );
+        [ECG heasig ann end_sample] = read_HES_format(recording_name, ECG_start_idx, ECG_end_idx );
     else
         ECG = read_HES_format(recording_name, ECG_start_idx, ECG_end_idx );
     end
@@ -173,6 +174,17 @@ elseif( strcmp(recording_format, 'MIT') )
     if( ECG_end_idx == 0 )
         ECG_end_idx = realmax;
     end
+    
+    samples2read = ECG_end_idx - ECG_start_idx + 1;
+    %No leer bloques mas grandes de 200 megabytes
+    MaxIOread = 200; %megabytes
+    
+    if( (samples2read*heasig.nsig*2) > (MaxIOread * 1024^2) )
+        samples2read = (MaxIOread * 1024^2) / heasig.nsig / 2;
+        ECG_end_idx = samples2read + ECG_start_idx - 1;
+        warning(['Limited to read ' num2str(MaxIOread) ' Mb.'])
+    end
+    
     
     for ii = 1:length(recording_files)
         sig_idx = find(strcmpi(recording_files(ii), cellstr(heasig.fname)));

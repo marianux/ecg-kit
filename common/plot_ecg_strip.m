@@ -161,6 +161,9 @@ returned_handles = [];
 
 %% Constants
 
+% Avoid IO greater than MaxIOread
+MaxIOread = 10; %megabytes
+
 %multilead
 color_Pwave_global =        [210 255 189]/255;
 color_QRScomplex_global =   [255 200 255]/255;
@@ -589,6 +592,14 @@ if( isempty(ECG) )
     if(cant_samp == 0)
         cant_samp = realmax;
     end
+    
+    % only for big recordings, can it be readed all together ?
+    aux_MaxIOread = (MaxIOread * 1024^2) / heasig.nsig / 2;
+    if( cant_samp > aux_MaxIOread )
+        cant_samp = aux_MaxIOread;
+        cprintf('[1,0.5,0]','Recording too big, reading only %d samples. Use "Start_time" and "End_time" arguments to select other parts.\n', cant_samp);
+    end
+    
     cant_leads = heasig.nsig;
 else
 
@@ -621,12 +632,14 @@ if( ~isfield( heasig, 'nsamp' ) )
     heasig.nsamp = cant_samp;
 end
 
-if( isempty(QRS_locations) || (iscell(QRS_locations) && all(cellfun(@(a)(isempty(a)), QRS_locations))) )
-    if( ~isempty(global_annotations) )
-        QRS_locations_names = [QRS_locations_names {'global'} ];
-        QRS_locations = {QRS_locations {global_annotations.qrs}};
-    end
-else
+if( ~isempty(global_annotations) )
+    QRS_locations_names = [QRS_locations_names {'global'} ];
+    QRS_locations = {QRS_locations {global_annotations.qrs}};
+end
+
+if( isempty(QRS_locations) )
+    QRS_locations_names = {[]};
+    QRS_locations = {[]};
 end
 
 cant_QRS_locations = cellfun(@(a)(length(a)), QRS_locations);
@@ -743,12 +756,9 @@ end
 
 this_Xmargin = min(1*heasig.freq, round((aux_idx(end) - aux_idx(1))*0.1));
 
-aux_idx = max(1,aux_idx(1)-this_Xmargin):min(cant_samp, aux_idx(end)+this_Xmargin);
+aux_idx =            max(1,aux_idx(1)-this_Xmargin):min(cant_samp, aux_idx(end)+this_Xmargin);
 
-aux_idx_downsample = max(1,aux_idx(1)-1*heasig.freq):min(cant_samp, aux_idx(end)+1*heasig.freq);
-
-
-
+aux_idx_downsample = [ max(1,aux_idx(1)-1*heasig.freq) min(cant_samp, aux_idx(end)+1*heasig.freq) ];
 
 kLinesAnns      = 1;
 kBackColourAnns = 2;
@@ -811,7 +821,7 @@ if( down_factor > 1 )
         ECGd = bsxfun( @rdivide, bsxfun( @minus, ECGd, rowvec(double(heasig.adczero)) ), rowvec(double(heasig.gain)) ) ;
 
     else
-        ECGd = resample( ECG(aux_idx_downsample,:), 1, down_factor, fir_coeffs );
+        ECGd = resample( ECG(aux_idx_downsample(1):aux_idx_downsample(end),:), 1, down_factor, fir_coeffs );
         ECGd = ECGd(aux_idx_downsample_start:aux_idx_downsample_end);
         ECGd = bsxfun( @rdivide, bsxfun( @minus, double(ECGd), rowvec(double(heasig.adczero)) ), rowvec(double(heasig.gain)) ) ;
 
@@ -1190,7 +1200,7 @@ set(fig_hdl, ...
     'WindowKeyReleaseFcn',      {@WindowKeyReleaseCallback2D});
 
 if(~bPrettyPrint)
-    disp('[plot_ecg_strip]: Press ''h'' for help.')
+    disp_help()
 end
 
 if( nargout > 1 )
@@ -1662,7 +1672,9 @@ end
     bAux = eDetailLevel ~= kNoDetail && ( (eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) );
     
     % QRS annotations labels
-    if( bAux && ~isempty(qrs_ploted_names) )
+    bAux2 = any( colvec(cellfun( @(a,b,c)(~isempty(a(b(c)))), qrs_ploted, qrs2plot, aux_seq )) );
+    
+    if( bAux && bAux2 && ~isempty(qrs_ploted_names) )
 
         cant_qrs_names = length(qrs_ploted_names);
 
@@ -4219,27 +4231,42 @@ end
 
     function disp_help()
         
-       fprintf(1, [... 
-                '  +-------------------+\n' ... 
-                '  |plot_ecg_strip help|\n' ... 
-                '  +-------------------+\n\n' ... 
-                '  Mouse actions:\n' ... 
-                '  Normal mode:\n' ... 
+        title_color = 'blue*';
+        sub_title_color = 'magenta';
+        
+        disp_string_framed('*Blue', 'plot_ecg_strip help' );
+        
+        cprintf( title_color, 'Mouse actions:\n\n');
+        
+        cprintf( sub_title_color, '  Normal mode:\n' );
+        
+        fprintf(1, [... 
                 '      single-click and holding LB : Activation Drag mode\n' ... 
                 '      single-click and holding RB : Activation Rubber Band for region zooming\n' ... 
                 '      single-click MB             : Activation ''Extend'' Zoom mode\n' ... 
                 '      scroll wheel MB             : Activation Zoom mode\n' ... 
                 '      double-click LB, RB, MB     : Reset to Original View\n' ... 
-                '\n' ... 
-                '  Magnifier mode:\n' ... 
+                    ] );
+                       
+        
+        cprintf( sub_title_color, '  Magnifier mode:\n');
+        
+        fprintf(1, [... 
                 '      single-click LB             : Not Used\n' ... 
                 '      single-click RB             : Not Used\n' ... 
                 '      single-click MB             : Reset Magnifier to Original View\n' ... 
                 '      scroll MB                   : Change Magnifier Zoom\n' ... 
                 '      double-click LB             : Increase Magnifier Size\n' ... 
                 '      double-click RB             : Decrease Magnifier Size\n' ... 
-                '\n' ... 
-                '  Hotkeys in 2D mode:\n' ... 
+                    ] );
+                       
+        fprintf(1, '\n');
+        
+        cprintf( title_color, 'Hotkeys in 2D mode:');
+
+        fprintf(1, '\n\n');
+        
+        fprintf(1, [... 
                 '      ''h''                         : Show help\n' ... 
                 '      ''+''                         : Zoom plus\n' ... 
                 '      ''-''                         : Zoom minus\n' ... 
@@ -4254,9 +4281,9 @@ end
                 '      ''m''                         : If pressed and holding, Magnifier mode on\n' ... 
                 '      ''p''                         : On/Off paper mode\n' ... 
                 '      ''r''                         : Format of the exported file (PDF/PNG)\n' ... 
-                '      ''s''                         : Export current view\n' ... 
+                '      ''s''                         : Export current view\n' ...                     ] );
                     ] );
-               
+                
     end
 
     function timer_stop_fcn(obj,event_obj)

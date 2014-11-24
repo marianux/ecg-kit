@@ -48,7 +48,7 @@ else
 end
 
 if (fid<0)
-    error(['Can not write ' [header_path  header.recname '.hea'] '\n']);
+    error('Can not write %s.hea\n', header_path, header.recname );
 end
 
 try
@@ -117,7 +117,7 @@ try
         end
         
         if isfield(header,'initval')
-            fprintf(fid,'%d ',header.adczero(ii));
+            fprintf(fid,'%d ',header.initval(ii));
         else
             fprintf(fid,'%d ', 0);
         end

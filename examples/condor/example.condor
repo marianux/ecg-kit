@@ -1,0 +1,112 @@
+####################
+##
+## .condor file for matlab simulation
+##
+####################
+
+#
+# your username is used in pathname
+#
+User	= mllamedo 
+Grupo   = bio
+
+#notify_user = llamedom@gmail.com
+notification = Complete
+
+# Check the Condor primer on which universe to choose
+# (standard / vanilla)
+Universe        = vanilla
+
+#
+# Cambiar este valor para que coincida con el directorio
+# en el que se encuentran los ficheros de condor_matlab
+#
+
+
+#InputDir = /home/$(Grupo)/$(User)/ECGKit/examples/condor
+
+# 
+# Do not edit
+# 
+InitialDir = /home/$(Grupo)/$(User)/ECGKit/examples/condor
+#
+# Cambiar para indicar el directorio en el que se  
+# desea la salida. Se recomienda que sea un directorio
+# particular para Condor_Matlab (se generan mucho ficheros)
+#
+
+#OutputDir = /home/$(Grupo)/$(User)/ecg_classification/tmp
+
+# The absolute path (not relative to InitialDir!) to
+# your Executable
+Executable = /home/$(Grupo)/$(User)/ECGKit/examples/condor/condor_exec.sh
+
+
+# This is to be turned on for Matlab simulations.
+#GetEnv	= true
+
+# Transfer-input-files is a list of all files being
+# used by your job other than the Executable.
+# Indicar TODOS los ficheros necesarios a nivel de 
+# ejecucion separados por comas
+
+#Transfer-Input-Files = $(InitialDir)
+
+#
+# We define variables
+
+# Transfer-Output-files is a list of all files
+# containing results other than StdOut, StdErr
+#Transfer-Output-Files = $(OutputDir)/stdout.$(Process)
+
+# Arguments are as if you would run your program,
+# locally. If you use filenames here, they should also
+# figure under Transer-(Input/Output)-Files!
+# Si nuestro codigo en Matlab tiene parametros, deben indicarse en este paso
+
+
+# Error and Log files: Relative path to InitialDir
+# The directories referred must already exist.
+# Error will contain StdErr of your program.
+# You can use $(Process) which will be replaced by
+# the identifier of the corresponding process.
+# (each queue initiates a new process)
+Error = /extra/scratch/bio/mllamedo/tmp/condor_output/$(Cluster).$(Process).err
+Log   = /extra/scratch/bio/mllamedo/tmp/condor_output/$(Cluster).$(Process).log
+
+# Output file: Relative path to InitialDir
+# The directories referred must already exist.
+# This file will contain StdOut of your program.
+# You can use $(Process) which will be replaced by
+# the identifier of the corresponding process.
+# (each queue initiates a new process)
+Output = /extra/scratch/bio/mllamedo/tmp/condor_output/$(Cluster).$(Process).out
+
+#features evaluadas registro a registro
+# Forma tradicional.
+# Arguments  = FeatureSelectionSFFS('$(strFeaturesMode)', $(iCriterionIndex), $(Process)+1, $(iCantidadProcesos), $(bDoOutlierRemotion), $(bExcludeNoisySegments), $(OptCriterion), $(bUseGroup_of_Features) )
+
+# Requirements = Arch == "X86_64" || Arch == "INTEL") 
+# Requirements = ((Arch == "INTEL") || (Arch == "X86_64")) && (OpSys == "LINUX") && (Disk >= DiskUsage) && ((Memory * 1024) >= ImageSize) && (TARGET.FileSystemDomain == MY.FileSystemDomain)
+# Rank = (1/(TotalLoadAvg+0.01))
+# Rank = LoadAvg
+
+request_cpus = 1
+request_memory = 2048
+
+# para que no contabilice las horas de CPUs usadas.
+nice_user = true
+#nice_user = false
+
++ShortJob = TRUE
+
+######################
+## Una DB completa ###
+######################
+
+# comando a ejecutar.
+iCantidadProcesos = 4
+
+Arguments  = second_simple_example( sprintf('%d/%d', $(Process)+1, $(iCantidadProcesos) ) )
+Queue $(iCantidadProcesos)
+
