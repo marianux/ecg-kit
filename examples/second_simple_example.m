@@ -54,7 +54,7 @@ function second_simple_example(pid_str)
     ECGw.this_pid = pid_str;
     % in this example we are not interested in caching results, since the
     % recording is very short, so we will re-process every call.
-    ECGw.cacheResults = false;
+    ECGw.cacheResults = true;
     % add a user-defined prefix to the result filenames
     ECGw.user_string = my_user;
     

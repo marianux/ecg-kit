@@ -634,7 +634,7 @@ end
 
 if( ~isempty(global_annotations) )
     QRS_locations_names = [QRS_locations_names {'global'} ];
-    QRS_locations = {QRS_locations {global_annotations.qrs}};
+    QRS_locations = [QRS_locations {global_annotations.qrs}];
 end
 
 if( isempty(QRS_locations) )
@@ -1669,7 +1669,7 @@ end
         UserChnageViewHdls = [UserChnageViewHdls; legend_hdl];
     end
 
-    bAux = eDetailLevel ~= kNoDetail && ( (eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) );
+    bAux = eDetailLevel ~= kNoDetail && ( (eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) && plotXrange <= closeDetailSampSize );
     
     % QRS annotations labels
     bAux2 = any( colvec(cellfun( @(a,b,c)(~isempty(a(b(c)))), qrs_ploted, qrs2plot, aux_seq )) );

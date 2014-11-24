@@ -103,7 +103,7 @@ if( nargin < 2 || ~any(strcmpi(cDetails, detailLevel)) )
 end
 
 if( nargin < 4 || isempty(win_lengths) || ~isnumeric(win_lengths) )
-    win_lengths = [60*60 30*60 60 7]; % seconds
+    win_lengths = [60*60 30*60 59 7]; % seconds
 end
 
 if( ~isobject(ECG_w) || ~isa(ECG_w, 'ECGwrapper') )
