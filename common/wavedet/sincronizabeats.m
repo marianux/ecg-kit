@@ -124,7 +124,7 @@ try
     
 catch me
     messages.errors=[messages.errors {'Fatal error in sincronizebeats.'}];
-    warning(char(messages.errors(end)))
+%     warning(char(messages.errors(end)))
     messages.errors_desc=[messages.errors_desc {me.message}];
     messages.status=0;
     return

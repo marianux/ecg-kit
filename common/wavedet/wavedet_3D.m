@@ -1587,10 +1587,10 @@ while ((endsamp+1) < t(2))
             auxaux=intervalo(1):intervalo(end);
             %
             if ~isempty(aux)  % one beat is from the former interval  1.AGO.07
-                if aux(1)>1
-                    messages.errors=[messages.errors {['QRS onset not found at beat(s): ' num2str(auxaux(aux ))]}];
-                    warning(char(messages.errors(end)));
-                end
+%                 if aux(1)>1
+%                     messages.errors=[messages.errors {['QRS onset not found at beat(s): ' num2str(auxaux(aux ))]}];
+%                     warning(char(messages.errors(end)));
+%                 end
                 auxqrspiconset(aux)=[];
                 QRSon(:,aux)=[];  %31.07.07
                 auxqrspicoffset(aux)=[];

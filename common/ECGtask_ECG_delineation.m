@@ -351,25 +351,36 @@ classdef ECGtask_ECG_delineation < ECGtask
                 payload = plB;
                 
             else
-                for fn = rowvec(fieldnames(plA))
+                for this_ECG_delineator = rowvec(fieldnames(plA))
                     
-                    if( isfield(plA, fn{1}) && isfield(plB, fn{1}) )
-                        lplA = length(plA.(fn{1}));
-                        if( lplA == length(plB.(fn{1})) )
-                            for ii = 1:lplA
-                                for fn2 = rowvec(fieldnames(colvec(plA.(fn{1}))))
-                                    payload.(fn{1})(ii).(fn2{1}) = [ colvec(plA.(fn{1})(ii).(fn2{1})); colvec(plB.(fn{1})(ii).(fn2{1})) ];
+                    this_ECG_delineator = this_ECG_delineator{1};
+                    
+                    if( isfield(plB, this_ECG_delineator)  )
+                        
+                        for this_lead = rowvec(fieldnames(plA.(this_ECG_delineator)))
+                            
+                            this_lead = this_lead{1};
+                        
+                            if( isfield(plB.(this_ECG_delineator), this_lead)  )
+                            
+                                for fn = rowvec(fieldnames(plA.(this_ECG_delineator).(this_lead) ))
+
+                                    if( isfield(plB.(this_ECG_delineator).(this_lead), fn{1}) )
+                                        payload.( this_ECG_delineator).(this_lead).(fn{1}) = [ colvec(plA.( this_ECG_delineator).(this_lead).(fn{1}) ); colvec( plB.(this_ECG_delineator).(this_lead).(fn{1}) ) ];
+                                    else
+                                        error('ECGtask_ECG_delineation:BadTMPfiles', ['Results from ' this_ECG_delineator '.' this_lead  '.' fn{1} ' not found. Skipping concatenation.'])
+                                    end
+
                                 end
+                            else
+                                error('ECGtask_ECG_delineation:BadTMPfiles', ['Results from ' this_ECG_delineator '.' this_lead ' not found. Skipping concatenation.'] )
                             end
-                        else
-                            error('ECGtask_ECG_delineation:BadTMPfiles','Different amount of leads found in payloads. Try erasing tmp files and running again.')
                         end
                         
                     else
-                        error('ECGtask_ECG_delineation:BadTMPfiles','Different structures found in payloads. Try erasing tmp files and running again.')
+                        error('ECGtask_ECG_delineation:BadTMPfiles', ['Results from ' this_ECG_delineator ' not found. Skipping concatenation.'] )
                     end
-                    
-                end            
+                end
             end
             
 

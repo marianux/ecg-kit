@@ -92,17 +92,30 @@ classdef ECGtask_heartbeat_classifier < ECGtask
                 aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'corrected_'))), aux_fn, 'UniformOutput', false)));
                 
                 if( isempty(aux_idx) )
-                    aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'wavedet_'))), aux_fn, 'UniformOutput', false)));
-                    if( isempty(aux_idx) )
-                        disp_string_framed(2, 'Could not identify QRS detections in the input payload.');
-                        return
+                    
+                    if( isfield(obj.payload, 'series_quality') )
+                        % choose the best ranked automatic detection
+                        [~, aux_idx] = sort(obj.payload.series_quality.ratios, 'descend' );
+                        aux_val = obj.payload.(obj.payload.series_quality.AnnNames{aux_idx(1),1} ).(obj.payload.series_quality.AnnNames{aux_idx(1),2});
+                        delineation_chosen = obj.payload.series_quality.AnnNames{aux_idx(1),1};
                     else
-                        aux_val = obj.payload.(aux_fn{1}).time;
+                        % choose the first of wavedet
+                        aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'wavedet_'))), aux_fn, 'UniformOutput', false)));
+                        if( isempty(aux_idx) )
+                            disp_string_framed(2, 'Could not identify QRS detections in the input payload.');
+                            return
+                        else
+                            aux_val = obj.payload.(aux_fn{aux_idx(1)}).time;
+                            delineation_chosen = aux_fn{aux_idx(1)};
+                        end
                     end
                 else
+                    % choose the first manually audited
                     aux_val = obj.payload.(aux_fn{aux_idx(1)}).time;
+                    delineation_chosen = aux_fn{aux_idx(1)};
                 end
                 
+                cprintf('blue', [' + Using ' delineation_chosen ' detections.\n' ] );
                 aux_val = aux_val - ECG_start_offset + 1 ;
                 bAux = aux_val >= ECG_sample_start_end_idx(1) & aux_val <= ECG_sample_start_end_idx(2);
                 Ann_struct.time = aux_val(bAux);
