@@ -63,6 +63,11 @@ ECG = [];
 heasig = [];
 ann = [];
 cKnownFormats = {'MIT' 'AHA' 'ISHNE', 'HES', 'MAT', 'Mortara'};
+
+cMatSignalNames = {'sig' 'signal' 'ECG'};
+cMatSignalHeaderNames = {'header' 'heasig' 'hea'};
+cMatSignalAnnNames = {'ann' 'annotations' 'qrs'};
+
 end_sample = [];
 
 if( nargin < 4 || isempty(recording_format) || ~any(strcmpi( recording_format, cKnownFormats)) )
@@ -91,16 +96,25 @@ elseif( strcmp(recording_format, 'MAT') )
     
     aux_load = load(recording_name);
 
+    fnames = fieldnames(aux_load);
+    signal_name = intersect( fnames, cMatSignalNames);
+    header_name = intersect( fnames, cMatSignalHeaderNames);
+    ann_name = intersect( fnames, cMatSignalAnnNames);
+    
     if( nargout > 1 )
         
-        heasig = aux_load.header;
-        ECG = aux_load.signal;
-        
-        if( isfield(aux_load, 'ann') )
-            ann = aux_load.ann;            
+        if( ~isempty(header_name) )
+            heasig = aux_load.(header_name{1});
         end
-    else
-        ECG = aux_load.signal;
+        
+        if( ~isempty(ann_name) )
+            ann = aux_load.(ann_name{1});            
+        end
+        
+    end
+
+    if( ~isempty(signal_name) )
+        ECG = aux_load.(signal_name{1});
     end
     
     ECG = ECG(ECG_start_idx:ECG_end_idx,:);

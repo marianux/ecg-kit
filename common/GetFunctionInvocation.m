@@ -7,7 +7,11 @@ for ii = 1:length(args)
     elseif(isempty(args{ii}))
         strAux = [strAux '[]'];
     elseif(isnumeric(args{ii}))
-        strAux = [strAux sprintf( num2str(args{ii}))];
+        if( max(size(args{ii})) < 10 )
+            strAux = [strAux sprintf( num2str(args{ii}))];
+        else
+            strAux = [strAux '#BIG_NUMERIC_DATA#'];
+        end
     elseif(islogical(args{ii}))
         if( args{ii} )
             strAux = [strAux sprintf('true')];

@@ -526,14 +526,15 @@ classdef ECGwrapper < handle
                                 % create an annotation struct for this
                                 % iteration.
                                 this_ann = obj.ECG_annotations;
-
-                                for field_names = rowvec(fieldnames(this_ann))
-                                    if( ~isempty( this_ann.(field_names{1}) ) )
-                                        this_ann.(field_names{1}) = this_ann.(field_names{1})(this_iter_QRS_start_idx:this_iter_QRS_end_idx);
+                                if( ~isempty(this_ann) )
+                                    for field_names = rowvec(fieldnames(this_ann))
+                                        if( ~isempty( this_ann.(field_names{1}) ) )
+                                            this_ann.(field_names{1}) = this_ann.(field_names{1})(this_iter_QRS_start_idx:this_iter_QRS_end_idx);
+                                        end
                                     end
+                                    this_ann.time = this_ann.time - this_iter_ECG_start_idx + 1;
                                 end
-                                this_ann.time = this_ann.time - this_iter_ECG_start_idx + 1;
-
+                                
                                 % in QRS mode, this is not useful.
                                 this_iter_ECG_relative_start_end_idx = [1 (this_iter_ECG_end_idx - this_iter_ECG_start_idx + 1)];
 
@@ -550,15 +551,17 @@ classdef ECGwrapper < handle
                                 % create an annotation struct for this
                                 % iteration.
                                 this_ann = obj.ECG_annotations;
-                                bAux = this_ann.time > this_iter_ECG_start_idx & this_ann.time < this_iter_ECG_end_idx;
-                                for field_names = rowvec(fieldnames(this_ann))
-                                    if( ~isempty( this_ann.(field_names{1}) ) )
-                                        aux_val = this_ann.(field_names{1});
-                                        this_ann.(field_names{1}) = aux_val( bAux );
+                                if( ~isempty(this_ann) )
+                                    bAux = this_ann.time > this_iter_ECG_start_idx & this_ann.time < this_iter_ECG_end_idx;
+                                    for field_names = rowvec(fieldnames(this_ann))
+                                        if( ~isempty( this_ann.(field_names{1}) ) )
+                                            aux_val = this_ann.(field_names{1});
+                                            this_ann.(field_names{1}) = aux_val( bAux );
+                                        end
                                     end
+                                    this_ann.time = this_ann.time - this_iter_ECG_start_idx + 1;
+                                
                                 end
-                                this_ann.time = this_ann.time - this_iter_ECG_start_idx + 1;
-
                                 %Sample where the ECG starts. Useful for
                                 %overlapped mode.
                                 this_iter_ECG_relative_start_end_idx = [(ECG_start_idx - 1 + iter_starts(this_iter) - this_iter_ECG_start_idx + 1), (ECG_start_idx - 1 + iter_ends(this_iter) - this_iter_ECG_start_idx + 1) ];

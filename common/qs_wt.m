@@ -70,7 +70,7 @@ function wt = qs_wt(x, scales, fs, q_filters)
     max_scale = max(scales);
     
     if( nargin < 4 || isempty(q_filters) )
-        filters_cache_filename = ['wt_filters_' num2str(scales) ' scales_' num2str(fs) ' Hz.mat' ];
+        filters_cache_filename = ['wt_filters_' num2str(max_scale) ' scales_' num2str(fs) ' Hz.mat' ];
         if( exist(filters_cache_filename, 'file') )
             load( filters_cache_filename );
         else

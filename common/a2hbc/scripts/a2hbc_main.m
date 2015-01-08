@@ -261,9 +261,10 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
                 
                 if( bECG_sample_provided )
 
+                    aux_struct.time = QRS_locations;
+                    
                     if( ECG_header.nsig > 1  )
                         % As no wrapper is needed, I manually execute the task
-                        aux_struct.time = QRS_locations;
                         ECGtask_PCA_proj_basis_hdl.Start(ECG_header, aux_struct);
                         ECGtask_PCA_proj_basis_hdl.Process(ECG_total, 1, [1 ECG_header.nsig], ECG_header, aux_struct, [1 length(QRS_locations) ] );
                         ECGtask_PCA_proj_basis_hdl.Finish(ECG_header);
@@ -810,27 +811,30 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
             end
         else
             %% No User interface
-            fprintf(2,'\n\n')
-            fprintf(2,'###########\n')
-            fprintf(2,'## ERROR ##\n')
-            fprintf(2,'###########\n')
-
-            fprintf(2,'Recording: %s (%d/%d) \n', recording_name, this_pid, cant_pids);
-
-            strAux = GetFunctionInvocation(mfilename, varargin);
             
-            local_host = getenv('HOSTNAME');
-            computer_arch = computer();
-
-            fprintf(2,'Computer: %s (%s) \n', local_host, computer_arch);
-            
-            fprintf(2, '%s\n\n', strAux);
-            
-            report = getReport(MException);
-            fprintf(2, '%s', report);
-            fprintf(2,'###########\n')
-            fprintf(2,'## ERROR ##\n')
-            fprintf(2,'###########\n')
+% this is obsolete now since ECGwrapper takes care about error reporting
+% 
+%             fprintf(2,'\n\n')
+%             fprintf(2,'###########\n')
+%             fprintf(2,'## ERROR ##\n')
+%             fprintf(2,'###########\n')
+% 
+%             fprintf(2,'Recording: %s (%d/%d) \n', recording_name, this_pid, cant_pids);
+% 
+%             strAux = GetFunctionInvocation(mfilename, varargin);
+%             
+%             local_host = getenv('HOSTNAME');
+%             computer_arch = computer();
+% 
+%             fprintf(2,'Computer: %s (%s) \n', local_host, computer_arch);
+%             
+%             fprintf(2, '%s\n\n', strAux);
+%             
+%             report = getReport(MException);
+%             fprintf(2, '%s', report);
+%             fprintf(2,'###########\n')
+%             fprintf(2,'## ERROR ##\n')
+%             fprintf(2,'###########\n')
             
             rethrow(MException)
 

@@ -37,4 +37,9 @@ end
 
 progress_handle.checkpoint('Calculating multilead delineation')
 
-position_multilead = positions_single_lead(1);
+if( ~isempty(positions_single_lead) )
+    position_multilead = positions_single_lead(1);
+else
+    position_multilead = [];
+end
+

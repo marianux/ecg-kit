@@ -118,11 +118,11 @@ classdef ECGtask_heartbeat_classifier < ECGtask
                 cprintf('blue', [' + Using ' delineation_chosen ' detections.\n' ] );
                 aux_val = aux_val - ECG_start_offset + 1 ;
                 bAux = aux_val >= ECG_sample_start_end_idx(1) & aux_val <= ECG_sample_start_end_idx(2);
-                Ann_struct.time = aux_val(bAux);
+                Ann_struct.time = sort(unique(aux_val(bAux)));
             else
                 obj.payload = obj.payload - ECG_start_offset + 1 ;
                 bAux = obj.payload >= ECG_sample_start_end_idx(1) & obj.payload <= ECG_sample_start_end_idx(2);
-                Ann_struct.time = obj.payload(bAux);
+                Ann_struct.time = sort(unique(obj.payload(bAux)));
             end
             
             [lead_idx, ECG_header ] = get_ECG_idx_from_header(ECG_header);
