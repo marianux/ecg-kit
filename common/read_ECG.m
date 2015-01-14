@@ -97,24 +97,24 @@ elseif( strcmp(recording_format, 'MAT') )
     aux_load = load(recording_name);
 
     fnames = fieldnames(aux_load);
-    signal_name = intersect( fnames, cMatSignalNames);
-    header_name = intersect( fnames, cMatSignalHeaderNames);
-    ann_name = intersect( fnames, cMatSignalAnnNames);
+    [~, signal_name_idx] = intersect( upper(fnames), upper(cMatSignalNames));
+    [~, header_name_idx] = intersect( upper(fnames), upper(cMatSignalHeaderNames));
+    [~, ann_name_idx] = intersect( upper(fnames), upper(cMatSignalAnnNames));
     
     if( nargout > 1 )
         
-        if( ~isempty(header_name) )
-            heasig = aux_load.(header_name{1});
+        if( ~isempty(header_name_idx) )
+            heasig = aux_load.(fnames{header_name_idx});
         end
         
-        if( ~isempty(ann_name) )
-            ann = aux_load.(ann_name{1});            
+        if( ~isempty(ann_name_idx) )
+            ann = aux_load.(fnames{ann_name_idx});            
         end
         
     end
 
-    if( ~isempty(signal_name) )
-        ECG = aux_load.(signal_name{1});
+    if( ~isempty(signal_name_idx) )
+        ECG = aux_load.(fnames{signal_name_idx});
     end
     
     [nsamp, nleads] = size(ECG);
