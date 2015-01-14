@@ -117,6 +117,12 @@ elseif( strcmp(recording_format, 'MAT') )
         ECG = aux_load.(signal_name{1});
     end
     
+    [nsamp, nleads] = size(ECG);
+    
+    if( nsamp < nleads)
+        ECG = ECG';
+    end
+    
     ECG = ECG(ECG_start_idx:ECG_end_idx,:);
     
     clear aux_load
