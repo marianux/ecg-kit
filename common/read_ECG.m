@@ -64,9 +64,7 @@ heasig = [];
 ann = [];
 cKnownFormats = {'MIT' 'AHA' 'ISHNE', 'HES', 'MAT', 'Mortara'};
 
-cMatSignalNames = {'sig' 'signal' 'ECG'};
-cMatSignalHeaderNames = {'header' 'heasig' 'hea'};
-cMatSignalAnnNames = {'ann' 'annotations' 'qrs'};
+matformat_definitions();
 
 end_sample = [];
 
@@ -97,30 +95,26 @@ elseif( strcmp(recording_format, 'MAT') )
     aux_load = load(recording_name);
 
     fnames = fieldnames(aux_load);
-    [~, signal_name_idx] = intersect( upper(fnames), upper(cMatSignalNames));
-    [~, header_name_idx] = intersect( upper(fnames), upper(cMatSignalHeaderNames));
-    [~, ann_name_idx] = intersect( upper(fnames), upper(cMatSignalAnnNames));
+    signal_name = intersect( fnames, cMatSignalNames);
+    header_name = intersect( fnames, cMatSignalHeaderNames);
+    ann_name = intersect( fnames, cMatSignalAnnNames);
     
     if( nargout > 1 )
         
-        if( ~isempty(header_name_idx) )
-            heasig = aux_load.(fnames{header_name_idx});
+        if( isempty(header_name) )
+            error( 'read_ECG:HeaderNotFound', ['Can''t find annotations for file : ' rowvec(recording_name') ] );
+        else            
+            heasig = aux_load.(header_name{1});
         end
         
-        if( ~isempty(ann_name_idx) )
-            ann = aux_load.(fnames{ann_name_idx});            
+        if( ~isempty(ann_name) )
+            ann = aux_load.(ann_name{1});            
         end
         
     end
 
-    if( ~isempty(signal_name_idx) )
-        ECG = aux_load.(fnames{signal_name_idx});
-    end
-    
-    [nsamp, nleads] = size(ECG);
-    
-    if( nsamp < nleads)
-        ECG = ECG';
+    if( ~isempty(signal_name) )
+        ECG = aux_load.(signal_name{1});
     end
     
     ECG = ECG(ECG_start_idx:ECG_end_idx,:);
@@ -157,7 +151,7 @@ elseif( strcmp(recording_format, 'MIT') )
             end
         end
         if(~bAnnotationFound)
-            error( 'read_ECG:AnnNotFound', ['Can�t find annotations for file : ' rowvec(recording_name') ] );
+            error( 'read_ECG:AnnNotFound', ['Can''t find annotations for file : ' rowvec(recording_name') ] );
         end
 
         ann = readannot(annFileName);

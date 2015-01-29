@@ -20,6 +20,7 @@ function recording_format = ECGformat(recording_filename)
     recording_format = [];
 
     cKnownFormats = {'MIT' 'ISHNE', 'AHA', 'HES', 'MAT', 'Mortara'};
+    matformat_definitions();
     lcKnownFormats = length(cKnownFormats);
 
     if( nargin < 0 || ~ischar(recording_filename) )
@@ -107,12 +108,20 @@ function recording_format = ECGformat(recording_filename)
             end
             
         elseif( strcmp(cKnownFormats{ii}, 'MAT') )
-
-            try
-                aux_load = load(recording_filename, 'header');
-                recording_format = cKnownFormats{ii};
-                return
             
+            try
+                
+                aux_load = load(recording_filename);
+
+                fnames = fieldnames(aux_load);
+                signal_name = intersect( fnames, cMatSignalNames);
+                header_name = intersect( fnames, cMatSignalHeaderNames);
+                
+                if( ~isempty(header_name) && ~isempty(signal_name) )
+                    recording_format = cKnownFormats{ii};
+                    return
+                end
+
             catch ME
                 
             end

@@ -1189,22 +1189,8 @@ classdef ECGwrapper < handle
 
                 elseif( strcmp(obj.recording_format, 'MAT') )
 
-                    aux_load = load(obj.recording_name);
-
-                    if( isfield( aux_load, 'header') )
-                        obj.ECG_header = aux_load.header;
-                    else                        
-                        error( 'ECGwrapper:ArgCheck:InvalidECGarg', 'MAT file does not include the "heasig" variable.\n' );
-                    end
-
-                    if( isfield( aux_load, 'ann') )
-                        ann_aux = aux_load.ann;
-                    else
-                        ann_aux = [];
-                    end
-
-                    clear aux_load
-
+                    [~, obj.ECG_header, ann_aux ] = read_ECG(obj.recording_name, [], [], obj.recording_format);
+                    
                 end
 
             end
