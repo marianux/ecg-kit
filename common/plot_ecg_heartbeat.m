@@ -30,9 +30,10 @@ ECG_hdl = [];
 
 % cla(axes_hdl);
 % axes(axes_hdl);
+
+axes(axes_hdl)
 fig_hdl = gcf;
 
-set(fig_hdl, 'CurrentAxes', axes_hdl);
 
 lECG = size(ECG,1);
 cant_sig = length(lead_idx);
@@ -145,7 +146,9 @@ if( ~isempty(filtro) && ~isempty(aux_idx) )
         aux_idx2 = max(1, aux_idx(1) - 1 * heasig.freq  ):min(lECG, aux_idx(end) + 1 * heasig.freq );
         orig_class = class(ECG);
         aux_val = filter(filtro, double(flipud(ECG(aux_idx2,aux_lead_idx))) );
-        ECG(aux_idx2,aux_lead_idx) = cast( round(filter(filtro, flipud(aux_val))), orig_class);
+% round works bad with floating point.
+%         ECG(aux_idx2,aux_lead_idx) = cast( round(filter(filtro, flipud(aux_val))), orig_class);
+        ECG(aux_idx2,aux_lead_idx) = cast( (filter(filtro, flipud(aux_val))), orig_class);
     end
     
 end

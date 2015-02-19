@@ -216,24 +216,22 @@ if ~isempty(n),
     end
     ind = find(m(3,:)==0);            % Discard all maximum lines with no
      if ff==1
-       fig4WT = axes(figWT4);
-       plot(fig4WT,m(4,:),w(m(4,:),4),'ob')
-       plot(fig4WT,[aa(1) aa(2)],[eps(4,nlead) eps(4,nlead)],':b')
-       plot(fig4WT,[aa(1) aa(2)],-[eps(4,nlead) eps(4,nlead)],':b')
+       axes(figWT4);
+       plot(figWT4,m(4,:),w(m(4,:),4),'ob')
+       plot(figWT4,[aa(1) aa(2)],[eps(4,nlead) eps(4,nlead)],':b')
+       plot(figWT4,[aa(1) aa(2)],-[eps(4,nlead) eps(4,nlead)],':b')
        if ~isempty(ind)
-           plot(fig4WT,m(4,ind),w(m(4,ind),4),'xr')
-           plot(fig4WT,[m(4,ind(1))-neighb m(4,ind(1))-neighb],[-5000 5000],':r')
-           plot(fig4WT,[m(4,ind(1))+neighb m(4,ind(1))+neighb],[-5000 5000],':r')
-           fig3WT = axes(figWT3);
-           plot(fig3WT,[m(4,ind(1))-neighb m(4,ind(1))-neighb],[-5000 5000],':r')
-           plot(fig3WT,[m(4,ind(1))+neighb m(3,ind(1))+neighb],[-5000 5000],':r')
+           plot(figWT4,m(4,ind),w(m(4,ind),4),'xr')
+           plot(figWT4,[m(4,ind(1))-neighb m(4,ind(1))-neighb],[-5000 5000],':r')
+           plot(figWT4,[m(4,ind(1))+neighb m(4,ind(1))+neighb],[-5000 5000],':r')
+           axes(figWT3);
+           plot(figWT3,[m(4,ind(1))-neighb m(4,ind(1))-neighb],[-5000 5000],':r')
+           plot(figWT3,[m(4,ind(1))+neighb m(3,ind(1))+neighb],[-5000 5000],':r')
        end
-       if ~exist(fig3WT,'var')
-           fig3WT = axes(figWT3);
-       end
-       plot(fig3WT,m(3,m(3,:)~=0),w(m(3,m(3,:)~=0),3),'ob')
-       plot(fig3WT,[aa(1) aa(2)],[eps(3,nlead) eps(3,nlead)],':b')
-       plot(fig3WT,[aa(1) aa(2)],-[eps(3,nlead) eps(3,nlead)],':b')
+       
+       plot(figWT3,m(3,m(3,:)~=0),w(m(3,m(3,:)~=0),3),'ob')
+       plot(figWT3,[aa(1) aa(2)],[eps(3,nlead) eps(3,nlead)],':b')
+       plot(figWT3,[aa(1) aa(2)],-[eps(3,nlead) eps(3,nlead)],':b')
      end
     m(:,ind) = [];                    % associated maximum at scale 3
     signo(ind)= [];
@@ -263,20 +261,17 @@ if ~isempty(n),
     if ff==1
 %         axes(figWT3);
         if ~isempty(ind)
-            plot(fig3WT,[m(3,ind(1))-neighb m(3,ind(1))-neighb],[-5000 5000],':r')
-            plot(fig3WT,[m(3,ind(1))+neighb m(3,ind(1))+neighb],[-5000 5000],':r')
-            plot(fig3WT,m(3,ind),w(m(3,ind),3),'xr')
-            fig2WT = axes(figWT2);
-            plot(fig2WT,[m(3,ind(1))-neighb m(3,ind(1))-neighb],[-5000 5000],':r')
-            plot(fig2WT,[m(3,ind(1))+neighb m(3,ind(1))+neighb],[-5000 5000],':r')
+            plot(figWT3,[m(3,ind(1))-neighb m(3,ind(1))-neighb],[-5000 5000],':r')
+            plot(figWT3,[m(3,ind(1))+neighb m(3,ind(1))+neighb],[-5000 5000],':r')
+            plot(figWT3,m(3,ind),w(m(3,ind),3),'xr')
+            axes(figWT2);
+            plot(figWT2,[m(3,ind(1))-neighb m(3,ind(1))-neighb],[-5000 5000],':r')
+            plot(figWT2,[m(3,ind(1))+neighb m(3,ind(1))+neighb],[-5000 5000],':r')
             
         end
-        if ~exist(fig2WT,'var')
-            fig2WT = axes(figWT2);
-        end
-        plot(fig2WT,m(2,m(2,:)~=0),w(m(2,m(2,:)~=0),2),'ob')
-        plot(fig2WT,[aa(1) aa(2)],[eps(2,nlead) eps(2,nlead)],':b')
-       plot(fig2WT,[aa(1) aa(2)],-[eps(2,nlead) eps(2,nlead)],':b')
+        plot(figWT2,m(2,m(2,:)~=0),w(m(2,m(2,:)~=0),2),'ob')
+        plot(figWT2,[aa(1) aa(2)],[eps(2,nlead) eps(2,nlead)],':b')
+       plot(figWT2,[aa(1) aa(2)],-[eps(2,nlead) eps(2,nlead)],':b')
     end
     
     m(:,ind) = [];                      % associated maximum at scale 2
@@ -307,12 +302,11 @@ if ~isempty(n),
     if ff==1
 %         axes(figWT2);
         if ~isempty(ind)
-            plot(fig2WT,m(2,ind),w(m(2,ind),2),'xr')
+            plot(figWT2,m(2,ind),w(m(2,ind),2),'xr')
         end
-        fig1WT = axes(figWT1);
-        plot(fig1WT,m(1,m(1,:)~=0),w(m(1,m(1,:)~=0),1),'ob')
-        plot(fig1WT,[aa(1) aa(2)],[eps(1,nlead) eps(1,nlead)],':b')
-       plot(fig1WT,[aa(1) aa(2)],-[eps(1,nlead) eps(1,nlead)],':b')
+        plot(figWT1,m(1,m(1,:)~=0),w(m(1,m(1,:)~=0),1),'ob')
+        plot(figWT1,[aa(1) aa(2)],[eps(1,nlead) eps(1,nlead)],':b')
+       plot(figWT1,[aa(1) aa(2)],-[eps(1,nlead) eps(1,nlead)],':b')
     end
     
     m(:,ind) = [];  		     % associated maximum at scale 1
@@ -330,38 +324,37 @@ if ~isempty(n),
     %     %%%% SO: por ahorro computacional se puede eliminar el log, y en el
     %     %%%% SO: valor del threshold si queremos.
     %
-    th=min(messages.setup.wavedet.thmax,mean(alpha)-messages.setup.wavedet.thfraction);
+    
+    % th was not being using at all in many cases, because thmax < min(alpha)
+%     th=min(messages.setup.wavedet.thmax,mean(alpha)-messages.setup.wavedet.thfraction);
+    th=mean(alpha)-messages.setup.wavedet.thfraction;
+    
     %    thlinha=min(5+log(5),mean(alphalinha)-.5); %%%%%% Rute 24/04/02
     ind = find(alpha<=th); % always empty?????!????1
     % ind=find(alpha3>=1 || alpha1<=0.9 || alpha2<=0.9);% elimination of large T waves
     if ff==1
-       figax1 = axes(fig1);
-        plot(figax1,m(1,:),w(m(1,:)),'ob')
-        legend(figax1,{'WT_1','mm lines'},'Location','NorthEastOutside')
+        plot(fig1,m(1,:),w(m(1,:)),'ob')
+        legend(fig1,{'WT_1','mm lines'},'Location','NorthEastOutside')
         plot(m(1,ind),w(m(1,ind)),'xr')
         if ~isempty(ind)
             ll={'mm lines','rejected mm lines'};
         else
             ll={'mm lines'};
         end
-        figWT1ECG = axes(figECGWT1);
-        plot(figWT1ECG,m(1,:),w(m(1,:),1),'ob')
-        plot(figWT1ECG,m(1,ind),w(m(1,ind),1),'xr')
-        figWT2ECG = axes(figECGWT2);
-        plot(figWT2ECG,m(2,:),w(m(2,:),2),'ob')
-        plot(figWT2ECG,m(2,ind),w(m(2,ind),2),'xr')
-        figWT3ECG = axes(figECGWT3);
-        plot(figWT3ECG,m(3,:),w(m(3,:),3),'ob')
-        plot(figWT3ECG,m(3,ind),w(m(3,ind),3),'xr')
+        plot(figECGWT1,m(1,:),w(m(1,:),1),'ob')
+        plot(figECGWT1,m(1,ind),w(m(1,ind),1),'xr')
+        plot(figECGWT2,m(2,:),w(m(2,:),2),'ob')
+        plot(figECGWT2,m(2,ind),w(m(2,ind),2),'xr')
+        plot(figECGWT3,m(3,:),w(m(3,:),3),'ob')
+        plot(figECGWT3,m(3,ind),w(m(3,ind),3),'xr')
         
-        figax3 = axes(fig3);
-        plot(figax3,m(3,:),w(m(3,:),3),'ob')
-        legend(figax3,{'WT_3','mm lines'},'Location','NorthEastOutside')
+        plot(fig3,m(3,:),w(m(3,:),3),'ob')
+        legend(fig3,{'WT_3','mm lines'},'Location','NorthEastOutside')
         plot(m(3,ind),w(m(3,ind),3),'xr')
 %         axes(fig1);
-        legend(figax1,['WT_1',ll],'Location','NorthEastOutside')
+        legend(fig1,['WT_1',ll],'Location','NorthEastOutside')
 %         axes(fig3);
-        legend(figax3,['WT_3',ll],'Location','NorthEastOutside')
+        legend(fig3,['WT_3',ll],'Location','NorthEastOutside')
         
         figure;
         hs = subplot(3,1,1);
@@ -402,25 +395,25 @@ if ~isempty(n),
     if size(m,2)<2 && ~isempty(ind), ind=1; end  % when only one maximum %16DEZ08
     if ff==1
 %         axes(fig1);
-        plot(figax1,m(1,ind),w(m(1,ind)),'+r')
+        plot(fig1,m(1,ind),w(m(1,ind)),'+r')
         if ~isempty(ind)
             ll=[ll {'isolated mm lines'}];
         end
 %         axes(fig1);
-        legend(figax1,['WT_1',ll],'Location','NorthEastOutside')
+        legend(fig1,['WT_1',ll],'Location','NorthEastOutside')
 %         axes(fig3);
-        plot(figax3,m(3,ind),w(m(3,ind),3),'+r')
+        plot(fig3,m(3,ind),w(m(3,ind),3),'+r')
         legend(['WT_3',ll],'Location','NorthEastOutside')
         
         try
 %         axes(figECGWT1);
-        plot(figWT1ECG,m(1,ind),w(m(1,ind),1),'+r')
-        plot(figWT1ECG,[m(1,ind(1))-thresinterval m(1,ind(1))-thresinterval],[-5000 5000],':r')
-        plot(figWT1ECG,[m(1,ind(1))+thresinterval m(1,ind(1))+thresinterval],[-5000 5000],':r')
+        plot(figECGWT1,m(1,ind),w(m(1,ind),1),'+r')
+        plot(figECGWT1,[m(1,ind(1))-thresinterval m(1,ind(1))-thresinterval],[-5000 5000],':r')
+        plot(figECGWT1,[m(1,ind(1))+thresinterval m(1,ind(1))+thresinterval],[-5000 5000],':r')
 %         axes(figECGWT2);
-        plot(figWT2ECG,m(2,ind),w(m(2,ind),2),'+r')
+        plot(figECGWT2,m(2,ind),w(m(2,ind),2),'+r')
 %         axes(figECGWT3);
-        plot(figWT3ECG,m(3,ind),w(m(3,ind),3),'+r')
+        plot(figECGWT3,m(3,ind),w(m(3,ind),3),'+r')
         catch me
             me.message = 'Error plotting WT signal';
         end
@@ -443,21 +436,21 @@ if ~isempty(n),
     end
     if ff==1
 %         axes(fig1);
-        plot(figax1,m(1,redundant),w(m(1,redundant)),'sm')
+        plot(fig1,m(1,redundant),w(m(1,redundant)),'sm')
 %         axes(fig3);
         
-        plot(figax3,m(3,redundant),w(m(3,redundant),3),'sm')
+        plot(fig3,m(3,redundant),w(m(3,redundant),3),'sm')
         if ~isempty(redundant)
             ll=[ll {'redundant mm lines'}];
         end
 %         axes(figECGWT1);
-        plot(figWT1ECG,m(1,redundant),w(m(1,redundant)),'sm')
+        plot(figECGWT1,m(1,redundant),w(m(1,redundant)),'sm')
 %         axes(figECGWT2);
-        plot(figWT2ECG,m(2,redundant),w(m(2,redundant),2),'sm')
+        plot(figECGWT2,m(2,redundant),w(m(2,redundant),2),'sm')
 %         axes(figECGWT3);
-        plot(figWT3ECG,m(3,redundant),w(m(3,redundant),3),'sm')
-        plot(figWT3ECG,[m(3,206)-messages.setup.wavedet.intvlthr1_2*thresinterval m(3,206)-messages.setup.wavedet.intvlthr1_2*thresinterval],[-5000 5000],':r')
-        plot(figWT3ECG,[m(3,206)+messages.setup.wavedet.intvlthr1_2*thresinterval m(3,206)+messages.setup.wavedet.intvlthr1_2*thresinterval],[-5000 5000],':r')
+        plot(figECGWT3,m(3,redundant),w(m(3,redundant),3),'sm')
+        plot(figECGWT3,[m(3,206)-messages.setup.wavedet.intvlthr1_2*thresinterval m(3,206)-messages.setup.wavedet.intvlthr1_2*thresinterval],[-5000 5000],':r')
+        plot(figECGWT3,[m(3,206)+messages.setup.wavedet.intvlthr1_2*thresinterval m(3,206)+messages.setup.wavedet.intvlthr1_2*thresinterval],[-5000 5000],':r')
 
     end
     m(:,redundant)=[];		  % Discard redundant lines
@@ -483,21 +476,21 @@ if ~isempty(n),
     end
     if ff==1
 %         axes(fig1);
-        plot(figax1,m(1,redundant),w(m(1,redundant)),'*r')
+        plot(fig1,m(1,redundant),w(m(1,redundant)),'*r')
 %         axes(fig3);
-        plot(figax3,m(3,redundant),w(m(3,redundant),3),'*r')
+        plot(fig3,m(3,redundant),w(m(3,redundant),3),'*r')
         if ~isempty(redundant)
             ll=[ll {'redundant mm lines'}];
         end
         try
 %             axes(figECGWT1);
-            plot(figWT1ECG,m(1,redundant(end)),w(m(1,redundant(end))),'sm')
+            plot(figECGWT1,m(1,redundant(end)),w(m(1,redundant(end))),'sm')
 %             axes(figECGWT2);
-            plot(figWT2ECG,m(2,redundant(end)),w(m(2,redundant(end)),2),'sm')
+            plot(figECGWT2,m(2,redundant(end)),w(m(2,redundant(end)),2),'sm')
 %             axes(figECGWT3);
-            plot(figWT3ECG,m(3,redundant(end)),w(m(3,redundant),3),'sm')
-            plot(figWT3ECG,[m(3,182)-messages.setup.wavedet.intvlthr1_2*thresinterval m(3,182)-messages.setup.wavedet.intvlthr1_2*thresinterval],[-5000 5000],':r')
-            plot(figWT3ECG,[m(3,182)+messages.setup.wavedet.intvlthr1_2*thresinterval m(3,182)+messages.setup.wavedet.intvlthr1_2*thresinterval],[-5000 5000],':r')
+            plot(figECGWT3,m(3,redundant(end)),w(m(3,redundant),3),'sm')
+            plot(figECGWT3,[m(3,182)-messages.setup.wavedet.intvlthr1_2*thresinterval m(3,182)-messages.setup.wavedet.intvlthr1_2*thresinterval],[-5000 5000],':r')
+            plot(figECGWT3,[m(3,182)+messages.setup.wavedet.intvlthr1_2*thresinterval m(3,182)+messages.setup.wavedet.intvlthr1_2*thresinterval],[-5000 5000],':r')
         catch me
             me.message = 'Error plotting WT signal';
         end
@@ -525,9 +518,9 @@ if ~isempty(n),
     end
     if ff==1
 %        axes(fig1);
-        plot(figax1,m(1,redundant),w(m(1,redundant)),'*r')
+        plot(fig1,m(1,redundant),w(m(1,redundant)),'*r')
 %        axes(fig3);
-        plot(figax3,m(3,redundant),w(m(3,redundant),3),'*r')
+        plot(fig3,m(3,redundant),w(m(3,redundant),3),'*r')
         if ~isempty(redundant)
             ll=[ll {'redundant mm lines'}];
         end
@@ -540,20 +533,20 @@ if ~isempty(n),
     if size(m,2)<2 && ~isempty(ind), ind=1; end  % when only one maximum %16DEZ08
     if ff==1
 %        axes(fig1);
-        legend(figax1,['WT_1',ll],'Location','NorthEastOutside')
+        legend(fig1,['WT_1',ll],'Location','NorthEastOutside')
 %        axes(fig3);
-        legend(figax3,['WT_3',ll],'Location','NorthEastOutside')
+        legend(fig3,['WT_3',ll],'Location','NorthEastOutside')
 %        axes(fig1);
-        plot(figax1,m(1,ind),w(m(1,ind)),'+m')
+        plot(fig1,m(1,ind),w(m(1,ind)),'+m')
 %        axes(fig3);
-        plot(figax3,m(3,ind),w(m(3,ind),3),'+m')
+        plot(fig3,m(3,ind),w(m(3,ind),3),'+m')
         if ~isempty(ind)
             ll=[ll {'isolated mm lines'}];
         end
 %        axes(fig1);
-        legend(figax1,['WT_1',ll],'Location','NorthEastOutside')
+        legend(fig1,['WT_1',ll],'Location','NorthEastOutside')
 %        axes(fig3);
-        legend(figax3,['WT_3',ll],'Location','NorthEastOutside')
+        legend(fig3,['WT_3',ll],'Location','NorthEastOutside')
     end
     m(:,ind) = [];                     %Discard isolated maximum lines
     signo(ind)=[];
@@ -563,6 +556,7 @@ if ~isempty(n),
     end
     eliminar=[];
     %%%%extra protection% 23MAR09
+    % discard if no peak before and after messages.setup.wavedet.pictime ms
     for ii=1:size(m,2)
         pa = picant(w(max(1,m(2,ii)-round(messages.setup.wavedet.pictime*messages.setup.wavedet.freq)):m(2,ii),2),m(2,ii));
         % first peak before detected qrs position at scale 2
@@ -574,16 +568,16 @@ if ~isempty(n),
     end
     if ff==1
 %        axes(fig1);
-        plot(figax1,m(1,eliminar),w(m(1,eliminar)),'.r')
+        plot(fig1,m(1,eliminar),w(m(1,eliminar)),'.r')
 %        axes(fig3);
-        plot(figax3,m(3,eliminar),w(m(3,eliminar),3),'.r')
+        plot(fig3,m(3,eliminar),w(m(3,eliminar),3),'.r')
         if ~isempty(eliminar)
             ll=[ll {'extra protection'}];
         end
 %        axes(fig1);
-        legend(figax1,['WT_1',ll],'Location','NorthEastOutside')
+        legend(fig1,['WT_1',ll],'Location','NorthEastOutside')
 %        axes(fig3);
-        legend(figax3,['WT_3',ll],'Location','NorthEastOutside')
+        legend(fig3,['WT_3',ll],'Location','NorthEastOutside')
     end
     m(:,eliminar)=[];
     signo(eliminar)=[];
@@ -625,12 +619,12 @@ if ~isempty(n),
         end
     end
     if ff==1
-       figax2 = axes(fig2);
-        plot(figax2,time,messages.sig(time),'ob')
+        plot(fig2,time,messages.sig(time),'ob')
         ll_ECG={'ECG','QRS candidates'};
-        legend(figax2,ll_ECG,'Location','NorthEastOutside')
+        legend(fig2,ll_ECG,'Location','NorthEastOutside')
     end
-    % Refractary period after a QRS detection
+    % Refractary period after a QRS detection. Retain only the waves with
+    % more energy within the refractary period.
     if ~isempty(time),
         rr = (time(2:end)-time(1:end-1));
         ind = find(rr<ceil(refrper*messages.setup.wavedet.freq));             
@@ -641,21 +635,21 @@ if ~isempty(n),
 %       ind=ind+1; % olde version % always the second one is eliminated!!!
         if ff==1
 %            axes(fig2);
-            plot(figax2,time(ind),messages.sig(time(ind)),'xr')
+            plot(fig2,time(ind),messages.sig(time(ind)),'xr')
 %            axes(fig1);
-            plot(figax1,m(1,ind),w(m(1,ind)),'xr')
+            plot(fig1,m(1,ind),w(m(1,ind)),'xr')
 %            axes(fig3);
-            plot(figax3,m(3,ind),w(m(3,ind),3),'xr')
+            plot(fig3,m(3,ind),w(m(3,ind),3),'xr')
             if ~isempty(ind)
                 ll=[ll {'rejected by the refractary period'}];
                 ll_ECG=[ll_ECG {'rejected by the refractary period'}];
             end
 %            axes(fig2);
-            legend(figax2,ll_ECG,'Location','NorthEastOutside')
+            legend(fig2,ll_ECG,'Location','NorthEastOutside')
 %            axes(fig1);
-            legend(figax1,['WT_1',ll],'Location','NorthEastOutside')
+            legend(fig1,['WT_1',ll],'Location','NorthEastOutside')
 %            axes(fig3);
-            legend(figax3,['WT_3',ll],'Location','NorthEastOutside')
+            legend(fig3,['WT_3',ll],'Location','NorthEastOutside')
         end
         time(ind)=[]; %RUTE 27Jun11
         aux(ind)=[];
@@ -686,16 +680,16 @@ if ~isempty(n),
                     ll=[ll {'searchback'}];
                     ll_ECG=[ll_ECG {'searchback'}];
 %                    axes(fig2);
-                    plot(figax2,time(ind),messages.sig(time(ind))+50,'vc')
+                    plot(fig2,time(ind),messages.sig(time(ind))+50,'vc')
                     legend(ll_ECG,'Location','NorthEastOutside')
 %                    axes(fig1);
-                    plot(figax1,time(ind),w(time(ind),1)+200,'vc')
+                    plot(fig1,time(ind),w(time(ind),1)+200,'vc')
 %                    axes(fig3);
-                    plot(figax3,time(ind),w(time(ind),3)+200,'vc')
+                    plot(fig3,time(ind),w(time(ind),3)+200,'vc')
 %                    axes(fig1);
-                    legend(figax1,'WT_1',ll,'Location','NorthEastOutside')
+                    legend(fig1,'WT_1',ll,'Location','NorthEastOutside')
 %                    axes(fig3);
-                    legend(figax3,'WT_3',ll,'Location','NorthEastOutside')
+                    legend(fig3,'WT_3',ll,'Location','NorthEastOutside')
                 end
             end
             for l = ind,               % For all rr intervals greater than 1.5RR
@@ -708,11 +702,11 @@ if ~isempty(n),
                     %  time = sort(time);    	     % and sorted
                     if ff==1
 %                        axes(fig2);
-                        plot(figax2,nuevo,messages.sig(nuevo),'oc')
+                        plot(fig2,nuevo,messages.sig(nuevo),'oc')
                         if ~isempty(nuevo)
                             ll_ECG=[ll_ECG {'new candidates by searchback'}]; %#ok<AGROW>
                         end
-                        legend(figax2,ll_ECG,'Location','NorthEastOutside')
+                        legend(fig2,ll_ECG,'Location','NorthEastOutside')
                     end
                 end
             end %%%%%%%%%%%%%%%%introduzido a 17/05/02 Rute
@@ -731,11 +725,11 @@ if ~isempty(n),
         time = nuevo;
         if ff==1
 %            axes(fig2);
-            plot(figax2,nuevo,messages.sig(nuevo),'oc')
+            plot(fig2,nuevo,messages.sig(nuevo),'oc')
             if ~isempty(nuevo)
                 ll_ECG=[ll_ECG {'new candidates by searchback'}];
             end
-            legend(figax2,ll_ECG,'Location','NorthEastOutside')
+            legend(fig2,ll_ECG,'Location','NorthEastOutside')
         end
     end
     if ~isempty(time),
@@ -753,11 +747,11 @@ if ~isempty(n),
                 time = [time nuevo];
                 if ff==1
 %                    axes(fig2);
-                    plot(figax2,nuevo,messages.sig(nuevo),'oc')
+                    plot(fig2,nuevo,messages.sig(nuevo),'oc')
                     if ~isempty(nuevo)
                         ll_ECG=[ll_ECG {'new candidates by searchback'}];
                     end
-                    legend(figax2,ll_ECG,'Location','NorthEastOutside')
+                    legend(fig2,ll_ECG,'Location','NorthEastOutside')
                 end
             end
         end
@@ -793,13 +787,13 @@ if ~isempty(n),
     end
     if ff==1
 %        axes(fig2);
-        plot(figax2,time,messages.sig(time),'.g')
+        plot(fig2,time,messages.sig(time),'.g')
         ll_ECG=[ll_ECG {'final SL marks'}];
-        legend(figax2,ll_ECG,'Location','NorthEastOutside')
+        legend(fig2,ll_ECG,'Location','NorthEastOutside')
 %        axes(fig1);
-        legend(figax1,['WT_1',ll],'Location','NorthEastOutside')
+        legend(fig1,['WT_1',ll],'Location','NorthEastOutside')
 %        axes(fig3);
-        legend(figax3,['WT_3',ll],'Location','NorthEastOutside')
+        legend(fig3,['WT_3',ll],'Location','NorthEastOutside')
     end    
 else
     intervalo=[];time=[]; %Rute 13Set06

@@ -632,7 +632,7 @@ function ann_output = QRScorrector(varargin)
             [ this_ratios, this_estimated_labs ] = CalcRRserieRatio(aux_val, ECG_struct.header);
         end
         
-        all_annotations = [all_annotations; aux_val];
+        all_annotations = [all_annotations; aux_val ];
         ratios = [ratios; this_ratios ];
         estimated_labs = [estimated_labs; this_estimated_labs];
         AnnNames = [AnnNames; this_AnnNames(new_AnnNames_idx,:)];
@@ -2014,6 +2014,8 @@ function ann_output = QRScorrector(varargin)
     %     similarity = [repmat(similarity(1,:),round((nsamp_pattern-1)/2),1); similarity];
         similarity = abs(mean(similarity,2));
 
+        prev_fig = gcf();
+        
         figure(2)
         aux_idx = 1:2*ECG_struct.header.freq;
         aux_windows = 0:round(ECG_struct.header.nsamp/4):ECG_struct.header.nsamp*4/5;
@@ -2032,7 +2034,7 @@ function ann_output = QRScorrector(varargin)
         bContinue = true;
 
         detection_threshold = 0.3;
-
+        
         while(bContinue)
 
             ECG_struct.pattern_match.time = modmax(similarity, QRSxlims, thr, +1, round(detection_threshold*ECG_struct.header.freq) );
@@ -2045,20 +2047,28 @@ function ann_output = QRScorrector(varargin)
     %             ECG_struct.pattern_match.time = sort([colvec(ECG_struct.pattern_match.time(aux_idx2)); colvec(ECG_struct.pattern_match.time(aux_idx( find(merged_times == 1) ))); colvec(ECG_struct.pattern_match.time(aux_idx( find(merged_times == 2) )+1 )) ]);
     %         end
 
+    
             if( strcmp(AnnNames(end,1), cellstr('pattern_match') ) )
-                ratios(end) = CalcRRserieQuality(ECG_struct.signal, ECG_struct.header,  all_annotations, ECG_struct.noise_power, length(ratios) );
+                aux_all_anns = all_annotations;
+                aux_all_anns{end} = ECG_struct.pattern_match.time;
             else
                 AnnNames = [AnnNames; cellstr('pattern_match') cellstr('time')];
-                ratios = [ratios; CalcRRserieQuality(ECG_struct.signal, ECG_struct.header, all_annotations, ECG_struct.noise_power, size(AnnNames,1))];
+                aux_all_anns = [all_annotations; {ECG_struct.pattern_match.time}];
             end
 
+            [ ratios, estimated_labs ] = CalcRRserieRatio(aux_all_anns, ECG_struct.header);
+            
+            all_annotations = aux_all_anns;
+            
             AnnNames_idx = size(AnnNames,1);
             anns_under_edition = ECG_struct.pattern_match.time;
 
             hb_idx = 1;
             selected_hb_idx = [];
 
+            figure(prev_fig);
             Redraw();
+            figure(2);
 
             ocurrences = length(ECG_struct.pattern_match.time);
             update_title_efimero(['Threshold: ' num2str(thr) ' - found ' num2str(ocurrences) ' heartbeats with quality ' num2str(ratios(end)) ], 5 );        
@@ -2104,15 +2114,12 @@ function ann_output = QRScorrector(varargin)
         cant_anns = size(AnnNames,1);
         aux_str = repmat( ' - ',cant_anns,1);
 
+        [~, best_detections_idx] = sort(ratios, 'descend');
+        [~, annotations_ranking] = sort(aux_val(best_detections_idx));
+        
         set(annotation_list_control, 'string', [ char(cellstr(num2str((1:cant_anns)'))) aux_str char(AnnNames(:,1)) repmat( ' (',cant_anns,1) num2str(round(colvec(ratios * 1000))) aux_str num2str(colvec(annotations_ranking))  repmat( ')',cant_anns,1)  ] );
         set(annotation_under_edition_label, 'string', [ 'Annotation under edition: ' char(AnnNames( AnnNames_idx ,1)) ' (' num2str(ratios(AnnNames_idx)) ')' ])
         set(annotation_list_control, 'Value', AnnNames_idx);    
-
-        [~, best_detections_idx] = sort(ratios, 'descend');
-
-        aux_val = 1:cant_anns;
-
-        [~, annotations_ranking] = sort(aux_val(best_detections_idx));
 
         close(2)
 
