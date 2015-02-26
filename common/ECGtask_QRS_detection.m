@@ -83,6 +83,8 @@ classdef ECGtask_QRS_detection < ECGtask
         wavedet_config
         payload
         CalculatePerformance = false;
+        signal_payload = false
+        
     end
     
     methods
@@ -401,8 +403,9 @@ classdef ECGtask_QRS_detection < ECGtask
 
                             if( exist(this_detector_name) == 2 )
                                 
-                                ud_func_pointer = eval(['@' this_detector_name]);
-
+%                                 ud_func_pointer = eval(['@' this_detector_name]);
+                                ud_func_pointer = str2func(this_detector_name);
+                                
                                 obj.progress_handle.checkpoint([ 'User defined function: ' this_detector_name])
 
                                 ECG_header_aux = trim_ECG_header(ECG_header, obj.lead_idx);

@@ -80,7 +80,7 @@ function ann_output = QRScorrector(varargin)
     %argument definition
     p = inputParser;   % Create instance of inputParser class.
     p.addParamValue('FilterSignals', true, @(x)( islogical(x)));
-    p.addParamValue('BuildArtificial', true, @(x)( islogical(x)));
+    p.addParamValue('BuildArtificial', false, @(x)( islogical(x)));
     p.addParamValue('recording', [], @(x)( ischar(x)));
     p.addParamValue('recording_path', [], @(x)( ischar(x)));
     p.addParamValue('recording_indexes', [], @(x)( isnumeric(x) && all(x > 0) ) );
@@ -1982,6 +1982,7 @@ function ann_output = QRScorrector(varargin)
         end
         
         update_title_efimero('Filtering ECG ...', 5 );
+        llead_idx = length(lead_idx);
         
         if( isempty(filtro) )
             ECG = ECG_struct.signal(:,lead_idx);
@@ -1998,8 +1999,8 @@ function ann_output = QRScorrector(varargin)
         pattern2detect = ECG_struct.signal(aux_seq,lead_idx);
         pattern2detect = bsxfun( @minus, pattern2detect, mean(pattern2detect));
 
-        [nsamp_pattern nsig_pattern] = size(pattern2detect);
-        max_idx = max_index(pattern2detect);
+%         [nsamp_pattern nsig_pattern] = size(pattern2detect);
+%         max_idx = max_index(pattern2detect);
 
     %     cross_corr = 1/sqrt(var(ECG)*var(pattern2detect) )*conv(ECG, flipud(pattern2detect) , 'valid');
     %     pattern2detect_var = var(pattern2detect);
@@ -2009,35 +2010,116 @@ function ann_output = QRScorrector(varargin)
     %     similarity = arrayfun( @(a)( 1/sqrt(var(ECG(a-nsamp_pattern+1:a))* pattern2detect_var)*(rowvec(ECG(a-nsamp_pattern+1:a)-mean(ECG(a-nsamp_pattern+1:a))) * colvec(pattern2detect) ) ), colvec(nsamp_pattern:ECG_struct.header.nsamp));    
     %     similarity = [repmat(similarity(1,:),nsamp_pattern-1,1); similarity];
 
-        similarity = cellfun( @(a,b)( diff(conv( a, b, 'same' )) ), mat2cell(ECG_struct.signal(:,lead_idx), ECG_struct.header.nsamp, ones(1,length(lead_idx))), mat2cell(pattern2detect, diff(xlims)+1, ones(1,length(lead_idx))), 'UniformOutput', false);
-        similarity = cell2mat(cellfun( @(a,b)( diff(conv( a, b, 'same' )) ), similarity, mat2cell(flipud(pattern2detect), diff(xlims)+1, ones(1,length(lead_idx))), 'UniformOutput', false));
-    %     similarity = [repmat(similarity(1,:),round((nsamp_pattern-1)/2),1); similarity];
-        similarity = abs(mean(similarity,2));
-
+    
+        if( isempty(ECG_w) )
+            % short or easy memory handlable signals
+            similarity = cellfun( @(a,b)( diff(conv( a, b, 'same' )) ), mat2cell(ECG_struct.signal(:,lead_idx), ECG_struct.header.nsamp, ones(1,llead_idx)), mat2cell(pattern2detect, diff(xlims)+1, ones(1,llead_idx)), 'UniformOutput', false);
+            similarity = cell2mat(cellfun( @(a,b)( diff(conv( a, b, 'same' )) ), similarity, mat2cell(flipud(pattern2detect), diff(xlims)+1, ones(1,llead_idx)), 'UniformOutput', false));
+        %     similarity = [repmat(similarity(1,:),round((nsamp_pattern-1)/2),1); similarity];
+            similarity = abs(mean(similarity,2));
+        else
+            aux_w = ECGwrapper('recording_name', ECG_w.recording_name);
+            aux_w.ECGtaskHandle = 'arbitrary_function';
+            aux_w.cacheResults = false;
+            aux_w.ECGtaskHandle.lead_idx = lead_idx;
+            aux_w.ECGtaskHandle.signal_payload = true;
+            aux_w.ECGtaskHandle.user_string = ['similarity_calc_for_lead_' num2str(sort(lead_idx)) ];
+            aux_w.ECGtaskHandle.function_pointer = @similarity_calculation;
+            aux_w.ECGtaskHandle.function_payload_in = pattern2detect;
+            aux_w.Run
+        end
+        
         prev_fig = gcf();
         
-        figure(2)
-        aux_idx = 1:2*ECG_struct.header.freq;
-        aux_windows = 0:round(ECG_struct.header.nsamp/4):ECG_struct.header.nsamp*4/5;
-        aux_idx = repmat(aux_idx,length(aux_windows),1);
-        aux_idx = bsxfun(@plus, aux_idx',aux_windows);
-        aux_idx = colvec(aux_idx);
-        aux_val = [(ECG(aux_idx)-mean(ECG(aux_idx))) (similarity(aux_idx)-mean(similarity(aux_idx)))];
-        aux_val = bsxfun(@times, aux_val, 1./max(abs(aux_val)));
-        plot(aux_val)
+        fig2_hdl = figure(2);
+        clf();
+        set(fig2_hdl, 'Position', [ maximized_size(3:4) maximized_size(3:4) ] .* [ 0.05 0.13 0.95 0.9] );
+        
+        win_sample = 3*ECG_struct.header.freq;
+        break_sample = round(1*ECG_struct.header.freq);
+        n_excerpts = 5;
+        aux_idx = 1:win_sample;
+        aux_windows = linspace(0, ECG_struct.header.nsamp-win_sample, n_excerpts);
+        sig_breaks = nan(break_sample, llead_idx + 1 );
+        
+        if( isempty(ECG_w) )
+            
+            aux_val = sig_breaks;
+            for aux_start = (aux_windows+1)
+%                 aux_val1 = [bsxfun( @minus, ECG(aux_start:(aux_start+win_sample),:), mean(ECG(aux_idx))) similarity(aux_start:(aux_start+win_sample))-mean(similarity(aux_start:(aux_start+win_sample))) ];
+                aux_val1 = [bsxfun( @minus, ECG(aux_start:(aux_start+win_sample),:), mean(ECG(aux_idx))) similarity(aux_start:(aux_start+win_sample)) ];
+                aux_val = [aux_val; aux_val1; sig_breaks ];
+            end
+            
+        else
+            
+            aux_w = ECGwrapper('recording_name', char(aux_w.Result_files));
+            aux_val = sig_breaks;
+            for aux_start = (aux_windows+1)
+                aux_val1 = [ECG_w.read_signal( aux_start, aux_start + win_sample ) aux_w.read_signal( aux_start, aux_start + win_sample ) ];
+                aux_val = [aux_val; [bsxfun(@minus, aux_val1(:,1:end-1), mean(aux_val1(:,1:end-1)) ) aux_val1(:,end)]; sig_breaks ];
+            end
+        end
+        
+        aux_thr_scale = max(abs(aux_val));
+        aux_val = bsxfun(@times, aux_val, 1./aux_thr_scale);
+        aux_hdls = plot(aux_val);
+        axes_hdl = gca();
+        set(axes_hdl, 'Position', [ 0.025 0.025 0.95 0.95] );
 
+        detection_threshold = 0.3; % seconds
+        dt_samples = round(detection_threshold*ECG_struct.header.freq);
+        
+        xlims = get(axes_hdl, 'xlim');
+        ylims = get(axes_hdl, 'ylim');
+        
+        dt_yloc = ylims(1) + 0.05*diff(ylims);
+        dt_xloc = xlims(1) + 0.1*diff(xlims);
+        
+        hold(axes_hdl, 'on');
+        arrow( [dt_xloc; dt_yloc], [dt_xloc + dt_samples; dt_yloc], 2, 0.5, [0 0 0], axes_hdl )
+        text( dt_xloc, dt_yloc+0.01*diff(ylims), ['Min QRS sep '  Seconds2HMS(detection_threshold,2) ])
+        hold(axes_hdl, 'off');
+        
+        set(axes_hdl, 'Ytick', [])
+        
+        aux_val = sort([ break_sample+(0:(win_sample+break_sample):(n_excerpts-1)*(win_sample+break_sample)) break_sample+win_sample+(0:(win_sample+break_sample):(n_excerpts-1)*(win_sample+break_sample)) length(aux_val) ]);
+        set(axes_hdl, 'Xtick', aux_val )
+        
+        aux_val = sort([ aux_windows (aux_windows + win_sample) ECG_struct.header.nsamp]);
+        set(axes_hdl, 'XtickLabel', Seconds2HMS( aux_val ./ ECG_struct.header.freq ))
+        
+        legend(aux_hdls, {'ECG'; 'Similarity'} )
+        
         update_title_efimero('Select the threshold to use.', 5 );        
         
         [~, thr] = ginput(1);
 
+        thr = thr * aux_thr_scale(2);
+        
         QRSxlims = 1;
         bContinue = true;
 
-        detection_threshold = 0.3;
         
         while(bContinue)
 
-            ECG_struct.pattern_match.time = modmax(similarity, QRSxlims, thr, +1, round(detection_threshold*ECG_struct.header.freq) );
+            if( isempty(ECG_w) )
+                % short or easy memory handlable signals
+                ECG_struct.pattern_match.time = modmax(similarity, QRSxlims, thr, 0, round(detection_threshold*ECG_struct.header.freq) );
+            else
+                aux_w.ECGtaskHandle = 'arbitrary_function';
+                aux_w.cacheResults = false;
+                aux_w.ECGtaskHandle.lead_idx = lead_idx;
+                % generate QRS detections
+                aux_w.ECGtaskHandle.signal_payload = false;
+                aux_w.ECGtaskHandle.user_string = ['modmax_calc_for_leads_' num2str(sort(lead_idx)) ];
+                aux_w.ECGtaskHandle.function_pointer = @(a)(modmax(a,QRSxlims, thr, 0, round(detection_threshold*ECG_struct.header.freq)));
+                aux_w.Run
+                
+                % asume that the whole series keep in mem.
+                aux_val = load(aux_w.Result_files{1});  
+                ECG_struct.pattern_match.time = aux_val.result_signal;
+            end
 
     %         aux_idx = 1;
     %         while( ~isempty(aux_idx) )
@@ -2056,7 +2138,15 @@ function ann_output = QRScorrector(varargin)
                 aux_all_anns = [all_annotations; {ECG_struct.pattern_match.time}];
             end
 
-            [ ratios, estimated_labs ] = CalcRRserieRatio(aux_all_anns, ECG_struct.header);
+            if( isempty(ECG_w) )
+                % only for short signals
+                [ ratios, estimated_labs ] = CalcRRserieRatio(aux_all_anns, ECG_struct.header);
+            else
+                % ignore ratios and q measurements in long recordings.
+                ratios = zeros(size(AnnNames,1),1);
+                estimated_labs = cell(size(AnnNames,1),1);
+                
+            end
             
             all_annotations = aux_all_anns;
             
@@ -2085,7 +2175,8 @@ function ann_output = QRScorrector(varargin)
                 update_title_efimero('Select the threshold to use.', 5 );        
                 
                 [~, thr] = ginput(1);
-
+                thr = thr * aux_thr_scale(2);
+                
             elseif( strcmp(key, 'rh') )
 
                 key = input( 'Enter the minimum time between heartbeats:\n' , 's');

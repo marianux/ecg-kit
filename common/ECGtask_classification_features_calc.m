@@ -26,6 +26,7 @@ classdef ECGtask_classification_features_calc < ECGtask
     properties(GetAccess = public, SetAccess = private)
         true_labels
         memory_constant = 0.15;
+        started
     end
     
     properties( Access = private, Constant)
@@ -37,7 +38,7 @@ classdef ECGtask_classification_features_calc < ECGtask
         SmallValue = 0.0001;
         
     end
-
+    
     properties( Access = private)
         delayLP
         q_filters
@@ -46,7 +47,7 @@ classdef ECGtask_classification_features_calc < ECGtask
         scale_idx
         scales    
         series
-        cant_QRS_locations        
+        cant_QRS_locations 
     end
     
     properties
@@ -55,6 +56,9 @@ classdef ECGtask_classification_features_calc < ECGtask
         class_labeling
         autovec
         user_string = 'results'
+        tmp_path
+        signal_payload = false
+        
     end
     
     methods
@@ -360,7 +364,7 @@ classdef ECGtask_classification_features_calc < ECGtask
 
         end
         
-        function Finish(obj)
+        function payload = Finish(obj, payload, ECG_header)
             % not implemented
         end
         

@@ -50,6 +50,7 @@ classdef ECGtask_PPG_ABP_corrector < ECGtask
         caller_variable = 'payload'
         tmp_path
         payload
+        signal_payload = false
         
     end
     

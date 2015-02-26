@@ -33,6 +33,7 @@ classdef ECGtask_do_nothing < ECGtask
         progress_handle
         user_string
         tmp_path
+        signal_payload = false
     end
 
     methods

@@ -39,15 +39,25 @@ classdef ECGtask < handle
         progress_handle
         user_string
         tmp_path
+        signal_payload
     end
 
     methods (Abstract)
                 
         Start(obj, ECG_header, ECG_annotations)
         
-        payload = Process(ECG, ECG_sample_start_end_idx, ECG_header, ECG_annotations, ECG_annotations_start_end_idx )
+% ECG is the ECG signal
+% ECG_start_offset is the location of ECG(1,:) within the whole signal
+% ECG_sample_start_end_idx are the start and end samples within ECG to
+%    generate valid results.
+% ECG_header is the header for this signal
+% ECG_annotations are the QRS locations available for this signal
+% ECG_annotations_start_end_idx are the start and end indexes corresponding
+%    to the first and last element of ECG_annotations in the current
+%    iteration.
+        payload = Process(ECG, ECG_start_offset, ECG_sample_start_end_idx, ECG_header, ECG_annotations, ECG_annotations_start_end_idx )
 
-        Finish(obj)
+        payload = Finish(obj, payload, ECG_header)
         
         payload = Concatenate(plA, plB)
 

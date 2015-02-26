@@ -1,12 +1,14 @@
-function [indexes max_mod] = modmax(x, first_samp, threshold, signo, t_restriction, n_greater)
+function [indexes max_mod] = modmax(x, first_samp, threshold, signo, t_restriction, n_greater, pb)
 % Function which returns the indexes of vector x in which there are
 % local modulus maxima or minima whose modulus is greater than 
 % threshold.
 % if signo is 0, it doesn't matter, if signo is +1 or -1, it only searchs
 % for modulus maxima positive or negative
 % t_restriction: time restriction. Doesnt allow modmax's closer than
-% t_restriction. If more than one modmax, the bigger wins.
-
+% n_greater. In order to restrict the amount of detections, just keep the
+% n_greater max_mod found. If more than one modmax, the bigger wins. 
+% pb a progress bar object to track evolution of the algorithm in big
+% signals
 lx = size(x,1);
 indexes = [];
 max_mod = [];
@@ -28,6 +30,10 @@ end
 
 if( nargin < 4 || isempty(signo) )
     signo = 0;
+end
+
+if( nargin < 7 || isempty(pb) )
+    pb = progress_bar('Modmax function');
 end
 
 
@@ -60,11 +66,21 @@ if( t_restriction > 0 )
     
     bContinue = true; 
     while( bContinue )
+        
+        
         aux_idx = [];
         ii = 1;
         bRefine = false; 
         
-        while( ii < length(indexes) )
+        pb.reset();
+        
+        lindexes = length(indexes);
+        pb.Loops2Do = lindexes;
+        
+        while( ii < lindexes )
+            
+            pb.start_loop();
+
             indexes_inside_idx = find( indexes >= indexes(ii) & indexes < (indexes(ii)+t_restriction) );
             if( length(indexes_inside_idx) == 1 )
                 aux_idx = [ aux_idx; indexes(ii)];
@@ -75,6 +91,12 @@ if( t_restriction > 0 )
                 aux_idx = [ aux_idx; indexes(indexes_inside_idx(max_idx))];
                 ii = indexes_inside_idx(end)+1;
             end
+
+            pb.LoopsDone = ii;
+            pb.checkpoint('');
+            
+            pb.end_loop();
+            
         end
 
         indexes = aux_idx;
@@ -82,7 +104,7 @@ if( t_restriction > 0 )
         if( ~bRefine )
             bContinue = false; 
         end
-
+        
     end
     
     max_mod = x(indexes) .* s(indexes);

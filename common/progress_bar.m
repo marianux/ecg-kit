@@ -26,7 +26,7 @@ classdef progress_bar < handle
 % 
 % %% some iteration known a priori
 % 
-% pb.Loop2do = 10;
+% pb.Loops2Do = 10;
 % pb.Title = 'Iterations known a priori';
 % 
 % for ii = 1:10
@@ -112,13 +112,13 @@ classdef progress_bar < handle
 
     properties(SetAccess = private, GetAccess = public)
         LoopMeanTime = [];
-        LoopsDone = 0;
     end
     
     properties
         Message = '';
         Title = '';
-        Loop2do = [];
+        Loops2Do = [];
+        LoopsDone = 0;
     end
     
     methods 
@@ -183,18 +183,19 @@ classdef progress_bar < handle
                 if( isempty(obj.parent) )
                     aux_mean_time = obj.LoopMeanTime;
                     aux_LoopsDone = obj.LoopsDone;
-                    aux_Loop2do = obj.Loop2do;
+                    aux_Loop2do = obj.Loops2Do;
                 else
                     aux_mean_time = obj.parent.LoopMeanTime + obj.LoopMeanTime;
-                    aux_LoopsDone = obj.parent.LoopsDone * obj.Loop2do + obj.LoopsDone;
-                    aux_Loop2do = obj.parent.Loop2do * obj.Loop2do ;
+                    aux_LoopsDone = obj.parent.LoopsDone * obj.Loops2Do + obj.LoopsDone;
+                    aux_Loop2do = obj.parent.Loops2Do * obj.Loops2Do ;
                 end
-                
-                if( aux_mean_time > obj.long_loop_in_sec )
-                    obj.counter = currTime/aux_mean_time;
-                else
+
+                if( ~isempty(aux_Loop2do) && aux_Loop2do > 0 )
                     obj.counter = aux_LoopsDone/aux_Loop2do;
-                end
+                else
+                    obj.counter = currTime/aux_mean_time;
+                end                    
+                
             end 
 
             % take care always a waitbar to draw.
@@ -224,14 +225,14 @@ classdef progress_bar < handle
             else
                
                 if( isempty(obj.parent) )
-                    aux_Time2Finish = (obj.Loop2do-obj.LoopsDone) * obj.LoopMeanTime - currTime;
+                    aux_Time2Finish = (obj.Loops2Do-obj.LoopsDone) * obj.LoopMeanTime - currTime;
                 else
-                    aux_Time2Finish = (obj.parent.Loop2do - obj.parent.LoopsDone) * obj.parent.LoopMeanTime + (obj.Loop2do-obj.LoopsDone) * obj.LoopMeanTime - currTime;
+                    aux_Time2Finish = (obj.parent.Loops2Do - obj.parent.LoopsDone) * obj.parent.LoopMeanTime + (obj.Loops2Do-obj.LoopsDone) * obj.LoopMeanTime - currTime;
                 end                
                 
                 if( obj.bUIpresent )
                 
-                    if( isempty(obj.Loop2do) )
+                    if( isempty(obj.Loops2Do) )
                         set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 30) '. [' Seconds2HMS( aux_LoopMeanTime ) ' s/loop]']);
                     else
                         set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 30) '. Finishing in ' Seconds2HMS(aux_Time2Finish) ]);
@@ -297,7 +298,7 @@ classdef progress_bar < handle
             obj.LoopMeanTime = [];
             obj.counter = 0;
             obj.LoopsDone = 0;
-            obj.Loop2do = [];
+            obj.Loops2Do = [];
             obj.obj_tic = [];
             obj.Message = '';
             
@@ -330,11 +331,11 @@ classdef progress_bar < handle
             end
         end
         
-        function set.Loop2do(obj,value)
+        function set.Loops2Do(obj,value)
             if( isempty(value) || (isnumeric(value) && value > 0 ) )
-                obj.Loop2do = value;
+                obj.Loops2Do = value;
             else
-                warning('progress_bar:BadArg', 'Loop2do must be a number > 1.');
+                warning('progress_bar:BadArg', 'Loops2Do must be a number > 1.');
             end
         end
         

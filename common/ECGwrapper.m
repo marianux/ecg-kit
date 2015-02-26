@@ -297,9 +297,22 @@ classdef ECGwrapper < handle
             
             % check for cached results
             if( obj.cacheResults )
-
-                files_this_pid = dir([obj.output_path obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name '*.mat']);
                 
+                if( obj.ECGtaskHandle.signal_payload )
+                    
+                    MIT_filename = [ obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name ];
+
+                    MIT_filename = regexprep(MIT_filename, '\W*(\w+)\W*', '$1');
+                    MIT_filename = regexprep(MIT_filename, '\W', '_');
+
+                    files_this_pid = dir([obj.output_path MIT_filename '*.dat']);
+                    
+                else
+                
+                    files_this_pid = dir([obj.output_path obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name '*.mat']);
+
+                end
+
                 if( ~isempty(files_this_pid) )
                     obj.Processed = true;
                     obj.NoWork2Do = true;
@@ -307,7 +320,7 @@ classdef ECGwrapper < handle
                     cellfun(@(a)(cprintf('[1,0.5,0]','Cached results found in %s.\n', a)), obj.Result_files);
                     return
                 end
-
+                
             end            
             
             overlapping_samples = obj.overlapping_time * obj.ECG_header.freq;
@@ -503,7 +516,7 @@ classdef ECGwrapper < handle
                             end
                         end
 
-                        pb.Loop2do = cant_iter;
+                        pb.Loops2Do = cant_iter;
 
                         for this_iter = start_iter:cant_iter
                             %% loop initialization
@@ -711,6 +724,8 @@ classdef ECGwrapper < handle
                                         % Update point
                                         pb.checkpoint('Collecting other PIDs results');
 
+                                        this_header = [];
+                                        
                                         %feature matrices
                                         payload = [];
                                         payload_idx = 1;
@@ -753,25 +768,79 @@ classdef ECGwrapper < handle
                                                 end
                                                 aux = load(aux_FM_filename);
 
+                                                if( obj.ECGtaskHandle.signal_payload )
+                                                % Process the results as a
+                                                % signal, dump sequentialy
+                                                % to disk
+
+                                                    if( isempty(this_header) )
+
+                                                        % gain offset calculation to fit in destination class int16
+                                                        range_conversion_offset = mean(obj.ECGtaskHandle.range_min_max_tracking, 2);
+                                                        range_conversion_gain = (2^15-1)./(diff(obj.ECGtaskHandle.range_min_max_tracking,1, 2)./2); 
+
+                                                        result_signal = cast( round( bsxfun( @times, bsxfun( @minus, aux.result_signal, range_conversion_offset), range_conversion_gain) ) , 'int16');
+                                                        
+                                                        this_header = obj.ECG_header;
+
+                                                        % in ADCu / physical units
+                                                        this_header.gain = range_conversion_gain;
+                                                        this_header.offset = range_conversion_offset;
+                                                        this_header.nsig = size(aux.result_signal, 2);
+
+                                                        if( obj.repetitions > 1)
+                                                            aux_sufix = [ '_repetition_' num2str(repeat_idx)];
+                                                        else
+                                                            aux_sufix = [];                                                       
+                                                        end
+
+                                                        MIT_filename = [ obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name aux_sufix ];
+                                                        
+                                                        MIT_filename = regexprep(MIT_filename, '\W*(\w+)\W*', '$1');
+                                                        MIT_filename = regexprep(MIT_filename, '\W', '_');
+
+                                                        this_header.recname = MIT_filename;
+
+                                                        writeheader(obj.output_path, this_header);   
+                                                        
+                                                        result_files = [ result_files; cellstr([obj.output_path MIT_filename '.dat'])];
+                                                        
+                                                        fidECG = fopen([obj.output_path MIT_filename '.dat'], 'w');
+                                                        
+                                                    else
+                                                        fidECG = fopen([obj.output_path MIT_filename '.dat'], 'a');
+                                                    end
+                                                    
+                                                    
+                                                    try
+                                                        fwrite(fidECG, result_signal', 'int16', 0 );
+                                                        fclose(fidECG);
+                                                    catch MEE
+                                                        fclose(fidECG);
+                                                        rethrow(MEE);
+                                                    end
+
+                                                else
                                                 % Process the results according to the
                                                 % 'Concatenate' method
-                                                payload = obj.ECGtaskHandle.Concatenate(payload, aux);
+                                                    payload = obj.ECGtaskHandle.Concatenate(payload, aux);
 
-                                                %check variable growth
-                                                payload_var_size = whos('payload');
-                                                payload_var_size = payload_var_size.bytes/obj.typical_compression_ratio;
+                                                    %check variable growth
+                                                    payload_var_size = whos('payload');
+                                                    payload_var_size = payload_var_size.bytes/obj.typical_compression_ratio;
 
-                                                if( payload_var_size > obj.payload_max_size )
-                                                    %force dump to disk.
-                                                    payload.payload_idx = payload_idx;
-                                                    save([obj.output_path 'payloads_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_' num2str(payload_dump_counter) '.mat'], '-struct', 'payload');
-                                                    %update counter and reset payload.
-                                                    payload_idx = payload_idx + size(payload,1) + 1;
-                                                    payload = [];
-                                                    payload_dump_counter = payload_dump_counter + 1;
-                                                    %to continue from this pid/iteration.
-                                                    start_pid = ii;
-                                                    resume_iter_this_pid = jj+1;
+                                                    if( payload_var_size > obj.payload_max_size )
+                                                        %force dump to disk.
+                                                        payload.payload_idx = payload_idx;
+                                                        save([obj.output_path 'payloads_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_' num2str(payload_dump_counter) '.mat'], '-struct', 'payload');
+                                                        %update counter and reset payload.
+                                                        payload_idx = payload_idx + size(payload,1) + 1;
+                                                        payload = [];
+                                                        payload_dump_counter = payload_dump_counter + 1;
+                                                        %to continue from this pid/iteration.
+                                                        start_pid = ii;
+                                                        resume_iter_this_pid = jj+1;
+                                                    end
                                                 end
 
                                             end
@@ -851,14 +920,17 @@ classdef ECGwrapper < handle
 
                                 end
 
-                                for result_fn = rowvec(result_files)
-                                % Master PID can operate over the global
-                                % payload.
-                                    payload = load(result_fn{1});
-                                    payload = obj.ECGtaskHandle.Finish( payload, obj.ECG_header );
-                                    save(result_fn{1}, '-struct', 'payload');
-                                end
+                                if( ~obj.ECGtaskHandle.signal_payload )
+                                
+                                    for result_fn = rowvec(result_files)
+                                    % Master PID can operate over the global
+                                    % payload.
+                                        payload = load(result_fn{1});
+                                        payload = obj.ECGtaskHandle.Finish( payload, obj.ECG_header );
+                                        save(result_fn{1}, '-struct', 'payload');
+                                    end
 
+                                end
                             else
                             %% Slave PIDs
 

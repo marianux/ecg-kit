@@ -93,6 +93,8 @@ classdef ECGtask_ECG_delineation < ECGtask
         CalculateArtificialDetections = true;
         payload
         tmp_path
+        signal_payload = false
+
     end
     
     methods

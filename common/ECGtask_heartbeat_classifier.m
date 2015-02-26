@@ -49,6 +49,7 @@ classdef ECGtask_heartbeat_classifier < ECGtask
         payload
         mode 
         tmp_path        
+        signal_payload = false
         
     end
     

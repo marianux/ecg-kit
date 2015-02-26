@@ -50,6 +50,8 @@ classdef ECGtask_PCA_proj_basis < ECGtask
         autovec
         user_string = 'results'
         tmp_path
+        signal_payload = false
+        
     end
     
     methods
@@ -79,7 +81,7 @@ classdef ECGtask_PCA_proj_basis < ECGtask
             
         end
         
-        function payload = Process(obj, ECG, ECG_start_offset, ECG_sample_start_end_idx, ECG_header, ECG_annotations, ECG_annotations_start_end_idx, payload_in   )
+        function payload = Process(obj, ECG, ECG_start_offset, ECG_sample_start_end_idx, ECG_header, ECG_annotations, ECG_annotations_start_end_idx )
             
             % this object doesn't generate any payload
             payload = [];

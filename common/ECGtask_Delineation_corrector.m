@@ -48,6 +48,7 @@ classdef ECGtask_Delineation_corrector < ECGtask
         caller_variable = 'payload'
         tmp_path
         payload
+        signal_payload = false
         
     end
     
