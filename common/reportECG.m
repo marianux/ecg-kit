@@ -117,7 +117,7 @@ bAux = (win_lengths * heasig.freq) <= heasig.nsamp;
 % Activate the progress_struct bar.
 pb = progress_bar('Report ECG');
 
-pb.Loop2do = sum(bAux);
+pb.Loops2Do = sum(bAux);
 
 ii = 1;
 fig_hdl = [];
@@ -147,7 +147,7 @@ try
 
         str_aux = ['Reporting for window size: ' Seconds2HMS(win_length) ];
         pb1 = pb.AddInerLoop( str_aux );
-        pb1.Loop2do = cant_figs;
+        pb1.Loops2Do = cant_figs;
 
         jj = 1;
 

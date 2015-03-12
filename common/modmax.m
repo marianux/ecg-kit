@@ -1,4 +1,4 @@
-function [indexes max_mod] = modmax(x, first_samp, threshold, signo, t_restriction, n_greater, pb)
+function [indexes max_mod] = modmax(x, first_samp, threshold, signo, t_restriction, n_greater)
 % Function which returns the indexes of vector x in which there are
 % local modulus maxima or minima whose modulus is greater than 
 % threshold.
@@ -32,7 +32,9 @@ if( nargin < 4 || isempty(signo) )
     signo = 0;
 end
 
-if( nargin < 7 || isempty(pb) )
+bWithPB = false;
+if( lx > 10e5 )
+    bWithPB = true;
     pb = progress_bar('Modmax function');
 end
 
@@ -64,51 +66,56 @@ end
 
 if( t_restriction > 0 )
     
-    bContinue = true; 
-    while( bContinue )
-        
-        
-        aux_idx = [];
-        ii = 1;
-        bRefine = false; 
-        
+    aux_idx = [];
+    ii = 1;
+    bRefine = false; 
+
+    if( bWithPB )
         pb.reset();
-        
-        lindexes = length(indexes);
+    end
+
+    lindexes = length(indexes);
+    if( bWithPB )
         pb.Loops2Do = lindexes;
-        
-        while( ii < lindexes )
-            
+    end
+
+    [~, aux_sorted_mod_idx] = sort(x(indexes), 'descend');
+
+    while( ii < lindexes )
+
+        if( bWithPB )
             pb.start_loop();
+        end
+        
+        if( ~isnan(indexes(aux_sorted_mod_idx(ii))) )
 
-            indexes_inside_idx = find( indexes >= indexes(ii) & indexes < (indexes(ii)+t_restriction) );
-            if( length(indexes_inside_idx) == 1 )
-                aux_idx = [ aux_idx; indexes(ii)];
-                ii = ii+1;
-            else            
-                bRefine = true; 
-                max_idx = max_index( x(indexes(indexes_inside_idx)) );
-                aux_idx = [ aux_idx; indexes(indexes_inside_idx(max_idx))];
-                ii = indexes_inside_idx(end)+1;
+            indexes_inside_idx = find( indexes >= (indexes(aux_sorted_mod_idx(ii)) - t_restriction) & indexes <= (indexes(aux_sorted_mod_idx(ii))+t_restriction) );
+            indexes_inside_idx(indexes_inside_idx == aux_sorted_mod_idx(ii)) = [];
+
+            if( ~isempty(indexes_inside_idx) )
+                indexes(indexes_inside_idx) = nan;
             end
-
-            pb.LoopsDone = ii;
-            pb.checkpoint('');
-            
-            pb.end_loop();
-            
         end
 
-        indexes = aux_idx;
-        
-        if( ~bRefine )
-            bContinue = false; 
+        ii = ii+1;
+
+        if( bWithPB )
+            pb.LoopsDone = ii;
+            pb.checkpoint('');
+
+            pb.end_loop();
         end
         
     end
-    
+
+    indexes(isnan(indexes)) = [];
+        
     max_mod = x(indexes) .* s(indexes);
     
+end
+
+if( bWithPB )
+    clear pb
 end
 
 

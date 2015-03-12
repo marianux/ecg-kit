@@ -266,7 +266,7 @@ function ann_output = QRScorrector(varargin)
 
                 pb = progress_bar( 'Processing ratios', sprintf( '%d recordings found', lrec_names ) );
 
-                pb.Loop2do = lrec_names;
+                pb.Loops2Do = lrec_names;
 
                 for ii2 = recording_indexes
                     pb.start_loop();
@@ -2065,8 +2065,9 @@ function ann_output = QRScorrector(varargin)
         aux_val = bsxfun(@times, aux_val, 1./aux_thr_scale);
         aux_hdls = plot(aux_val);
         axes_hdl = gca();
-        set(axes_hdl, 'Position', [ 0.025 0.025 0.95 0.95] );
-
+        set(axes_hdl, 'Position', [ 0.015 0.025 0.97 0.92] );
+        title('Select the detection threshold to use')
+        
         detection_threshold = 0.3; % seconds
         dt_samples = round(detection_threshold*ECG_struct.header.freq);
         
@@ -2081,15 +2082,15 @@ function ann_output = QRScorrector(varargin)
         text( dt_xloc, dt_yloc+0.01*diff(ylims), ['Min QRS sep '  Seconds2HMS(detection_threshold,2) ])
         hold(axes_hdl, 'off');
         
-        set(axes_hdl, 'Ytick', [])
+        set(axes_hdl, 'Ytick', []);
         
         aux_val = sort([ break_sample+(0:(win_sample+break_sample):(n_excerpts-1)*(win_sample+break_sample)) break_sample+win_sample+(0:(win_sample+break_sample):(n_excerpts-1)*(win_sample+break_sample)) length(aux_val) ]);
-        set(axes_hdl, 'Xtick', aux_val )
+        set(axes_hdl, 'Xtick', aux_val );
         
         aux_val = sort([ aux_windows (aux_windows + win_sample) ECG_struct.header.nsamp]);
-        set(axes_hdl, 'XtickLabel', Seconds2HMS( aux_val ./ ECG_struct.header.freq ))
+        set(axes_hdl, 'XtickLabel', Seconds2HMS( aux_val ./ ECG_struct.header.freq ));
         
-        legend(aux_hdls, {'ECG'; 'Similarity'} )
+        legend(aux_hdls, {'ECG'; 'Similarity'} );
         
         update_title_efimero('Select the threshold to use.', 5 );        
         
@@ -2105,7 +2106,7 @@ function ann_output = QRScorrector(varargin)
 
             if( isempty(ECG_w) )
                 % short or easy memory handlable signals
-                ECG_struct.pattern_match.time = modmax(similarity, QRSxlims, thr, 0, round(detection_threshold*ECG_struct.header.freq) );
+                ECG_struct.pattern_match.time = modmax(similarity, QRSxlims, thr, 1, round(detection_threshold*ECG_struct.header.freq) );
             else
                 aux_w.ECGtaskHandle = 'arbitrary_function';
                 aux_w.cacheResults = false;
@@ -2113,7 +2114,7 @@ function ann_output = QRScorrector(varargin)
                 % generate QRS detections
                 aux_w.ECGtaskHandle.signal_payload = false;
                 aux_w.ECGtaskHandle.user_string = ['modmax_calc_for_leads_' num2str(sort(lead_idx)) ];
-                aux_w.ECGtaskHandle.function_pointer = @(a)(modmax(a,QRSxlims, thr, 0, round(detection_threshold*ECG_struct.header.freq)));
+                aux_w.ECGtaskHandle.function_pointer = @(a)(modmax(a,QRSxlims, thr, 1, round(detection_threshold*ECG_struct.header.freq)));
                 aux_w.Run
                 
                 % asume that the whole series keep in mem.
@@ -2151,11 +2152,32 @@ function ann_output = QRScorrector(varargin)
             all_annotations = aux_all_anns;
             
             AnnNames_idx = size(AnnNames,1);
-            anns_under_edition = ECG_struct.pattern_match.time;
+            anns_under_edition = unique(round(colvec( ECG_struct.pattern_match.time )));
 
             hb_idx = 1;
             selected_hb_idx = [];
 
+            undo_buffer_idx = 1;
+
+            aux_val = anns_under_edition;
+
+            bAnnsEdited = false;
+
+            if( isempty(aux_val) )
+                anns_under_edition = [];
+                RRserie = {[]};
+                all_annotations_selected_serie_location = [];
+                serie_location_mask = [];
+            else
+                anns_under_edition = unique(round(colvec( aux_val )));
+                RRserie = colvec(diff(anns_under_edition));
+                RRserie = {[RRserie(1); RRserie] * 1/ECG_struct.header.freq};
+            end
+            all_annotations_selected = {anns_under_edition};
+            RR_idx = { find( anns_under_edition >= start_idx &  anns_under_edition <= end_idx ) };
+
+            bSeriesChange = true;
+            
             figure(prev_fig);
             Redraw();
             figure(2);
@@ -2206,6 +2228,8 @@ function ann_output = QRScorrector(varargin)
         aux_str = repmat( ' - ',cant_anns,1);
 
         [~, best_detections_idx] = sort(ratios, 'descend');
+        
+        aux_val = 1:length(ratios);
         [~, annotations_ranking] = sort(aux_val(best_detections_idx));
         
         set(annotation_list_control, 'string', [ char(cellstr(num2str((1:cant_anns)'))) aux_str char(AnnNames(:,1)) repmat( ' (',cant_anns,1) num2str(round(colvec(ratios * 1000))) aux_str num2str(colvec(annotations_ranking))  repmat( ')',cant_anns,1)  ] );

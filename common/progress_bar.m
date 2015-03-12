@@ -93,6 +93,8 @@ classdef progress_bar < handle
         bar_position = [0.05    0.3    0.9    0.25];
         default_evolution = 0.1;
         long_loop_in_sec = 10; % seconds
+        update_msg_time = 10; % seconds
+        loops2weight = 20; % last 20 loops
         
     end
 
@@ -107,7 +109,9 @@ classdef progress_bar < handle
         bPBcreated = false;
         childs
         parent
-        
+        update_counter
+        time_elapsed
+        time_weighting
     end
 
     properties(SetAccess = private, GetAccess = public)
@@ -136,6 +140,9 @@ classdef progress_bar < handle
             if( obj.bUIpresent )
                 % log to a waitbar
                 
+                obj.update_counter = 0;
+                obj.time_elapsed = 0;
+                
                 if( nargin < 3 || ~ishandle(wb_handle) )
                     obj.wb_handle = waitbar(0, obj.Message, 'name', obj.Title );
                 else
@@ -150,6 +157,9 @@ classdef progress_bar < handle
                 % TODO:log to stdout
                 
             end
+            
+            obj.time_weighting = linspace(1,0.1,obj.loops2weight);
+            obj.time_weighting = obj.time_weighting / sum(obj.time_weighting);
             
             %to clean and delete the waitbar.
 %             obj.Cleanup_hdl = onCleanup(@()DoPBHouseKeeping(, obj.wb_handle));
@@ -225,17 +235,22 @@ classdef progress_bar < handle
             else
                
                 if( isempty(obj.parent) )
-                    aux_Time2Finish = (obj.Loops2Do-obj.LoopsDone) * obj.LoopMeanTime - currTime;
+                    aux_Time2Finish = (obj.Loops2Do-obj.LoopsDone) * obj.LoopMeanTime;
                 else
-                    aux_Time2Finish = (obj.parent.Loops2Do - obj.parent.LoopsDone) * obj.parent.LoopMeanTime + (obj.Loops2Do-obj.LoopsDone) * obj.LoopMeanTime - currTime;
+                    aux_Time2Finish = (obj.parent.Loops2Do - obj.parent.LoopsDone) * obj.parent.LoopMeanTime + (obj.Loops2Do-obj.LoopsDone) * obj.LoopMeanTime;
                 end                
                 
                 if( obj.bUIpresent )
                 
-                    if( isempty(obj.Loops2Do) )
-                        set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 30) '. [' Seconds2HMS( aux_LoopMeanTime ) ' s/loop]']);
-                    else
-                        set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 30) '. Finishing in ' Seconds2HMS(aux_Time2Finish) ]);
+                    obj.update_counter = obj.update_counter + obj.LoopMeanTime;
+                    
+                    if( obj.update_counter > obj.update_msg_time )
+                        obj.update_counter = 0;
+                        if( isempty(obj.Loops2Do) )
+                            set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 30) ' - [' Seconds2HMS( aux_LoopMeanTime ) ' s/loop]']);
+                        else
+                            set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 30) ' - Finishing in ' Seconds2HMS(aux_Time2Finish) ]);
+                        end
                     end
                     
                 end
@@ -265,11 +280,17 @@ classdef progress_bar < handle
         end
         
         function end_loop(obj)
-            
             %end of loop. Calculate averages.
             obj.LoopTimes = [obj.LoopTimes; toc(obj.obj_tic)];
-            obj.LoopMeanTime = mean(obj.LoopTimes);
             obj.LoopsDone = obj.LoopsDone + 1;
+            if( length(obj.loops2weight) >= obj.loops2weight )
+                % last loop is the most weighted
+                obj.LoopMeanTime = mean([ (rowvec(obj.LoopTimes((end-obj.loops2weight+1):end))*flipud(colvec(obj.time_weighting))) (obj.time_elapsed / obj.LoopsDone) ]);
+            else
+                obj.LoopMeanTime = mean(obj.LoopTimes);
+            end
+            
+            obj.time_elapsed = obj.time_elapsed + obj.LoopTimes(end);
             
             if( obj.bUIpresent )
 
@@ -301,6 +322,8 @@ classdef progress_bar < handle
             obj.Loops2Do = [];
             obj.obj_tic = [];
             obj.Message = '';
+            obj.update_counter = 0;
+            obj.time_elapsed = 0;
             
             if( obj.bUIpresent )
                 waitbar( 0, obj.wb_handle, obj.Message );

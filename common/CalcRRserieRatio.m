@@ -93,7 +93,7 @@ function [ ratio, estimated_labs ] = CalcRRserieRatio(time_serie, ECG_header, st
 
     lreferences = length(time_serie);
 
-    pb.Loop2do = lreferences;
+    pb.Loops2Do = lreferences;
     pb.checkpoint('Calculating ratios.');
     
     ratio = nan(lreferences,1);

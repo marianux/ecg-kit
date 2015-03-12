@@ -96,7 +96,7 @@ if( fid > 0 )
             end
             ii = 0;
 
-            pb.Loop2do = length(lines);
+            pb.Loops2Do = length(lines);
             
             for cell_line = lines'
 

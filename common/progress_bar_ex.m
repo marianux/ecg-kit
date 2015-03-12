@@ -13,7 +13,7 @@ pause(4)
 
 %% some iteration known a priori
 
-pb.Loop2do = 10;
+pb.Loops2Do = 10;
 pb.Title = 'Iterations known a priori';
 
 for ii = 1:10

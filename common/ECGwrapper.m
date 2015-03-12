@@ -776,8 +776,13 @@ classdef ECGwrapper < handle
                                                     if( isempty(this_header) )
 
                                                         % gain offset calculation to fit in destination class int16
-                                                        range_conversion_offset = mean(obj.ECGtaskHandle.range_min_max_tracking, 2);
-                                                        range_conversion_gain = (2^15-1)./(diff(obj.ECGtaskHandle.range_min_max_tracking,1, 2)./2); 
+                                                        % offset/gain transform
+%                                                         range_conversion_offset = mean(obj.ECGtaskHandle.range_min_max_tracking, 2);
+%                                                         range_conversion_gain = (2^15-1)./(diff(obj.ECGtaskHandle.range_min_max_tracking,1, 2)./2); 
+
+                                                        % gain transform
+                                                        range_conversion_offset = 0;
+                                                        range_conversion_gain = (2^15-1)./(max(abs(obj.ECGtaskHandle.range_min_max_tracking),[],2)); 
 
                                                         result_signal = cast( round( bsxfun( @times, bsxfun( @minus, aux.result_signal, range_conversion_offset), range_conversion_gain) ) , 'int16');
                                                         
