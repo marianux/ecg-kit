@@ -1,0 +1,2519 @@
+﻿/****** Global settings (all devices) ******/
+* {
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+	-webkit-tap-highlight-color: transparent; /* For some Androids */
+}
+body {
+	font-size: 100%;/* 1em = 16px */
+	font-family: "Helvetica Medium", Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+	min-width: 250px;
+	color: #3f4344;
+	background-color: #ffffff;
+}
+div.content {
+	background-color: #ffffff;
+}
+div.header {
+	background-color: #83CCDF;
+	z-index: 5;
+}
+div.content_top_link {/* Holds back to top link: Desktop only. */
+	display: none;
+	position: fixed;
+	right: 2em;
+	bottom: 1em;
+	height: 1em;
+}
+div.content_top_link a {
+	font-weight: bold;
+	text-decoration: none;
+	background-color: transparent;
+	background-image: url(to_top.png);
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-size: contain;
+	padding-left: 25px;
+	color: #83CCDF;
+}
+div.content_top_link a:hover,
+div.content_top_link a:active {
+	text-decoration: none !important;
+}
+div.header a {
+	text-decoration: inherit;
+}
+div.sidebar a,
+div.desktop_functionholder a,
+div.searchfieldholdermobile a,
+div.wSearchResults a,
+div.buttonbar a {
+	color: inherit;
+	text-decoration: inherit;
+}
+a.homelink {
+	border: none;
+	text-decoration: none;
+	color: #ffffff;
+}
+a.homelink:hover {
+	text-decoration: none;
+	color: #ffffff;
+}
+div.logo {
+	text-align: left;
+}
+div.logo img {/* Force logo to adhere to logo placeholder size */
+	width: auto !important;
+	max-height: 100% !important;
+	vertical-align: middle;
+}
+/* Hide localisation div */
+div#localisation {
+	display: none;
+}
+/* Disable webkit additions to search field */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  display: none;
+}
+input[type="search"]::-ms-clear{display: none;}
+/* Buttonbar: Only small phone has separate setting */
+div.buttonbar {
+	background-color: #383D3E;
+}
+div.buttonbarholder {
+	width: 45em;
+	height: 5em;
+	margin: 0 auto;
+}
+div.buttonbarholder > div {
+	width: 5em;
+	height: 5em;
+	margin: 0 2em 2em;/* Different media queries do specify different margins! */
+	padding: 0;
+	float: left;
+	cursor: pointer;
+}
+div.buttonbar div img {
+	max-width: 100%;
+}
+div.buttonbar a {
+	display: block;
+	height: 100%;
+	width: 100%;
+	text-decoration: none;
+}
+div.bar_toc {
+	background-color: transparent;
+	background-image: url(toc_buttonbar.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+div.bar_toc:hover,
+div.bar_toc:active,
+div.bar_toc_active {
+	background-color: #ffffff;
+	background-image: url(toc_buttonbar_hover.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+div.bar_index {
+	background-color: transparent;
+	background-image: url(index_buttonbar.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+div.bar_index:hover,
+div.bar_index:active,
+div.bar_index_active {
+	background-color: #ffffff;
+	background-image: url(index_buttonbar_hover.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+div.bar_glossary {
+	background-color: transparent;
+	background-image: url(glo_buttonbar.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+div.bar_glossary:hover,
+div.bar_glossary:active,
+div.bar_glossary_active {
+	background-color: #ffffff;
+	background-image: url(glo_buttonbar_hover.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+div.bar_search {
+	background-color: transparent;
+	background-image: url(search_buttonbar.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+div.bar_search:hover,
+div.bar_search:active,
+div.bar_search_active {
+	background-color: #ffffff;
+	background-image: url(search_buttonbar_hover.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+div.bar_topic {
+	background-color: transparent;
+	background-image: url(topic.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+div.bar_topic:hover,
+div.bar_topic:active {
+	background-color: transparent;
+	background-image: url(topic.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+/* Page title of special pages */
+div.specialpagetitle {
+	font-family: "Helvetica Medium", Arial, sans-serif;
+	text-align: center;
+	font-size: 2em;
+	font-weight: bold;
+	color: #83CCDF;
+	margin: 0;
+	padding: .5em 0;
+}
+/* Style checkboxes to on/off switches */
+.hidden {
+	display: none;
+}
+div.switch {
+	min-height: 50px;
+	line-height: 50px;
+}
+label.switch-toggle {
+	background-image: url('switch.png');
+	background-repeat: repeat-y;
+	height: 26px;
+	width: 52px;
+	line-height: 25px;
+	padding: 0 12px;
+	font-size: 15px;
+	display: block !important;
+	font-weight: bold;
+	cursor: pointer;
+	display: none;
+	float: left;
+	font-family: "Helvetica Medium", Arial, sans-serif;
+	text-transform: uppercase;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+div.switch {
+	min-height: 1.2em;
+	line-height: 1.2em;
+}
+label.switch-toggle.on {
+	text-align: center;
+	background-position: 0px 0px;
+	color: #ffffff;
+	padding: 0 10px 0 14px;
+}
+label.switch-toggle.off {
+	text-align: left;
+	background-position: 0px 26px;
+	color: #ffffff;
+}
+label.switch-toggle.hidden {
+	display: none;
+}
+/****** Media queries: Target specific devices ******/
+@media screen and (max-width: 43.68em) {
+	
+	/****** Phone framework ******/
+	body, html {
+		overflow: hidden;
+	}
+	div.floatholder {
+		
+	}
+	div.phone_scrollarea {
+		
+	}
+	div.header {
+		position: absolute;
+		overflow: auto;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 3.3em;
+	}
+	table.headertable {
+		height: 3.3em;
+		margin: 0;
+		padding: 0;
+		border-collapse: collapse;
+		border-spacing: 0;
+		width: 100%;
+	}
+	table.headertable tr,
+	table.headertable td {
+		margin: 0;
+		padding: 0;
+	}
+	table.headertable td.logo {
+		width: 1.5em;
+		text-align: center;
+		vertical-align: middle;
+	}
+	table.headertable td.logo img {
+		max-width: 3em !important;
+		vertical-align: middle;
+	}
+	table.headertable td.title {
+		
+	}
+	table.headertable td.title div {
+		height: 2.2em;
+		line-height: 2.2em;
+		font-size: 1.4em;
+		overflow-y: auto;
+		overflow-x: hidden;
+		padding-left: .2em;
+	}
+	table.headertable td.brsNext,
+	table.headertable td.brsBack {
+		width: 40px;
+		vertical-align: middle;
+		text-align: center;
+	}
+	table.headertable td.brsNext a img,
+	table.headertable td.brsBack a img {
+		max-height: 100% !important;
+		vertical-align: middle;
+	}
+	div.searchholder {
+		margin: 1em 5%;
+		width: 90%;
+		height: 4em;
+		float: left;
+	}
+	div.sidebar {
+		display: none;
+	}
+	div.content {
+		position: absolute;
+		top: 3.4em;
+		bottom: 2.65em;
+		left: 0;
+		padding-bottom: 1em;
+		width: 100%;
+		overflow: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+	div.specialpagetitle {
+		font-size: 1.5em;
+	}
+	div.desktop_functionholder {
+		display: none;
+	}
+	div.desktop_functionholder.searchpage {
+		display: block;
+	}
+	div.desktop_functionholder div.brsNext,
+	div.desktop_functionholder div.brsPrev,
+	div.desktop_functionholder div.print,
+	div.desktop_functionholder div.home {
+		display: none;
+	}
+	div.buttonbar {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 2.5em;
+	}
+	div.buttonbar > div {
+		width: 100%;
+		height: 2.5em;
+		margin: 0 auto;
+	}
+	div.buttonbar > div > div {
+		width: 20%;
+		margin: 0;
+		padding: 0;
+		height: 2.5em;
+		float: left;
+	}
+	div.bar_toc {
+		background-image: url(toc_buttonbar_small.png);
+	}
+	div.bar_toc:hover,
+	div.bar_toc:active,
+	div.bar_toc_active {
+		background-image: url(toc_hover_buttonbar_small.png);
+	}
+	div.bar_index {
+		background-image: url(index_buttonbar_small.png);
+	}
+	div.bar_index:hover,
+	div.bar_index:active,
+	div.bar_index_active {
+		background-image: url(index_hover_buttonbar_small.png);
+	}
+	div.bar_glossary {
+		background-image: url(glo_buttonbar_small.png);
+	}
+	div.bar_glossary:hover,
+	div.bar_glossary:active,
+	div.bar_glossary_active {
+		background-image: url(glo_hover_buttonbar_small.png);
+	}
+	div.bar_search {
+		background-image: url(search_buttonbar_small.png);
+	}
+	div.bar_search:hover,
+	div.bar_search:active,
+	div.bar_search_active {
+		background-image: url(search_hover_buttonbar_small.png);
+	}
+	div.bar_topic {
+		background-image: url(icon_back_small.png);
+	}
+	div.bar_topic:hover,
+	div.bar_topic:active {
+		background-image: url(icon_back_small.png);
+	}
+	/* Special styling for topic page only */
+	div.buttonbarholder.topic_page_holder div.topic_page{
+		width: 25%;
+	}
+	div.buttonbarholder.topic_page_holder {
+		width: 80%;
+		margin: 0 10%;
+	}
+}
+
+@media screen and (min-width: 43.69em) and (max-width: 59.49em) {
+	
+	/****** Tablet small framework ******/
+	div.floatholder {
+		
+	}
+	div.phone_scrollarea {
+		
+	}
+	div.header {
+		position: absolute;
+		overflow: auto;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 4em;
+	}
+	table.headertable {
+		height: 4em;
+		margin: 0;
+		padding: 0;
+		border-collapse: collapse;
+		border-spacing: 0;
+		width: 100%;
+	}
+	table.headertable td.logo {
+		max-height: 4em;
+		width: 4em;
+		vertical-align: middle;
+		text-align: center;
+	}
+	table.headertable td.logo img {
+		vertical-align: middle;
+		max-height: 3.5em !important;
+	}
+	table.headertable td.title {
+	}
+	table.headertable td.title div {
+		height: 2.2em;
+		line-height: 2.2em;
+		font-size: 1.6em;
+		overflow-y: auto;
+		overflow-x: hidden;
+		white-space: no-wrap;
+		padding-left: .4em;
+	}
+	table.headertable td.brsNext,
+	table.headertable td.brsBack {
+		width: 2.5em;
+		vertical-align: middle;
+		text-align: center;
+	}
+	table.headertable td.brsNext a img,
+	table.headertable td.brsBack a img {
+		min-width: 70% !important;
+		margin-right: .2em;
+		max-height: 100% !important;
+		vertical-align: middle;
+	}
+	td.title a {
+		font-size: 1em;
+	}
+	
+	div.sidebar {
+		display: none;
+	}
+	div.content {
+		position: absolute;
+		top: 4.5em;
+		bottom: 5.5em;
+		left: 0;
+		right: 0;
+		margin: 0;
+		overflow: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+	div.desktop_functionholder {
+		display: none;
+	}
+	div.desktop_functionholder.searchpage {
+		display: block;
+	}
+	div.desktop_functionholder div.brsNext,
+	div.desktop_functionholder div.brsPrev,
+	div.desktop_functionholder div.print,
+	div.desktop_functionholder div.home	{
+		display: none;
+	}
+	div.buttonbar {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 5em;
+	}
+	div.buttonbarholder.topic_page_holder {
+		width: 36em;
+		height: 5em;
+		margin: 0 auto;
+	}
+}
+
+@media screen and (min-width: 59.5em) and (max-width: 80.99em) {
+	
+	/****** Tablet large framework ******/
+	div.floatholder {
+		
+	}
+	div.header {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 4em;
+		overflow: auto;
+	}
+	table.headertable {
+		height: 4em;
+		margin: 0;
+		padding: 0;
+		border-collapse: collapse;
+		border-spacing: 0;
+		width: 100%;
+	}
+	table.headertable td.logo {
+		max-height: 4em;
+		width: 4em;
+		text-align: center;
+		vertical-align: middle;
+	}
+	table.headertable td.logo img {
+		max-height: 3.5em !important;
+		vertical-align: middle;
+	}
+	table.headertable td.title {
+	
+	}
+	table.headertable td.title div {
+		height: 2.2em;
+		line-height: 2.2em;
+		font-size: 1.75em;
+		overflow-y: auto;
+		overflow-x: hidden;
+		white-space: no-wrap;
+		padding-left: .4em;
+	}
+	table.headertable td.brsNext,
+	table.headertable td.brsBack {
+		width: 40px;
+		vertical-align: middle;
+		text-align: center;
+	}
+	table.headertable td.brsNext a img,
+	table.headertable td.brsBack a img {
+		min-width: 70% !important;
+		max-height: 100% !important;
+		vertical-align: middle;
+	}
+	div.sidebar {
+		display: none;
+	}
+	div.content {
+		position: absolute;
+		top: 4em;
+		left: 5.25em;
+		right: .1em;
+		bottom: .25em;
+		overflow: auto;
+		-webkit-overflow-scrolling: touch;
+		/*margin: 4.5em .1em .25em 5.25em;*/
+	}
+	div.desktop_functionholder {
+		display: none;
+	}
+	div.desktop_functionholder.searchpage {
+		display: block;
+	}
+	div.desktop_functionholder div.brsNext,
+	div.desktop_functionholder div.brsPrev,
+	div.desktop_functionholder div.print,
+	div.desktop_functionholder div.home {
+		display: none;
+	}
+	div.buttonbar {
+		position: fixed;
+		top: 4em;
+		left: 0;
+		bottom: 0;
+		width: 5em;
+		overflow-y: auto;
+		overflow-x: hidden;
+		margin: 0;
+		padding: 0;
+	}
+	div.buttonbar::-webkit-scrollbar { 
+		display: none; /* Hide the scroll bar */
+	}
+	div.buttonbar > div {
+		margin: 0;
+		padding: 0;
+		width: 100%;
+		height: 100%;
+	}
+	div.buttonbar > div > div {
+		margin-left: 0;
+		margin-right: 0;
+	}
+}
+
+@media screen and (min-width: 81em) {
+	/* Custom scrollbar Need more info styling the scroll bar? See http://css-tricks.com/custom-scrollbars-in-webkit/ */
+	::-webkit-scrollbar              {
+		width: .5em;
+		height: .5em;
+	}
+	::-webkit-scrollbar-button  {}
+	::-webkit-scrollbar-track  {
+		background-color: #f1ede9;
+	}
+	::-webkit-scrollbar-track-piece  {}
+	::-webkit-scrollbar-thumb {
+		background-color: #cfcbc6;
+	}
+	::-webkit-scrollbar-corner       {}
+	::-webkit-resizer                {}
+
+	/****** Desktop colour ******/
+	body {
+		
+	}
+	div.header { 
+		
+	}
+	div.title {
+		
+	}
+	div.content {
+		
+	}
+	div.sidebar {
+		background-color: #ffffff;
+	}
+	div.sidebar .ui-resizable-e {
+		background-color: #83CCDF;
+		width: 10px;
+	}
+	div.desktop_functionholder {
+		background-color: #383D3E;
+	}
+	
+	/****** Desktop framework ******/
+	div.floatholder {
+		
+	}
+	div.header {
+		width: 100%;
+		height: 4.5em;
+		margin: 0;
+		padding: 0;
+		position: absolute;
+		overflow: auto;
+	}
+	table.headertable {
+		height: 4.5em;
+		width: 100%;
+		margin: 0;
+		padding: 0;
+		border-spacing: 0;
+		border-collapse: collapse;
+	}
+	table.headertable tr,
+	table.headertablde td {
+		padding: 0;
+		margin: 0;
+	}
+	table.headertable td.logo {
+		padding: 0 0 0 .5em;
+		width: 4em;
+		vertical-align: middle;
+	}
+	table.headertable td.logo img {
+		vertical-align: middle;
+		max-height: 4em;
+	}
+	table.headertable td.title {
+		font-size: 1.8em;
+		vertical-align: middle;
+		padding-left: .5em;
+	}
+	table.headertable td.title div {
+		display: inline;
+	}
+	table.headertable td.brsNext,
+	table.headertable td.brsBack {
+		display: none;
+	}
+	div.sidebar {
+		position: absolute;
+		top: 4.5em;
+		left: 0%;
+		width: 22%;
+		bottom: 0;
+		overflow: hidden;
+	}
+	div.sidebar .ui-resizable-e {
+		right: 0;
+		cursor: col-resize;
+	}
+	div.sidebar div.closebutton {
+		position: absolute;
+		right: .1em;
+		top: 50%;
+		height: 2em;
+		width: .9em;
+		margin: -2em 0 0 0;
+		cursor: pointer;
+		z-index: 250;
+		border: none;
+		-webkit-border-radius: .3em;
+		-moz-border-radius: .3em;
+		border-radius: .3em;
+	}
+	div.sidebar .buttonOpened {
+		background-color: #ffffff;
+		background-image: url(close_sidebar.png);
+		background-repeat: no-repeat;
+		background-position: left center;
+	}
+	div.sidebar .buttonClosed {
+		background-color: #ffffff;
+		background-image: url(open_sidebar.png);
+		background-repeat: no-repeat;
+		background-position: right center;
+	}
+	div.sidebar div.text {
+		text-align: center;
+		font-size: 1.8em;
+		font-weight: bold;
+		margin: 0;
+		padding: .25em 0;
+	}
+	div.sidebar div.text a {
+		color: #59caff;
+		text-decoration: none;
+		border: none;
+		display: block;
+		height: 4.5em;
+		background: transparent url(topic.png) no-repeat center 2em;
+	}
+	div.sidebar div.text a:hover {
+		background-color: #ffffff;
+	}
+	div.content {
+		position: absolute;
+		top: 4.5em;
+		right: 0%;
+		width: 78%;
+		bottom: 0;
+		overflow: hidden;
+	}
+	div.contentholder {
+		position: absolute;
+		top: 3.5em;
+		bottom: 2em;
+		left: .5em;
+		right: .5em;
+		overflow: auto;
+	}
+	div.content_top_link {
+		display: block;
+	}
+	div.desktop_functionholder {
+		height: 3em;
+		width: 100%;
+		overflow: hidden;
+	}
+	div.searchholder {
+		float: right;
+		height: 3em;
+		margin: 0 .5em;
+	}
+	div.secondary_search_box {
+		display: none;
+	}
+	div.home,
+	div.print,
+	div.brsBack,
+	div.brsNext {
+		float: left;
+		height: 3em;
+		width: 3em;
+		margin: 0 .25em;
+		
+	}
+	div.home a:hover,
+	div.print a:hover,
+	div.brsBack a:hover,
+	div.brsNext a:hover {
+		background-color: #ffffff;
+		cursor: pointer;
+	}
+	div.home a,
+	div.brsBack a,
+	div.print a,
+	div.brsNext a {
+		display: block;
+		height: 100%;
+		width: 100%;
+		margin: 0;
+		padding: 0;
+		border: none;
+	}
+	div.home img,
+	div.brsBack img,
+	div.print img,
+	div.brsNext img{
+		margin: 25% 25%;
+		border: none;
+		vertical-align: middle;
+	}
+	div.print img {
+		margin: 30% 25% 20%;
+	}
+	div.buttonbar {
+		display: none;
+	}
+	
+}
+
+@media print {
+	div.header {
+		display: none;
+	}
+	div.sidebar {
+		display: none;
+	}
+	div.searchfieldholdermobile {
+		display: none;
+	}
+	div.desktop_functionholder {
+		display: none;
+	}
+	div.buttonbar {
+		display: none;
+	}
+}
+
+/*************
+	
+	CSS for widgets
+
+************/
+* {
+	outline-style: none;
+}
+
+/****** Topic ******/
+div.wTopic {
+	/* No position attributes allowed */
+	margin: 1em;
+	
+}
+
+/****** Glossary ******/
+div.wGlossary {/* Main holder div */
+	/* No position attributes allowed */
+	
+}
+input.wGloFilter {/* Filter box */
+	display: block;
+	width: 100%;
+	max-width: 30em;
+	font-size: 1em;
+	height: 2.4em;
+	margin: 1.2em auto 1em;
+	padding: 0 2%;
+	-webkit-border-radius: .5em;
+	-moz-border-radius: .5em;
+	border-radius: .5em;
+	border-color: #83CCDF;
+	border-width: .1em;
+	border-style: solid;
+	background-color: #ffffff;
+	-moz-box-sizing: border-box;
+     box-sizing: border-box;
+}
+div.wGloTerm {/* Glossary term */
+	color: #3f4344;
+	font-weight: normal;
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 0.8em 1em;
+}
+div.wGloTermHover {/* Glossary term hover */
+	color: #3f4344;
+	font-weight: normal;
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 0.8em 1em;
+	cursor: pointer;
+	background-color: #f1ede9;
+}
+div.wGloTermSelected {/* Glossary term selected */
+	color: #3f4344;
+	font-weight: normal;
+	text-align: left;
+	font-size: 1.2em;
+	padding: 0.8em 1em;
+	cursor: pointer;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+}
+span.wGloTermText {/* Glossary term text */
+	
+}
+div.wGloDefinition {/* Glossary definition */
+	margin: 0 2em 1em 2.5em;
+}
+div.wGloDefinitionHover {/* Glossary defintion holder */
+	margin: 0 2em 1em 2.5em;
+	cursor: pointer;
+}
+span.wGloDefinitionText {/* Definition text */
+	color: #3f4344;
+}
+div.wGloAlphabet {/* Category (letter or sign) */
+	text-align: center;
+	font-size: 1.8em;
+	/*font-weight: bold;*/
+	color: #59caff;
+	margin: 0;
+	padding: .25em 0 0;
+}
+span.wGloAlphabetText {/* Alphabet text */
+	
+}
+@media screen and (max-width: 43.68em) {
+	input.wGloFilter {/* Filter box */
+		margin-top: 0;
+		max-width: 80%;
+	}
+	div.wGloAlphabet {/* Category (letter or sign) */
+		display: none;
+	}
+	div.wGloTerm {/* Glossary term */
+		font-size: 1.1em;
+		padding: .45em .65em;
+	}
+	div.wGloTermHover {/* Glossary term hover */
+		font-size: 1.1em;
+		padding: .45em .65em;
+		background-color: #f1ede9;
+	}
+	div.wGloTermSelected {/* Glossary term selected */
+		font-size: 1.1em;
+		padding: .45em .65em;
+	}
+	div.wGloDefinition {/* Glossary definition */
+		margin: 0 2em 0.5em;
+	}
+	div.wGloDefinitionHover {/* Glossary defintion holder */
+		margin: 0 2em 0.5em;
+	}
+}
+@media screen and (min-width: 81em) {
+	div.wGlossary {/* Main holder div */
+		/* No position attributes allowed */
+		width: 95%;
+		font-size: 1em;
+	}
+	input.wGloFilter {/* Filter box */
+		font-size: .8em;
+	}
+	div.wGloTerm {/* Glossary term */
+		font-size: 1em;
+		font-weight: normal;
+		text-align: left;
+		border: none;
+		padding: 0;
+		margin: .5em 0 .25em 0;
+		min-height: auto;
+		line-height: 15px;
+		color: #3f4344;
+	}
+	div.wGloTermHover {/* Glossary term hover */
+		font-size: 1em;
+		text-align: left;
+		font-weight: normal;
+		cursor: pointer;
+		text-decoration: underline;
+		border: none;
+		padding: 0;
+		margin: .5em 0 .25em 0;
+		min-height: auto;
+		line-height: 15px;
+		color: #3f4344;
+		background-color: transparent;
+	}
+	div.wGloTermSelected {/* Glossary term selected */
+		font-size: 1em;
+		text-align: left;
+		font-weight: normal;
+		cursor: pointer;
+		border: none;
+		padding: 0;
+		margin: .5em 0 .25em 0;
+		min-height: auto;
+		line-height: 15px;
+		color: #3f4344;
+	}
+	div.wGloDefinition {/* Glossary definition */
+		font-size: .9em;
+		margin: 0 .5em 1em;
+		border-left-style: solid;
+		border-left-width: .15em;
+		border-left-color: #83CCDF;
+		padding-left: .3em;
+	}
+	div.wGloDefinitionHover {/* Glossary defintion holder */
+		font-size: .9em;
+		margin: 0 .5em 1em;
+		border: none;
+		border-left-style: solid;
+		border-left-width: .15em;
+		border-left-color: #83CCDF;
+		padding-left: .3em;
+	}
+	span.wGloDefinitionText {
+		color: #3f4344;
+	}
+	div.wGloAlphabet {/* Category (letter or sign) */
+		margin: .5em 0;
+		color: #83CCDF;
+		border-bottom-width: 1px;
+		border-bottom-style: solid;
+		border-bottom-color: #83CCDF;
+	}
+}
+
+/****** Index ******/
+div.wIndex {/* Main index holder */
+	/* No position attributes allowed */
+	
+}
+input.wIdxFilter {/* Index filter input */
+	display: block;
+	width: 100%;
+	max-width: 30em;
+	font-size: 1em;
+	height: 2.4em;
+	margin: 1.2em auto 1em;
+	padding: 0 2%;
+	-webkit-border-radius: .5em;
+	-moz-border-radius: .5em;
+	border-radius: .5em;
+	border-color: #83CCDF;
+	border-width: .1em;
+	border-style: solid;
+	background-color: #ffffff;
+	-moz-box-sizing: border-box;
+     box-sizing: border-box;
+}
+div.wIdxKeyword {/* Index keyword */
+	color: #3f4344;
+	font-weight: normal;
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 50px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: transparent;
+	background-image: url(TOCNodeOpenBook.png);
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-size: 31px 38px;
+}
+div.wIdxKeywordHover {/* Index keyword hover */
+	color: #3f4344;
+	font-weight: normal;
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 50px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: #f1ede9;
+	background-image: url(TOCNodeOpenBook.png);
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-size: 31px 38px;
+}
+span.wIdxKeywordText {/* Index keyword text */
+	cursor: pointer;
+}
+div.wIdxChildBlock {/* Index child block */
+	width: 95%;
+	margin: 0 0 0 5%;
+}
+div.wIdxLink {
+	color: #3f4344;
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 50px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: transparent;
+	background-image: url(TOCNodePage.png);
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-size: 31px 38px;
+}
+div.wIdxLinkHover {
+	color: #83CCDF;
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 50px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: transparent;
+	background-image: url(TOCNodePage.png);
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-size: 31px 38px;
+}
+span.wIdxLinkText {/* Index link entry */
+	
+}
+div.wIdxAlphabet {/* Category (letter or sign) */
+	text-align: center;
+	font-size: 1.8em;
+	/*font-weight: bold;*/
+	color: #59caff;
+	margin: 0;
+	padding: .25em 0 0;
+}
+span.wIdxAlphabetText {/* Alphabet text */
+	
+}
+@media screen and (max-width: 43.68em) {
+	input.wIdxFilter {/* Index filter input */
+		margin-top: 0;
+		max-width: 80%;
+	}
+	div.wIdxKeyword {/* Index keyword */
+		font-size: 1.1em;
+		min-height: 18px;
+		line-height: 18px;
+		padding: 11px 0 11px 32px;
+		background-image: url(TOCTreePage.png);
+		background-size: 14px 18px;
+	}
+	div.wIdxKeywordHover {/* Index keyword hover */
+		font-size: 1.1em;
+		min-height: 18px;
+		line-height: 18px;
+		padding: 11px 0 11px 32px;
+		background-image: url(TOCTreePage.png);
+		background-size: 14px 18px;
+	}
+	div.wIdxChildBlock {/* Index child block */
+		width: 95%;
+		margin: 0 0 0 5%;
+	}
+	div.wIdxLink {
+		font-size: 1.1em;
+		min-height: 18px;
+		line-height: 18px;
+		padding: 11px 0 11px 32px;
+		background-image: url(TOCTreePage.png);
+		background-size: 14px 18px;
+	}
+	div.wIdxLinkHover {
+		font-size: 1.1em;
+		min-height: 18px;
+		line-height: 18px;
+		padding: 11px 0 11px 32px;
+		background-image: url(TOCTreePage.png);
+		background-size: 14px 18px;
+	}
+	div.wIdxAlphabet {/* Category (letter or sign) */
+		display: none;
+	}
+}
+@media screen and (min-width: 81em) {
+	div.wIndex {
+		width: 95%;
+		font-size: 1em;
+	}
+	input.wIdxFilter {/* Index filter input */
+		font-size: .8em;
+	}
+	div.wIdxKeyword {/* Index keyword */
+		font-size: 1em;
+		font-weight: normal;
+		text-align: left;
+		border: none;
+		background: none;
+		padding: 0;
+		margin: .5em 0 .25em 0;
+		min-height: 1em;
+		line-height: 1em;
+		color: #3f4344;
+	}
+	div.wIdxKeywordHover {/* Index keyword hover */
+		font-size: 1em;
+		text-align: left;
+		font-weight: normal;
+		cursor: pointer;
+		text-decoration: underline;
+		border: none;
+		background: none;
+		padding: 0;
+		margin: .5em 0 .25em 0;
+		min-height: 1em;
+		line-height: 1em;
+		color: #3f4344;
+	}
+	div.wIdxLink {
+		font-size: 1em;
+		font-weight: normal;
+		text-align: left;
+		border: none;
+		background: none;
+		padding: 0;
+		margin: .5em 0 .25em 0;
+		min-height: 1em;
+		line-height: 1em;
+		color: #83CCDF;
+	}
+	div.wIdxLinkHover {
+		font-size: 1em;
+		text-align: left;
+		font-weight: normal;
+		cursor: pointer;
+		text-decoration: underline;
+		border: none;
+		background: none;
+		padding: 0;
+		margin: .5em 0 .25em 0;
+		min-height: 1em;
+		line-height: 1em;
+		color: #3f4344;
+	}
+	span.wIdxLinkText {/* Index link entry */
+		
+	}
+	div.wIdxAlphabet {/* Category (letter or sign) */
+		margin: .5em 0;
+		color: #83CCDF;
+		border-bottom-width: 1px;
+		border-bottom-style: solid;
+		border-bottom-color: #83CCDF;
+	}
+	span.wIdxAlphabetText {/* Alphabet text */
+		
+	}
+}
+/****** TOC Tree ******/
+div.wTOCTreePage {/* Main tree holder */
+	/* No position attributes allowed */
+}
+div.wTOCTreeCloseBook {/* Closed book */
+	line-height: 1em;
+	margin: 0;
+	padding: 7px 7px 7px 27px;
+	text-indent: -20px;
+	color: #3f4344;
+	font-size: 1em;
+}
+div.wTOCTreeCloseBookHover {/* Closed book hover */
+	line-height: 1em;
+	margin: 0;
+	padding: 7px 7px 7px 27px;
+	text-indent: -20px;
+	cursor: pointer;
+	text-decoration: underline;
+	color: #3f4344;
+	font-size: 1em;
+}
+div.wTOCTreeCloseBookSelected {/* Closed book selected */
+	line-height: 1em;
+	margin: 0;
+	padding: 7px 7px 7px 27px;
+	text-indent: -20px;
+	background-color: #B5DEE7;
+	color: #3f4344;
+	font-size: 1em;
+}
+span.wTOCTreeCloseBookText {/* Closed book text */
+	color: #3f4344;
+}
+img.wTOCTreeCloseBookIcon {/* Closed book icon */
+	margin: -3px 4px 0 1px;
+	vertical-align: middle;
+	border: none;
+	height: 18px;
+	width: 14px;
+}
+div.wTOCTreeOpenBook {/* Open book */
+	line-height: 1em;
+	margin: 0;
+	padding: 7px 7px 7px 27px;
+	text-indent: -20px;
+	color: #3f4344;
+	font-size: 1em;
+}
+div.wTOCTreeOpenBookHover {/* Open book hover */
+	line-height: 1em;
+	margin: 0;
+	padding: 7px 7px 7px 27px;
+	text-indent: -20px;
+	cursor: pointer;
+	text-decoration: underline;
+	color: #3f4344;
+	font-size: 1em;
+}
+div.wTOCTreeOpenBookSelected {/* Open book selected */
+	line-height: 1em;
+	margin: 0;
+	padding: 7px 7px 7px 27px;
+	text-indent: -20px;
+	background-color: #B5DEE7;
+	color: #3f4344;
+	font-size: 1em;
+}
+div.wTOCTreeOpenBookChildBlock {/* Open book child block */
+	margin-left: 1em;
+	min-width: 10em;
+}
+span.wTOCTreeOpenBookText {/* Open book text */
+	color: #3f4344;
+}
+img.wTOCTreeOpenBookIcon {/* Open book image */
+	margin: -3px 4px 0 1px;
+	vertical-align: middle;
+	border: none;
+	height: 18px;
+	width: 14px;
+	font-size: 1em;
+}
+div.wTOCTreePage {/* TOC page */
+	line-height: 1em;
+	margin: 0;
+	padding: 7px 7px 7px 27px;
+	text-indent: -20px;
+	color: #3f4344;
+	font-size: 1em;
+}
+div.wTOCTreePageHover {/* TOC page hover */
+	line-height: 1em;
+	margin: 0;
+	padding: 7px 7px 7px 27px;
+	text-indent: -20px;
+	cursor: pointer;
+	text-decoration: underline;
+	color: #3f4344;
+	font-size: 1em;
+}
+div.wTOCTreePageSelected {/* TOC page selected */
+	line-height: 1em;
+	margin: 0;
+	padding: 7px 7px 7px 27px;
+	text-indent: -20px;
+	background-color: #B5DEE7;
+	color: #3f4344;
+	font-size: 1em;
+}
+span.wTOCTreePageText {/* TOC page text */
+	color: #3f4344;
+}
+img.wTOCTreePageIcon {/* TOC page icon */
+	margin: -3px 4px 0 1px;
+	vertical-align: middle;
+	border: none;
+	max-height: 18px !important;
+	max-width: 14px !important;
+}
+div.wTOCTreeLink {/* TOC URL */
+	line-height: 1em;
+	margin: 0;
+	padding: 7px 7px 7px 27px;
+	text-indent: -20px;
+	color: #3f4344;
+	font-size: 1em;
+}
+div.wTOCTreeLinkHover {/* TOC URL hover */
+	line-height: 1em;
+	margin: 0;
+	padding: 7px 7px 7px 27px;
+	text-indent: -20px;
+	cursor: pointer;
+	text-decoration: underline;
+	color: #3f4344;
+	font-size: 1em;
+}
+div.wTOCTreeLinkSelected {/* TOC URL selected */
+	line-height: 1em;
+	margin: 0;
+	padding: 7px 7px 7px 27px;
+	text-indent: -20px;
+	background-color: #B5DEE7;
+	color: #3f4344;
+	font-size: 1em;
+}
+span.wTOCTreeLinkText {/* TOC URL text */
+	color: #3f4344;
+}
+img.wTOCTreeLinkIcon {/* TOC URL image */
+	margin: -3px 4px 0 1px;
+	vertical-align: middle;
+	border: none;
+	max-height: 16px !important;
+	max-width: 15px !important;
+	font-size: 1em;
+}
+/****** TOC expanding node ******/
+div.wTOCNode {/* Main TOC holder */
+	/* No position attributes allowed */
+	
+}
+div.wTOCNodeCloseBook {/* Closed book */
+	font-weight: normal;
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 50px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: transparent;
+	background-image: url(TOCNodeCloseBook.png);
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-size: 31px 37px;
+}
+div.wTOCNodeCloseBookHover {/* Closed book hover */
+	font-weight: normal;
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 50px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: #f1ede9;
+	background-image: url(TOCNodeCloseBook.png);
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-size: 31px 37px;
+	cursor: pointer;
+}
+div.wTOCNodeCloseBookSelected {/* Closed book selected */
+	font-weight: normal;
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 50px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: #f1ede9;
+	background-image: url(TOCNodeCloseBook.png);
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-size: 31px 37px;
+	cursor: pointer;
+}
+span.wTOCNodeCloseBookText {/* Closed book text */
+	color: #3f4344;
+}
+img.wTOCNodeCloseBookIcon {/* Closed book icon */
+	display: none;
+}
+div.wTOCNodeOpenBook {/* Open book */
+	font-weight: normal;
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 50px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: transparent;
+	background-image: url(TOCNodeOpenBook.png);
+	background-repeat: no-repeat;
+	background-size: 31px 38px;
+	background-position: 10px center;
+}
+div.wTOCNodeOpenBookHover {/* Open book hover */
+	font-weight: normal;
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 50px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: #f1ede9;
+	background-image: url(TOCNodeOpenBook.png);
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-size: 31px 38px;
+	cursor: pointer;
+}
+div.wTOCNodeOpenBookSelected {/* Open book selected */
+	font-weight: normal;
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 50px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: #f1ede9;
+	background-image: url(TOCNodeOpenBook.png);
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-size: 31px 38px;
+	cursor: pointer;
+}
+span.wTOCNodeOpenBookText {/* Open book text */
+	color: #3f4344;
+}
+img.wTOCNodeOpenBookIcon { /* Open book icon */
+	display: none;
+}
+div.wTOCNodePage {/* TOC page */
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 50px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: transparent;
+	background-image: url(TOCNodePage.png);
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-size: 31px 38px;
+}
+div.wTOCNodePageHover {/* TOC page hover */
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 50px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: #f1ede9;
+	background-image: url(TOCNodePage.png);
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-size: 31px 38px;
+	cursor: pointer;
+}
+div.wTOCNodePageSelected {/* TOC page selected */
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 50px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: #f1ede9;
+	background-image: url(TOCNodePage.png);
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-size: 31px 38px;
+}
+span.wTOCNodePageText {/* TOC page text */
+	color: #3f4344;
+}
+img.wTOCNodePageIcon {/* TOC page image */
+	display: none;
+}
+div.wTOCNodeLink {/* TOC URL */
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 50px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: transparent;
+	background-image: url(TOCNodeLink.png);
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-size: 33px 33px;
+}
+div.wTOCNodeLinkHover {/* TOC URL hover */
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 50px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: #f1ede9;
+	background-image: url(TOCNodeLink.png);
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-size: 33px 33px;
+	cursor: pointer;
+}
+div.wTOCNodeLinkSelected {/* TOC URL selected */
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 50px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: #f1ede9;
+	background-image: url(TOCNodeLink.png);
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-size: 33px 33px;
+}
+span.wTOCNodeLinkText {/* TOC URL text */
+	color: #3f4344;
+}
+img.wTOCNodeLinkIcon {/* TOC URL image */
+	display: none;
+}
+div.wTOCNodeUp {/* TOC up */
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 40px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: transparent;
+	background-image: url(TOCNodeUp.png);
+	background-repeat: no-repeat;
+	background-position: 12px center;
+	background-size: 33px 33px;
+}
+div.wTOCNodeUpHover {/* TOC up hover */
+	text-align: left;
+	font-size: 1.2em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	padding: 1em 1em 1em 40px;
+	min-height: 33px;
+	line-height: 33px;
+	background-color: #f1ede9;
+	background-image: url(TOCNodeUp.png);
+	background-repeat: no-repeat;
+	background-position: 12px center;
+	background-size: 33px 33px;
+	cursor: pointer;
+}
+span.wTOCNodeUpText {/* TOC up text */
+	text-decoration: none;
+	margin-left: .5em;
+}
+img.wTOCNodeUpIcon {/* TOC up image */
+	display: none;
+}
+@media screen and (max-width: 43.68em) {
+	div.wTOCNodeCloseBook {/* Closed book */
+		font-size: 1.1em;
+		line-height: 1em;
+		min-height: 18px;
+		padding: .6em 0 .6em 32px;
+		background-image: url(TOCTreeCloseBook.png);
+		background-size: 15px 16px;
+	}
+	div.wTOCNodeCloseBookHover {/* Closed book hover */
+		font-size: 1.1em;
+		line-height: 1em;
+		min-height: 18px;
+		padding: .6em 0 .6em 32px;
+		background-image: url(TOCTreeCloseBook.png);
+		background-size: 15px 16px;
+	}
+	div.wTOCNodeCloseBookSelected {/* Closed book selected */
+		font-size: 1.1em;
+		line-height: 1em;
+		min-height: 18px;
+		padding: .6em 0 .6em 32px;
+		background-image: url(TOCTreeCloseBook.png);
+		background-size: 15px 16px;
+	}
+	div.wTOCNodeOpenBook {/* Open book */
+		font-size: 1.1em;
+		line-height: 1em;
+		min-height: 18px;
+		padding: .6em 0 .6em 32px;
+		background-image: url(TOCTreeOpenBook.png);
+		background-size: 15px 16px;
+	}
+	div.wTOCNodeOpenBookHover {/* Open book hover */
+		font-size: 1.1em;
+		line-height: 1em;
+		min-height: 18px;
+		padding: .6em 0 .6em 32px;
+		background-image: url(TOCTreeOpenBook.png);
+		background-size: 15px 16px;
+	}
+	div.wTOCNodeOpenBookSelected {/* Open book selected */
+		font-size: 1.1em;
+		line-height: 1em;
+		min-height: 18px;
+		padding: .6em 0 .6em 32px;
+		background-image: url(TOCTreeOpenBook.png);
+		background-size: 15px 16px;
+	}
+	div.wTOCNodePage {/* TOC page */
+		font-size: 1.1em;
+		line-height: 1em;
+		min-height: 18px;
+		padding: .6em 0 .6em 32px;
+		background-image: url(TOCTreePage.png);
+		background-size: 15px 16px;
+	}
+	div.wTOCNodePageHover {/* TOC page hover */
+		font-size: 1.1em;
+		line-height: 1em;
+		min-height: 18px;
+		padding: .6em 0 .6em 32px;
+		background-image: url(TOCTreePage.png);
+		background-size: 15px 16px;
+	}
+	div.wTOCNodePageSelected {/* TOC page selected */
+		font-size: 1.1em;
+		line-height: 1em;
+		min-height: 18px;
+		padding: .6em 0 .6em 32px;
+		background-image: url(TOCTreePage.png);
+		background-size: 15px 16px;
+	}
+	div.wTOCNodeLink {/* TOC URL */
+		font-size: 1.1em;
+		line-height: 1em;
+		min-height: 18px;
+		padding: .6em 0 .6em 32px;
+		background-image: url(TOCTreeLink.png);
+		background-size: 15px 16px;
+	}
+	div.wTOCNodeLinkHover {/* TOC URL hover */
+		font-size: 1.1em;
+		line-height: 1em;
+		min-height: 18px;
+		padding: .6em 0 .6em 32px;
+		background-image: url(TOCTreeLink.png);
+		background-size: 15px 16px;
+	}
+	div.wTOCNodeLinkSelected {/* TOC URL selected */
+		font-size: 1.1em;
+		line-height: 1em;
+		min-height: 18px;
+		padding: .6em 0 .6em 32px;
+		background-image: url(TOCTreeLink.png);
+		background-size: 15px 16px;
+	}
+	div.wTOCNodeUp {/* TOC up */
+		font-size: 1.1em;
+		line-height: 1em;
+		min-height: 18px;
+		padding: .6em 0 .6em 22px;
+		background-image: url(TOCNodeUpSmall.png);
+		background-position: 9px center;
+		background-size: 15px 16px;
+	}
+	div.wTOCNodeUpHover {/* TOC up hover */
+		font-size: 1.1em;
+		line-height: 1em;
+		min-height: 18px;
+		padding: .6em 0 .6em 22px;
+		background-image: url(TOCNodeUpSmall.png);
+		background-position: 9px center;
+		background-size: 15px 16px;
+	}
+}
+
+/****** Print link ******/
+a.wPrintLink {
+	color: #83CCDF;
+}
+a.wPrintLink:hover,
+a.wPrintLink:active {
+	text-decoration: underline;
+}
+/****** Print button ******/
+a.wPrintButton {
+	color: #83CCDF;
+}
+a.wPrintButton:hover,
+a.wPrintButton:active {
+	text-decoration: underline;
+}
+img.wPrintButton {
+	border: none;
+}
+
+/****** Browse sequence links ******/
+a.wBSBackLink {
+	color: #83CCDF;
+}
+a.wBSBackLink:active {
+	text-decoration: underline;
+}
+a.wBSNextLink {
+	color: #83CCDF;
+}
+a.wBSNextLink:active {
+	text-decoration: underline;
+}
+/****** Browse sequence buttons ******/
+a.wBSBackButton {
+	color: #83CCDF;
+}
+a.wBSBackButton:active {
+	text-decoration: underline;
+}
+img.wBSBackButton {
+	border: none;
+}
+a.wBSNextButton {
+	color: #83CCDF;
+}
+a.wBSNextButton:active {
+	text-decoration: underline;
+}
+img.wBSNextButton {
+	border: none;
+}
+
+/****** Search results area ******/
+div.wSearchResults {
+	/* No position attributes allowed */
+	margin: 1em 1em 2em 1em;
+	font-size: 1.1em;
+}
+div.cSearchSettingsToggle {
+	margin: 0 0 .5em 0;
+}
+div.cSearchSettingsToggle a {
+	cursor: pointer;
+	font-size: .9em;
+	color: #83CCDF;
+	padding: 0 0 0 24px;
+	background-image: url(search_advanced_open.png);
+	background-repeat: no-repeat;
+	background-position: left top;
+	background-size: contain;
+}	
+div.cSearchSettingsToggle a.opened {
+	background-image: url(search_advanced_closed.png);
+}
+div.wSearchResultSettings {
+	margin: 0 0 1em 0;
+	display: none;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+}
+div.cSearchAND {/* Custom element added to widget */
+	margin: .5em 0;
+}
+div.wSearchHighlight {
+	margin: .75em 0;
+}
+input.wSearchHighlight {
+	
+}
+span.wSearchHighlight {
+		font-size: .8em;
+}
+div.wSearchCount {
+	margin: .75em 0;
+}
+select.wSearchCount {
+	border-width: 1px;
+	border-style: solid;
+	margin-right: .6em;
+	height: 28px;
+	line-height: 28px;
+	width: 58px;
+	font-weight: bold;
+	border: none;
+	background: no-repeat right;
+	background-color: #DCDFDF;
+}
+@media screen and (-webkit-min-device-pixel-ratio:0) { 
+	select.wSearchCount {
+		background-image: url(select_button.png);
+		appearance: none;
+		-webkit-appearance: none;
+	}
+}
+span.wSearchCount {
+	font-size: .8em;
+	margin-left: .3em;
+}
+div.wSearchMessage {
+	margin: 0 0 1em 0;
+	padding-top: .5em;
+	font-size: .9em;
+	border-top-width: .1em;
+	border-top-style: solid;
+	border-top-color: #83CCDF;
+	display: block;
+}
+span.wSearchMessage {
+	color: #000000;
+}
+div.wSearchResultItemsBlock {
+	
+}
+div.wSearchResultItem {
+	margin: 0 0 1em 0;
+}
+div.wSearchResultTitle {
+	color: #83CCDF;
+	font-size: 1.1em;
+}
+div.wSearchResultTitleHover {
+	color: #83CCDF;
+	font-size: 1.1em;
+	text-decoration: underline;
+}
+span.wSearchURL {
+	display: block;
+	margin-top: .5em;
+	color: #383D3E;
+	word-break:break-all;
+	font-size: .9em;
+}
+span.wSearchContext {
+	display: block;
+	margin-top: -1em;
+	color: #383D3E;
+	font-size: .9em;
+}
+div#searchResList {
+	
+}
+div.wSearchNavigation {
+	font-size: 2em;
+	overflow: hidden;
+	margin-bottom: .5em;
+}
+div.wSearchBack {
+	float: left;
+}
+a.wSearchBack {
+	text-decoration: none;
+	margin-right: 1em;
+	padding-right: .5em;
+	color: transparent !important;
+	background-image: url(searchBack.png);
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-size: contain;
+}
+a.wSearchBack:hover,
+a.wSearchBack:active {
+	text-decoration: underline;
+}
+div.wSearchNext {
+	float: right;
+	margin-left:.5em;
+	
+}
+a.wSearchNext {
+	text-decoration: none;
+	padding-left: .5em;
+	color: transparent !important;
+	background-image: url(searchNext.png);
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-size: contain;
+}
+a.wSearchNext:hover,
+a.wSearchNext:active {
+	text-decoration: underline;
+}
+div.wSearchPageNumbers {
+	float: left;
+}
+div.wSearchPageNumbers ul li:first-child {
+	margin-left: 0;
+	padding-left: 0;
+	border-left: none;
+}
+li.wSearchPageNumberSelected {
+	color: #3f4344;
+	margin-left: 1em;
+	padding-left: .5em;
+}
+li.wSearchPageNumberLink {
+	color: #59caff;
+	text-decoration: none;
+	margin-left: 1em;
+	padding-left: .5em;
+}
+li.wSearchPageNumberLink:hover {
+	text-decoration: underline;
+}
+span.wSearchPageNumberSelected {
+
+}
+a.wSearchPageNumberLink {
+	
+}
+@media screen and (max-width: 43.68em) {
+	div.wSearchResultItem {
+		font-size: .9em;
+	}
+	div.wSearchPageNumbers {
+		font-size: .5em;
+		margin-top: .6em;
+	}
+	a.wSearchBack {
+		margin-right: 0.5em;
+		padding: 0;
+	}
+	a.wSearchNext {
+		padding: 0;
+}
+}
+@media screen and (min-width: 43.69em) and (max-width: 59.49em) {
+	a.wSearchNext,
+	a.wSearchBack	{
+		font-size: .75em;
+	}	 
+	div.wSearchPageNumbers {
+		font-size: .6em;
+		margin-top: .6em;
+	}
+}
+@media screen and (min-width: 59.5em) and (max-width: 80.99em) {
+	div.wSearchNavigation {
+		font-size: 1.4em;
+	}
+}
+@media screen and (min-width: 81em) {
+	div.wSearchNavigation {
+		font-size: 1.2em;
+	}
+	div.wSearchNext {
+		float: left;
+	}
+	a.wSearchNext {
+		color: #3f4344 !important;
+		background: none;
+	}
+	a.wSearchBack {
+		color: #3f4344 !important;
+		background: none;
+	}
+}
+
+/****** Search results area for small screens ******/
+
+div.wSearchResultsSmallScr {
+	/* No position attributes allowed */
+	margin: 1em;
+	font-size: 1.1em;
+}
+div.wSearchResultSettingsSmallScr {
+	margin: 0 0 1em 0;
+}
+div.wSearchHighlightSmallScr {
+	margin: .5em 0;
+}
+input.wSearchHighlightSmallScr {
+	
+}
+span.wSearchHighlightSmallScr {
+	
+}
+div.wSearchCountSmallScr {
+	margin: .5em 0;
+}
+div.wSearchCountComboSmallScr {
+	
+}
+select.wSearchCountSmallScr {
+	
+}
+div.wSearchCountMsgSmallScr {
+	
+}
+span.wSearchCountSmallScr {
+
+}
+div.wSearchMessageSmallScr {
+	margin: 0 0 1em 0;
+	font-size: .9em;
+	border-bottom-width: .1em;
+	border-bottom-style: solid;
+	border-bottom-color: #a99f95;
+}
+span.wSearchMessageSmallScr {
+
+}
+div.wSearchResultItemsBlockSmallScr {
+	
+}
+div.wSearchResultItemSmallScr {
+	margin: 0 0 1em 0;
+}
+div.wSearchResultTitleSmallScr {
+	color: #83CCDF;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+div.wSearchResultTitleHoverSmallScr {
+	color: #83CCDF;
+	font-size: 1.2em;
+	font-weight: bold;
+	text-decoration: underline;
+}
+span.wSearchURLSmallScr {
+	color: #59caff;
+	word-break:break-all;
+}
+span.wSearchContextSmallScr {
+
+}
+div#searchResListSmallScr {
+	
+}
+div.wSearchNavigationSmallScr {
+	font-size: 1.1em;
+	overflow: hidden;
+}
+div.wSearchBackSmallScr {
+	float: left;
+}
+a.wSearchBackSmallScr {
+	color: #3f4344;
+	text-decoration: none;
+	margin-right:.5em;
+	padding-right: .5em;
+	display: block;
+	height: 42px;
+	line-height: 60px;
+}
+a.wSearchBackSmallScr img {
+	margin-right: 15px;
+}
+div.wSearchNextSmallScr {
+	float: left;
+	margin-left:.5em;
+	padding-left: .5em;
+}
+a.wSearchNextSmallScr {
+	color: #3f4344;
+	text-decoration: none;
+	display: block;
+	height: 42px;
+	line-height: 60px;
+}
+a.wSearchNextSmallScr img {
+	margin-left: 15px;
+}
+div.wSearchPageNumbersSmallScr {
+	float: left;
+}
+div.wSearchPageNumbersSmallScr ul li:first-child {
+	margin-left: 0;
+	padding-left: 0;
+	border-left: none;
+}
+li.wSearchPageNumberSelectedSmallScr{
+	color: #3f4344;
+	margin-left: 1em;
+	padding-left: .5em;
+}
+li.wSearchPageNumberLinkSmallScr {
+    color: #59caff;
+	text-decoration: none;
+	margin-left: 1em;
+	padding-left: .5em;
+}
+li.wSearchPageNumberLinkSmallScr:hover {
+	text-decoration: underline;
+}
+span.wSearchPageNumberSelectedSmallScr {
+
+}
+a.wSearchPageNumberLinkSmallScr {
+	
+}
+
+
+/****** Show/Hide ******/
+a.wShowHide {
+	color: #83CCDF;
+}
+a.wShowHide:hover,
+a.wShowHide:active {
+	text-decoration: underline;
+}
+/****** Show/Hide toggle ******/
+a.wShow {
+	color: #83CCDF;
+}
+a.wShow:hover,
+a.wShow:active {
+	text-decoration: underline;
+}
+a.wHide {
+	color: #83CCDF;
+}
+a.wHide:hover,
+a.wHide:active {
+	text-decoration: underline;
+}
+
+/****** Project title ******/
+span.wProjTitle {
+
+}
+
+/****** Search options (with AND) ******/
+div.wSearchField {
+	width: 100%;
+	max-width: 30em;
+	height: 5em;
+	margin: 0 auto;
+	position: relative;
+}
+input.wSearchField {
+	font-size: 1em;
+	height: 2.4em;
+	margin: 1.2em 2% 1em;
+	padding: 0 2%;
+	padding-right: 8%;
+	width: 96%;
+	outline: 0;
+	-webkit-border-radius: .5em;
+	-moz-border-radius: .5em;
+	border-radius: .5em;
+	border-color: #83CCDF;
+	border-width: .1em;
+	border-style: solid;
+	background-color: #ffffff;
+	-moz-box-sizing: border-box;
+     box-sizing: border-box;
+}
+a.wSearchLink {
+    position: absolute;
+	top: 1.7em;
+	right: 4%;
+	-webkit-appearance: none;
+}
+img.wSearchLink {
+	max-width: 24px;
+	max-height: 24px;
+	width: auto !important;
+	margin-top: 0;
+}
+input.wSearchAND {
+	
+}
+span.wSearchAND {
+	font-size: .8em;
+}
+@media screen and (min-width: 81em) {
+	div.desktop_functionholder div.wSearchField {
+		position: relative;
+	}
+	div.desktop_functionholder input.wSearchField {
+		-webkit-appearance: none;
+		margin: .75em 0 0 0;
+		font-size: .9em;
+		height: 1.8em;
+		background-color: #ffffff;
+		padding: .15em 2em .15em .4em;
+		width: 20em;
+		-webkit-border-radius: .2em;
+		-moz-border-radius: .2em;
+		border: none;
+	}
+	div.desktop_functionholder a.wSearchLink {
+		position: absolute;
+		top: .65em;
+		right: .1em;
+		margin: 0;
+		padding: .1em 0;
+		font-size: 1em;
+		height: 1.4em;
+		border: none;
+		display: block;
+		float: left;
+		background-color: transparent;
+		text-align: center;
+	}
+	div.desktop_functionholder a.wSearchLink  img.wSearchLink{
+		margin-top: .2em;
+		max-width: 100% !important;
+		max-height: 80% !important;
+	}
+}
+
+/****** Search options ******/
+div.wSearchOptions {
+	/* No position attributes allowed */
+	
+}
+/****** Tabbed Panel - Horizontal (empty and not empty) ******/
+div.wTabbedPanel {
+	/* No position attributes allowed */
+	min-width: 17.5em;
+}
+ul.wTabGroup {
+	background-color: #383D3E;
+	height: 3em;
+	color: #ffffff;
+	margin: 0;
+	padding: 0;
+	font-weight: bold;
+	overflow: hidden;
+	width: 100%;
+}
+ul.wTabGroup li:first-child {
+	margin-left: .25em !important;
+}
+ul.wTabGroup li img {
+	margin-top: .6em;
+}
+.wTabSelected img.normal,
+img.hover {/* Initial hoverstate set */
+	display: none;
+}
+img.wTabSelected .hover {/* Initial hoverstate set */
+	display: block;
+}
+li.wTab {
+	display: block !important;
+	font-size: 1.2em;
+	height: 2.5em;
+	line-height: 2.5em;
+	margin: 0 0.25em;
+	width: 3em;
+	float: left;
+	text-align: center;
+	cursor: default;
+}
+li.wTabHover {
+	display: block !important;
+	font-size: 1.2em;
+	height: 2.5em;
+	line-height: 2.5em;
+	margin: 0 0.25em;
+	width: 3em;
+	float: left;
+	text-align: center;
+	cursor: pointer;
+	background-color: #ffffff;
+	color: #383D3E;
+}
+li.wTabSelected {
+	display: block !important;
+	font-size: 1.2em;
+	height: 2.5em;
+	line-height: 2.5em;
+	margin: 0 0.25em;
+	width: 3em;
+	float: left;
+	text-align: center;
+	cursor: default;
+	background-color: #ffffff;
+	color: #383D3E;
+}
+li.wTab img,
+li.wTabHover img,
+li.wTabSelected img {
+	width: auto !important;
+	max-width: 2em !important;
+	max-height: 2em !important;
+}
+span.wTabText {
+	
+}
+div.wTabContentGroup {
+	position: absolute;
+	top: 3.5em;
+	bottom: .5em;
+	left: 1.5em;
+	right: 1em;
+	overflow: auto;
+}
+div.wTabContent {
+	display: none;
+}
+
+/****** Tabbed pannel - Vertical (empty and not empty) ******/
+div.wVTabbedPanel {
+	/* No position attributes allowed */
+	
+}
+ul.wVTabGroup {
+	background-color: #ffffff;
+	color: #383D3E;
+	margin: 0;
+	padding: 0;
+	font-weight: bold;
+	overflow: hidden;
+	min-width: 15em;
+}
+li.wVTab img,
+li.wVTabHover img,
+li.wVTabSelected img {
+	
+}
+li.wVTab {
+	display: block;
+	text-align: center;
+	font-size: 1.5em;
+	padding: .5em 0;
+}
+li.wVTabHover {
+	display: block;
+	text-align: center;
+	font-size: 1.5em;
+	padding: .5em 0;
+	background-color: #ffffff;
+	color: #383D3E;
+	cursor: pointer;
+}
+li.wVTabSelected {
+	display: block;
+	text-align: center;
+	font-size: 1.5em;
+	padding: .5em 0;
+	background-color: #ffffff;
+	color: #383D3E;
+}
+span.wVTabText {
+
+}
+div.wVTabContentGroup {
+	
+}
+div.wVTabContent {
+	
+}
+
+/****** Loading ******/
+div.wLoadingIcon {
+	text-align: center;
+}
+div.loadingicon {
+	text-align: center;
+}
+img.wLoadingIcon {
+	border: none;
+	vertical-align: middle;
+}
+div.wLoadingText {
+	text-align: center;
+}
+div.loadingtext {
+	text-align: center;
+}
+
+/****** Internal widget styles, must always be available ******/
+.unclickable {/*Modifies the cursor on hover to default*/
+	cursor: default;
+}
+.handcursor {/*Modifies the cursor on hover to hand*/
+	cursor: pointer;
+	cursor: hand;
+}
+.unselectable {/*Modifies the content unselectable by mouse*/
+	-webkit-user-select: none;
+	-moz-user-select: none;
+}
+div.treeitem {/*Used by TOC Tree widget*/
+	clear: both;
+	margin: 0px;
+	padding: 0px;
+}
+li.hlist {/*Used to display horizontal list of page numbers in search results */
+	display: inline;
+}
+a.nolink {/*Used to remove default styling of a hyperlink*/
+	color: inherit;
+	text-decoration: none;
+}

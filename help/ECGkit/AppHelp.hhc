@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<toc version="1.0">
+	<properties imagewidth="16" windowstyles="8388610" exwindowstyles="256">
+	</properties>
+	<item name="Procedures">
+	</item>
+	<item name="Reference">
+		<item name="Getting Started" link="Getting_started.htm">
+		</item>
+		<item name="Examples" link="examples.html">
+		</item>
+		<item name="Release notes" link="release-notes.html">
+		</item>
+		<item name="Ask for help" link="contact.html">
+		</item>
+		<item name="Functionlist" link="functionlist.html">
+			<item name="Base classes">
+				<item name="ECGwrapper" link="ECGwrapper.html">
+				</item>
+				<item name="ECGtask" link="ECGtask.htm">
+				</item>
+			</item>
+			<item name="Signal formats">
+			</item>
+			<item name="Signal processing">
+			</item>
+			<item name="Plotting and reporting">
+			</item>
+			<item name="ECGkit extension">
+			</item>
+		</item>
+	</item>
+</toc>

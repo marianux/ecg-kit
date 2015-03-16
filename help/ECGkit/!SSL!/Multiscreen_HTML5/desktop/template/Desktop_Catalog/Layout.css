@@ -1,0 +1,1343 @@
+﻿/*Created with Adobe RoboHelp 11.*/
+/**
+	Color scheme:
+	
+		
+	Blue:				 		`		#00a6c2
+	Dark grey:		 					#c4c4c4
+	Shadow: 							#a3a3a3
+	Light grey:							#f6f6f6
+	Special text:						#fff
+	
+**/
+/************
+
+	Framework CSS
+	
+************/
+a {
+	color: #00a6c2;
+	background-color: transparent;
+}
+a:hover {
+	background-color: transparent;
+	text-decoration: underline;
+}
+div.topbanner {
+	height: 65px;
+	width: 100%;
+	background-color: #00a6c2;
+	color: #ffffff;
+	margin: 0;
+	padding: 0;
+	position: relative;
+	overflow: visible;
+}
+/* This is the empty top border. For visual only */
+div.logo {
+	position: relative;
+	top: 20px;
+	left: 20.5%;
+	border: none;
+	width: 400px;
+	z-index: 100;
+}
+div.logo img {
+	border: none;
+}
+/* No border around logo */
+div.titleholder {
+	height: 35pt;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	position: relative;
+	background-color: #c4c4c4;
+	-moz-box-shadow: 0 10px 5px #a3a3a3;
+	-webkit-box-shadow: 0 10px 5px #a3a3a3;
+	box-shadow: 0 10px 5px #a3a3a3;
+}
+/* Holds title and search field */
+table.titleholdertable {
+	border: none;
+	border-collapse: collapse;
+	width: 100%;
+	text-align: center;
+	margin: 0;
+	padding: 0;
+}
+table.titleholdertable td {
+	width: 25%;
+}
+table.titleholdertable td.title {
+	font-size: 22pt;
+	color: #ffffff;
+	font-style: italic;
+	font-weight: bold;
+	line-height: 35pt;
+	font-family: Georgia, serif;
+	text-transform: uppercase;
+	vertical-align: middle;
+	font-weight: normal;
+	width: 50%;
+	white-space: no-wrap;
+}
+table.titleholdertable td.searchfield {
+	vertical-align: middle;
+	text-align: right;
+	min-width: 210px;
+}
+/* Minimum width required so the looking glass is displayed inside the search field. */
+table.titleholdertable td.home {
+	text-align: center;
+	vertical-align: middle;
+}
+table.titleholdertable td.home a,
+table.titleholdertable td.home img {
+	background-color: transparent	 ! important ;
+}
+/* Do not allow user CSS to overwrite */
+table.titleholdertable td.home img {
+	border: none;
+}
+div.poweredby {
+	width: 100%;
+	text-align: center;
+	margin: 0 0 5pt 0;
+	padding: 0;
+}
+div.poweredby a {
+	background-color: transparent;
+	text-decoration: none;
+}
+div.poweredby a:hover {
+	background-color: transparent;
+	text-decoration: underline;
+}
+@media print{
+	div.topbanner {
+		display: none;
+	}
+	}
+
+@media print{
+	div.titleholder {
+		display: none;
+	}
+	}
+
+@media print{
+	div.contentholdertop {
+		display: none;
+	}
+	}
+
+@media print{
+	div.contentoptions {
+		display: none;
+	}
+	}
+
+@media print{
+	div.contenttoc {
+		display: none;
+	}
+	}
+
+@media print{
+	div.bottomshadowholder {
+		display: none;
+	}
+	}
+
+@media print{
+	div.poweredby {
+		display: none;
+	}
+	}
+
+@media print{
+	div.contentholder {
+		border: none	 ! important ;
+		-moz-box-shadow: none	 ! important ;
+		-webkit-box-shadow: none	 ! important ;
+		box-shadow: none	 ! important ;
+	}
+	}
+
+@media print{
+	div.allcontents {
+		width: 100%;
+	}
+	}
+
+@media print{
+	div.contenttopic {
+		float: none	 ! important ;
+		width: 100%	 ! important ;
+		border: none	 ! important ;
+	}
+	}
+
+/*******
+
+	Home page elements
+	
+******/
+div.welcome {
+	width: 300pt;
+	min-width: 50%;
+	margin-top: 35pt;
+	margin-left: 25%;
+	background-color: #F6F6F6;
+	-moz-box-shadow: 5px 5px 5px #a3a3a3;
+	-webkit-box-shadow: 5px 5px 5px #a3a3a3;
+	box-shadow: 5px 5px 5px #a3a3a3;
+	padding: 0;
+	height: 1%;
+	overflow: visible;
+}
+/* First width and then min-width to make it look good in the Robo editor */
+div.welcometop {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	height: 15pt;
+}
+div.welcomebanner {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	height: 41px;
+	line-height: 41px;
+	background: transparent url(welcome_background.png) repeat-x left top;
+	overflow: hidden;
+	overflow: visible;
+}
+/* Overflow so that the right banner doesn't show up below the ribbon in the RH editor. */
+div.welcomebannerleft {
+	width: 19px;
+	height: 41px;
+	display: inline;
+	float: left;
+	background: transparent url(welcome_background_left.png) no-repeat left top;
+	position: relative;
+	top: 0;
+	left: -19px;
+}
+/* The left ribbon for the welcome banner. Do not change. */
+div.welcomebannerright {
+	width: 19px;
+	height: 41px;
+	display: inline;
+	background: transparent url(welcome_background_right.png) no-repeat left top;
+	float: right;
+	position: relative;
+	top: 0;
+	right: -19px;
+}
+/* The right ribbon for the welcome banner. Do not change. */
+div.welcomebannertext {
+	display: inline;
+	height: 41px;
+	line-height: 35px;
+	font-size: 20px;
+	font-style: italic;
+	color: #ffffff;
+	font-family: Georgia, serif;
+	text-transform: uppercase;
+	float: left;
+	width: 80%;
+	margin-left: 5%;
+}
+/* This floating is needed to  make it look good in the RH editor*/
+div.welcometextholder {
+	width: 100%;
+	min-height: 75pt;
+}
+div.welcometext {
+	width: 80%;
+	margin-left: 10%;
+}
+div.highlightholder {
+	margin: 25pt 0 0 0;
+	width: 100%;
+	background: #f6f6f6;
+	padding-top: 25pt;
+	padding-bottom: 25pt;
+	border-top: 4px solid #00a6c2;
+	border-bottom: 1px dashed #c4c4c4;
+	-moz-box-shadow: 0 -5px 5px #a3a3a3;
+	-webkit-box-shadow: 0 -5px 5px #a3a3a3;
+	box-shadow: 0 -5px 5px #a3a3a3;
+	height: auto;
+	overflow: visible;
+	overflow: hidden;
+}
+/* RH editor workaround */
+table.highlight {
+	float: left;
+	width: 18.5%;
+	margin-left: 5%;
+	border-collapse: collapse;
+	border: none;
+}
+table.highlight tr.heading {
+	border-bottom: 1px dashed #00a6c2;
+}
+table.highlight tr.heading td {
+	text-align: center;
+	text-transform: uppercase;
+}
+table.highlight tr.description td {
+	padding-top: 8pt;
+}
+div.tocholder {
+	clear: both;
+	margin: 0 0 25pt 0;
+	padding: 25pt 0;
+	width: 100%;
+	background-color: #ffffff;
+	-moz-box-shadow: 5px 5px 5px #a3a3a3;
+	-webkit-box-shadow: 5px 5px 5px #a3a3a3;
+	box-shadow: 5px 5px 5px #a3a3a3;
+}
+div.contentholder {
+	width: 100%;
+	height: 100%;
+	background-color: #ffffff;
+	-moz-box-shadow: 0 5px -5px #a3a3a3;
+	-webkit-box-shadow: 0 -5px 5px #a3a3a3;
+	box-shadow: 0 -5px 5px #a3a3a3;
+	margin-top: 5px;
+	overflow: hidden;
+}
+div.contentholdertop {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	position: fixed;
+	width: 100%;
+	top: 0pt;
+	left: 0pt;
+	margin-top: 10pt;
+	height: 15pt;
+}
+div.contentoptions {
+	margin: 0;
+	padding: 4pt 0;
+	background-color: #00a6c2;
+	overflow: hidden;
+	position: fixed;
+	width: 100%;
+	top: 5pt;
+	left: 0pt;
+	height: 25pt;
+	z-index: 1;
+}
+table.contentoptionstable {
+	width: 100%;
+	border: none;
+}
+table.contentoptionstable a,
+table.contentoptionstable img {
+	background-color: transparent	 ! important ;
+}
+/* Do not let topic CSS overwrite hyperlink style */
+table.contentoptionstable td.search {
+	width: 24.5%;
+	text-align: right;
+	vertical-align: middle;
+	color: #000000;
+	min-width: 205px;
+}
+table.contentoptionstable td.topic {
+	vertical-align: middle;
+	padding-left: 5pt;
+	width: 75.5%;
+}
+div.allcontents {
+	overflow: hidden;
+	position: absolute;
+	top: 30pt;
+	left: 0pt;
+	width: 100%;
+}
+div.contenttoc {
+	max-width: 20%;
+	margin: 20pt 2% 0 2%;
+	float: left;
+	overflow: hidden;
+	position: fixed;
+	top: 30pt;
+	left: 0pt;
+}
+div.contenttopic {
+	margin: 20pt 2% 0;
+	padding: 0 2%;
+	min-height: 450pt;
+	overflow: auto;
+	position: relative;
+	width: 80%;
+	height: 90%;
+	top: 0pt;
+	left: 20%;
+	z-index: 0;
+
+}
+div.bottomshadowholder {
+	position: absolute;
+	width: 100%;
+	height: 10pt;
+	bottom: 0pt;
+	background-color: #ffffff;
+	margin: 0;
+	padding: 0;
+	margin-bottom: 25pt;
+	-moz-box-shadow: 0 5px 5px #a3a3a3;
+	-webkit-box-shadow: 0 5px 5px #a3a3a3;
+	box-shadow: 0 5px 5px #a3a3a3;
+	overflow: hidden;
+}
+div.bottomshadowholder * {
+	display: none;
+}
+div.contentoptionssearch {
+	width: 100%;
+	margin: 0;
+	padding: 4pt 0;
+	height: 25pt;
+	background-color: #00a6c2;
+	overflow: hidden;
+}
+table.searchoptionstable {
+	width: auto;
+	border-collapse: collapse;
+	margin-left: 5%;
+}
+table.searchoptionstable td {
+	vertical-align: middle;
+	color: #ffffff;
+}
+/*************
+	
+	CSS for widgets
+
+************/
+html{
+  width: 100%;
+  height: 100%;
+}
+
+body {
+	font-size: 14px;
+	margin: 0	 ! important ;
+	padding: 0	 ! important ;
+	font-family: "Century Gothic", sans-serif;
+	height: 100%;
+	min-height: 100%;
+}
+* {
+	outline-style: none;
+}
+
+div.wTopic {
+	height: 100%;
+	overflow: auto;
+}
+/* No position attributes allowed */
+/****** Glossary ******/
+div.wGlossary {
+	font-size: 11pt;
+}
+/* Main holder div */
+/* No position attributes allowed */
+input.wGloFilter {
+	float: right;
+	max-width: 80%;
+}
+/* Filter box */
+div.wGloTerm {
+	cursor: pointer;
+	color: #000000;
+}
+/* Glossary term */
+div.wGloTermHover {
+	cursor: pointer;
+	color: #000000;
+	text-decoration: underline;
+}
+/* Glossary term hover */
+div.wGloTermSelected {
+	cursor: pointer;
+	color: #000000;
+}
+/* Glossary term selected */
+span.wGloTermText {
+}
+/* Glossary term text */
+div.wGloDefinition {
+	margin-left: 15pt;
+	margin-bottom: 8pt;
+	font-size: 10pt;
+	color: #000000;
+}
+/* Glossary definition */
+div.wGloDefinitionHover {
+	margin-left: 15pt;
+	margin-bottom: 8pt;
+	font-size: 10pt;
+	color: #000000;
+}
+/* Glossary defintion holder */
+span.wGloDefinitionText {
+}
+/* Definition text */
+div.wGloAlphabet {
+	clear: both;
+	font-size: 13pt;
+	border-bottom: 1px dashed #00a6c2;
+	margin: 8pt 0;
+	color: #000000;
+}
+/* Category (letter or sign) */
+span.wGloAlphabetText {
+}
+/* Alphabet text */
+/****** Index ******/
+div.wIndex {
+	font-size: 11pt;
+}
+/* Main index holder */
+/* No position attributes allowed */
+input.wIdxFilter {
+	float: right;
+	max-width: 80%;
+}
+/* Index filter input */
+div.wIdxKeyword {
+	cursor: pointer;
+	color: #00a6c2;
+}
+/* Index keyword */
+div.wIdxKeywordHover {
+	cursor: pointer;
+	color: #00a6c2;
+	text-decoration: underline;
+}
+/* Index keyword hover */
+span.wIdxKeywordText {
+}
+/* Index keyword text */
+div.wIdxChildBlock {
+	cursor: pointer;
+	margin-left: 15pt;
+}
+/* Index child block */
+span.wIdxLinkText {
+	color: #00a6c2;
+}
+/* Index link entry */
+span.wIdxLinkText:hover {
+	text-decoration: underline;
+}
+div.wIdxAlphabet {
+	clear: both;
+	font-size: 13pt;
+	border-bottom: 1px dashed #00a6c2;
+	margin: 8pt 0;
+	color: #000000;
+}
+/* Category (letter or sign) */
+span.wIdxAlphabetText {
+}
+/* Alphabet text */
+/****** TOC Tree ******/
+div.wTOCTreePage {
+}
+/* Main tree holder */
+/* No position attributes allowed */
+div.wTOCTreeCloseBook {
+	cursor: pointer;
+	color: #000000;
+	margin-top: 6px;
+	min-height: 15px;
+}
+/* Closed book */
+div.wTOCTreeCloseBookHover {
+	cursor: pointer;
+	color: #c4c4c4;
+	margin-top: 6px;
+	min-height: 15px;
+	text-decoration: underline;
+}
+/* Closed book hover */
+div.wTOCTreeCloseBookSelected {
+	cursor: pointer;
+	color: #00a6c2;
+	margin-top: 6px;
+	min-height: 15px;
+}
+/* Closed book selected */
+span.wTOCTreeCloseBookText {
+	margin-left: 5px;
+}
+/* Closed book text */
+img.wTOCTreeCloseBookIcon {
+	border: none;
+	vertical-align: middle;
+}
+/* Closed book icon */
+div.wTOCTreeOpenBook {
+	cursor: pointer;
+	color: #000000;
+	margin-top: 6px;
+	min-height: 15px;
+}
+/* Open book */
+div.wTOCTreeOpenBookHover {
+	cursor: pointer;
+	color: #c4c4c4;
+	margin-top: 6px;
+	min-height: 15px;
+	text-decoration: underline;
+}
+/* Open book hover */
+div.wTOCTreeOpenBookSelected {
+	cursor: pointer;
+	color: #00a6c2;
+	margin-top: 6px;
+	min-height: 15px;
+}
+/* Open book selected */
+div.wTOCTreeOpenBookChildBlock {
+	margin-left: 15pt;
+	margin-top: 6px;
+}
+/* Open book child block */
+span.wTOCTreeOpenBookText {
+	margin-left: 5px;
+}
+/* Open book text */
+img.wTOCTreeOpenBookIcon {
+	border: none;
+	vertical-align: middle;
+}
+/* Open book image */
+div.wTOCTreePage {
+	cursor: pointer;
+	color: #000000;
+	margin-top: 6px;
+	min-height: 15px;
+}
+/* TOC page */
+div.wTOCTreePageHover {
+	cursor: pointer;
+	color: #c4c4c4;
+	margin-top: 6px;
+	min-height: 15px;
+	text-decoration: underline;
+}
+/* TOC page hover */
+div.wTOCTreePageSelected {
+	cursor: pointer;
+	color: #00a6c2;
+	margin-top: 6px;
+	min-height: 15px;
+}
+/* TOC page selected */
+span.wTOCTreePageText {
+	margin-left: 5px;
+}
+/* TOC page text */
+img.wTOCTreePageIcon {
+	border: none;
+	vertical-align: middle;
+}
+/* TOC page icon */
+div.wTOCTreeLink {
+	cursor: pointer;
+	color: #000000;
+	margin-top: 6px;
+	min-height: 15px;
+}
+/* TOC URL */
+div.wTOCTreeLinkHover {
+	cursor: pointer;
+	color: #c4c4c4;
+	margin-top: 6px;
+	min-height: 15px;
+	text-decoration: underline;
+}
+/* TOC URL hover */
+div.wTOCTreeLinkSelected {
+	cursor: pointer;
+	color: #00a6c2;
+	margin-top: 6px;
+	min-height: 15px;
+}
+/* TOC URL selected */
+span.wTOCTreeLinkText {
+	margin-left: 5px;
+}
+/* TOC URL text */
+img.wTOCTreeLinkIcon {
+	border: none;
+	vertical-align: middle;
+}
+/* TOC URL image */
+/****** TOC expanding node ******/
+div.wTOCNode {
+	width: 100%;
+	border: none;
+	background-color: #ffffff;
+	text-align: center;
+}
+/* Main TOC holder */
+/* No position attributes allowed */
+div.wTOCNodeCloseBook {
+	cursor: pointer;
+	border: 1px solid #00a6c2;
+	height: 24px;
+	line-height: 24px;
+	width: 100%;
+}
+/* Closed book */
+div.wTOCNodeCloseBookHover {
+	cursor: pointer;
+	border: 1px solid #00a6c2;
+	height: 24px;
+	line-height: 24px;
+	color: #ffffff;
+	background-color: #00a6c2;
+	width: 100%;
+}
+/* Closed book hover */
+div.wTOCNodeCloseBookSelected {
+	cursor: pointer;
+	border: 1px solid #00a6c2;
+	height: 24px;
+	line-height: 24px;
+	color: #ffffff;
+	background-color: #00a6c2;
+	width: 100%;
+}
+/* Closed book selected */
+span.wTOCNodeCloseBookText {
+	text-decoration: none;
+}
+/* Closed book text */
+img.wTOCNodeCloseBookIcon {
+	border: none;
+	float: right;
+}
+/* Closed book icon */
+div.wTOCNodeOpenBook {
+	cursor: pointer;
+	border: 1px solid #00a6c2;
+	height: 24px;
+	line-height: 24px;
+	width: 100%;
+}
+/* Open book */
+div.wTOCNodeOpenBookHover {
+	cursor: pointer;
+	border: 1px solid #00a6c2;
+	height: 24px;
+	line-height: 24px;
+	color: #ffffff;
+	background-color: #00a6c2;
+	width: 100%;
+}
+/* Open book hover */
+div.wTOCNodeOpenBookSelected {
+	cursor: pointer;
+	border: 1px solid #00a6c2;
+	height: 24px;
+	line-height: 24px;
+	color: #ffffff;
+	background-color: #00a6c2;
+	width: 100%;
+}
+/* Open book selected */
+span.wTOCNodeOpenBookText {
+	text-decoration: none;
+}
+/* Open book text */
+img.wTOCNodeOpenBookIcon {
+	border: none;
+	float: right;
+}
+/* Open book icon */
+div.wTOCNodePage {
+	cursor: pointer;
+	border: 1px solid #00a6c2;
+	height: 24px;
+	line-height: 24px;
+	width: 100%;
+}
+/* TOC page */
+div.wTOCNodePageHover {
+	cursor: pointer;
+	border: 1px solid #00a6c2;
+	height: 24px;
+	line-height: 24px;
+	color: #ffffff;
+	background-color: #00a6c2;
+	width: 100%;
+}
+/* TOC page hover */
+div.wTOCNodePageSelected {
+	cursor: pointer;
+	border: 1px solid #00a6c2;
+	height: 24px;
+	line-height: 24px;
+	color: #ffffff;
+	background-color: #00a6c2;
+	width: 100%;
+}
+/* TOC page selected */
+span.wTOCNodePageText {
+	text-decoration: none;
+}
+/* TOC page text */
+img.wTOCNodePageIcon {
+	border: none;
+	float: right;
+}
+/* TOC page image */
+div.wTOCNodeLink {
+	cursor: pointer;
+	border: 1px solid #00a6c2;
+	height: 24px;
+	line-height: 24px;
+	width: 100%;
+}
+/* TOC URL */
+div.wTOCNodeLinkHover {
+	cursor: pointer;
+	border: 1px solid #00a6c2;
+	height: 24px;
+	line-height: 24px;
+	color: #ffffff;
+	background-color: #00a6c2;
+	width: 100%;
+}
+/* TOC URL hover */
+div.wTOCNodeLinkSelected {
+	cursor: pointer;
+	border: 1px solid #00a6c2;
+	height: 24px;
+	line-height: 24px;
+	color: #ffffff;
+	background-color: #00a6c2;
+	width: 100%;
+}
+/* TOC URL selected */
+span.wTOCNodeLinkText {
+	text-decoration: none;
+}
+/* TOC URL text */
+img.wTOCNodeLinkIcon {
+	border: none;
+	float: right;
+}
+/* TOC URL image */
+div.wTOCNodeUp {
+	border: none;
+	height: 24px;
+	line-height: 24px;
+	text-align: left;
+	width: 100%;
+}
+/* TOC up */
+div.wTOCNodeUpHover {
+	border: none;
+	cursor: pointer;
+	height: 24px;
+	line-height: 24px;
+	text-align: left;
+	width: 100%;
+}
+/* TOC up hover */
+span.wTOCNodeUpText {
+	text-decoration: none;
+}
+/* TOC up text */
+img.wTOCNodeUpIcon {
+	border: none;
+	float: left;
+}
+/* TOC up image */
+/****** Print link ******/
+a.wPrintLink {
+	background-color: transparent;
+}
+/****** Print button ******/
+a.wPrintButton {
+	background-color: transparent;
+}
+img.wPrintButton {
+	border: none;
+}
+/****** Browse sequence links ******/
+a.wBSBackLink {
+	background-color: transparent;
+}
+a.wBSNextLink {
+	background-color: transparent;
+}
+/****** Browse sequence buttons ******/
+a.wBSBackButton {
+	margin-left: 15pt;
+	background-color: transparent;
+}
+img.wBSBackButton {
+	border: none;
+}
+a.wBSNextButton {
+	margin-left: 15pt;
+	background-color: transparent;
+}
+img.wBSNextButton {
+	border: none;
+}
+/****** Search results area ******/
+div.wSearchResults {
+	margin-top: 10pt;
+	width: 100%;
+}
+/* No position attributes allowed */
+div.wSearchResultSettings {
+	height: auto;
+	overflow: visible;
+	overflow: hidden;
+	width: 90%;
+	margin-left: 5%;
+}
+div.wSearchHighlight {
+	display: inline;
+	float: left;
+}
+input.wSearchHighlight {
+	position: relative;
+	top: 0.75pt;
+}
+span.wSearchHighlight {
+	margin-left: 6pt;
+}
+div.wSearchCount {
+	float: right;
+}
+select.wSearchCount {
+	float: right;
+}
+span.wSearchCount {
+	float: right;
+	margin-right: 6pt;
+}
+div.wSearchMessage {
+	margin-top: 15pt;
+	margin-left: 5%;
+	width: 90%;
+	border-bottom: 1px dashed #00a6c2;
+	padding-bottom: 2pt;
+}
+span.wSearchMessage {
+}
+div.wSearchResultItemsBlock {
+	margin-left: 5%;
+	margin-top: 5pt;
+	width: 90%;
+}
+div.wSearchResultItem {
+	margin-top: 10pt;
+}
+div.wSearchResultTitle {
+	cursor: pointer;
+	text-decoration: underline;
+}
+div.wSearchResultTitleHover {
+	cursor: pointer;
+	text-decoration: underline;
+}
+span.wSearchURL {
+	color: #c4c4c4;
+}
+span.wSearchContext {
+}
+div.wSearchNavigation {
+	margin-top: 10pt;
+	border-top: 1px dashed #00a6c2;
+	padding-top: 5pt;
+}
+div.wSearchBack {
+	float: left;
+	margin-right: 5pt;
+}
+a.wSearchBack {
+	margin: 0;
+	padding: 0 0 0 14px;
+	height: 100%;
+	width: 1px;
+	color: transparent;
+	background: transparent url(searchPrev.png) no-repeat center center;
+	text-decoration: none;
+}
+a.wSearchBack:hover {
+	background-image: url(searchPrevHover.png);
+}
+div.wSearchNext {
+	float: left;
+	margin-right: 5pt;
+}
+a.wSearchNext {
+	margin: 0;
+	padding: 0 0 0 14px;
+	height: 100%;
+	width: 1px;
+	color: transparent;
+	background: transparent url(searchNext.png) no-repeat center center;
+	text-decoration: none;
+}
+a.wSearchNext:hover {
+	background-image: url(searchNextHover.png);
+}
+div.wSearchPageNumbers {
+	float: left;
+	margin-right: 5pt;
+	margin-top: 0;
+}
+li.wSearchPageNumberSelected {
+	margin-right: 3pt;
+}
+li.wSearchPageNumberLink {
+	margin-right: 3pt;
+	color: #00a6c2;
+}
+li.wSearchPageNumberLink:hover {
+	text-decoration: underline;
+}
+span.wSearchPageNumberSelected {
+}
+a.wSearchPageNumberLink {
+	background-color: transparent;
+}
+/****** Search results area for small screens ******/
+div.wSearchResultsSmallScr {
+	margin-top: 10pt;
+	width: 100%;
+}
+/* No position attributes allowed */
+div.wSearchResultSettingsSmallScr {
+	height: auto;
+	overflow: visible;
+	overflow: hidden;
+	width: 90%;
+	margin-left: 5%;
+}
+div.wSearchHighlightSmallScr {
+	display: inline;
+	float: left;
+}
+input.wSearchHighlightSmallScr {
+	position: relative;
+	top: 0.75pt;
+}
+span.wSearchHighlightSmallScr {
+	margin-left: 6pt;
+}
+div.wSearchCountSmallScr {
+	float: right;
+}
+div.wSearchCountComboSmallScr {
+	float: right;
+}
+select.wSearchCountSmallScr {
+	float: right;
+	margin-right: 6pt;
+}
+div.wSearchCountMsgSmallScr {
+}
+span.wSearchCountSmallScr {
+}
+div.wSearchMessageSmallScr {
+	margin-top: 15pt;
+	margin-left: 5%;
+	width: 90%;
+	border-bottom: 1px dashed #00a6c2;
+	padding-bottom: 2pt;
+}
+span.wSearchMessageSmallScr {
+}
+div.wSearchResultItemsBlockSmallScr {
+	margin-left: 5%;
+	margin-top: 5pt;
+	width: 90%;
+}
+div.wSearchResultItemSmallScr {
+	margin-top: 10pt;
+}
+div.wSearchResultTitleSmallScr {
+	cursor: pointer;
+	text-decoration: underline;
+}
+div.wSearchResultTitleHoverSmallScr {
+	cursor: pointer;
+	text-decoration: underline;
+}
+span.wSearchURLSmallScr {
+	color: #c4c4c4;
+}
+span.wSearchContextSmallScr {
+}
+div.wSearchBackSmallScr {
+	float: left;
+	margin-right: 5pt;
+}
+a.wSearchBackSmallScr {
+	margin: 0;
+	padding: 0 0 0 14px;
+	height: 100%;
+	width: px;
+	color: transparent;
+	background: transparent url(searchPrev.png) no-repeat center center;
+	text-decoration: none;
+}
+a.wSearchBackSmallScr:hover {
+	background-image: transparent url(searchPrevHover.png);
+}
+div.wSearchNextSmallScr {
+	float: left;
+	margin-right: 5pt;
+}
+a.wSearchNextSmallScr {
+	margin: 0;
+	padding: 0 0 0 14px;
+	height: 100%;
+	width: 1px;
+	color: transparent;
+	background: transparent url(searchNext.png) no-repeat center center;
+	text-decoration: none;
+}
+a.wSearchNextSmallScr:hover {
+	background-image: transparent url(searchNextHover.png);
+}
+div.wSearchPageNumbersSmallScr {
+	float: left;
+	margin-right: 5pt;
+	margin-top: 0;
+}
+li.wSearchPageNumberSelectedSmallScr {
+	margin-right: 3pt;
+}
+li.wSearchPageNumberLinkSmallScr {
+	margin-right: 3pt;
+	color: #00a6c2;
+}
+li.wSearchPageNumberLinkSmallScr:hover {
+	text-decoration: underline;
+}
+span.wSearchPageNumberSelectedSmallScr {
+}
+a.wSearchPageNumberLinkSmallScr {
+	background-color: transparent;
+}
+/****** Show/Hide ******/
+a.wShowHide {
+	color: #ffffff;
+	margin-left: 15pt;
+	text-decoration: none;
+}
+/****** Show/Hide toggle ******/
+a.wShow {
+	color: #ffffff	 ! important ;
+	margin-left: 15pt;
+	background-color: transparent;
+	text-decoration: none;
+}
+a.wHide {
+	color: #ffffff	 ! important ;
+	margin-left: 15pt;
+	background-color: transparent;
+	text-decoration: none;
+}
+/****** Project title ******/
+span.wProjTitle {
+}
+/****** Search options (with AND) ******/
+div.wSearchField {
+	display: inline;
+}
+input.wSearchField {
+	border: 2px inset #f6f6f6;
+	padding: 3px 35px 3px 5px;
+}
+a.wSearchLink {
+	position: relative;
+	top: 0;
+	right: 20px;
+	background-color: transparent;
+}
+img.wSearchLink {
+	border: none;
+}
+input.wSearchAND {
+	position: relative;
+	top: 2pt;
+}
+span.wSearchAND {
+	position: relative;
+	top: 0.5pt;
+	left: 3pt;
+}
+/****** Search options ******/
+div.wSearchOptions {
+}
+/* No position attributes allowed */
+/****** Tabbed Panel - Horizontal (empty and not empty) ******/
+div.wTabbedPanel {
+	width: 100%;
+}
+/* No position attributes allowed */
+ul.wTabGroup {
+	background-color: #00a6c2;
+	font-size: 12pt;
+	padding: 0;
+	text-align: center;
+	height: auto;
+	padding: 0;
+	border: none;
+	border: 3px solid #00a6c2;
+}
+li.wTab {
+	padding: 0 8pt;
+	color: #ffffff;
+	cursor: pointer;
+	margin: 0 5pt;
+	white-space: nowrap;
+}
+li.wTabHover {
+	padding: 0 8pt;
+	color: #ffffff;
+	cursor: pointer;
+	margin: 0 5pt;
+	white-space: nowrap;
+}
+li.wTabSelected {
+	padding: 0 8pt;
+	color: #00a6c2;
+	background-color: #ffffff;
+	margin: 0 5pt;
+	white-space: nowrap;
+}
+span.wTabText {
+}
+div.wTabContentGroup {
+}
+div.wTabContent {
+	margin: 15pt 5% 0;
+	padding: 0 0 15pt 0;
+	width: 90%;
+	overflow: auto;
+}
+/****** Tabbed pannel - Vertical (empty and not empty) ******/
+div.wVTabbedPanel {
+	border: 1px solid #00a6c2;
+	background: #fff;
+	width: 100%;
+}
+/* No position attributes allowed */
+ul.wVTabGroup {
+	border-top: 1px solid #00a6c2;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: 12pt;
+}
+li.wVTab {
+	cursor: pointer;
+	background: #00a6c2;
+	text-align: center;
+	width: 100%;
+	color: #ffffff;
+	padding: 4pt 0;
+}
+li.wVTabHover {
+	cursor: pointer;
+	background: #00a6c2;
+	text-align: center;
+	width: 100%;
+	color: #ffffff;
+	padding: 4pt 0;
+}
+li.wVTabSelected {
+	cursor: pointer;
+	background: #fff;
+	text-align: center;
+	width: 100%;
+	color: #00a6c2;
+	padding: 4pt 0;
+}
+span.wVTabText {
+}
+div.wVTabContentGroup {
+	overflow: auto;
+}
+div.wVTabContent {
+	margin: 10pt 15pt;
+}
+/****** Loading ******/
+div.wLoadingIcon {
+	text-align: center;
+	width: 100%;
+}
+div.loadingicon {
+}
+img.wLoadingIcon {
+	border: none;
+}
+div.wLoadingText {
+	text-align: center;
+	width: 100%;
+}
+div.loadingtext {
+}
+/****** Internal widget styles ******/
+.unclickable {
+	cursor: default;
+}
+/*Modifies the cursor on hover to default*/
+.handcursor {
+	cursor: pointer;
+	cursor: hand;
+}
+/*Modifies the cursor on hover to hand*/
+.unselectable {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+}
+/*Modifies the content unselectable by mouse*/
+div.treeitem {
+	clear: both;
+	margin: 0px;
+	padding: 0px;
+}
+/*Used by TOC Tree widget*/
+li.hlist {
+	display: inline;
+}
+/*Used to display horizontal list of page numbers in search results */
+a.nolink {
+	color: #00a6c2;
+	background-color: transparent;
+	text-decoration: none;
+}
+/*Used to remove default styling of a hyperlink*/
+a.nolink:hover {
+	background-color: transparent;
+}
+div.droptext {
+	overflow: hidden;
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rhpml majorversion="6" minorversion="12">
+	<variablesets/>
+	<variables>
+		<variable>
+			<name>ProductName</name>
+			<value>BigProduct</value>
+		</variable>
+		<variable>
+			<name>RoboHelpVersion</name>
+			<value>8.0.0</value>
+		</variable>
+		<variable>
+			<name>CompanyName</name>
+			<value>BigCo</value>
+		</variable>
+	</variables>
+</rhpml>

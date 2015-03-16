@@ -1,0 +1,1 @@
+gXMLBuffer="<?xml version=\"1.0\" encoding=\"utf-8\" ?><screens defaulturl=\"desktop/index.htm\" ><screen minwidth=\"1296\" maxwidth=\"99999\"  minheight=\"0\" maxheight=\"0\" browseragent=\"\" folder=\"desktop\" defaulturl=\"desktop/index.htm\" default=\"1\" /></screens>";

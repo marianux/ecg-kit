@@ -1,0 +1,106 @@
+﻿[Target:WebHelp Pro]
+ResultFileName=!SSL!\WebHelp_Pro\ECGkit.htm
+SSLayoutType=32
+ServerProjectName=ECGkit
+CreateProjectTime=
+CreateProjectUser=
+SupportMas_MPJ=1
+[Target:WebHelp]
+ResultFileName=!SSL!\WebHelp\ECGkit.htm
+SSLayoutType=2
+CreateProjectTime=
+CreateProjectUser=
+SupportMas_MPJ=1
+[Target:Microsoft HTML Help]
+ResultFileName=!SSL!\Microsoft_HTML_Help\ECGkit.chm
+SSLayoutType=1
+CreateProjectTime=
+CreateProjectUser=
+SupportMas_MPJ=1
+[Target:FlashHelp]
+ResultFileName=!SSL!\FlashHelp\ECGkit.htm
+SSLayoutType=2
+CreateProjectTime=
+CreateProjectUser=
+SupportMas_MPJ=1
+[Target:Printed Documentation]
+ResultFileName=!SSL!\Printed_Documentation\ECGkit.doc
+SSLayoutType=7
+[Target:XML Output]
+ResultFileName=!SSL!\XML_Output\ECGkit.xml
+SSLayoutType=8129
+[Target:FlashHelp Pro]
+ResultFileName=!SSL!\FlashHelp_Pro\ECGkit.htm
+SSLayoutType=2
+CreateProjectTime=
+CreateProjectUser=
+SupportMas_MPJ=1
+[Target:Adobe AIR]
+ResultFileName=!SSL!\Adobe_AIR\ECGkit.air
+SSLayoutType=512
+CreateProjectTime=
+CreateProjectUser=
+SupportMas_MPJ=1
+[Target:Multiscreen HTML5]
+ResultFileName=!SSL!\Multiscreen_HTML5\index.htm
+SSLayoutType=2
+CreateProjectTime=17:37, March 13, 2015
+CreateProjectUser=dplab
+SupportMas_MPJ=1
+ActionID For Generation=1005
+Remove Folder with prompt=1
+Enable Result Dialog=1
+ViewFileName=!SSL!\Multiscreen_HTML5\index.htm
+ResultStatus=0
+ResultStatusSharePoint=2
+BuildTimeHi=30432717
+BuildTimeLow=-1807125942
+[Target:eBook]
+ResultFileName=!SSL!\eBook\ECGkit.epub
+SSLayoutType=2
+CreateProjectTime=
+CreateProjectUser=
+SupportMas_MPJ=1
+[Target:Responsive HTML5]
+ResultFileName=!SSL!\Responsive_HTML5\index.htm
+SSLayoutType=2
+CreateProjectTime=10:52, March 04, 2015
+CreateProjectUser=Mariano
+SupportMas_MPJ=1
+ActionID For Generation=1005
+Remove Folder with prompt=1
+ViewFileName=!SSL!\Responsive_HTML5\index.htm
+ResultStatus=0
+BuildTimeHi=30430850
+BuildTimeLow=-2030770725
+Enable Result Dialog=1
+[PreSingleSource]
+Html Help Project=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\ECGkit.hhp
+Table Of Content=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\AppHelp.hhc
+Index=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\AppHelp.hhk
+Topic Index=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\RHTopicKeyword$.hhk
+See Also Index=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\ECGkit.hha
+Browse Sequence=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\ECGkit.brs
+Glossary=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\AppHelp.glo
+Topic Properties=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\ECGkit.trs
+Active Folders=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\ECGkit.trf
+Baggage Files=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\ECGkit.trb
+Skin List=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\ECGkit.trk
+Active Layout Names=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\ECGkit.trl
+Template Files=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\ECGkit.trt
+Project TOC List=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\ECGkit.trtocl
+Project Index List=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\ECGkit.tridxl
+Project Glossary List=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\ECGkit.trglol
+Project CSS List=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\ECGkit.trcss
+Project Variable Set List=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\ECGkit.trvset
+External URL Settings=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\SearchOptions.xml
+Screen Template File Details=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\ECGkit.sctfdl
+CPSwfToHTML5Map=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\__cpSwf2HTML5ZipMap
+Default Topic=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\Getting_started.htm
+Build Tags0=5833;Online | Print
+Build Tags=
+Build Expression=
+Language ID=1033
+Language Name=en_US
+Language=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\!Language!\en_US\RoboHHRE.lng
+Stop List=D:\Mariano\misc\ECGkit\help\robohelp\ECGkit\!Language!\en_US\ECGkit.stp

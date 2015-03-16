@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" itemscope="" itemtype="http://www.mathworks.com/help/schema/MathWorksDocPage">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta charset="utf-8" content="" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="chunktype" content="refpage" />
+<meta name="refentity" itemprop="refentity" content="function:ECGwrapper" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta name="toctype" itemprop="pagetype" content="fcn" />
+<meta name="infotype" itemprop="infotype" content="ref/function" />
+<meta name="description" itemprop="description" content="This MATLAB function generates a view of a MATLAB file in HTML format for sharing your code." />
+<meta name="generator" content="Adobe RoboHelp 11" />
+<title>ECGtask</title>
+<link rel="StyleSheet" href="merged.css" type="text/css" />
+<script type="text/javascript" src="includes/product/scripts/jquery/jquery-latest.js"></script>
+<script type="text/javascript" src="includes/shared/scripts/l10n.js"></script>
+<script type="text/javascript" src="includes/shared/scripts/docscripts.js"></script>
+<script type="text/javascript" src="includes/product/scripts/docscripts.js"></script>
+<script type="text/javascript" src="includes/shared/scripts/mw.toc.js"></script>
+<script type="text/javascript" src="includes/shared/scripts/mw.imagescaling.js"></script>
+<script type="text/javascript" src="includes/shared/scripts/mw.imageanimation.js"></script>
+<script type="text/javascript" src="includes/shared/scripts/mw.breadcrumb.js"></script>
+<script type="text/javascript" src="includes/shared/scripts/jquery.highlight.js"></script>
+<script type="text/javascript" src="includes/shared/scripts/nanoscroller.min.js"></script>
+<script type="text/javascript" src="includes/product/scripts/jquery/jquery.tmpl.js"></script>
+<script type="text/javascript" src="includes/product/scripts/jquery/jquery.tmpl.min.js"></script>
+<script type="text/javascript" src="includes/product/scripts/jquery/jquery.toggleval.js"></script>
+<script type="text/javascript" src="includes/product/scripts/localnav.js"></script>
+<script type="text/javascript" src="includes/product/scripts/suggest.js"></script>
+<script type="text/javascript">//<![CDATA[
+var suggestionsObj;
+            $(function() {
+                var searchField = $('#docsearch');
+                suggestionsObj = new Suggestions(getSuggestions, getMore, searchField);
+            });
+        
+            function getSuggestions() {
+               var text = suggestionsObj.searchField.val();
+               document.location='docsuggestion:' + text;
+            }
+
+            function getMore(type) {
+                var text = suggestionsObj.searchField.val();
+                document.location='docsuggestion:' + type + ':' + text;
+            }
+//]]></script>
+</head>
+
+<body>
+<div class="site_container site_toc_opened">
+	<!--close_toc_pane-->
+		<div class="page_container">
+		<div class="content_frame">
+			<div class="content_container" id="content_container">
+				<div itemprop="content">
+					<h1 class="r2014a" itemprop="title">ECGtask</h1>
+					<!-- SYNCHTO: _funcalpha.html -->
+						<div class="doc_topic_desc">
+						<div class="purpose_container">
+							<p itemprop="purpose">Allow the access to ECG 
+							 recordings of arbitrary format and length.</p>
+							<div class="switch">
+								<a href="javascript:void(0);" id="expandAllPage">expand 
+								 all in page</a> 
+							</div>
+						</div>
+					</div>
+				</div>
+				<h2 id="syntax">Syntax</h2>
+				<div class="syntax_signature">
+					<div class="syntax_signature_module">
+						<ol>
+							<li><tt class="synopsis">ECGw = ECGwrapper()</tt> 
+							 <span class="syntax_example"><a href="ECGwrapper.html#ecgw_ex_noarg" 
+															 class="intrnllnk">example</a></span> 
+							 </li>
+							<li><tt class="synopsis">ECGw = ECGwrapper(Name,Value)</tt> 
+							 <span class="syntax_example"><a href="ECGwrapper.html#ecgw_ex_namevalue" 
+															 class="intrnllnk">example</a></span> 
+							 </li>
+						</ol>
+					</div>
+				</div>
+				<div class="clear">
+					<p>&#160;</p>
+				</div>
+				<div itemprop="content">
+					<a name="btbskip-1"></a> 
+					<h2 id="description">Description</h2>
+					<div class="descriptions">
+						<div class="description_module">
+							<div class="description_element">
+								<p>ECG wrapper is a class to allow the 
+								 access to cardiovascular signal recordings 
+								 of several formats (MIT, ISHNE, AHA, HES, 
+								 MAT) and lengths, from minutes to days. 
+								 Also an ECGtask object can be plugged 
+								 to it to perform several tasks, such as 
+								 QRS detection and ECG delineation among 
+								 others. </p>
+							</div>
+						</div>
+						<div class="description_module">
+							<div class="description_element">
+								<p class="syntax_example"><a href="ECGwrapper.html#ecgw_ex_noarg" 
+															 class="intrnllnk">example</a></p>
+								<p><span itemprop="syntax"><tt>ECGwrapper()</tt></span> 
+								 creates an ECGwrapper object with its 
+								 default values. You can set later through 
+								 its properties the recording filename 
+								 to work with, and the task to perform 
+								 on it. </p>
+							</div>
+							<div class="description_element">
+								<p class="syntax_example"><a href="ECGwrapper.html#ecgw_ex_namevalue" 
+															 class="intrnllnk">example</a></p>
+								<p><span itemprop="syntax"><tt>ECGwrapper(<a 
+								 href="#namevaluepairarguments" class="intrnllnk"><tt>Name,Value</tt></a>)</tt></span> 
+								 creates an ECGwrapper object with options 
+								 specified by one or more name-value pair 
+								 arguments. </p>
+							</div>
+						</div>
+					</div>
+					<div class="clear">
+						<p>&#160;</p>
+					</div>
+				</div>
+				<div itemprop="content">
+					<h2 id="inputs">Input Arguments</h2>
+					<div class="expandableContent">
+						<div class="arguments">
+							<div class="input_argument_container">
+								<a name="namevaluepairarguments"></a> 
+								<h3 id="namevaluepairs" class="bottom_ruled">Name-Value 
+								 Pair Arguments</h3>
+								<a name="btbgsws"></a> 
+								<div class="namevaluecontainer">
+									<p>Specify optional comma-separated 
+									 pairs of <tt>Name,Value</tt> arguments. 
+									 <tt>Name</tt> is the argument name 
+									 and <tt>Value</tt> is the corresponding 
+									 value. <tt>Name</tt> must appear inside 
+									 single quotes (<tt>' '</tt>). You 
+									 can specify several name and value 
+									 pair arguments in any order as <tt>Name1,Value1,...,NameN,ValueN</tt>.</p>
+									<span class="example_desc"><strong>Example: 
+									 </strong><tt>'recording_name','/ecg_recordings/rec1.dat', 
+									 'ECGtaskHandle', 'QRS_detection' </tt>specifies 
+									 to create an ECGwrapper to detect 
+									 heartbeats in recording '/ecg_recordings/rec1.dat' 
+									 LaTeX output file format and excludes 
+									 the code from the output.</span> 
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_outputDir"></a> 
+									<h3 id="input_argument_namevalue_outputdir" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>'recording_name'</tt> 
+									 — ECG Recording full name</span></a><span 
+									 class="example_desc"><tt>''</tt> (default)</span></span></h3>
+									<div class="collapse">
+										<p>The full path filename of the 
+										 ECG recording.</p>
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_format"></a> 
+									<h3 id="input_argument_namevalue_format" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>'recording_format'</tt> 
+									 — ECG recording format </span></a><span 
+									 class="example_desc"><tt>''</tt> (default 
+									 auto-detect) | <tt>'MIT'</tt> | <tt>'ISHNE'</tt> 
+									 | <tt>'AHA'</tt> | <tt>'HES'</tt> 
+									 | <tt>'MAT'</tt>| <tt>'Mortara'</tt></span></span></h3>
+									<div class="collapse">
+										<p>The format of the ECG recording. 
+										 By default or if not specified, 
+										 the wrapper will attemp to auto-detect 
+										 the format.</p>
+										<table class="body" style="border-collapse: separate; 
+												 border-collapse: separate;" 
+												 cellspacing="0" border="2">
+											<colgroup>	<col style="width: 50%;" />
+												<col style="width: 50%;" />
+											</colgroup>
+											<tr style="vertical-align: top;">
+												<th style="vertical-align: top; 
+													 padding-left: 4px; 
+													 padding-top: 4px; 
+													 padding-right: 4px; 
+													 padding-bottom: 4px;">Output 
+												 Format</th>
+												<th style="vertical-align: top; 
+													 padding-left: 4px; 
+													 padding-top: 4px; 
+													 padding-right: 4px; 
+													 padding-bottom: 4px;">String 
+												 Value</th>
+											</tr>
+											<tr style="vertical-align: top;">
+												<td style="padding-left: 4px; 
+													 padding-top: 4px; 
+													 padding-right: 4px; 
+													 padding-bottom: 4px;">'MIT'</td>
+												<td style="padding-left: 4px; 
+													 padding-top: 4px; 
+													 padding-right: 4px; 
+													 padding-bottom: 4px;"><tt><a 
+												 href="http://www.physionet.org/physiotools/wag/signal-5.htm">MIT 
+												 format</a></tt></td>
+											</tr>
+											<tr style="vertical-align: top;">
+												<td style="padding-left: 4px; 
+													 padding-top: 4px; 
+													 padding-right: 4px; 
+													 padding-bottom: 4px;">'ISHNE'</td>
+												<td style="padding-left: 4px; 
+													 padding-top: 4px; 
+													 padding-right: 4px; 
+													 padding-bottom: 4px;"><tt><a 
+												 href="http://thew-project.org/THEWFileFormat.htm">ISHNE 
+												 format</a></tt></td>
+											</tr>
+											<tr style="vertical-align: top;">
+												<td style="padding-left: 4px; 
+													 padding-top: 4px; 
+													 padding-right: 4px; 
+													 padding-bottom: 4px;">'AHA'</td>
+												<td style="padding-left: 4px; 
+													 padding-top: 4px; 
+													 padding-right: 4px; 
+													 padding-bottom: 4px;"><tt><a 
+												 href="https://www.ecri.org/Products/Pages/AHA_ECG_DVD.aspx" 
+												 class="corrected_url">American 
+												 Heart Association ECG 
+												 Database</a> or <a href="http://www.physionet.org/physiotools/old/dbpg/dbu_84.htm" 
+												 class="corrected_url">Physionet</a> 
+												 </tt></td>
+											</tr>
+											<tr style="vertical-align: top;">
+												<td style="padding-left: 4px; 
+													 padding-top: 4px; 
+													 padding-right: 4px; 
+													 padding-bottom: 4px;">'HES'</td>
+												<td style="padding-left: 4px; 
+													 padding-top: 4px; 
+													 padding-right: 4px; 
+													 padding-bottom: 4px;"><tt><a 
+												 href="HES-Header-Definition.pdf" 
+												 class="corrected_url">Biosigna 
+												 format</a></tt></td>
+											</tr>
+											<tr style="vertical-align: top;">
+												<td style="padding-left: 4px; 
+													 padding-top: 4px; 
+													 padding-right: 4px; 
+													 padding-bottom: 4px;">'MAT'</td>
+												<td style="padding-left: 4px; 
+													 padding-top: 4px; 
+													 padding-right: 4px; 
+													 padding-bottom: 4px;"><tt><a 
+												 href="MAT_format.html" 
+												 class="corrected_url">Matlab 
+												 file format</a></tt></td>
+											</tr>
+											<tr style="vertical-align: top;">
+												<td style="padding-left: 4px; 
+													 padding-top: 4px; 
+													 padding-right: 4px; 
+													 padding-bottom: 4px;">'Mortara'</td>
+												<td style="padding-left: 4px; 
+													 padding-top: 4px; 
+													 padding-right: 4px; 
+													 padding-bottom: 4px;"><tt><a 
+												 href="http://www.mortara.com/" 
+												 class="corrected_url">Mortara 
+												 SuperECG format</a></tt></td>
+											</tr>
+										</table>
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_outputDir"></a> 
+									<h3 id="input_argument_namevalue_outputdir" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>'this_pid'</tt> 
+									 — Process identification</span></a><span 
+									 class="example_desc"><tt>'1/1'</tt> 
+									 (default)</span></span></h3>
+									<div class="collapse">
+										<p>In case working in a multiprocess 
+										 environment, this value will identify 
+										 the current process. Can be a 
+										 numeric value, or a string of 
+										 the form 'N/M'. This pid is N 
+										 and the total amount of pid's 
+										 to divide the whole work is M.</p>
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_outputDir"></a> 
+									<h3 id="input_argument_namevalue_outputdir" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>'tmp_path'</tt> 
+									 — The path to store temporary data</span></a><span 
+									 class="example_desc"><tt>'tempdir()'</tt> 
+									 (default)</span></span></h3>
+									<div class="collapse">
+										<p>Full path to a directory with 
+										 write privileges.</p>
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_outputDir"></a> 
+									<h3 id="input_argument_namevalue_outputdir" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>'output_path'</tt> 
+									 — The output path to store results</span></a><span 
+									 class="example_desc"><tt>'fileparts(recording_name)'</tt> 
+									 (default)</span></span></h3>
+									<div class="collapse">
+										<p>Full path to a directory with 
+										 write privileges. By default will 
+										 be the same path of the recordings.</p>
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_outputDir"></a> 
+									<h3 id="input_argument_namevalue_outputdir" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>'ECGtaskHandle'</tt> 
+									 — The task to perform.</span></a><span 
+									 class="example_desc"><tt>''</tt> (default)</span></span></h3>
+									<div class="collapse">
+										<p>The task to perform, can be 
+										 the name of the task, or an ECGtask 
+										 object. Available ECGtasks can 
+										 be listed with <a href="matlab:doc('list_all_ECGtask')" 
+															 class="corrected_url">list_all_ECGtask()</a> 
+										 command.</p>
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_outputDir"></a> 
+									<h3 id="input_argument_namevalue_outputdir" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>'partition_mode'</tt> 
+									 — The way that this object will partition 
+									 lengthy signals</span></a><span class="example_desc"><tt>'ECG_overlapped'</tt> 
+									 (default)</span></span></h3>
+									<div class="collapse">
+										<p>The way that this object will 
+										 partition lengthy signals: </p>
+										<ul style="list-style: disc;">
+											<li><p>'ECG_contiguous' no 
+											 overlapp between segments.</p></li>
+											<li><p>'ECG_overlapped' overlapp 
+											 'overlapping_time' between 
+											 segments.</p></li>
+											<li><p>'QRS' do the partition 
+											 based on the annotations in 
+											 ECG_annotations.time property. 
+											 Typically but not necessary 
+											 are QRS annotations.</p></li>
+										</ul>
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_outputDir"></a> 
+									<h3 id="input_argument_namevalue_outputdir" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>'overlapping_time'</tt> 
+									 — Time in seconds of overlapp among 
+									 consequtive segments</span></a><span 
+									 class="example_desc"><tt>30</tt> (default)</span></span></h3>
+									<div class="collapse">
+										<p>Time in seconds of overlapp 
+										 among consequtive segments. This 
+										 segment is useful for ensuring 
+										 transitory responses of systems 
+										 to be finished.</p>
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_outputDir"></a> 
+									<h3 id="input_argument_namevalue_outputdir" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>'cacheResults'</tt> 
+									 — Save intermediate results to recover 
+									 in case of failure</span></a><span 
+									 class="example_desc"><tt>true</tt> 
+									 (default)</span></span></h3>
+									<div class="collapse">
+										<p>Save intermediate results to 
+										 recover in case of failure.</p>
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_outputDir"></a> 
+									<h3 id="input_argument_namevalue_outputdir" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>'syncSlavesWithMaster'</tt> 
+									 — Time in seconds of overlapp among 
+									 consequtive segments</span></a><span 
+									 class="example_desc"><tt>false</tt> 
+									 (default)</span></span></h3>
+									<div class="collapse">
+										<p>In multiprocess environments 
+										 sometimes it is useful to terminate 
+										 all pid's together in order to 
+										 start subsequent tasks synchronously.</p>
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_outputDir"></a> 
+									<h3 id="input_argument_namevalue_outputdir" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>'repetitions'</tt> 
+									 — Times to repeat the ECGtask</span></a><span 
+									 class="example_desc"><tt>1</tt> (default)</span></span></h3>
+									<div class="collapse">
+										<p>In case the ECGtask is not deterministic, 
+										 the repetition property allows 
+										 to repeat the task several times.</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div itemprop="content">
+					<div class="clear">
+						<p>&#160;</p>
+					</div>
+					<div class="examples">
+						<h2 id="examples">Examples</h2>
+						<div class="expandableContent" id="expandableExamples">
+							<p class="switch"><a href="javascript:void(0);" 
+												 class="expandAllLink">collapse 
+							 all</a></p>
+							<div class="example_module expandableContent" 
+								 id="example_1">
+								<a name="ecgw_ex_noarg"></a> 
+								<h3 class="expand"><span><a href="javascript:void(0);" 
+															 title="Expand/Collapse" 
+															 style="display: block;"><span 
+								 class="example_title">Create the simplest 
+								 ECG wrapper object</span></a></span></h3>
+								<div class="collapse" style="display: none;">
+									<p>Create the ECGwrapper object.</p>
+									<pre class="programlisting codeinput">
+&gt;&gt; ECG_w = ECGwrapper()
+ECG_w = 
+############################
+# <span style="color: #0000ff;"><strong>ECGwrapper object config</strong></span> #
+############################
++ECG recording: <span style="color: #ff0000;"><strong>None selected</strong></span>
++PID: 1/1
++Repetitions: 1
++Partition mode: ECG_overlapped
++Function name: <span style="color: #ff0000;"><strong>Null task</strong></span>
++Processed: <span style="color: #ff0000;"><strong>false</strong></span>
+				</pre>
+									<p>Then, in your script or in the command 
+									 window you can type:</p>
+									<pre class="programlisting codeinput">
+&gt;&gt; ECG_w.recording_name = 'some_path\100';
+&gt;&gt; ECG_w.ECGtaskHandle = 'QRS_detection'
+ECG_w = 
+############################
+# <span style="color: #0000ff;"><strong>ECGwrapper object config</strong></span> #
+############################
++ECG recording: <span style="color: #0000ff;"><strong>some_path\100 (auto)</strong></span>
++PID: 1/1
++Repetitions: 1
++Partition mode: ECG_overlapped
++Function name: QRS_detection
++Processed: <span style="color: #ff0000;"><strong>false</strong></span>
+				</pre>
+									<p>Now, you just want to run the task 
+									 by executing:</p>
+									<pre class="programlisting codeinput">
+&gt;&gt; ECG_w.Run();
+				</pre>
+								</div>
+							</div>
+							<div class="example_module expandableContent" 
+								 id="example_1">
+								<a name="ecgw_ex_namevalue"></a> 
+								<h3 class="expand"><span><a href="javascript:void(0);" 
+															 title="Expand/Collapse" 
+															 style="display: block;"><span 
+								 class="example_title">Create an ECGwrapper 
+								 object for an specific recording and task</span></a></span></h3>
+								<div class="collapse" style="display: none;">
+									<p>In this case, we create the same 
+									 object of the previous example but 
+									 using the name-value .</p>
+									<pre class="programlisting codeinput">
+&gt;&gt; ECG_w = ECGwrapper( ...
+		<span style="color: #A020F0;">'recording_name'</span>, <span style="color: #A020F0;">'some_path\100'</span>, ...
+		<span style="color: #A020F0;">'recording_format'</span>, <span style="color: #A020F0;">'MIT'</span>, ...
+		<span style="color: #A020F0;">'ECGtaskHandle'</span>, <span style="color: #A020F0;">'QRS_detection'</span>, ...
+		)
+ECG_w = 
+############################
+# <span style="color: #0000ff;"><strong>ECGwrapper object config</strong></span> #
+############################
++ECG recording: <span style="color: #0000ff;"><strong>some_path\100 (auto)</strong></span>
++PID: 1/1
++Repetitions: 1
++Partition mode: ECG_overlapped
++Function name: QRS_detection
++Processed: <span style="color: #ff0000;"><strong>false</strong></span>
+					
+&gt;&gt; ECG_w.Run();
+				</pre>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="clear">
+					<p>&#160;</p>
+				</div>
+				<div class="moreabout">
+					<h2 id="moreabout">More About</h2>
+					<div class="expandableContent">
+						<p class="switch"><a href="javascript:void(0);" 
+											 class="expandAllLink">expand 
+						 all</a></p>
+						<div class="expandableContent" itemprop="content">
+							<a name="btbsnu4-2"></a> 
+							<h3 class="expand"><span><a href="javascript:void(0);" 
+														 title="Expand/Collapse" 
+														 style="display: block;"><span>Other 
+							 resources</span></a></span></h3>
+							<div class="collapse">
+								<ul>
+									<li><a href="http://physionet.org/" 
+											 target="_blank">Physionet.org</a></li>
+									<li><a href="http://thew-project.org/" 
+											 target="_blank">Telemetric 
+									 and Holter ECG Warehouse (THEW)</a></li>
+									<li><a href="http://diec.unizar.es/~laguna/personal/publicaciones/publicaciones.htm" 
+											 target="_blank">Pablo Laguna 
+									 research group at University of Zaragoza</a></li>
+									<li><a href="http://cinc.org/" target="_blank">Computing 
+									 in Cardiology</a></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<h2>See Also</h2>
+				<p><span itemscope="" itemtype="http://www.mathworks.com/help/schema/MathWorksDocPage/SeeAlso" 
+						 itemprop="seealso"><span itemprop="name"><tt>ECGtask</tt></span></span> 
+				 | <span itemscope="" itemtype="http://www.mathworks.com/help/schema/MathWorksDocPage/SeeAlso" 
+						 itemprop="seealso"><a itemprop="url" href="examples.html"><span 
+				 itemprop="name"><tt>examples</tt></span></a></span> </p>
+				</section> <!--Last updated: Fri Feb  7 21:30:33 EST 2014-->
+   
+			
+			
+			
+			
+			
+			</div>
+		<!-- close_content_container -->
+		</div>
+	<!-- close_content_frame -->
+	</div>
+<!--  close_page_container -->
+</div>
+<!--  close_site_container -->
+</body>
+</html>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rhpml majorversion="6" minorversion="12">
+	<skins>
+		<skin>
+			<filename>!SkinSubFolder!\Default\Default.skn</filename>
+		</skin>
+		<skin>
+			<filename>!SkinSubFolder!\Beautiful_Vista_Flash\Beautiful_Vista_Flash.fhs</filename>
+		</skin>
+	</skins>
+</rhpml>

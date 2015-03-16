@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rhpml majorversion="6" minorversion="12">
+	<windows>
+		<window>
+			<name>WidgetMax</name>
+			<caption>WidgetMax</caption>
+			<tocfile></tocfile>
+			<indexfile></indexfile>
+			<defaultfile></defaultfile>
+			<homefile></homefile>
+			<jump1filename>http://www.widgetmax.com</jump1filename>
+			<jump1text>Web Site</jump1text>
+			<jump2filename>About.htm</jump2filename>
+			<jump2text>About</jump2text>
+			<flags>1074267424</flags>
+			<navpanewidth>0</navpanewidth>
+			<buttons>798726</buttons>
+			<windowplacement>
+				<left>0</left>
+				<top>0</top>
+				<right>800</right>
+				<bottom>600</bottom>
+			</windowplacement>
+			<windowstyle>0</windowstyle>
+			<windowstyleex>0</windowstyleex>
+			<expandedstate>0</expandedstate>
+			<defaulttab>0</defaulttab>
+			<tabposition>0</tabposition>
+			<showwindow>0</showwindow>
+		</window>
+	</windows>
+</rhpml>

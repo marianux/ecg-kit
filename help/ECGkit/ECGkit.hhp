@@ -1,0 +1,61 @@
+﻿[OPTIONS]
+Compiled File=ECGkit.chm
+Title=ECGkit
+Contents File=AppHelp.hhc
+Index File=AppHelp.hhk
+Default topic=
+Default Window=WidgetMax
+Error log file=
+Display compile progress=No
+Display compile notes=No
+Full-text search=No
+Binary Index=No
+Auto Index=No
+Enhanced decompilation=No
+Binary TOC=No
+Flat=No
+LANG_ID=1033
+LANG_NAME=English (US)
+Custom tab="&Glossary", HHActiveX.GlossaryPane
+
+[WINDOWS]
+WidgetMax="WidgetMax","AppHelp.hhc","AppHelp.hhk","","","http://www.widgetmax.com","Web Site",,,0x40080120,0,0x43006,[0,0,800,600],0x0,0x0,,0,0,0,[Glossary,HHActiveX.GlossaryPane]
+
+[FILES]
+release-notes.html
+examples.html
+Getting_started.htm
+ECGtask.htm
+functionlist.html
+contact.html
+ECGwrapper.html
+includes\product\scripts\docscripts.js
+includes\product\scripts\jquery\jquery.tmpl.js
+includes\product\scripts\jquery\jquery.tmpl.min.js
+includes\product\scripts\jquery\jquery.toggleval.js
+includes\product\scripts\jquery\jquery-latest.js
+includes\product\scripts\localnav.js
+includes\product\scripts\suggest.js
+includes\shared\scripts\docscripts.js
+includes\shared\scripts\jquery.highlight.js
+includes\shared\scripts\l10n.js
+includes\shared\scripts\mw.breadcrumb.js
+includes\shared\scripts\mw.imageanimation.js
+includes\shared\scripts\mw.imagescaling.js
+includes\shared\scripts\mw.toc.js
+includes\shared\scripts\nanoscroller.min.js
+
+AppHelp.glo
+ECGkit.brs
+[ALIAS]
+#include ECGkit.ali
+
+[MAP]
+#include BSSCDefault.h
+#include WidgetMax.h
+
+[TEXT POPUPS]
+BSSCDefault.h
+WidgetMax.h
+
+

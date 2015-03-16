@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html itemscope="" itemtype="http://www.mathworks.com/help/schema/MathWorksDocPage" 
+ xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta charset="utf-8" content="" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta name="toctype" itemprop="pagetype" content="cat" />
+<meta name="infotype" itemprop="infotype" content="cat" />
+<meta name="description" itemprop="description" content="Syntax, operators, data types, array indexing and manipulation" />
+<meta name="generator" content="Adobe RoboHelp 11" />
+<title>Functionlist</title>
+<link rel="StyleSheet" href="merged.css" type="text/css" />
+<script type="text/javascript" src="./includes/product/scripts/jquery/jquery-latest.js"></script>
+<script type="text/javascript" src="./includes/shared/scripts/l10n.js"></script>
+<script type="text/javascript" src="./includes/shared/scripts/docscripts.js"></script>
+<script type="text/javascript" src="./includes/product/scripts/docscripts.js"></script>
+<script type="text/javascript" src="./includes/shared/scripts/mw.toc.js"></script>
+<script type="text/javascript" src="./includes/shared/scripts/mw.imagescaling.js"></script>
+<script type="text/javascript" src="./includes/shared/scripts/mw.imageanimation.js"></script>
+<script type="text/javascript" src="./includes/shared/scripts/mw.breadcrumb.js"></script>
+<script type="text/javascript" src="./includes/shared/scripts/jquery.highlight.js"></script>
+<script type="text/javascript" src="./includes/shared/scripts/nanoscroller.min.js"></script>
+<script type="text/javascript" src="./includes/product/scripts/jquery/jquery.tmpl.js"></script>
+<script type="text/javascript" src="./includes/product/scripts/jquery/jquery.tmpl.min.js"></script>
+<script type="text/javascript" src="./includes/product/scripts/jquery/jquery.toggleval.js"></script>
+<script type="text/javascript" src="./includes/product/scripts/localnav.js"></script>
+<script type="text/javascript" src="./includes/product/scripts/suggest.js"></script>
+<script type="text/javascript">//<![CDATA[
+            var suggestionsObj;
+            $(function() {
+                var searchField = $('#docsearch');
+                suggestionsObj = new Suggestions(getSuggestions, getMore, searchField);
+            });
+        
+            function getSuggestions() {
+               var text = suggestionsObj.searchField.val();
+               document.location='docsuggestion:' + text;
+            }
+
+            function getMore(type) {
+                var text = suggestionsObj.searchField.val();
+                document.location='docsuggestion:' + type + ':' + text;
+            }
+//]]></script>
+<script type="text/javascript">//<![CDATA[
+           $(function() {
+               $('h3.expand').click(function() {
+                   var h3elt = $(this);
+                   h3elt.siblings('.collapse').slideToggle();
+                   h3elt.toggleClass('open');
+                   h3elt.children('a').toggleClass('open'); 
+               });
+               $('h3.expand').wrapInner('<a style="display:block" href="#" title="Expand/Collapse" />');
+           });
+//]]></script>
+<script type="text/javascript">//<![CDATA[
+   $(document).ready(function(){
+
+   
+       if (location.hash == '#bth9dea-1') {
+           $("li.bth9dea-1>h3").click()
+       }
+   
+       if (location.hash == '#language-fundamentals') {
+           $("li.language-fundamentals>h3").click()
+       }
+   
+       if (location.hash == '#mathematics') {
+           $("li.mathematics>h3").click()
+       }
+   
+       if (location.hash == '#graphics') {
+           $("li.graphics>h3").click()
+       }
+   
+       if (location.hash == '#programming-and-data-types') {
+           $("li.programming-and-data-types>h3").click()
+       }
+   
+       if (location.hash == '#data-and-file-management') {
+           $("li.data-and-file-management>h3").click()
+       }
+   
+       if (location.hash == '#gui-development') {
+           $("li.gui-development>h3").click()
+       }
+   
+       if (location.hash == '#external-interfaces') {
+           $("li.external-interfaces>h3").click()
+       }
+   
+       if (location.hash == '#desktop-tools-and-development-environment') {
+           $("li.desktop-tools-and-development-environment>h3").click()
+       }
+   
+
+   });
+//]]></script>
+</head>
+
+<body>
+<h1 itemprop="title content" class="r2013b">ECGkit</h1>
+<div class="doc_topic_desc" itemprop="content purpose">
+	A toolbox for cardiovascular signal processing 
+</div>
+<h3>Base classes</h3>
+<div class="doc_topic_desc">
+	The base classes to access signal recordings and perform ECG, PPG and 
+	 ABP tasks. 
+</div>
+<ul class="unbulleted_list" itemprop="content">
+	<li><span class="dcenter_c1title"><a href="ECGwrapper.html">ECG wrapper</a></span><br />
+	</li>
+	<li><span class="dcenter_c1title"><a href="ECG_task.html">ECG task</a></span><br />
+	</li>
+	<li style="list-style: none;"><br />
+	
+	<h3>Signal processing</h3>
+	<div class="doc_topic_desc">
+		Methods to perform QRS and pulse detection, classification and 
+		 wave delineation. 
+	</div>
+	<ul class="unbulleted_list" itemprop="content">
+		<li><span class="dcenter_c1title">QRS detection task</span><br />
+		</li>
+		<li><span class="dcenter_c1title"><a href="ABP_PPG_peak_detection.html">PPG/ABP 
+		 pulse detection task</a></span><br />
+		</li>
+		<li><span class="dcenter_c1title"><a href="ECG_delineation.html">ECG 
+		 delineation task</a></span><br />
+		</li>
+		<li><span class="dcenter_c1title"><a href="Heartbeat_classification.html">Heartbeat 
+		 classification task</a></span><br />
+		</li>
+		<li style="list-style: none;"><br />
+		
+		<h3>Plotting and reporting</h3>
+		<div class="doc_topic_desc">
+			Plot signals, annotations, allow GUI interaction and reporting. 
+			 
+		</div></li>
+		<li><span class="dcenter_c1title"><a href="QRS_correction.html">QRS 
+		 manual correction task</a></span><br />
+		</li>
+		<li><span class="dcenter_c1title"><a href="PPG_ABP_correction.html">PPG/ABP 
+		 manual correction task</a></span><br />
+		</li>
+		<li><span class="dcenter_c1title">ECG delineation correction task</span><br />
+		</li>
+		<li><span class="dcenter_c1title"><a href="plot_ecg_strip.html">ECG 
+		 strip visualization</a></span><br />
+		</li>
+		<li><span class="dcenter_c1title"><a href="plot_ecg_mosaic.html">ECG 
+		 mosaic visualization</a></span><br />
+		</li>
+	</ul>
+	<br />
+	
+	<h3>ECGkit extension</h3>
+	<div class="doc_topic_desc">
+		Howto extend the ECGwrapper to new recording formats, create/modify 
+		 ECG tasks. 
+	</div></li>
+	<li><span class="dcenter_c1title"><a href="Custom_formats.html">Custom 
+	 signal recording format</a></span><br />
+	</li>
+	<li><span class="dcenter_c1title"><a href="New_ECGtasks.html">Adding 
+	 new ECGtasks</a></span><br />
+	</li>
+</ul>
+</body>
+</html>
