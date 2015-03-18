@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="generator" content="Adobe RoboHelp 10" />
+<title>Search Results Page</title>
+<link type="text/css" rel="Stylesheet" href="Layout.css" />
+</head>
+
+<body>
+<div class="topbanner">
+	<div class="logo">
+	</div>
+</div>
+<div class="titleholder">
+	<table class="titleholdertable">
+		<col style="width: 33.333%;" />
+		<col style="width: 33.333%;" />
+		<col style="width: 33.333%;" />
+		<tr>
+			<td>&#160;</td>
+			<td class="title"><?rh-variable_start name="project-title" 
+													 format="default" value="Lorem Ipsum" ?>Lorem Ipsum<?rh-variable_end ?></td>
+			<td class="home"><a href="Topic.slp"><img src="home_default.png" 
+														 alt="Home" title="Home" 
+														 width="26" height="24" 
+														 border="0" /></a></td>
+		</tr>
+	</table>
+</div>
+<div class="contentholder">
+	<div class="contentholdertop">
+		<p>&#160;</p>
+	</div>
+	<div class="contentoptionssearch">
+		<table class="searchoptionstable">
+			<tr>
+				<td><div class="wSearchField">
+					<?rh-msp-search-text-box id="searchBox" widgettype="searchfieldAND" 
+											 placeholder="{{Search}}" class="wSearchField" 
+											 type="search" ?><?rh-msp-search-link-start 
+					 class="wSearchLink" widgettype="navlinksearch" related-id="searchBox" ?><img 
+					 src="Search.png" alt="" class="wSearchLink" border="0" /><?rh-msp-search-link-end ?> 
+					 
+				</div>
+				<?rh-msp-search-and-control id="andsearch" widgettype="andsearch" 
+											 type="checkbox" class="wSearchAND" ?><?rh-lng-string 
+				 lngname="EnableAndSearch" class="wSearchAND" lngvalue="Show results containing all words" ?> 
+				 </td>
+			</tr>
+		</table>
+	</div>
+	<div class="content">
+		<?rh-msp-search-results-start widgettype="searchresult" class="wSearchResults" ?>
+			<div class="wSearchResultSettings">
+				<div class="wSearchHighlight">
+					<?rh-msp-search-highlight-control id="highlightsearch" 
+														 widgettype="highlightsearch" 
+														 type="checkbox" 
+														 checked="true" 
+														 class="wSearchHighlight" 
+														 textcolorval="#000000" 
+														 bgcolorval="#00a6c2" ?><?rh-lng-string 
+					 widgettype="lngstring" lngname="HighlightSearchResults" 
+					 class="wSearchHighlight" lngvalue="Highlight search results" ?> 
+					 
+				</div>
+				<div class="wSearchCount">
+					<?rh-msp-search-count-combo-start class="wSearchCount" 
+														 id="searchResCount" 
+														 widgettype="searchcount" 
+														 option="5|5;10|10;15|15;20|20;25|25;30|30;35|35;40|40;45|45;50|50;-1|{{ShowAll}}" ?>
+					<?rh-msp-search-count-combo-end ?><?rh-lng-string widgettype="lngstring" 
+					 lngname="SearchResultsPerScreen" class="wSearchCount" 
+					 lngvalue="Search results per screen" ?> 
+				</div>
+			</div>
+			<div class="wSearchMessage">
+				<?rh-msp-search-message id="searchMsg" class="wSearchMessage" ?> 
+				 
+			</div>
+			<div class="wSearchResultItemsBlock">
+				<?rh-msp-search-result-item-start id="searchResList" class="wSearchResultItem" ?>
+					<?rh-msp-search-result-title class="wSearchResultTitle" 
+												 classhover="wSearchResultTitleHover" ?>
+					
+					<?rh-msp-search-result-url class="wSearchURL" ?> <br />
+					<?rh-msp-search-result-context class="wSearchContext" ?> 
+					 
+				<?rh-msp-search-result-item-end ?>
+				<div class="wSearchNavigation">
+					<div class="wSearchBack">
+						<?rh-msp-search-back-start widgettype="navlinksearchback" 
+													 id="searchprev" class="wSearchBack" ?>&lt; 
+						 <?rh-msp-search-back-end ?>
+					</div>
+					<?rh-msp-search-page-nos id="pageList" class="wSearchPageNumbers" 
+											 classpagelink="wSearchPageNumberLink" 
+											 classpage="wSearchPageNumberSelected" ?>
+					
+					<div class="wSearchNext">
+						<?rh-msp-search-next-start widgettype="navlinksearchnext" 
+													 id="searchnext" class="wSearchNext" ?>&gt; 
+						 <?rh-msp-search-next-end ?>
+					</div>
+				</div>
+			</div>
+		<?rh-msp-search-results-end ?>
+	</div>
+</div>
+<div class="bottomshadowholder">
+	<p>&#160;</p>
+</div>
+</body>
+</html>

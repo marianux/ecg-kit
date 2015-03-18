@@ -2,7 +2,13 @@
 <rhpml majorversion="6" minorversion="12">
 	<folders>
 		<folder>
-			<name>Desktop_Catalog</name>
+			<name>pepe</name>
+		</folder>
+		<folder>
+			<name>Desktop_Government</name>
+		</folder>
+		<folder>
+			<name>my_layout</name>
 		</folder>
 	</folders>
 </rhpml>

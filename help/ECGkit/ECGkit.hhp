@@ -22,13 +22,28 @@ Custom tab="&Glossary", HHActiveX.GlossaryPane
 WidgetMax="WidgetMax","AppHelp.hhc","AppHelp.hhk","","","http://www.widgetmax.com","Web Site",,,0x40080120,0,0x43006,[0,0,800,600],0x0,0x0,,0,0,0,[Glossary,HHActiveX.GlossaryPane]
 
 [FILES]
+ABP_PPG_peak_correction.htm
+ECG_delineation_corrector.htm
+Arbitrary_tasks.htm
+ECGdelineation.htm
+ECG_heartbeat_classifier.htm
 release-notes.html
+QRScorrector.htm
+Matlab_format.htm
+QRS_detection.htm
 examples.html
+ABP_PPG_peak_detection.htm
 Getting_started.htm
 ECGtask.htm
+extensions.htm
 functionlist.html
 contact.html
+plot_ecg_mosaic.htm
+custom_formats.htm
 ECGwrapper.html
+plot_ecg_strip.htm
+list_all_ECGtask.htm
+reportECG.htm
 includes\product\scripts\docscripts.js
 includes\product\scripts\jquery\jquery.tmpl.js
 includes\product\scripts\jquery\jquery.tmpl.min.js

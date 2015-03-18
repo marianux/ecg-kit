@@ -1,0 +1,1 @@
+gXMLBuffer ="<?xml version=\"1.0\" encoding=\"utf-8\" ?><data  src=\"toc2.js\"  name=\"Plotting and reporting\"><item name=\"reportECG\" url=\"reportECG.htm\" /><item name=\"plot_ecg_strip\" url=\"plot_ecg_strip.htm\" /><item name=\"plot_ecg_mosaic\" url=\"plot_ecg_mosaic.htm\" /></data>";

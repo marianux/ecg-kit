@@ -1,1 +1,1 @@
-gXMLBuffer="<?xml version=\"1.0\" encoding=\"UTF-8\"?><cki><ck fm=\"Ask for help\" to=\"Release notes\" num=\"7\"/></cki>";
+gXMLBuffer="<?xml version=\"1.0\" encoding=\"UTF-8\"?><cki><ck fm=\"ABP_PPG_peak_correction\" to=\"reportECG\" num=\"22\"/></cki>";

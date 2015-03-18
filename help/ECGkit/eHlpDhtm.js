@@ -9,7 +9,7 @@
 /// Section Begin - General and relative topics(JavaScript 1.0)
 
 //{{HH_SYMBOL_SECTION
-var HH_ChmFilename = "D:\\Mariano\\misc\\ECGkit\\help\\robohelp\\ECGkit\\ECGkit.chm";
+var HH_ChmFilename = "D:\\Mariano\\misc\\ECGkit\\help\\ECGkit\\ECGkit.chm";
 var HH_WindowName = "WidgetMax";
 var HH_GlossaryFont = "";
 var HH_Glossary = "1";
