@@ -75,7 +75,6 @@ classdef ECGtask_QRS_detection < ECGtask
     
     properties
         progress_handle
-        user_string = '';
         tmp_path
         detectors = 'all-detectors';
         only_ECG_leads = false;

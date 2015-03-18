@@ -55,7 +55,6 @@ classdef ECGtask_classification_features_calc < ECGtask
         recording_format
         class_labeling
         autovec
-        user_string = 'results'
         tmp_path
         signal_payload = false
         

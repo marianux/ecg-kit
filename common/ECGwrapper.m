@@ -289,10 +289,10 @@ classdef ECGwrapper < handle
             cprintf( 'Blue', disp_option_enumeration( 'Description of the process:', { ['Recording: ' obj.recording_name] ['Task name: ' obj.ECGtaskHandle.name] } ));
             fprintf(1, '\n');
             
-            if( isempty(obj.ECGtaskHandle.user_string) )
+            if( isempty(obj.user_string) )
                 aux_user_prefix = [];
             else
-                aux_user_prefix= [obj.ECGtaskHandle.user_string '_'];
+                aux_user_prefix= [obj.user_string '_'];
             end
             
             % check for cached results
@@ -873,10 +873,10 @@ classdef ECGwrapper < handle
                                         files_this_pid = dir([obj.output_path 'payloads_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_*.mat']);
                                         cant_iteraciones_this_pid = length(files_this_pid);
 
-                                        if( isempty(obj.ECGtaskHandle.user_string) )
+                                        if( isempty(obj.user_string) )
                                             aux_user_prefix = [];
                                         else
-                                            aux_user_prefix= [obj.ECGtaskHandle.user_string '_'];
+                                            aux_user_prefix= [obj.user_string '_'];
                                         end
 
                                         for jj = 1:cant_iteraciones_this_pid
@@ -1540,9 +1540,6 @@ classdef ECGwrapper < handle
                     obj.ECGtaskHandle = ECGtask_do_nothing();
                 else
                     obj.ECGtaskHandle = obj.cKnownECGtasksHdl{aux_idx};
-                    if( ~isempty(obj.user_string) )
-                        obj.ECGtaskHandle.user_string = obj.user_string;
-                    end
                     obj.bArgChanged = true;
                 end
             elseif( isempty(value) )

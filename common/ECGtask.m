@@ -37,7 +37,6 @@ classdef ECGtask < handle
     
     properties(Abstract = true)
         progress_handle
-        user_string
         tmp_path
         signal_payload
     end

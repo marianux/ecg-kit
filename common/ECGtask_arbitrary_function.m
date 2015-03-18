@@ -43,7 +43,6 @@ classdef ECGtask_arbitrary_function < ECGtask
     properties
         
         progress_handle 
-        user_string = ''
         tmp_path
         
         function_pointer

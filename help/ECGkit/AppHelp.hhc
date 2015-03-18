@@ -2,8 +2,6 @@
 <toc version="1.0">
 	<properties imagewidth="16" windowstyles="8388610" exwindowstyles="256">
 	</properties>
-	<item name="Procedures">
-	</item>
 	<item name="Reference">
 		<item name="Getting Started" link="Getting_started.htm">
 		</item>
@@ -20,7 +18,7 @@
 				<item name="ECGtask" link="ECGtask.htm">
 				</item>
 			</item>
-			<item name="Signal processing">
+			<item name="Commmon tasks">
 				<item name="QRS_detection" link="QRS_detection.htm">
 				</item>
 				<item name="QRS_correction" link="QRScorrector.htm">
@@ -35,13 +33,13 @@
 				</item>
 				<item name="ECG_heartbeat_classifier" link="ECG_heartbeat_classifier.htm">
 				</item>
-			</item>
-			<item name="Plotting and reporting">
-				<item name="reportECG" link="reportECG.htm">
-				</item>
-				<item name="plot_ecg_strip" link="plot_ecg_strip.htm">
-				</item>
-				<item name="plot_ecg_mosaic" link="plot_ecg_mosaic.htm">
+				<item name="Plotting and reporting">
+					<item name="reportECG" link="reportECG.htm">
+					</item>
+					<item name="plot_ecg_strip" link="plot_ecg_strip.htm">
+					</item>
+					<item name="plot_ecg_mosaic" link="plot_ecg_mosaic.htm">
+					</item>
 				</item>
 			</item>
 			<item name="ECGkit extension">

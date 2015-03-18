@@ -48,7 +48,6 @@ classdef ECGtask_PCA_proj_basis < ECGtask
         progress_handle 
         cant_QRS_locations
         autovec
-        user_string = 'results'
         tmp_path
         signal_payload = false
         

@@ -56,33 +56,18 @@ var suggestionsObj;
 			<div class="content_container" id="content_container">
 				<a name="btbskip"></a> 
 				<div itemprop="content">
-					<h1 class="r2013b" itemprop="title">ABP/PPG peak detection 
-					 task</h1>
+					<h1 class="r2013b" itemprop="title">QRS detection</h1>
+					<p class="r2013b">&#160;</p>
 					<!-- SYNCHTO: _funcalpha.html -->
 						<div class="doc_topic_desc">
 						<div class="purpose_container">
-							<p itemprop="purpose">Allow the access to ECG 
-							 recordings of arbitrary format and length.</p>
+							<p itemprop="purpose">This document describes 
+							 how to perform QRS detection..</p>
 							<div class="switch">
 								<a href="javascript:void(0);" id="expandAllPage">expand 
 								 all in page</a> 
 							</div>
 						</div>
-					</div>
-				</div>
-				<h1 id="syntax" class="r2013b">Syntax</h1>
-				<div class="syntax_signature">
-					<div class="syntax_signature_module">
-						<ul>
-							<li><tt class="synopsis">ECGw = ECGwrapper()</tt> 
-							 <span class="syntax_example"><a href="ECGwrapper.html#ecgw_ex_noarg" 
-															 class="intrnllnk">example</a></span> 
-							 </li>
-							<li><tt class="synopsis">ECGw = ECGwrapper(Name,Value)</tt> 
-							 <span class="syntax_example"><a href="ECGwrapper.html#ecgw_ex_namevalue" 
-															 class="intrnllnk">example</a></span> 
-							 </li>
-						</ul>
 					</div>
 				</div>
 				<div class="clear">
@@ -92,50 +77,39 @@ var suggestionsObj;
 					<a name="btbskip-1"></a> 
 					<h1 id="description" class="r2013b">Description</h1>
 					<div class="descriptions">
-						<div class="description_module">
-							<div class="description_element">
-								<p>ECG wrapper is a class to allow the 
-								 access to cardiovascular signal recordings 
-								 of several formats (MIT, ISHNE, AHA, HES, 
-								 MAT) and lengths, from minutes to days. 
-								 Also an ECGtask object can be plugged 
-								 to it to perform several tasks, such as 
-								 QRS detection and ECG delineation among 
-								 others. </p>
-							</div>
-						</div>
-						<div class="description_module">
-							<div class="description_element">
-								<p class="syntax_example"><a href="ECGwrapper.html#ecgw_ex_noarg" 
-															 class="intrnllnk">example</a></p>
-								<p><span itemprop="syntax"><tt>ECGwrapper()</tt></span> 
-								 creates an ECGwrapper object with its 
-								 default values. You can set later through 
-								 its properties the recording filename 
-								 to work with, and the task to perform 
-								 on it. </p>
-							</div>
-							<div class="description_element">
-								<p class="syntax_example"><a href="ECGwrapper.html#ecgw_ex_namevalue" 
-															 class="intrnllnk">example</a></p>
-								<p><span itemprop="syntax"><tt>ECGwrapper(<a 
-								 href="#namevaluepairarguments" class="intrnllnk"><tt>Name,Value</tt></a>)</tt></span> 
-								 creates an ECGwrapper object with options 
-								 specified by one or more name-value pair 
-								 arguments. </p>
-							</div>
-						</div>
+						<p>This task is probably one of the first and most 
+						 important when you process cardiovascular recordings. 
+						 The ECGkit has several algorithms to perform this 
+						 task:</p>
+						<ul style="list-style: disc;">
+							<li>Wavedet</li>
+							<li>gqrs</li>
+							<li>wqrs</li>
+							<li>Pan and Tompkins&#160;</li>
+							<li>ECGpuwave</li>
+							<li>Aristotle</li>
+						</ul>
+						<p>You can use any or all the algorithms as you 
+						 will see below or you can even add your own algorithms 
+						 if you follow an easy interface, as described 
+						 HERE LINK. The results are stored in a single 
+						 file, that you can use to perform other subsequent 
+						 tasks, such as ECG delineation or even the visual 
+						 inspection of the algorithm results. For a quick 
+						 reference about using the algorithms you can refer 
+						 to this <a href="examples.html#QRS_automatic_detection">example</a></p>
 					</div>
 					<div class="clear">
 						<p>&#160;</p>
 					</div>
 				</div>
 				<div itemprop="content">
-					<h1 id="inputs" class="r2013b">Input Arguments</h1>
+					<h1 id="inputs" class="r2013b">Properties</h1>
 					<div class="expandableContent">
 						<div class="arguments">
 							<div class="input_argument_container">
-								<a name="namevaluepairarguments"></a> 
+								<a name="Name-Value_Pair_Arguments"></a> 
+								 
 								<h3 id="namevaluepairs" class="bottom_ruled">Name-Value 
 								 Pair Arguments</h3>
 								<a name="btbgsws"></a> 
@@ -152,9 +126,8 @@ var suggestionsObj;
 									 </strong><tt>'recording_name','/ecg_recordings/rec1.dat', 
 									 'ECGtaskHandle', 'QRS_detection' </tt>specifies 
 									 to create an ECGwrapper to detect 
-									 heartbeats in recording '/ecg_recordings/rec1.dat' 
-									 LaTeX output file format and excludes 
-									 the code from the output.</span> 
+									 heartbeats in recording '/ecg_recordings/rec1.dat'.</span> 
+									 
 								</div>
 								<div class="expandableContent">
 									<a name="inputarg_outputDir"></a> 
@@ -253,10 +226,8 @@ var suggestionsObj;
 												<td style="padding-left: 4px; 
 													 padding-top: 4px; 
 													 padding-right: 4px; 
-													 padding-bottom: 4px;"><tt><a 
-												 href="HES-Header-Definition.pdf" 
-												 class="corrected_url">Biosigna 
-												 format</a></tt></td>
+													 padding-bottom: 4px;"><tt>Biosigna 
+												 format</tt></td>
 											</tr>
 											<tr style="vertical-align: top;">
 												<td style="padding-left: 4px; 
@@ -267,7 +238,7 @@ var suggestionsObj;
 													 padding-top: 4px; 
 													 padding-right: 4px; 
 													 padding-bottom: 4px;"><tt><a 
-												 href="MAT_format.html" 
+												 href="Matlab_format.htm" 
 												 class="corrected_url">Matlab 
 												 file format</a></tt></td>
 											</tr>
@@ -338,11 +309,11 @@ var suggestionsObj;
 								<div class="expandableContent">
 									<a name="inputarg_outputDir"></a> 
 									<h3 id="input_argument_namevalue_outputdir" 
-										 class="expand"><span><a href="javascript:void(0);" 
-									 title="Expand/Collapse" style="display: block;"><span 
-									 class="argument_name"><tt>'ECGtaskHandle'</tt> 
-									 — The task to perform.</span></a><span 
-									 class="example_desc"><tt>''</tt> (default)</span></span></h3>
+										 class="expand"><span class="argument_name"><a 
+									 href="javascript:void(0);" title="Expand/Collapse" 
+									 style="display: block;"><tt>'ECGtaskHandle'</tt> 
+									 — The task to perform.</a></span><span 
+									 class="example_desc"><tt>''</tt> (default)</span></h3>
 									<div class="collapse">
 										<p>The task to perform, can be 
 										 the name of the task, or an ECGtask 
@@ -353,7 +324,9 @@ var suggestionsObj;
 									</div>
 								</div>
 								<div class="expandableContent">
-									<a name="inputarg_outputDir"></a> 
+									<span class="argument_name"><tt><a 
+									 name="inputarg_ECGtask"></a></tt></span> 
+									 
 									<h3 id="input_argument_namevalue_outputdir" 
 										 class="expand"><span><a href="javascript:void(0);" 
 									 title="Expand/Collapse" style="display: block;"><span 
@@ -362,19 +335,26 @@ var suggestionsObj;
 									 lengthy signals</span></a><span class="example_desc"><tt>'ECG_overlapped'</tt> 
 									 (default)</span></span></h3>
 									<div class="collapse">
-										<p>The way that this object will 
-										 partition lengthy signals: </p>
+										<p>The way to do batch partition 
+										 in lengthy signals:</p>
 										<ul style="list-style: disc;">
 											<li><p>'ECG_contiguous' no 
 											 overlapp between segments.</p></li>
 											<li><p>'ECG_overlapped' overlapp 
-											 'overlapping_time' between 
-											 segments.</p></li>
+											 of 'overlapping_time' among 
+											 segments. This can be useful 
+											 if your task have a transient 
+											 period to avoid. </p></li>
 											<li><p>'QRS' do the partition 
-											 based on the annotations in 
-											 ECG_annotations.time property. 
-											 Typically but not necessary 
-											 are QRS annotations.</p></li>
+											 based on the annotations provided 
+											 in ECG_annotations.time property. 
+											 This option is useful if your 
+											 task works in the boundaries 
+											 of a fiducial point (commonly 
+											 a heartbeat), and not in the 
+											 whole signal. This partition 
+											 mode ignores those parts of 
+											 the recording without annotations.</p></li>
 										</ul>
 									</div>
 								</div>
@@ -391,8 +371,8 @@ var suggestionsObj;
 										<p>Time in seconds of overlapp 
 										 among consequtive segments. This 
 										 segment is useful for ensuring 
-										 transitory responses of systems 
-										 to be finished.</p>
+										 the end of all transients within 
+										 a task.</p>
 									</div>
 								</div>
 								<div class="expandableContent">
@@ -407,7 +387,8 @@ var suggestionsObj;
 									 (default)</span></span></h3>
 									<div class="collapse">
 										<p>Save intermediate results to 
-										 recover in case of failure.</p>
+										 recover in case of errors. Useful 
+										 for long jobs or recordings.</p>
 									</div>
 								</div>
 								<div class="expandableContent">
@@ -424,7 +405,10 @@ var suggestionsObj;
 										<p>In multiprocess environments 
 										 sometimes it is useful to terminate 
 										 all pid's together in order to 
-										 start subsequent tasks synchronously.</p>
+										 start subsequent tasks synchronously. 
+										 This value forces all parts of 
+										 a multipart process to wait until 
+										 all other parts finish.</p>
 									</div>
 								</div>
 								<div class="expandableContent">

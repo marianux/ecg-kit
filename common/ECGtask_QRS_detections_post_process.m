@@ -78,7 +78,6 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
     properties
         post_proc_func
         progress_handle
-        user_string = '';
         payload
         tmp_path
         CalculatePerformance = false;

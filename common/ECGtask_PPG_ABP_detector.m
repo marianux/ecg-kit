@@ -45,7 +45,6 @@ classdef ECGtask_PPG_ABP_detector < ECGtask
     
     properties
         progress_handle
-        user_string = '';
         tmp_path
         detectors = 'all-detectors';
         lead_config = 'PPG-ABP-only';

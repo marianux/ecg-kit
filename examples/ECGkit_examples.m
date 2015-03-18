@@ -176,13 +176,6 @@ function ECGkit_examples(pid_str, examples_path, user_str)
 %         "your_QRS_detector_func_name" can be your own detector.
         ECGt_QRSd.detectors = {'wavedet' 'gqrs' 'wqrs' 'user:example_worst_ever_QRS_detector'};    
 
-        % you can individualize each run of the QRS detector with an
-        % external string
-        ECGt_QRSd.user_string = user_str;
-        % or group by the config used
-%         ECGt_QRSd.user_string = ECGt_QRSd.detectors;
-        
-        
 %         ECGt_QRSd.only_ECG_leads = false;    % consider all signals ECG
         ECGt_QRSd.only_ECG_leads = true;    % Identify ECG signals based on their header description.
         
@@ -192,6 +185,10 @@ function ECGkit_examples(pid_str, examples_path, user_str)
                             'output_path', output_path, ...
                             'ECGtaskHandle', ECGt_QRSd);
         
+        % you can individualize each run of the QRS detector with an
+        % external string
+        ECGt_QRSd.user_string = user_str;
+                        
         try
             
             % process the task
@@ -266,9 +263,6 @@ function ECGkit_examples(pid_str, examples_path, user_str)
                         
                         % This task is supposed to be supervised, so only one pid is enough.
                         ECG_all_wrappers(ii).this_pid = '1/1';
-
-                        % user provided name to individualize each run
-                        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
                         
                         % to avoid loading cached results and exit, this flag
                         % allows the re-editing of the current state of the
@@ -338,9 +332,6 @@ function ECGkit_examples(pid_str, examples_path, user_str)
         % set the delineator task name and run again.
         ECG_all_wrappers(ii).ECGtaskHandle = 'PPG_ABP_detector';
 
-        % user provided name to individualize each run
-        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
-
         % process the task
         ECG_all_wrappers(ii).Run;
         
@@ -394,9 +385,6 @@ function ECGkit_examples(pid_str, examples_path, user_str)
                         % This task is supposed to be supervised, so only one pid is enough.
                         ECG_all_wrappers(ii).this_pid = '1/1';
 
-                        % user provided name to individualize each run
-                        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
-                        
                         % to avoid loading cached results and exit, this flag
                         % allows the re-editing of the current state of the
                         % detections.
@@ -463,9 +451,6 @@ function ECGkit_examples(pid_str, examples_path, user_str)
         % set the delineator task name and run again.
         ECG_all_wrappers(ii).ECGtaskHandle = 'ECG_delineation';
 
-        % user provided name to individualize each run
-        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
-        
         % Identify ECG signals based on their header description and
         % perform delineation in those leads.
         ECG_all_wrappers(ii).ECGtaskHandle.only_ECG_leads = true;
@@ -530,9 +515,6 @@ function ECGkit_examples(pid_str, examples_path, user_str)
                         % This task is supposed to be supervised, so only one pid is enough.
                         ECG_all_wrappers(ii).this_pid = '1/1';
 
-                        % user provided name to individualize each run
-                        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
-                        
                         % to avoid loading cached results and exit, this flag
                         % allows the re-editing of the current state of the
                         % detections.
@@ -611,9 +593,6 @@ function ECGkit_examples(pid_str, examples_path, user_str)
             ECG_all_wrappers(ii).ECGtaskHandle.mode = 'auto';
 %             ECG_all_wrappers(ii).ECGtaskHandle.mode = 'slightly-assisted';
 %             ECG_all_wrappers(ii).ECGtaskHandle.mode = 'assisted';
-
-            % user provided name to individualize each run
-            ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
 
             % process the task
             ECG_all_wrappers(ii).Run;

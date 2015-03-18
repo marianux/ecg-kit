@@ -86,7 +86,6 @@ classdef ECGtask_ECG_delineation < ECGtask
     
     properties
         progress_handle
-        user_string = '';
         only_ECG_leads = false;
         delineators = 'all-delineators';
         wavedet_config
