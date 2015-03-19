@@ -71,7 +71,7 @@ function examples(pid_str, examples_path, user_str)
     [~,recnames] = cellfun(@(a)(fileparts(a)), recnames, 'UniformOutput', false);
     recnames = unique(recnames);
     recnames = setdiff(recnames, {'' '.' '..' 'results' 'condor' });
-    recnames = {'ex_ABP_PPG_Registro_01M'};
+%     recnames = {'ex_ABP_PPG_Registro_01M'};
 %     recnames = recnames(1)
     lrecnames = length(recnames);
 

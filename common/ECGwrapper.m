@@ -1138,10 +1138,10 @@ classdef ECGwrapper < handle
                     obj.bArgChanged = false;
                 end
 
-                if( isempty(prev_ECGtaskHandle.user_string) )
+                if( isempty(obj.user_string) )
                     aux_user_prefix = [];
                 else
-                    aux_user_prefix= [prev_ECGtaskHandle.user_string '_'];
+                    aux_user_prefix= [obj.user_string '_'];
                 end
 
                 files_this_pid = dir([obj.output_path obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name '.mat']);
