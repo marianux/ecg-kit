@@ -1,5 +1,6 @@
 classdef progress_bar < handle
 
+    
 % Description:
 % A progress-bar object to show the progress of a process. If the process
 % is a loop, and the iteration number is known a priori, the object can inform

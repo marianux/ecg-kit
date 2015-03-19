@@ -16,30 +16,28 @@
 				<item name="ECGwrapper" link="ECGwrapper.html">
 				</item>
 				<item name="ECGtask" link="ECGtask.htm">
+					<item name="QRS_detection" link="QRS_detection.htm">
+					</item>
+					<item name="QRS_correction" link="QRScorrector.htm">
+					</item>
+					<item name="ABP_PPG_peak_detection" link="ABP_PPG_peak_detection.htm">
+					</item>
+					<item name="ABP_PPG_peak_correction" link="ABP_PPG_peak_correction.htm">
+					</item>
+					<item name="ECG_delineation" link="ECGdelineation.htm">
+					</item>
+					<item name="ECG_delineation_corrector" link="ECG_delineation_corrector.htm">
+					</item>
+					<item name="ECG_heartbeat_classifier" link="ECG_heartbeat_classifier.htm">
+					</item>
 				</item>
 			</item>
-			<item name="Commmon tasks">
-				<item name="QRS_detection" link="QRS_detection.htm">
+			<item name="Plotting and reporting">
+				<item name="reportECG" link="reportECG.htm">
 				</item>
-				<item name="QRS_correction" link="QRScorrector.htm">
+				<item name="plot_ecg_strip" link="plot_ecg_strip.htm">
 				</item>
-				<item name="ABP_PPG_peak_detection" link="ABP_PPG_peak_detection.htm">
-				</item>
-				<item name="ABP_PPG_peak_correction" link="ABP_PPG_peak_correction.htm">
-				</item>
-				<item name="ECG_delineation" link="ECGdelineation.htm">
-				</item>
-				<item name="ECG_delineation_corrector" link="ECG_delineation_corrector.htm">
-				</item>
-				<item name="ECG_heartbeat_classifier" link="ECG_heartbeat_classifier.htm">
-				</item>
-				<item name="Plotting and reporting">
-					<item name="reportECG" link="reportECG.htm">
-					</item>
-					<item name="plot_ecg_strip" link="plot_ecg_strip.htm">
-					</item>
-					<item name="plot_ecg_mosaic" link="plot_ecg_mosaic.htm">
-					</item>
+				<item name="plot_ecg_mosaic" link="plot_ecg_mosaic.htm">
 				</item>
 			</item>
 			<item name="ECGkit extension">

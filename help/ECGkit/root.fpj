@@ -121,5 +121,10 @@
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
+		<topic>
+			<name>progress_bar.htm</name>
+			<comments></comments>
+			<frameset>0</frameset>
+		</topic>
 	</topics>
 </rhpml>

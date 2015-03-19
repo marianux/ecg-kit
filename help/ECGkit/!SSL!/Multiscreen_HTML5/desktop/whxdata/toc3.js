@@ -1,1 +1,1 @@
-gXMLBuffer ="<?xml version=\"1.0\" encoding=\"utf-8\" ?><data  src=\"toc2.js\"  name=\"Base classes\"><item name=\"ECGwrapper\" url=\"ECGwrapper.html\" /><item name=\"ECGtask\" url=\"ECGtask.htm\" /></data>";
+gXMLBuffer ="<?xml version=\"1.0\" encoding=\"utf-8\" ?><data  src=\"toc2.js\"  name=\"Base classes\"><item name=\"ECGwrapper\" url=\"ECGwrapper.html\" /><book  src=\"toc4.js\"  name=\"ECGtask\" url=\"ECGtask.htm\" /></data>";

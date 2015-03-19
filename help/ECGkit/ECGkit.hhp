@@ -44,6 +44,7 @@ ECGwrapper.html
 plot_ecg_strip.htm
 list_all_ECGtask.htm
 reportECG.htm
+progress_bar.htm
 includes\product\scripts\docscripts.js
 includes\product\scripts\jquery\jquery.tmpl.js
 includes\product\scripts\jquery\jquery.tmpl.min.js

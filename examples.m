@@ -119,13 +119,6 @@ function examples(pid_str, examples_path, user_str)
 %         ECGt_QRSd.detectors = 'user:your_QRS_detector_func_name';    %
 %         "your_QRS_detector_func_name" can be your own detector.
         ECGt_QRSd.detectors = {'wavedet' 'gqrs' 'user:example_worst_ever_QRS_detector'};    
-
-        % you can individualize each run of the QRS detector with an
-        % external string
-        ECGt_QRSd.user_string = user_str;
-        % or group by the config used
-%         ECGt_QRSd.user_string = ECGt_QRSd.detectors;
-        
         
 %         ECGt_QRSd.only_ECG_leads = false;    % consider all signals ECG
         ECGt_QRSd.only_ECG_leads = true;    % Identify ECG signals based on their header description.
@@ -136,6 +129,9 @@ function examples(pid_str, examples_path, user_str)
                             'output_path', output_path, ...
                             'ECGtaskHandle', ECGt_QRSd);
         
+        % you can individualize each experiment with an external string
+        ECG_w.user_string = user_str;
+                        
         try
             
             % process the task

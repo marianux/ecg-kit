@@ -77,27 +77,31 @@ var suggestionsObj;
 					<a name="btbskip-1"></a> 
 					<h1 id="description" class="r2013b">Description</h1>
 					<div class="descriptions">
-						<p>This task is probably one of the first and most 
-						 important when you process cardiovascular recordings. 
-						 The ECGkit has several algorithms to perform this 
-						 task:</p>
+						<p>Heartbeat detection is probably one of the first 
+						 and most important tasks when you process cardiovascular 
+						 recordings. The ECGkit has several algorithms 
+						 to achieve this, such as:</p>
 						<ul style="list-style: disc;">
-							<li>Wavedet</li>
-							<li>gqrs</li>
-							<li>wqrs</li>
-							<li>Pan and Tompkins&#160;</li>
-							<li>ECGpuwave</li>
+							<li><a href="http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf">Wavedet</a></li>
+							<li><a href="http://www.physionet.org/physiotools/wag/gqrs-1.htm">gqrs</a></li>
+							<li><a href="http://www.physionet.org/physiotools/wag/wqrs-1.htm">wqrs</a></li>
+							<li><a href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?reload=true&amp;arnumber=4122029">Pan 
+							 and Tompkins</a>&#160;</li>
+							<li><a href="http://www.physionet.org/physiotools/ecgpuwave/">ECGpuwave</a></li>
 							<li>Aristotle</li>
 						</ul>
 						<p>You can use any or all the algorithms as you 
 						 will see below or you can even add your own algorithms 
 						 if you follow an easy interface, as described 
-						 HERE LINK. The results are stored in a single 
-						 file, that you can use to perform other subsequent 
-						 tasks, such as ECG delineation or even the visual 
-						 inspection of the algorithm results. For a quick 
-						 reference about using the algorithms you can refer 
-						 to this <a href="examples.html#QRS_automatic_detection">example</a></p>
+						 <a href="#Adding_a_custom_detection_algorithm">below</a>. 
+						 The results are stored in a single file, that 
+						 you can use to perform other subsequent tasks, 
+						 such as <a href="ECGdelineation.htm">ECG delineation</a> 
+						 or even the visual <a href="plot_ecg_strip.htm">inspection</a> 
+						 or <a href="QRScorrector.htm">correction</a> of 
+						 the algorithms results. For a quick reference 
+						 about &#160;heartbeat detection you may want to 
+						 check &#160;this <a href="examples.html#QRS_automatic_detection">example</a></p>
 					</div>
 					<div class="clear">
 						<p>&#160;</p>
@@ -109,148 +113,29 @@ var suggestionsObj;
 						<div class="arguments">
 							<div class="input_argument_container">
 								<div class="namevaluecontainer">
-									<p>Specify optional comma-separated 
-									 pairs of <tt>Name,Value</tt> arguments. 
-									 <tt>Name</tt> is the argument name 
-									 and <tt>Value</tt> is the corresponding 
-									 value. <tt>Name</tt> must appear inside 
-									 single quotes (<tt>' '</tt>). You 
-									 can specify several name and value 
-									 pair arguments in any order as <tt>Name1,Value1,...,NameN,ValueN</tt>.</p>
-									<span class="example_desc"><strong>Example: 
-									 </strong><tt>'recording_name','/ecg_recordings/rec1.dat', 
-									 'ECGtaskHandle', 'QRS_detection' </tt>specifies 
-									 to create an ECGwrapper to detect 
-									 heartbeats in recording '/ecg_recordings/rec1.dat'.</span> 
+									<p>The properties used by this task 
+									 are:</p>
+									<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;payload</p>
+									<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;CalculatePerformance 
+									 = false;</p>
+									<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;signal_payload 
+									 = false</p>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_progress_handle"></a> 
 									 
-								</div>
-								<div class="expandableContent">
-									<a name="inputarg_outputDir"></a> 
 									<h3 id="input_argument_namevalue_outputdir" 
-										 class="expand"><span><a href="javascript:void(0);" 
-									 title="Expand/Collapse" style="display: block;"><span 
-									 class="argument_name"><tt>'recording_name'</tt> 
-									 — ECG Recording full name</span></a><span 
-									 class="example_desc"><tt>''</tt> (default)</span></span></h3>
+										 class="expand"><span class="argument_name"><a 
+									 href="javascript:void(0);" title="Expand/Collapse" 
+									 style="display: block;"><tt>progress_handle</tt> 
+									 — <tt>used to track the progress within 
+									 your function.</tt></a></span><span 
+									 class="example_desc"><tt>[]</tt> (default)</span></h3>
 									<div class="collapse">
-										<p>The full path filename of the 
-										 ECG recording.</p>
-									</div>
-								</div>
-								<div class="expandableContent">
-									<a name="inputarg_format"></a> 
-									<h3 id="input_argument_namevalue_format" 
-										 class="expand"><span><a href="javascript:void(0);" 
-									 title="Expand/Collapse" style="display: block;"><span 
-									 class="argument_name"><tt>'recording_format'</tt> 
-									 — ECG recording format </span></a><span 
-									 class="example_desc"><tt>''</tt> (default 
-									 auto-detect) | <tt>'MIT'</tt> | <tt>'ISHNE'</tt> 
-									 | <tt>'AHA'</tt> | <tt>'HES'</tt> 
-									 | <tt>'MAT'</tt>| <tt>'Mortara'</tt></span></span></h3>
-									<div class="collapse">
-										<p>The format of the ECG recording. 
-										 By default or if not specified, 
-										 the wrapper will attemp to auto-detect 
-										 the format.</p>
-										<table class="body" style="border-collapse: separate; 
-												 border-collapse: separate;" 
-												 cellspacing="0" border="2">
-											<colgroup>	<col style="width: 50%;" />
-												<col style="width: 50%;" />
-											</colgroup>
-											<tr style="vertical-align: top;">
-												<th style="vertical-align: top; 
-													 padding-left: 4px; 
-													 padding-top: 4px; 
-													 padding-right: 4px; 
-													 padding-bottom: 4px;">Output 
-												 Format</th>
-												<th style="vertical-align: top; 
-													 padding-left: 4px; 
-													 padding-top: 4px; 
-													 padding-right: 4px; 
-													 padding-bottom: 4px;">String 
-												 Value</th>
-											</tr>
-											<tr style="vertical-align: top;">
-												<td style="padding-left: 4px; 
-													 padding-top: 4px; 
-													 padding-right: 4px; 
-													 padding-bottom: 4px;">'MIT'</td>
-												<td style="padding-left: 4px; 
-													 padding-top: 4px; 
-													 padding-right: 4px; 
-													 padding-bottom: 4px;"><tt><a 
-												 href="http://www.physionet.org/physiotools/wag/signal-5.htm">MIT 
-												 format</a></tt></td>
-											</tr>
-											<tr style="vertical-align: top;">
-												<td style="padding-left: 4px; 
-													 padding-top: 4px; 
-													 padding-right: 4px; 
-													 padding-bottom: 4px;">'ISHNE'</td>
-												<td style="padding-left: 4px; 
-													 padding-top: 4px; 
-													 padding-right: 4px; 
-													 padding-bottom: 4px;"><tt><a 
-												 href="http://thew-project.org/THEWFileFormat.htm">ISHNE 
-												 format</a></tt></td>
-											</tr>
-											<tr style="vertical-align: top;">
-												<td style="padding-left: 4px; 
-													 padding-top: 4px; 
-													 padding-right: 4px; 
-													 padding-bottom: 4px;">'AHA'</td>
-												<td style="padding-left: 4px; 
-													 padding-top: 4px; 
-													 padding-right: 4px; 
-													 padding-bottom: 4px;"><tt><a 
-												 href="https://www.ecri.org/Products/Pages/AHA_ECG_DVD.aspx" 
-												 class="corrected_url">American 
-												 Heart Association ECG 
-												 Database</a> or <a href="http://www.physionet.org/physiotools/old/dbpg/dbu_84.htm" 
-												 class="corrected_url">Physionet</a> 
-												 </tt></td>
-											</tr>
-											<tr style="vertical-align: top;">
-												<td style="padding-left: 4px; 
-													 padding-top: 4px; 
-													 padding-right: 4px; 
-													 padding-bottom: 4px;">'HES'</td>
-												<td style="padding-left: 4px; 
-													 padding-top: 4px; 
-													 padding-right: 4px; 
-													 padding-bottom: 4px;"><tt>Biosigna 
-												 format</tt></td>
-											</tr>
-											<tr style="vertical-align: top;">
-												<td style="padding-left: 4px; 
-													 padding-top: 4px; 
-													 padding-right: 4px; 
-													 padding-bottom: 4px;">'MAT'</td>
-												<td style="padding-left: 4px; 
-													 padding-top: 4px; 
-													 padding-right: 4px; 
-													 padding-bottom: 4px;"><tt><a 
-												 href="Matlab_format.htm" 
-												 class="corrected_url">Matlab 
-												 file format</a></tt></td>
-											</tr>
-											<tr style="vertical-align: top;">
-												<td style="padding-left: 4px; 
-													 padding-top: 4px; 
-													 padding-right: 4px; 
-													 padding-bottom: 4px;">'Mortara'</td>
-												<td style="padding-left: 4px; 
-													 padding-top: 4px; 
-													 padding-right: 4px; 
-													 padding-bottom: 4px;"><tt><a 
-												 href="http://www.mortara.com/" 
-												 class="corrected_url">Mortara 
-												 SuperECG format</a></tt></td>
-											</tr>
-										</table>
+										<p>progress_handle, is a handle 
+										 to a <a href="progress_bar.htm">progress_bar</a> 
+										 object, that can be used to track 
+										 the progress within your function.</p>
 									</div>
 								</div>
 								<div class="expandableContent">
@@ -258,26 +143,7 @@ var suggestionsObj;
 									<h3 id="input_argument_namevalue_outputdir" 
 										 class="expand"><span><a href="javascript:void(0);" 
 									 title="Expand/Collapse" style="display: block;"><span 
-									 class="argument_name"><tt>'this_pid'</tt> 
-									 — Process identification</span></a><span 
-									 class="example_desc"><tt>'1/1'</tt> 
-									 (default)</span></span></h3>
-									<div class="collapse">
-										<p>In case working in a multiprocess 
-										 environment, this value will identify 
-										 the current process. Can be a 
-										 numeric value, or a string of 
-										 the form 'N/M'. This pid is N 
-										 and the total amount of pid's 
-										 to divide the whole work is M.</p>
-									</div>
-								</div>
-								<div class="expandableContent">
-									<a name="inputarg_outputDir"></a> 
-									<h3 id="input_argument_namevalue_outputdir" 
-										 class="expand"><span><a href="javascript:void(0);" 
-									 title="Expand/Collapse" style="display: block;"><span 
-									 class="argument_name"><tt>'tmp_path'</tt> 
+									 class="argument_name"><tt>tmp_path</tt> 
 									 — The path to store temporary data</span></a><span 
 									 class="example_desc"><tt>'tempdir()'</tt> 
 									 (default)</span></span></h3>
@@ -287,103 +153,48 @@ var suggestionsObj;
 									</div>
 								</div>
 								<div class="expandableContent">
-									<a name="inputarg_outputDir"></a> 
-									<h3 id="input_argument_namevalue_outputdir" 
-										 class="expand"><span><a href="javascript:void(0);" 
-									 title="Expand/Collapse" style="display: block;"><span 
-									 class="argument_name"><tt>'output_path'</tt> 
-									 — The output path to store results</span></a><span 
-									 class="example_desc"><tt>'fileparts(recording_name)'</tt> 
-									 (default)</span></span></h3>
-									<div class="collapse">
-										<p>Full path to a directory with 
-										 write privileges. By default will 
-										 be the same path of the recordings.</p>
-									</div>
-								</div>
-								<div class="expandableContent">
-									<a name="inputarg_outputDir"></a> 
-									<h3 id="input_argument_namevalue_outputdir" 
-										 class="expand"><span class="argument_name"><a 
-									 href="javascript:void(0);" title="Expand/Collapse" 
-									 style="display: block;"><tt>'ECGtaskHandle'</tt> 
-									 — The task to perform.</a></span><span 
-									 class="example_desc"><tt>''</tt> (default)</span></h3>
-									<div class="collapse">
-										<p>The task to perform, can be 
-										 the name of the task, or an ECGtask 
-										 object. Available ECGtasks can 
-										 be listed with <a href="matlab:doc('list_all_ECGtask')" 
-															 class="corrected_url">list_all_ECGtask()</a> 
-										 command.</p>
-									</div>
-								</div>
-								<div class="expandableContent">
 									<span class="argument_name"><tt><a 
 									 name="inputarg_ECGtask"></a></tt></span> 
 									 
 									<h3 id="input_argument_namevalue_outputdir" 
-										 class="expand"><span><a href="javascript:void(0);" 
-									 title="Expand/Collapse" style="display: block;"><span 
-									 class="argument_name"><tt>'partition_mode'</tt> 
-									 — The way that this object will partition 
-									 lengthy signals</span></a><span class="example_desc"><tt>'ECG_overlapped'</tt> 
-									 (default)</span></span></h3>
+										 class="expand"><span class="argument_name"><a 
+									 href="javascript:void(0);" title="Expand/Collapse" 
+									 style="display: block;"><tt>detectors</tt> 
+									 — The QRS detection algorithms to 
+									 use</a></span><span class="example_desc"><tt>'all-detectors'</tt> 
+									 (default)</span></h3>
 									<div class="collapse">
-										<p>The way to do batch partition 
-										 in lengthy signals:</p>
-										<ul style="list-style: disc;">
-											<li><p>'ECG_contiguous' no 
-											 overlapp between segments.</p></li>
-											<li><p>'ECG_overlapped' overlapp 
-											 of 'overlapping_time' among 
-											 segments. This can be useful 
-											 if your task have a transient 
-											 period to avoid. </p></li>
-											<li><p>'QRS' do the partition 
-											 based on the annotations provided 
-											 in ECG_annotations.time property. 
-											 This option is useful if your 
-											 task works in the boundaries 
-											 of a fiducial point (commonly 
-											 a heartbeat), and not in the 
-											 whole signal. This partition 
-											 mode ignores those parts of 
-											 the recording without annotations.</p></li>
-										</ul>
+										<p>A cell string or char with any 
+										 of the following names</p>
+										<p style="margin-left: 40px;">all-detectors</p>
+										<p style="margin-left: 40px;"><a 
+										 href="http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf">wavedet</a></p>
+										<p style="margin-left: 40px;"><a 
+										 href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?reload=true&amp;arnumber=4122029">pantom</a></p>
+										<p style="margin-left: 40px;">aristotle</p>
+										<p style="margin-left: 40px;"><a 
+										 href="http://www.physionet.org/physiotools/wag/gqrs-1.htm">gqrs</a></p>
+										<p style="margin-left: 40px;"><a 
+										 href="http://www.physionet.org/physiotools/wag/sqrs-1.htm">sqrs</a></p>
+										<p style="margin-left: 40px;"><a 
+										 href="http://www.physionet.org/physiotools/wag/wqrs-1.htm">wqrs</a></p>
+										<p style="margin-left: 40px;"><a 
+										 href="http://www.physionet.org/physiotools/ecgpuwave/">ecgpuwave</a></p>
+										<p style="margin-left: 40px;">&#160;</p>
 									</div>
 								</div>
 								<div class="expandableContent">
-									<a name="inputarg_outputDir"></a> 
+									&#160; 
 									<h3 id="input_argument_namevalue_outputdir" 
 										 class="expand"><span><a href="javascript:void(0);" 
 									 title="Expand/Collapse" style="display: block;"><span 
-									 class="argument_name"><tt>'overlapping_time'</tt> 
-									 — Time in seconds of overlapp among 
-									 consequtive segments</span></a><span 
-									 class="example_desc"><tt>30</tt> (default)</span></span></h3>
-									<div class="collapse">
-										<p>Time in seconds of overlapp 
-										 among consequtive segments. This 
-										 segment is useful for ensuring 
-										 the end of all transients within 
-										 a task.</p>
-									</div>
-								</div>
-								<div class="expandableContent">
-									<a name="inputarg_outputDir"></a> 
-									<h3 id="input_argument_namevalue_outputdir" 
-										 class="expand"><span><a href="javascript:void(0);" 
-									 title="Expand/Collapse" style="display: block;"><span 
-									 class="argument_name"><tt>'cacheResults'</tt> 
-									 — Save intermediate results to recover 
-									 in case of failure</span></a><span 
+									 class="argument_name"><tt>only_ECG_leads</tt> 
+									 — Process only ECG signals</span></a><span 
 									 class="example_desc"><tt>true</tt> 
 									 (default)</span></span></h3>
 									<div class="collapse">
-										<p>Save intermediate results to 
-										 recover in case of errors. Useful 
-										 for long jobs or recordings.</p>
+										<p>Find out which signals are ECG 
+										 based on their header description.</p>
 									</div>
 								</div>
 								<div class="expandableContent">
@@ -391,9 +202,22 @@ var suggestionsObj;
 									<h3 id="input_argument_namevalue_outputdir" 
 										 class="expand"><span><a href="javascript:void(0);" 
 									 title="Expand/Collapse" style="display: block;"><span 
-									 class="argument_name"><tt>'syncSlavesWithMaster'</tt> 
-									 — Time in seconds of overlapp among 
-									 consequtive segments</span></a><span 
+									 class="argument_name"><tt>gqrs_config_filename</tt> 
+									 — A configuration filename for the 
+									 gqrs algorithm.</span></a><span class="example_desc"><tt>[]</tt> 
+									 (default)</span></span></h3>
+									<div class="collapse">
+										<p>See the algorithm <a href="http://www.physionet.org/physiotools/wag/gqrs-1.htm">web</a> 
+										 page for details.</p>
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_outputDir"></a> 
+									<h3 id="input_argument_namevalue_outputdir" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>wavedet_config</tt> 
+									 — A structure for customizing wavedet algorithm.</span></a><span 
 									 class="example_desc"><tt>false</tt> 
 									 (default)</span></span></h3>
 									<div class="collapse">
@@ -429,6 +253,52 @@ var suggestionsObj;
 						<p>&#160;</p>
 					</div>
 					<div class="examples">
+						<div itemprop="content">
+							<a name="Adding_a_custom_detection_algorithm"></a> 
+							 
+							<h1 id="description1" class="r2013b">Adding 
+							 a custom detection algorithm</h1>
+							<div class="descriptions">
+								<p>Adding your own QRS detectors to the 
+								 kit is very simple. Ensure that your function 
+								 implements this interface:</p>
+								<pre class="codeinput">
+<p style="margin-left: 40px;"><span class="keyword">function</span> [positions_single_lead, position_multilead] = your_QRS_detector( ECG_matrix, ECG_header, progress_handle, payload_in)</p>
+
+								</pre>
+								<p>where the arguments are:</p>
+								<p style="margin-left: 40px;">ECG_matrix, 
+								 is a matrix size [ECG_header.nsamp ECG_header.nsig]</p>
+								<p style="margin-left: 40px;">ECG_header, 
+								 is a struct with info about the ECG signal, 
+								 such as:</p>
+								<p style="margin-left: 80px;">freq, the 
+								 sampling frequency</p>
+								<p style="margin-left: 80px;">desc, description 
+								 about the signals.</p>
+								<p style="margin-left: 40px;">progress_handle, 
+								 is a handle to a <a href="progress_bar.htm">progress_bar</a> 
+								 object, that can be used to track the 
+								 progress within your function.</p>
+								<p style="margin-left: 40px;">payload_in, 
+								 is a user variable allowed to be sent 
+								 each call to your function. It is sent, 
+								 via the payload property of this class, 
+								 for example:</p>
+								<pre class="codeinput">
+<p style="margin-left: 80px;">this_ECG_wrappers.ECGtaskHandle.payload = your_variable;</p><p style="margin-left: 80px;">&#160;</p><p style="margin-left: 80px;">this_ECG_wrappers.ECGtaskHandle.payload = {your_var1 your_var2};</p><p style="margin-left: 80px;">&#160;</p><p style="margin-left: 80px;">this_ECG_wrappers.ECGtaskHandle.payload = load(cached_filenames);</p></pre>
+								<p>and the output of your function must 
+								 be:</p>
+								<p style="margin-left: 40px;">positions_single_lead, 
+								 a cell array size ECG_header.nsig with 
+								 the&#160;QRS sample locations found in 
+								 each lead.</p>
+								<p style="margin-left: 40px;">position_multilead, 
+								 a numeric vector with the QRS locations 
+								 calculated using multilead rules.</p>
+								<p>&#160;</p>
+							</div>
+						</div>
 						<h1 id="examples" class="r2013b">Examples</h1>
 						<div class="expandableContent" id="expandableExamples">
 							<p class="switch"><a href="javascript:void(0);" 
@@ -533,8 +403,11 @@ ECG_w =
 							 resources</span></a></span></h3>
 							<div class="collapse">
 								<ul>
-									<li><a href="http://physionet.org/" 
-											 target="_blank">Physionet.org</a></li>
+									<li>Pan and Tompkins <a href="http://www.eplimited.com/software.htm" 
+															 target="_blank">original 
+									 implementation</a> and others implementations 
+									 <a href="http://www.oset.ir/">1</a>, 
+									 <a href="http://www.mathworks.com/matlabcentral/fileexchange/45840-complete-pan-tompkins-implementation-ecg-qrs-detector">2</a>.</li>
 									<li><a href="http://thew-project.org/" 
 											 target="_blank">Telemetric 
 									 and Holter ECG Warehouse (THEW)</a></li>
