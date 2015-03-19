@@ -196,9 +196,6 @@ function examples(pid_str, examples_path, user_str)
                         % This task is supposed to be supervised, so only one pid is enough.
                         ECG_all_wrappers(ii).this_pid = '1/1';
 
-                        % user provided name to individualize each run
-                        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
-                        
                         % to avoid loading cached results and exit, this flag
                         % allows the re-editing of the current state of the
                         % detections.
@@ -243,9 +240,6 @@ function examples(pid_str, examples_path, user_str)
         % set the delineator task name and run again.
         ECG_all_wrappers(ii).ECGtaskHandle = 'PPG_ABP_detector';
 
-        % user provided name to individualize each run
-        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
-
         % process the task
         ECG_all_wrappers(ii).Run;
         
@@ -285,9 +279,6 @@ function examples(pid_str, examples_path, user_str)
                         
                         % This task is supposed to be supervised, so only one pid is enough.
                         ECG_all_wrappers(ii).this_pid = '1/1';
-
-                        % user provided name to individualize each run
-                        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
                         
                         % to avoid loading cached results and exit, this flag
                         % allows the re-editing of the current state of the
@@ -345,9 +336,6 @@ function examples(pid_str, examples_path, user_str)
         % set the delineator task name and run again.
         ECG_all_wrappers(ii).ECGtaskHandle = 'ECG_delineation';
 
-        % user provided name to individualize each run
-        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
-
 %         ECGt_QRSd.detectors = 'wavedet'; % Wavedet algorithm based on
 %         ECGt_QRSd.detectors = 'user:example_worst_ever_ECG_delineator';
 %         % Example of how you can add your own ECG delineator. 
@@ -395,9 +383,6 @@ function examples(pid_str, examples_path, user_str)
                         % This task is supposed to be supervised, so only one pid is enough.
                         ECG_all_wrappers(ii).this_pid = '1/1';
 
-                        % user provided name to individualize each run
-                        ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
-                        
                         % to avoid loading cached results and exit, this flag
                         % allows the re-editing of the current state of the
                         % detections.
@@ -448,9 +433,6 @@ function examples(pid_str, examples_path, user_str)
             ECG_all_wrappers(ii).ECGtaskHandle = 'ECG_heartbeat_classifier';
 
             ECG_all_wrappers(ii).ECGtaskHandle.payload = load(cached_filenames{1});
-            
-            % user provided name to individualize each run
-            ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
 
             % process the task
             ECG_all_wrappers(ii).Run;
