@@ -30,6 +30,8 @@
 					</item>
 					<item name="ECG_heartbeat_classifier" link="ECG_heartbeat_classifier.htm">
 					</item>
+					<item name="Arbitrary_tasks" link="Arbitrary_tasks.htm">
+					</item>
 				</item>
 			</item>
 			<item name="Plotting and reporting">

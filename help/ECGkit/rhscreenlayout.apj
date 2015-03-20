@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rhpml majorversion="6" minorversion="12">
 	<ScreenLayouts>
-		<ScreenLayout name="pepe" comment="Deep Tourquoise banners and drop shadow panels for featuring products or services. Unusual display of the Table of Contents, Index and Glossary is set to the left and is easily hidden when the user prefers to have more real estate for viewing.">
-			<ScreenLayoutPages>
-				<ScreenLayoutPage default="0" name="SearchResults.slp" type="2"/>
-				<ScreenLayoutPage default="1" name="Topic.slp" type="1"/>
-			</ScreenLayoutPages>
-		</ScreenLayout>
 		<ScreenLayout name="my_layout" comment="Deep Tourquoise banners and drop shadow panels for featuring products or services. Unusual display of the Table of Contents, Index and Glossary is set to the left and is easily hidden when the user prefers to have more real estate for viewing.">
 			<ScreenLayoutPages>
 				<ScreenLayoutPage default="0" name="SearchResults.slp" type="2"/>

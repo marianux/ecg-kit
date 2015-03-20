@@ -12,7 +12,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="generator" content="Adobe RoboHelp 11" />
-<title>ECGkit - ECG_heartbeat_classifier</title>
+<title>ECGkit - header_description</title>
 <link rel="Stylesheet" href="template/my_layout/Layout.css" type="text/css" />
  <link rel="StyleSheet" href="merged.css" type="text/css" /><script type="text/javascript" src="includes/product/scripts/jquery/jquery-latest.js" language="JavaScript1.2"></script><script type="text/javascript" src="includes/shared/scripts/l10n.js" language="JavaScript1.2"></script><script type="text/javascript" src="includes/shared/scripts/docscripts.js" language="JavaScript1.2"></script><script type="text/javascript" src="includes/product/scripts/docscripts.js" language="JavaScript1.2"></script><script type="text/javascript" src="includes/shared/scripts/mw.toc.js" language="JavaScript1.2"></script><script type="text/javascript" src="includes/shared/scripts/mw.imagescaling.js" language="JavaScript1.2"></script><script type="text/javascript" src="includes/shared/scripts/mw.imageanimation.js" language="JavaScript1.2"></script><script type="text/javascript" src="includes/shared/scripts/mw.breadcrumb.js" language="JavaScript1.2"></script><script type="text/javascript" src="includes/shared/scripts/jquery.highlight.js" language="JavaScript1.2"></script><script type="text/javascript" src="includes/shared/scripts/nanoscroller.min.js" language="JavaScript1.2"></script><script type="text/javascript" src="includes/product/scripts/jquery/jquery.tmpl.js" language="JavaScript1.2"></script><script type="text/javascript" src="includes/product/scripts/jquery/jquery.tmpl.min.js" language="JavaScript1.2"></script><script type="text/javascript" src="includes/product/scripts/jquery/jquery.toggleval.js" language="JavaScript1.2"></script><script type="text/javascript" src="includes/product/scripts/localnav.js" language="JavaScript1.2"></script><script type="text/javascript" src="includes/product/scripts/suggest.js" language="JavaScript1.2"></script><script type="text/javascript" language="JavaScript1.2">//<![CDATA[
 var suggestionsObj;
@@ -83,7 +83,7 @@ gRootRelPath = ".";
 gCommonRootRelPath = "..";
 </script>
 <script type="text/javascript" language="JavaScript1.2">
-gTopicId = "1.1.1.1.0_7";
+gTopicId = "";
 </script>
 <script type="text/javascript" language="JavaScript1.2">
 gIdxKWHtml = "<span  class=\"wIdxKeywordText\">{%LINK_NAME%}</span>";
@@ -151,7 +151,7 @@ gTocUrlIconStyle = "";
 				</ul>
 				<div class="wTabContentGroup">
 					<div id="tocTabPane" class="wTabContent">
-						<div id="toc" class="wTOCTree" tabindex="168">
+						<div id="toc" class="wTOCTree" tabindex="99">
 							
 							
 							
@@ -186,16 +186,14 @@ gTocUrlIconStyle = "";
 		<div class="page_container">
 		<div class="content_frame">
 			<div class="content_container" id="content_container">
-				<br />
-				
+				<a name="btbskip"></a> 
 				<div itemprop="content">
-					<h1 class="r2013b" itemprop="title">ECG heartbeat classification</h1>
+					<h1 class="r2013b" itemprop="title">ECGtask</h1>
 					<!-- SYNCHTO: _funcalpha.html -->
 						<div class="doc_topic_desc">
 						<div class="purpose_container">
-							<p itemprop="purpose">This document describes 
-							 how to classify heartbeats according to its 
-							 origin.</p>
+							<p itemprop="purpose">Perform an specific task 
+							 to an ECG signal.</p>
 							<div class="switch">
 								<a href="javascript:void(0);" id="expandAllPage">expand 
 								 all in page</a> 
@@ -203,58 +201,90 @@ gTocUrlIconStyle = "";
 						</div>
 					</div>
 				</div>
-				<div itemprop="content">
-					<div class="clear">
-						<p>&#160;</p>
-					</div>
-					<div class="examples">
-						<a name="Description"></a> 
-						<h1 id="description1" class="r2013b">Description</h1>
-					</div>
+				<div class="clear">
+					<p>&#160;</p>
 				</div>
 				<div itemprop="content">
-					<div class="clear">
-						<p>&#160;</p>
-					</div>
-					<h1 id="inputs" class="r2013b">Input Arguments</h1>
-					<div class="expandableContent">
-						<div class="arguments">
-							<div class="input_argument_container">
-								<div class="expandableContent">
-									<p>&#160;</p>
-								</div>
+					<a name="btbskip-1"></a> 
+					<h1 id="description" class="r2013b">Description</h1>
+					<div class="descriptions">
+						<div class="description_module">
+							<div class="description_element">
+								<p>The ECGtask is an abstract class definition 
+								 where the minimum interface requirements 
+								 are specified, in order that your own 
+								 tasks can be safely plugged into <a href="ECGwrapper.html">ECGwrapper</a> 
+								 objects. As an example of how to use this 
+								 interface, see the derived classes for 
+								 <a href="QRS_detection.htm">QRS detection</a> 
+								 and <a href="ECGdelineation.htm">ECG delineation</a>, 
+								 among others that can be listed with the 
+								 <a href="list_all_ECGtask.htm">list_all_ECGtask</a> 
+								 function:</p>
+								<ul style="list-style: disc;">
+									<li><a href="ECGdelineation.htm">ECG_delineation</a> 
+									 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</li>
+									<li><a href="ECG_delineation_corrector.htm">ECG_delineation_corrector</a> 
+									 &#160;</li>
+									<li><a href="ABP_PPG_peak_correction.htm">PPG_ABP_corrector</a> 
+									 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</li>
+									<li><a href="ABP_PPG_peak_detection.htm">PPG_ABP_detector</a> 
+									 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</li>
+									<li><a href="QRScorrector.htm">QRS_corrector</a> 
+									 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</li>
+									<li><a href="QRS_detection.htm">QRS_detection</a> 
+									 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</li>
+									<li><a href="ECG_heartbeat_classifier.htm">ECG_heartbeat_classifier</a> 
+									 &#160;&#160;</li>
+									<li><a href="Arbitrary_tasks.htm">arbitrary_function</a></li>
+								</ul>
+								<p>These tasks are the core of this kit 
+								 and you will probably refer to them before 
+								 you extend the functionality with your 
+								 own tasks.</p>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div itemprop="content">
-					<div class="examples">
-						<h1 id="examples" class="r2013b">Examples</h1>
-						<p>Create the ECGtask_QRS_detection object.</p>
-						<pre class="codeinput">
-<span class="comment">% comments</span>
-&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;code = <span class="string">'strings'</span>; <span class="comment">% more comments</span>
-						</pre>
-					</div>
+				<div class="clear">
+					<p>&#160;</p>
 				</div>
 				<div class="moreabout">
-					<div class="clear">
-						<p>&#160;</p>
-					</div>
 					<h1 id="moreabout" class="r2013b">More About</h1>
-					<p>Here are some external references about heartbeat 
-					 detection:</p>
-					<ul style="list-style: disc;">
-						<li><a href="http://www.physionet.org/">Physionet</a></li>
-					</ul>
+					<div class="expandableContent">
+						<p class="switch"><a href="javascript:void(0);" 
+											 class="expandAllLink">expand 
+						 all</a></p>
+						<div class="expandableContent" itemprop="content">
+							<a name="btbsnu4-2"></a> 
+							<h3 class="expand"><span><a href="javascript:void(0);" 
+														 title="Expand/Collapse" 
+														 style="display: block;"><span>Other 
+							 resources</span></a></span></h3>
+							<div class="collapse">
+								<ul>
+									<li><a href="http://physionet.org/" 
+											 target="_blank">Physionet.org</a></li>
+									<li><a href="http://thew-project.org/" 
+											 target="_blank">Telemetric 
+									 and Holter ECG Warehouse (THEW)</a></li>
+									<li><a href="http://diec.unizar.es/~laguna/personal/publicaciones/publicaciones.htm" 
+											 target="_blank">Pablo Laguna 
+									 research group at University of Zaragoza</a></li>
+									<li><a href="http://cinc.org/" target="_blank">Computing 
+									 in Cardiology</a></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="clear">
+					<p>&#160;</p>
 				</div>
 				<h1 class="r2013b">See Also</h1>
-				<p><span itemprop="seealso"><a itemprop="url" href="ECGtask.html"><span 
-				 itemprop="name"><tt>ECGtask</tt></span></a></span> | <span 
-				 itemprop="seealso"><a itemprop="url" href="ECGdelineation.htm"><span 
-				 itemprop="name"><tt>ECG delineation</tt></span></a></span> 
-				 | <span itemprop="seealso"><a itemprop="url" href="examples.html"><span 
-				 itemprop="name"><tt>examples</tt></span></a></span> </p>
+				<p><a href="ECGwrapper.html">ECGwrapper</a> | <a href="ECGdelineation.htm">ECG_delineation</a> 
+				 | <a href="list_all_ECGtask.htm">list_all_ECGtask</a> 
+				 </p>
 			<!-- close_content_container -->
 			</div>
 		<!-- close_content_frame -->
@@ -263,8 +293,6 @@ gTocUrlIconStyle = "";
 	</div>
 </div>
 <!--  close_site_container -->
-
-
 </div>
 		</div>
 	</div>
