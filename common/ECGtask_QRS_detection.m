@@ -82,7 +82,7 @@ classdef ECGtask_QRS_detection < ECGtask
         wavedet_config
         payload
         CalculatePerformance = false;
-        
+        signal_payload = false
     end
     
     methods
