@@ -46,7 +46,7 @@ function examples(pid_str, examples_path, user_str)
         % inspect ECG files in rootpath\example recordings\ folder
         root_path = fileparts(mfilename('fullpath'));
         % default folder to look at
-        examples_path = [root_path filesep 'example recordings' filesep ];
+        examples_path = [root_path filesep 'recordings' filesep ];
         if(~exist(examples_path, 'dir'))
             disp_string_framed(2, 'Please provide a valid path with ECG recordings');
             return

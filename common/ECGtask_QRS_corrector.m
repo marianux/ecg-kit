@@ -79,7 +79,7 @@ classdef ECGtask_QRS_corrector < ECGtask
         caller_variable = 'payload'
         tmp_path
         payload
-        signal_payload = false
+        
         
     end
     

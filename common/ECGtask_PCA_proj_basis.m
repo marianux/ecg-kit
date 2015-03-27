@@ -49,7 +49,7 @@ classdef ECGtask_PCA_proj_basis < ECGtask
         cant_QRS_locations
         autovec
         tmp_path
-        signal_payload = false
+        
         
     end
     

@@ -81,7 +81,6 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
         payload
         tmp_path
         CalculatePerformance = false;
-        signal_payload = false
         
     end
     

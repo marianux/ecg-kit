@@ -56,8 +56,7 @@ classdef ECGtask_classification_features_calc < ECGtask
         class_labeling
         autovec
         tmp_path
-        signal_payload = false
-        
+                
     end
     
     methods

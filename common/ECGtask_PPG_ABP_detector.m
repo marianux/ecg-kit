@@ -51,7 +51,7 @@ classdef ECGtask_PPG_ABP_detector < ECGtask
         PPG_ABP_idx = [];
         gqrs_config_filename = [];
         wavedet_config
-        signal_payload = false
+        
         
     end
     

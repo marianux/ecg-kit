@@ -298,7 +298,9 @@ classdef ECGwrapper < handle
             % check for cached results
             if( obj.cacheResults )
                 
-                if( obj.ECGtaskHandle.signal_payload )
+                if( isprop(obj.ECGtaskHandle, 'signal_payload') )
+                    % The results is a signal for arbitrary tasks, so check
+                    % the result signal instead
                     
                     MIT_filename = [ obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name ];
 
@@ -768,7 +770,7 @@ classdef ECGwrapper < handle
                                                 end
                                                 aux = load(aux_FM_filename);
 
-                                                if( obj.ECGtaskHandle.signal_payload )
+                                                if( isprop(obj.ECGtaskHandle, 'signal_payload')  )
                                                 % Process the results as a
                                                 % signal, dump sequentialy
                                                 % to disk
@@ -925,8 +927,9 @@ classdef ECGwrapper < handle
 
                                 end
 
-                                if( ~obj.ECGtaskHandle.signal_payload )
-                                
+                                if( ~isprop(obj.ECGtaskHandle, 'signal_payload') )
+                                    %Dump results as standard payload.
+                                    
                                     for result_fn = rowvec(result_files)
                                     % Master PID can operate over the global
                                     % payload.
