@@ -732,11 +732,11 @@ function ann_output = QRScorrector(varargin)
         cla(Scatter_axes_hdl)
         bRRempty = all(cellfun( @(a)(isempty(a)), RRserie));
         if( bRRempty )
-            RRscatter_hdl = [];
+            RRscatter_hdl = {};
             hold(Scatter_axes_hdl, 'on')
         else
             hold(Scatter_axes_hdl, 'on')
-            RRscatter_hdl = cellfun( @(this_rr_serie, this_rr_idx, ii)( plot(Scatter_axes_hdl, this_rr_serie(this_rr_idx) , [this_rr_serie(this_rr_idx(2:end)); this_rr_serie(this_rr_idx(end)) ], 'Marker', all_markers{ii}, 'LineStyle', 'none', 'MarkerEdgeColor', ColorOrder(ii,:), 'Color', ColorOrder(ii,:), 'ButtonDownFcn',@inspect_scatter )  ), RRserie, RR_idx, num2cell((1:length(RRserie))') );
+            RRscatter_hdl = cellfun( @(this_rr_serie, this_rr_idx, ii)( plot(Scatter_axes_hdl, this_rr_serie(this_rr_idx) , [this_rr_serie(this_rr_idx(2:end)); this_rr_serie(this_rr_idx(end)) ], 'Marker', all_markers{ii}, 'LineStyle', 'none', 'MarkerEdgeColor', ColorOrder(ii,:), 'Color', ColorOrder(ii,:), 'ButtonDownFcn',@inspect_scatter )  ), RRserie, RR_idx, num2cell((1:length(RRserie))'), 'UniformOutput', false );
         end
 
         if( ~bRRempty )
@@ -772,11 +772,11 @@ function ann_output = QRScorrector(varargin)
 
         cla(RRserie_axes_hdl)
         if( isempty(aux_RR) )
-            RRserie_hdl = [];
+            RRserie_hdl = {};
             hold(RRserie_axes_hdl, 'on')
         else
             hold(RRserie_axes_hdl, 'on')
-            RRserie_hdl = cellfun( @(this_anns, this_rr_serie, this_rr_idx, ii)( plot(RRserie_axes_hdl, this_anns(this_rr_idx) , this_rr_serie(this_rr_idx), 'Marker', all_markers{ii}, 'LineStyle', ':', 'MarkerEdgeColor', ColorOrder(ii,:), 'Color', ColorOrder(ii,:), 'ButtonDownFcn',@inspect_RRserie )  ), all_annotations_selected, RRserie, RR_idx, num2cell((1:length(RRserie))') );
+            RRserie_hdl = cellfun( @(this_anns, this_rr_serie, this_rr_idx, ii)( plot(RRserie_axes_hdl, this_anns(this_rr_idx) , this_rr_serie(this_rr_idx), 'Marker', all_markers{ii}, 'LineStyle', ':', 'MarkerEdgeColor', ColorOrder(ii,:), 'Color', ColorOrder(ii,:), 'ButtonDownFcn',@inspect_RRserie )  ), all_annotations_selected, RRserie, RR_idx, num2cell((1:length(RRserie))'), 'UniformOutput', false );
         end
 
         if( ~isempty(aux_RR) )
@@ -901,7 +901,7 @@ function ann_output = QRScorrector(varargin)
                 
 %                 RRserie_zoombars_hdl = plot(RRserie_global_axes_hdl, repmat([ start_idx end_idx], 2, 1), repmat(limits,2,1)', 'LineWidth', 3, 'Color', 'r', 'ButtonDownFcn', @TimeOffsetClick );
                 RRserie_zoombars_hdl = patch([start_idx start_idx end_idx end_idx start_idx ], [limits(1) limits(2) limits(2) limits(1) limits(1)], [241 183 171]/255, 'EdgeColor', [1 0 0], 'ButtonDownFcn', @TimeOffsetClick, 'LineWidth', 0.5);
-%                 uistack(RRserie_zoombars_hdl, 'bottom');
+                uistack(RRserie_zoombars_hdl, 'bottom');
                 
                 hold(RRserie_global_axes_hdl, 'off')
 
@@ -1073,7 +1073,7 @@ function ann_output = QRScorrector(varargin)
         
 %         set(RRserie_axes_hdl,'ButtonDownFcn',@inspect_RRserie);
         
-        set(ECG_hdl,'ButtonDownFcn',@inspect_ECG);            
+        cellfun(@(a)( set(a,'ButtonDownFcn',@inspect_ECG)), ECG_hdl);            
         set(ECG_axes_hdl,'ButtonDownFcn',@inspect_ECG);            
 
     end
@@ -1116,7 +1116,7 @@ function ann_output = QRScorrector(varargin)
                 
                 ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);
 
-                set(ECG_hdl,'ButtonDownFcn',@inspect_ECG);            
+                cellfun(@(a)( set(a,'ButtonDownFcn',@inspect_ECG)), ECG_hdl);            
 
             end
         end
@@ -1363,7 +1363,8 @@ function ann_output = QRScorrector(varargin)
 
     %             zoom reset
 
-                set(ECG_hdl,'ButtonDownFcn',@inspect_ECG);            
+                cellfun(@(a)( set(a,'ButtonDownFcn',@inspect_ECG)), ECG_hdl);            
+
                 set(ECG_axes_hdl,'ButtonDownFcn',@inspect_ECG);            
 
                 % Zoom RR serie
@@ -1949,7 +1950,8 @@ function ann_output = QRScorrector(varargin)
 
     %         zoom reset
 
-            set(ECG_hdl,'ButtonDownFcn',@inspect_ECG);            
+            cellfun(@(a)( set(a,'ButtonDownFcn',@inspect_ECG)), ECG_hdl);            
+
             set(ECG_axes_hdl,'ButtonDownFcn',@inspect_ECG);            
 
             
@@ -2277,7 +2279,7 @@ function ann_output = QRScorrector(varargin)
         %         RRserie2 = cellfun( @(this_rr_serie)( [this_rr_serie(1); this_rr_serie] ), RRserie, 'UniformOutput', false);
 
                 hold(RRserie_zoom_axes_hdl, 'on')
-                RRserie_zoom_hdl = cellfun( @(this_anns, this_rr_serie, this_idx, ii)( plot(RRserie_zoom_axes_hdl, this_anns(this_idx) , this_rr_serie(this_idx), 'LineStyle', ':', 'Marker', all_markers{ii}, 'MarkerEdgeColor', ColorOrder(ii,:), 'Color', ColorOrder(ii,:) )  ), all_annotations_selected(aux_idx3), RRserie(aux_idx3), aux_idx2(aux_idx3), num2cell(colvec(aux_idx3)) );
+                RRserie_zoom_hdl = cellfun( @(this_anns, this_rr_serie, this_idx, ii)( plot(RRserie_zoom_axes_hdl, this_anns(this_idx) , this_rr_serie(this_idx), 'LineStyle', ':', 'Marker', all_markers{ii}, 'MarkerEdgeColor', ColorOrder(ii,:), 'Color', ColorOrder(ii,:) )  ), all_annotations_selected(aux_idx3), RRserie(aux_idx3), aux_idx2(aux_idx3), num2cell(colvec(aux_idx3)), 'UniformOutput', false );
 
                 this_ylims = get(RRserie_axes_hdl, 'Ylim' );
                 this_xlims_orig = get(RRserie_zoom_axes_hdl, 'Xlim' );
@@ -2303,11 +2305,11 @@ function ann_output = QRScorrector(varargin)
 
                 if( ~isempty(aux_RR) )
                     [~, aux_idx2] = intersect(selected_hb_idx, aux_idx);
-                    RRserie_zoom_hdl = [RRserie_zoom_hdl; colvec(plot(RRserie_zoom_axes_hdl, anns_under_edition(anns_under_edition_idx(selected_hb_idx(aux_idx2))), aux_RR(anns_under_edition_idx(selected_hb_idx(aux_idx2))), 'og' ))];
+                    RRserie_zoom_hdl = [RRserie_zoom_hdl; colvec(arrayfun(@(a,b)( plot(RRserie_zoom_axes_hdl, a, b, 'og')), anns_under_edition(anns_under_edition_idx(selected_hb_idx(aux_idx2))), aux_RR(anns_under_edition_idx(selected_hb_idx(aux_idx2))), 'UniformOutput', false ) ) ];
                 end
 
                 if( ~isempty(aux_RR) && hb_idx < length(aux_RR) )
-                    RRserie_zoom_hdl = [RRserie_zoom_hdl; colvec(plot(RRserie_zoom_axes_hdl, anns_under_edition(anns_under_edition_idx(hb_idx)), aux_RR(anns_under_edition_idx(hb_idx)), 'or' ))];
+                    RRserie_zoom_hdl = [RRserie_zoom_hdl; colvec(arrayfun(@(a,b)( plot(RRserie_zoom_axes_hdl, a, b, 'or')), anns_under_edition(anns_under_edition_idx(hb_idx)), aux_RR(anns_under_edition_idx(hb_idx)), 'UniformOutput', false ) )];
                 end
 
                 set(RRserie_zoom_axes_hdl, 'Xlim', this_xlims_orig );
@@ -2318,7 +2320,7 @@ function ann_output = QRScorrector(varargin)
                 ylabel(RRserie_zoom_axes_hdl, 'Serie value');
 
                 set(RRserie_zoom_axes_hdl,'ButtonDownFcn',@inspect_RRserie);  
-                set(RRserie_zoom_hdl, 'ButtonDownFcn', @inspect_RRserie);  
+                cellfun( @(a)(set(a, 'ButtonDownFcn', @inspect_RRserie ) ), RRserie_zoom_hdl );  
 
                 aux_hb_idx = find(hb_idx == aux_idx);
 

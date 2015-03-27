@@ -1278,14 +1278,21 @@ end
 
     % signal labels
     if( bPaperModeOn )
-        aux_hdl = cellfun( @(a,b,ii)( text( YlabelLeftPosition, b, a, 'FontSize', 8, 'HorizontalAlignment', 'left', 'Interpreter', 'none', 'BackgroundColor', [1 1 1], 'EdgeColor', ColorOrder(ii,:), 'Margin', 3 ) ), str_aux, num2cell(-offsets + ecg_max .* gains),num2cell((1:heasig.nsig)'));
+        aux_hdl = cellfun( @(a,b,ii)( text( YlabelLeftPosition, b, a, 'FontSize', 8, 'HorizontalAlignment', 'left', 'Interpreter', 'none', 'BackgroundColor', [1 1 1], 'EdgeColor', ColorOrder(ii,:), 'Margin', 3 ) ), str_aux, num2cell(-offsets + ecg_max .* gains),num2cell((1:heasig.nsig)'), 'UniformOutput', false);
     else
         % white patch to cover the background        
-        UserChnageViewHdls = [UserChnageViewHdls; patch('Faces', [1 2 3 4], 'Vertices', [[0; 0; 3*xTextOffset; 3*xTextOffset ] + plotXmin [plotYmin; plotYmax - plotYmin; plotYmax - plotYmin;plotYmin ] ], 'FaceColor', [1 1 1], 'EdgeColor', [1 1 1] ) ];
-        aux_hdl = cellfun( @(a,b,ii)( text( YlabelLeftPosition, -b + (ecg_min(ii) + ecg_range(ii)/2) * gains(ii), a, 'FontSize', 8, 'HorizontalAlignment', 'center', 'Rotation', 90, 'Interpreter', 'none', 'BackgroundColor', [1 1 1], 'EdgeColor', ColorOrder(ii,:), 'Margin', 3 ) ), str_aux, num2cell(offsets),num2cell((1:heasig.nsig)'));
+        UserChnageViewHdls = [UserChnageViewHdls; {patch('Faces', [1 2 3 4], 'Vertices', [[0; 0; 3*xTextOffset; 3*xTextOffset ] + plotXmin [plotYmin; plotYmax - plotYmin; plotYmax - plotYmin;plotYmin ] ], 'FaceColor', [1 1 1], 'EdgeColor', [1 1 1] )} ];
+        aux_hdl = cellfun( @(a,b,ii)( text( YlabelLeftPosition, -b + (ecg_min(ii) + ecg_range(ii)/2) * gains(ii), a, 'FontSize', 8, 'HorizontalAlignment', 'center', 'Rotation', 90, 'Interpreter', 'none', 'BackgroundColor', [1 1 1], 'EdgeColor', ColorOrder(ii,:), 'Margin', 3 ) ), str_aux, num2cell(offsets),num2cell((1:heasig.nsig)'), 'UniformOutput', false);
     end
     
     UserChnageViewHdls = [UserChnageViewHdls; colvec(aux_hdl)];
+    
+    % r2014 change handle to objects.
+    aux_hdll = aux_hdl{1};
+    for iii = 2:length(aux_hdl)
+        aux_hdll(iii) = aux_hdl{iii};
+    end
+    aux_hdl = aux_hdll;
     
     if( length(aux_hdl) > 1 )
         aux_extent = cell2mat(get(aux_hdl, 'Extent'));
@@ -1338,7 +1345,7 @@ end
         %build vertical axis
         aux_Xaxis = [ -xTextOffset 0 0 -xTextOffset] + startSignalX;
         aux_Yaxis = [ ecg_max ecg_max ecg_min ecg_min ]';
-        UserChnageViewHdls = [UserChnageViewHdls; plot(axes_hdl, bsxfun(@plus, repmat(colvec(aux_Xaxis),1,cant_leads), rowvec(aux_jitter)), bsxfun( @minus, bsxfun( @times, aux_Yaxis, rowvec(gains) ), rowvec(offsets)), 'LineWidth', 0.25 )];       
+        UserChnageViewHdls = [UserChnageViewHdls; colvec(arrayfun(@(a,b)(plot(axes_hdl, a, b, 'LineWidth', 0.25 )), bsxfun(@plus, repmat(colvec(aux_Xaxis),1,cant_leads), rowvec(aux_jitter)), bsxfun( @minus, bsxfun( @times, aux_Yaxis, rowvec(gains) ), rowvec(offsets)), 'UniformOutput', false )) ];       
 
     end
        
@@ -1393,7 +1400,7 @@ end
                 aux_position = get(aux_hdl, 'Position');
                 set(aux_hdl, 'Position', [ plotXmin+aux_extent(3) aux_position(2:3)]);
             end
-            UserChnageViewHdls = [UserChnageViewHdls; aux_hdl];
+            UserChnageViewHdls = [UserChnageViewHdls; {aux_hdl}];
 
             % time reference
 
@@ -1404,7 +1411,7 @@ end
                 aux_position = get(aux_hdl, 'Position');
                 set(aux_hdl, 'Position', [ plotXmin+aux_extent(3) aux_position(2:3)]);
             end
-            UserChnageViewHdls = [UserChnageViewHdls; aux_hdl];
+            UserChnageViewHdls = [UserChnageViewHdls; {aux_hdl}];
 
             aux_hdl = text( sample_last_reference + xTextOffset, plotYtimeAxis, Seconds2HMS((sample_last_reference + base_time ) / heasig.freq, 3), 'FontName', 'Arial', 'FontSize', 8);
             aux_extent = get(aux_hdl, 'Extent');
@@ -1412,7 +1419,7 @@ end
                 aux_position = get(aux_hdl, 'Position');
                 set(aux_hdl, 'Position', [ plotXmax - aux_extent(3) aux_position(2:3)]);
             end
-            UserChnageViewHdls = [UserChnageViewHdls; aux_hdl];
+            UserChnageViewHdls = [UserChnageViewHdls; {aux_hdl}];
 
             aux_seq = cellfun( @(a,b)(limit_sequence(a(b),[sample_reference sample_last_reference])), qrs_ploted, qrs2plot, 'UniformOutput', false );
 
@@ -1425,19 +1432,32 @@ end
             aux_hallign = aux_hallign(1:laux_seq);
 
             linespec_color = rowvec(cellfun( @(a)(a{4}), cLinespecs(1:length(aux_seq)), 'UniformOutput', false ));
+
+            aux_vall = cellfun( @(a,b,c,e,f,g)( colvec(arrayfun( @(d)(text( a(b(d)), plotYindexesAxis + e, num2str(b(d)) , 'FontSize', 8, 'HorizontalAlignment', f, 'Color', g)), c, 'UniformOutput', false)) ), qrs_ploted, qrs2plot, aux_seq, num2cell(0.02 * plotYrange * linspace(-0.1, 0.1, length(qrs_ploted))), aux_hallign, linespec_color, 'UniformOutput', false );
+            % r2014 change handle to objects.
+            laux_seq = aux_vall{1};
+            for iii = 2:length(aux_vall)
+                laux_seq = [laux_seq; colvec(aux_vall{iii})];
+            end
             
             UserChnageViewHdls = [ ... 
-                                UserChnageViewHdls; ...
-                                cell2mat(colvec(cellfun( @(a,b,c,e,f,g)( colvec(arrayfun( @(d)(text( a(b(d)), plotYindexesAxis + e, num2str(b(d)) , 'FontSize', 8, 'HorizontalAlignment', f, 'Color', g)), c)) ), qrs_ploted, qrs2plot, aux_seq, num2cell(0.02 * plotYrange * linspace(-0.1, 0.1, length(qrs_ploted))), aux_hallign, linespec_color, 'UniformOutput', false ))) ...
+                                UserChnageViewHdls; laux_seq
                                 ];
             
             % plot times relative to the reference
+            aux_vall = colvec(cellfun( @(a,b,c,e,f,g)( colvec(arrayfun( @(d)(text( a(b(d)), plotYtimeAxis + e, Seconds2HMS( (a(b(d)) - sample_reference + 1)/heasig.freq, 3 ) , 'FontSize', 8, 'HorizontalAlignment', f, 'Color', g )), c, 'UniformOutput', false)) ), qrs_ploted, qrs2plot, aux_seq, num2cell(0.02 * plotYrange * linspace(-0.1, 0.1, length(qrs_ploted))), aux_hallign, linespec_color, 'UniformOutput', false ));
+            % r2014 change handle to objects.
+            laux_seq = aux_vall{1};
+            for iii = 2:length(aux_vall)
+                laux_seq = [laux_seq; colvec(aux_vall{iii})];
+            end
+            
             UserChnageViewHdls = [ ... 
-                                UserChnageViewHdls; ...
-                                cell2mat(colvec(cellfun( @(a,b,c,e,f,g)( colvec(arrayfun( @(d)(text( a(b(d)), plotYtimeAxis + e, Seconds2HMS( (a(b(d)) - sample_reference + 1)/heasig.freq, 3 ) , 'FontSize', 8, 'HorizontalAlignment', f, 'Color', g )), c)) ), qrs_ploted, qrs2plot, aux_seq, num2cell(0.02 * plotYrange * linspace(-0.1, 0.1, length(qrs_ploted))), aux_hallign, linespec_color, 'UniformOutput', false ))) ...
+                                UserChnageViewHdls; laux_seq
                                 ];
+                            
             % black tips at the beginning/end
-            UserChnageViewHdls = [UserChnageViewHdls; plot(axes_hdl, [sample_reference sample_last_reference; sample_reference sample_last_reference], [ repmat(plotYmin + (0.01 * plotYrange), 1, 2); repmat(plotYmin + (0.06 * plotYrange), 1,2) ] , 'k-', 'LineWidth', 0.25 )];       
+            UserChnageViewHdls = [UserChnageViewHdls; colvec(arrayfun(@(a,b)(plot(axes_hdl, a, b , 'k-', 'LineWidth', 0.25 )), [sample_reference sample_last_reference; sample_reference sample_last_reference], [ repmat(plotYmin + (0.01 * plotYrange), 1, 2); repmat(plotYmin + (0.06 * plotYrange), 1,2) ], 'UniformOutput', false)) ];       
         
         end
         
@@ -1456,14 +1476,14 @@ end
 
             plotYtimeAxis = plotYmin + (0.02 * plotYrange);
 
-            UserChnageViewHdls = [ UserChnageViewHdls; text( aux_seq(1) - xTextOffset, plotYtimeAxis, Seconds2HMS( (aux_seq(1) + base_time )/heasig.freq ) , 'FontSize', 8, 'HorizontalAlignment', 'right')];
+            UserChnageViewHdls = [ UserChnageViewHdls; {text( aux_seq(1) - xTextOffset, plotYtimeAxis, Seconds2HMS( (aux_seq(1) + base_time )/heasig.freq ) , 'FontSize', 8, 'HorizontalAlignment', 'right') } ];
             for jj = rowvec(aux_seq(2:end-1))
-                UserChnageViewHdls = [ UserChnageViewHdls; text( jj, plotYtimeAxis, Seconds2HMS( jj/heasig.freq ) , 'FontSize', 8, 'HorizontalAlignment', 'center')];
+                UserChnageViewHdls = [ UserChnageViewHdls; {text( jj, plotYtimeAxis, Seconds2HMS( jj/heasig.freq ) , 'FontSize', 8, 'HorizontalAlignment', 'center')}];
             end
-            UserChnageViewHdls = [ UserChnageViewHdls; text( aux_seq(end) + xTextOffset, plotYtimeAxis, Seconds2HMS( (aux_seq(end) + base_time )/heasig.freq ) , 'FontSize', 8, 'HorizontalAlignment', 'left')];
+            UserChnageViewHdls = [ UserChnageViewHdls; {text( aux_seq(end) + xTextOffset, plotYtimeAxis, Seconds2HMS( (aux_seq(end) + base_time )/heasig.freq ) , 'FontSize', 8, 'HorizontalAlignment', 'left')}];
 
             % black tips at the beginning/end
-            UserChnageViewHdls = [UserChnageViewHdls; plot(axes_hdl, [sample_reference sample_last_reference; sample_reference sample_last_reference], [ repmat(plotYmin + (0.01 * plotYrange), 1, 2); repmat(plotYmin + (0.06 * plotYrange), 1,2) ] , 'k-', 'LineWidth', 0.25 )];       
+            UserChnageViewHdls = [UserChnageViewHdls; colvec(arrayfun(@(a,b)(plot(axes_hdl, a, b, 'k-', 'LineWidth', 0.25 )), [sample_reference sample_last_reference; sample_reference sample_last_reference], [ repmat(plotYmin + (0.01 * plotYrange), 1, 2); repmat(plotYmin + (0.06 * plotYrange), 1,2) ], 'UniformOutput', false )) ];       
             
         end
     end
@@ -1501,7 +1521,7 @@ end
             if( bAux && bAux2 )
                 QRSfpHdls = colvec(cellfun( @(a,b,c,d)( plot(axes_hdl, repmat(rowvec(a(b(c))), 2,1), [ repmat(plotYmin + d*(0.06 * plotYrange), 1,length(c)); repmat(titleYposition - d*(0.1 * plotYrange), 1,length(c)) ] ) ), qrs_ploted, qrs2plot, aux_seq, num2cell(linspace(0.9, 1.1, length(aux_seq))), 'UniformOutput', false));
                 cellfun( @(a,b)(set_a_linespec(a, b)), QRSfpHdls, cLinespecs(1:length(QRSfpHdls)) );
-                set(cell2mat(QRSfpHdls), 'LineWidth', 0.25)
+                cellfun(@(a)(set(a, 'LineWidth', 0.25)), QRSfpHdls);
             end
         else
             if( bAux )
@@ -1509,7 +1529,7 @@ end
             else
                 str_aux = 'off';
             end
-            set(cell2mat(QRSfpHdls), 'Visible', str_aux );
+            cellfun(@(a)(set(a, 'Visible', str_aux )), QRSfpHdls);
         end
 
     else
@@ -1520,10 +1540,10 @@ end
             
             bWaveLegendPlotted = true;
             % Waves frame
-            legend_hdl = patch([left_legend left_legend [left_legend left_legend]+width_legend left_legend ], [bottom_legend [bottom_legend bottom_legend]+height_legend bottom_legend bottom_legend], [1 1 1], 'EdgeColor', [0 0 0]);
-            legend_hdl = [legend_hdl; text( left_legend + width_legend/4, bottom_legend + height_legend/2, 'P', 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', color_Pwave_global)];
-            legend_hdl = [legend_hdl; text( left_legend + width_legend/2, bottom_legend + height_legend/2, 'QRS', 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', color_QRScomplex_global )];
-            legend_hdl = [legend_hdl; text( left_legend + width_legend*3/4, bottom_legend + height_legend/2, 'T', 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', color_Twave_global )];
+            legend_hdl = {patch([left_legend left_legend [left_legend left_legend]+width_legend left_legend ], [bottom_legend [bottom_legend bottom_legend]+height_legend bottom_legend bottom_legend], [1 1 1], 'EdgeColor', [0 0 0])};
+            legend_hdl = [legend_hdl; {text( left_legend + width_legend/4, bottom_legend + height_legend/2, 'P', 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', color_Pwave_global)}];
+            legend_hdl = [legend_hdl; {text( left_legend + width_legend/2, bottom_legend + height_legend/2, 'QRS', 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', color_QRScomplex_global )}];
+            legend_hdl = [legend_hdl; {text( left_legend + width_legend*3/4, bottom_legend + height_legend/2, 'T', 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', color_Twave_global )}];
             UserChnageViewHdls = [UserChnageViewHdls; legend_hdl];
             
         end
@@ -1661,15 +1681,16 @@ end
         bHBclassLegendPlotted = true;
 
         % Heartbeats class frame
-        legend_hdl = patch([left_hb_legend left_hb_legend [left_hb_legend left_hb_legend]+width_hb_legend left_hb_legend ], [bottom_hb_legend [bottom_hb_legend bottom_hb_legend]+height_hb_legend bottom_hb_legend bottom_hb_legend], [1 1 1], 'EdgeColor', [0 0 0]);
+        legend_hdl = {patch([left_hb_legend left_hb_legend [left_hb_legend left_hb_legend]+width_hb_legend left_hb_legend ], [bottom_hb_legend [bottom_hb_legend bottom_hb_legend]+height_hb_legend bottom_hb_legend bottom_hb_legend], [1 1 1], 'EdgeColor', [0 0 0])};
         lcBeatLabels = length(cBeatLabels);
         for jj = 1:lcBeatLabels
-            legend_hdl = [legend_hdl; text( left_hb_legend + jj*width_hb_legend/(lcBeatLabels+1), bottom_hb_legend + height_hb_legend/2, cBeatLabels{jj}, 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', QRScplxColor, 'EdgeColor', cBeatLabelsColorCode{jj} ) ];
+            legend_hdl = [legend_hdl; {text( left_hb_legend + jj*width_hb_legend/(lcBeatLabels+1), bottom_hb_legend + height_hb_legend/2, cBeatLabels{jj}, 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', QRScplxColor, 'EdgeColor', cBeatLabelsColorCode{jj} )} ];
         end
         UserChnageViewHdls = [UserChnageViewHdls; legend_hdl];
     end
 
-    bAux = eDetailLevel ~= kNoDetail && ( (eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) && plotXrange <= closeDetailSampSize );
+%     bAux = eDetailLevel ~= kNoDetail && ( (eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) && plotXrange <= closeDetailSampSize );
+    bAux = eDetailLevel ~= kNoDetail && ( (eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) );
     
     % QRS annotations labels
     bAux2 = any( colvec(cellfun( @(a,b,c)(~isempty(a(b(c)))), qrs_ploted, qrs2plot, aux_seq )) );
@@ -1696,17 +1717,17 @@ end
         end
 
         % QRS names frame
-        legend_hdl = patch([left_qrs_names_legend left_qrs_names_legend [left_qrs_names_legend left_qrs_names_legend]+width_qrs_names_legend left_qrs_names_legend ], [bottom_qrs_names_legend [bottom_qrs_names_legend bottom_qrs_names_legend]+height_qrs_names_legend bottom_qrs_names_legend bottom_qrs_names_legend], [1 1 1], 'EdgeColor', [0 0 0]);
+        legend_hdl = {patch([left_qrs_names_legend left_qrs_names_legend [left_qrs_names_legend left_qrs_names_legend]+width_qrs_names_legend left_qrs_names_legend ], [bottom_qrs_names_legend [bottom_qrs_names_legend bottom_qrs_names_legend]+height_qrs_names_legend bottom_qrs_names_legend bottom_qrs_names_legend], [1 1 1], 'EdgeColor', [0 0 0])};
         for jj = 1:cant_qrs_names
             aux_ls = cLinespecs{jj};
-            legend_hdl = [legend_hdl; text( left_qrs_names_legend + 0.1*width_qrs_names_legend, bottom_qrs_names_legend + height_qrs_names_legend * (jj)/(cant_qrs_names+1), adjust_string( qrs_ploted_names{jj}, 15 ), ...
+            legend_hdl = [legend_hdl; {text( left_qrs_names_legend + 0.1*width_qrs_names_legend, bottom_qrs_names_legend + height_qrs_names_legend * (jj)/(cant_qrs_names+1), adjust_string( qrs_ploted_names{jj}, 15 ), ...
                                             'FontSize', 8, ...
                                             'VerticalAlignment', 'middle', ...
                                             'HorizontalAlignment', 'left', ...
                                             'Interpreter', 'none', ...
                                             'Color', 1-aux_ls{4}, ...
                                             'BackgroundColor', aux_ls{4}, ... 
-                                            'EdgeColor', aux_ls{5} ) ... 
+                                            'EdgeColor', aux_ls{5} )} ... 
                             ];
         end
         UserChnageViewHdls = [UserChnageViewHdls; legend_hdl];
@@ -1719,10 +1740,10 @@ end
         if( eDetailLevel ~= kNoDetail && ( (eDetailLevel == kCloseDetailSL || eDetailLevel == kCloseDetailAll ) && plotXrange <= closeDetailSampSize ) )
             bWaveLegendPlotted = true;
             % frame
-            legend_hdl = patch([left_legend left_legend [left_legend left_legend]+width_legend left_legend ], [bottom_legend [bottom_legend bottom_legend]+height_legend bottom_legend bottom_legend], [1 1 1], 'EdgeColor', [0 0 0]);
-            legend_hdl = [legend_hdl; text( left_legend + width_legend/4, bottom_legend + height_legend/2, 'P', 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', PwaveColor)];
-            legend_hdl = [legend_hdl; text( left_legend + width_legend/2, bottom_legend + height_legend/2, 'QRS', 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', QRScplxColor )];
-            legend_hdl = [legend_hdl; text( left_legend + width_legend*3/4, bottom_legend + height_legend/2, 'T', 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', TwaveColor )];
+            legend_hdl = {patch([left_legend left_legend [left_legend left_legend]+width_legend left_legend ], [bottom_legend [bottom_legend bottom_legend]+height_legend bottom_legend bottom_legend], [1 1 1], 'EdgeColor', [0 0 0])};
+            legend_hdl = [legend_hdl; {text( left_legend + width_legend/4, bottom_legend + height_legend/2, 'P', 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', PwaveColor)}];
+            legend_hdl = [legend_hdl; {text( left_legend + width_legend/2, bottom_legend + height_legend/2, 'QRS', 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', QRScplxColor )}];
+            legend_hdl = [legend_hdl; {text( left_legend + width_legend*3/4, bottom_legend + height_legend/2, 'T', 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', TwaveColor )}];
             UserChnageViewHdls = [UserChnageViewHdls; legend_hdl];
         end
         
@@ -1792,7 +1813,7 @@ end
         rect_scale_width = 0.06 * plotXrange;
         rect_scale_X = plotXmax - (0.07 * plotXrange);
         rect_scale_Y = plotYmin + (0.07 * plotYrange);
-        UserChnageViewHdls = [UserChnageViewHdls; rectangle('Position',[rect_scale_X, rect_scale_Y, rect_scale_width, rect_scale_height], 'FaceColor', [1 1 1])];
+        UserChnageViewHdls = [UserChnageViewHdls; {rectangle('Position',[rect_scale_X, rect_scale_Y, rect_scale_width, rect_scale_height], 'FaceColor', [1 1 1])}];
 
         XscaleSize = floor( 0.03 * plotXrange * 1/heasig.freq) * heasig.freq ; 
         if( XscaleSize == 0 )
@@ -1804,7 +1825,7 @@ end
                 mult = round(mult / 2);
             end
             XscaleSize = XscaleSize_ms * heasig.freq / 1e3;
-            UserChnageViewHdls = [ UserChnageViewHdls; text( rect_scale_X + round(rect_scale_width/2), rect_scale_Y + yTextOffset, [ num2str(XscaleSize_ms) ' ms' ], 'FontSize', 8, 'HorizontalAlignment', 'center')];
+            UserChnageViewHdls = [ UserChnageViewHdls; {text( rect_scale_X + round(rect_scale_width/2), rect_scale_Y + yTextOffset, [ num2str(XscaleSize_ms) ' ms' ], 'FontSize', 8, 'HorizontalAlignment', 'center')}];
         else
             % multiple of mult seconds
             mult = 60;
@@ -1814,36 +1835,36 @@ end
                 mult = round(mult / 2);
             end
             XscaleSize = XscaleSize_s * heasig.freq;
-            UserChnageViewHdls = [ UserChnageViewHdls; text( rect_scale_X + round(rect_scale_width/2), rect_scale_Y + yTextOffset, [ num2str(XscaleSize_s) ' s' ], 'FontSize', 8, 'HorizontalAlignment', 'center')];
+            UserChnageViewHdls = [ UserChnageViewHdls; {text( rect_scale_X + round(rect_scale_width/2), rect_scale_Y + yTextOffset, [ num2str(XscaleSize_s) ' s' ], 'FontSize', 8, 'HorizontalAlignment', 'center')}];
         end
-        UserChnageViewHdls = [UserChnageViewHdls; plot(axes_hdl, [ -(XscaleSize/2) -(XscaleSize/2) XscaleSize/2 XscaleSize/2] + rect_scale_X + round(rect_scale_width/2) , [ -yTextOffset 0 0 -yTextOffset] + rect_scale_Y + 3*yTextOffset, 'k-',  'LineWidth', 0.25 )];
+        UserChnageViewHdls = [UserChnageViewHdls; {plot(axes_hdl, [ -(XscaleSize/2) -(XscaleSize/2) XscaleSize/2 XscaleSize/2] + rect_scale_X + round(rect_scale_width/2) , [ -yTextOffset 0 0 -yTextOffset] + rect_scale_Y + 3*yTextOffset, 'k-',  'LineWidth', 0.25 )}];
     end
 
     %% Title
     
     if( bPaperModeOn )
         UserChnageViewHdls = [UserChnageViewHdls; ...
-                text( plotXmin + 0.5 * plotXrange, titleYposition, ... 
+                { text( plotXmin + 0.5 * plotXrange, titleYposition, ... 
                         strTitle, ...
                         'BackGroundColor', [0.99 0.92 0.8], ...
                         'EdgeColor', [1 0 0], ...
                         'LineWidth', 1.2, ...
                         'Interpreter', 'none', ...
                         'FontSize', 9, ...
-                        'HorizontalAlignment', 'center' ); ];
+                        'HorizontalAlignment', 'center' )}; ];
     else                
         UserChnageViewHdls = [UserChnageViewHdls; ...
-                text( plotXmin + 0.5 * plotXrange, titleYposition, ... 
+                { text( plotXmin + 0.5 * plotXrange, titleYposition, ... 
                         strTitle, ...
                         'BackGroundColor', [0.702 0.78 1], ...
                         'EdgeColor', [0.078 0.169 0.549], ...
                         'LineWidth', 1.2, ...
                         'Interpreter', 'none', ...
                         'FontSize', 9, ...
-                        'HorizontalAlignment', 'center' ); ];
+                        'HorizontalAlignment', 'center' )}; ];
     end
     
-    titleExtent = get(UserChnageViewHdls(end), 'Extent');
+    titleExtent = get(UserChnageViewHdls{end}, 'Extent');
 
     topLevelHdl = [topLevelHdl; UserChnageViewHdls(end)];
     
@@ -1896,7 +1917,7 @@ end
         rect_scale_X = plotXmax - 6*xTextOffset;
         rect_scale_Y = plotYmin + (0.13 * plotYrange);
 
-        UserChnageViewHdls = [UserChnageViewHdls; rectangle('Position',[rect_scale_X, rect_scale_Y, rect_scale_width, rect_scale_height], 'FaceColor', [1 1 1])];
+        UserChnageViewHdls = [UserChnageViewHdls; {rectangle('Position',[rect_scale_X, rect_scale_Y, rect_scale_width, rect_scale_height], 'FaceColor', [1 1 1])}];
 
         YscaleSize = rect_scale_height / gains(volt_idx(1)); 
         if( YscaleSize < 1e-3 )
@@ -1928,9 +1949,9 @@ end
             mult = round(mult / 2);
         end
         YscaleSize_uv = YscaleSize * k * lead_gain;
-        UserChnageViewHdls = [ UserChnageViewHdls; text( plotXmax - 5*xTextOffset, rect_scale_Y + rect_scale_height/2, [ num2str(YscaleSize) ' ' str_aux 'V' ], 'FontSize', 8, 'HorizontalAlignment', 'center', 'Rotation', 90)];
+        UserChnageViewHdls = [ UserChnageViewHdls; {text( plotXmax - 5*xTextOffset, rect_scale_Y + rect_scale_height/2, [ num2str(YscaleSize) ' ' str_aux 'V' ], 'FontSize', 8, 'HorizontalAlignment', 'center', 'Rotation', 90)}];
 
-        UserChnageViewHdls = [UserChnageViewHdls; plot(axes_hdl, [ -xTextOffset 0 0 -xTextOffset] + (plotXmax - 3*xTextOffset) , [ -YscaleSize_uv/2 -YscaleSize_uv/2 YscaleSize_uv/2 YscaleSize_uv/2 ] + rect_scale_Y + rect_scale_height/2, 'k-', 'LineWidth', 0.25 )];
+        UserChnageViewHdls = [UserChnageViewHdls; {plot(axes_hdl, [ -xTextOffset 0 0 -xTextOffset] + (plotXmax - 3*xTextOffset) , [ -YscaleSize_uv/2 -YscaleSize_uv/2 YscaleSize_uv/2 YscaleSize_uv/2 ] + rect_scale_Y + rect_scale_height/2, 'k-', 'LineWidth', 0.25 )}];
 
     end
 
@@ -2008,12 +2029,14 @@ end
 
         set(axes_hdl, 'Xlim', [ plotXmin plotXmax]);
 
-        if( ~isempty(UserChnageViewHdls) )
-            if( ishandle(UserChnageViewHdls) )
-                delete(UserChnageViewHdls);
-            end
-            UserChnageViewHdls = [];
-        end
+        cellfun(@(a)( CheckAndDeleteHdl(a) ), UserChnageViewHdls);
+        UserChnageViewHdls = [];
+%         if( ~isempty(UserChnageViewHdls) )
+%             if( ishandle(UserChnageViewHdls) )
+%                 delete(UserChnageViewHdls);
+%             end
+%             UserChnageViewHdls = [];
+%         end
 
         update_axis_plot_ecg_strip( aux_qrs_ploted );
 
@@ -2542,7 +2565,7 @@ end
         bAux = ishandle(paperModeHdl);
         if( any(bAux) )
             delete(paperModeHdl(bAux));
-            paperModeHdl = [];
+            paperModeHdl = {};
         end
         
         hold(axes_hdl, 'on');
@@ -4329,6 +4352,14 @@ end
         stop(my_timer)
         delete(my_timer)
         delete(fig_hdl)
+        
+    end
+
+    function CheckAndDeleteHdl( this_hdl )
+
+        if( ishandle(this_hdl) )
+            delete(this_hdl);
+        end
         
     end
 
