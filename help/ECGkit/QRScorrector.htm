@@ -93,7 +93,11 @@ var suggestionsObj;
 						<p>&#160;</p>
 					</div>
 					<h1 id="inputs" class="r2013b">Input Arguments</h1>
-					<p>The properties that this task uses are the following:</p>
+					<p>The properties that the <span style="font-style: italic;">ECGtask_QRS_corrector</span> 
+					 class handle are described below. The usage of these 
+					 properties is restricted to low-level programming, 
+					 you can use this task through the ECGwrapper as is 
+					 shown in the example below.</p>
 					<div class="expandableContent">
 						<a name="inputarg_progress_handle"></a> 
 						<h3 id="input_argument_namevalue_outputdir" class="expand"><span 
@@ -157,7 +161,7 @@ var suggestionsObj;
 ECGw.ECGtaskHandle = <span class="string">'QRS_corrector'</span>;<span class="comment">
 % this is to use previous saved results as starting point, if any available</span>
 cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName({<span class="string">'QRS_corrector' 'QRS_detection'</span>});
-ECGw.ECGtaskHandle = load(cached_filenames{1});
+ECGw.ECGtaskHandle.payload = load(cached_filenames{1});
 ECGw.Run();</pre>
 						<p>Then the following GUI appears</p>
 						<img src="QRS corrector.PNG" alt="" style="border: none;" 

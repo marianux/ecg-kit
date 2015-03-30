@@ -1164,135 +1164,7 @@ classdef ECGwrapper < handle
             end
             
         end
-        
-        function obj = CheckECGrecording(obj)
-        % internal method to check the correctness of the user input.
-        
-            if( isempty(obj.recording_name) )
-                error( 'ECGwrapper:ArgCheck:InvalidECGarg', 'Please provide an ECG recording as described in the documentation, help(''ECGwrapper'') maybe could help you.\n' );
-            else
-                
-                % ECG to be read
-
-                if( exist(obj.recording_name, 'file') )
-                    
-                    [obj.rec_path, obj.rec_filename] = fileparts(obj.recording_name);
-                    obj.rec_path = [obj.rec_path filesep];
-                    
-                else
-                    
-                    [obj.rec_path, obj.rec_filename] = fileparts(obj.recording_name);
-                    
-                    obj.rec_path = [obj.rec_path filesep];
-                    
-                    if( ~exist(obj.rec_path, 'dir') )
-                        obj.rec_path = [pwd filesep obj.rec_path];
-                    end
-                    
-                    aux_files = dir([obj.rec_path obj.rec_filename '.*' ]);
-                    
-                    if( isempty(aux_files) )
-                        error( 'ECGwrapper:ArgCheck:RecNotFound', 'Can not find recording : %s', obj.recording_name );
-                    else
-                        % the bigger probably would have the ECG data
-                        [~, aux_idx] = max(cell2mat({aux_files(:).bytes}));
-                        obj.recording_name = [obj.rec_path aux_files(aux_idx).name];
-                    end
-                    
-                    [~, obj.rec_filename] = fileparts(obj.recording_name);
-                    
-                end
-
-                
-                if( strcmp(obj.recording_format, 'auto') )
-                    %Try guessing the ECG format
-                    aux_fmt = ECGformat(obj.recording_name);
-
-                    if( isempty(aux_fmt) )
-                       str_aux = disp_option_enumeration( sprintf('Could not guess the format of:\n\n%s\n\nChoose one of the following:', strrep(obj.recording_name, '\', '\\')), obj.cKnownFormats);
-                       error( 'ECGwrapper:ArgCheck:InvalidFormat', str_aux);
-                    else
-                        obj.recording_format = aux_fmt;
-                    end
-
-                end
-
-                if( strcmp(obj.recording_format, 'MIT') )
-                    strAnnExtension = {'ari' 'atr' 'ecg'};
-                    annFileName = {};
-                    bAnnotationFound = false;
-                    for ii = 1:length(strAnnExtension)
-                        aux_str = [obj.recording_name(1:end-3) strAnnExtension{ii}];
-                        if( exist(aux_str, 'file') )
-                            annFileName = [ annFileName aux_str ];
-                            bAnnotationFound = true;
-                        end
-                    end
-                    if(~bAnnotationFound)
-                        ann_aux = [];
-                    else
-                        for aux_str = annFileName
-                            ann_aux = readannot(aux_str{1});
-                            if( ~isempty(ann_aux) )
-                                break;                                
-                            end
-                        end
-                    end
-
-                    obj.ECG_header = readheader([obj.recording_name(1:end-3) 'hea']);
-
-                elseif( strcmp(obj.recording_format, 'ISHNE') )
-                    annFileName = [obj.recording_name(1:end-3) 'ann'];
-                    if( exist(annFileName, 'file') )
-                        ann_aux = read_ishne_ann(annFileName);
-                    else
-                        ann_aux = [];
-                    end        
-                    obj.ECG_header = read_ishne_header(obj.recording_name);
-
-                elseif( strcmp(obj.recording_format, 'Mortara') )
-                    ann_aux = [];
-                    obj.ECG_header = read_Mortara_header(obj.recording_name);
-                    [obj.rec_path, obj.rec_filename] = fileparts(obj.recording_name);
-                    obj.rec_path = [obj.rec_path filesep];
-                    
-
-                elseif( strcmp(obj.recording_format, 'HES') )
-                    ann_aux = read_HES_ann([obj.recording_name(1:end-3) 'lst']);
-                    header_aux = read_HES_header(obj.recording_name);
-                    ann_aux.time = round(ann_aux.time * header_aux.freq);
-                    obj.ECG_header = header_aux;
-
-                elseif( strcmp(obj.recording_format, 'AHA') )
-                    ann_aux = read_AHA_ann(obj.recording_name);
-                    obj.ECG_header = read_AHA_header(obj.recording_name);
-
-                elseif( strcmp(obj.recording_format, 'MAT') )
-
-                    [~, obj.ECG_header, ann_aux ] = read_ECG(obj.recording_name, [], [], obj.recording_format);
-                    
-                end
-
-            end
-
-            if(isempty(ann_aux))
-                obj.bQRSlocations = false;
-                obj.ECG_annotations = [];
-                obj.QRS_locations = [];
-            else
-                % discard non-beats and finish annotations parsing.
-                obj.bQRSlocations = true;
-                if( isfield(ann_aux, 'anntyp') )
-                    ann_aux = AnnotationFilterConvert(ann_aux, obj.recording_format, obj.class_labeling);
-                end
-                obj.QRS_locations = ann_aux.time;
-                obj.ECG_annotations = ann_aux;
-            end
-            
-            obj.bECG_rec_changed = false;
-            
-        end
-
+   
         function ReportErrors(obj)
         % error reporting method.
         
@@ -1569,7 +1441,139 @@ classdef ECGwrapper < handle
                 warning('ECGwrapper:BadArg', 'syncSlavesWithMaster must be boolean.');
             end
         end
-      
+              
+    end
+    
+    methods (Access = private)  
+        
+        function obj = CheckECGrecording(obj)
+        % internal method to check the correctness of the user input.
+        
+            if( isempty(obj.recording_name) )
+                error( 'ECGwrapper:ArgCheck:InvalidECGarg', 'Please provide an ECG recording as described in the documentation, help(''ECGwrapper'') maybe could help you.\n' );
+            else
+                
+                % ECG to be read
+
+                if( exist(obj.recording_name, 'file') )
+                    
+                    [obj.rec_path, obj.rec_filename] = fileparts(obj.recording_name);
+                    obj.rec_path = [obj.rec_path filesep];
+                    
+                else
+                    
+                    [obj.rec_path, obj.rec_filename] = fileparts(obj.recording_name);
+                    
+                    obj.rec_path = [obj.rec_path filesep];
+                    
+                    if( ~exist(obj.rec_path, 'dir') )
+                        obj.rec_path = [pwd filesep obj.rec_path];
+                    end
+                    
+                    aux_files = dir([obj.rec_path obj.rec_filename '.*' ]);
+                    
+                    if( isempty(aux_files) )
+                        error( 'ECGwrapper:ArgCheck:RecNotFound', 'Can not find recording : %s', obj.recording_name );
+                    else
+                        % the bigger probably would have the ECG data
+                        [~, aux_idx] = max(cell2mat({aux_files(:).bytes}));
+                        obj.recording_name = [obj.rec_path aux_files(aux_idx).name];
+                    end
+                    
+                    [~, obj.rec_filename] = fileparts(obj.recording_name);
+                    
+                end
+
+                
+                if( strcmp(obj.recording_format, 'auto') )
+                    %Try guessing the ECG format
+                    aux_fmt = ECGformat(obj.recording_name);
+
+                    if( isempty(aux_fmt) )
+                       str_aux = disp_option_enumeration( sprintf('Could not guess the format of:\n\n%s\n\nChoose one of the following:', strrep(obj.recording_name, '\', '\\')), obj.cKnownFormats);
+                       error( 'ECGwrapper:ArgCheck:InvalidFormat', str_aux);
+                    else
+                        obj.recording_format = aux_fmt;
+                    end
+
+                end
+
+                if( strcmp(obj.recording_format, 'MIT') )
+                    strAnnExtension = {'ari' 'atr' 'ecg'};
+                    annFileName = {};
+                    bAnnotationFound = false;
+                    for ii = 1:length(strAnnExtension)
+                        aux_str = [obj.recording_name(1:end-3) strAnnExtension{ii}];
+                        if( exist(aux_str, 'file') )
+                            annFileName = [ annFileName aux_str ];
+                            bAnnotationFound = true;
+                        end
+                    end
+                    if(~bAnnotationFound)
+                        ann_aux = [];
+                    else
+                        for aux_str = annFileName
+                            ann_aux = readannot(aux_str{1});
+                            if( ~isempty(ann_aux) )
+                                break;                                
+                            end
+                        end
+                    end
+
+                    obj.ECG_header = readheader([obj.recording_name(1:end-3) 'hea']);
+
+                elseif( strcmp(obj.recording_format, 'ISHNE') )
+                    annFileName = [obj.recording_name(1:end-3) 'ann'];
+                    if( exist(annFileName, 'file') )
+                        ann_aux = read_ishne_ann(annFileName);
+                    else
+                        ann_aux = [];
+                    end        
+                    obj.ECG_header = read_ishne_header(obj.recording_name);
+
+                elseif( strcmp(obj.recording_format, 'Mortara') )
+                    ann_aux = [];
+                    obj.ECG_header = read_Mortara_header(obj.recording_name);
+                    [obj.rec_path, obj.rec_filename] = fileparts(obj.recording_name);
+                    obj.rec_path = [obj.rec_path filesep];
+                    
+
+                elseif( strcmp(obj.recording_format, 'HES') )
+                    ann_aux = read_HES_ann([obj.recording_name(1:end-3) 'lst']);
+                    header_aux = read_HES_header(obj.recording_name);
+                    ann_aux.time = round(ann_aux.time * header_aux.freq);
+                    obj.ECG_header = header_aux;
+
+                elseif( strcmp(obj.recording_format, 'AHA') )
+                    ann_aux = read_AHA_ann(obj.recording_name);
+                    obj.ECG_header = read_AHA_header(obj.recording_name);
+
+                elseif( strcmp(obj.recording_format, 'MAT') )
+
+                    [~, obj.ECG_header, ann_aux ] = read_ECG(obj.recording_name, [], [], obj.recording_format);
+                    
+                end
+
+            end
+
+            if(isempty(ann_aux))
+                obj.bQRSlocations = false;
+                obj.ECG_annotations = [];
+                obj.QRS_locations = [];
+            else
+                % discard non-beats and finish annotations parsing.
+                obj.bQRSlocations = true;
+                if( isfield(ann_aux, 'anntyp') )
+                    ann_aux = AnnotationFilterConvert(ann_aux, obj.recording_format, obj.class_labeling);
+                end
+                obj.QRS_locations = ann_aux.time;
+                obj.ECG_annotations = ann_aux;
+            end
+            
+            obj.bECG_rec_changed = false;
+            
+        end
+
     end
    
     

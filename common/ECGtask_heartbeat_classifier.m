@@ -44,7 +44,6 @@ classdef ECGtask_heartbeat_classifier < ECGtask
     properties
         
         progress_handle
-        caller_variable = 'payload'
         payload
         mode 
         tmp_path        

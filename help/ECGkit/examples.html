@@ -108,80 +108,80 @@
 	<p class="doc_topic_desc">A toolbox for cardiovascular signal processing 
 	 </p>
 </div>
-	<h1 class="r2013b">Example of how to use the ECGkit</h1>
-	<!--introduction-->
-		<p>This script exemplifies the use of the ECGkit in a multimodal 
-	 cardiovascular recording which includes arterial blood pressure (ABP), 
-	 plethysmographic (PPG) and electrocardiogram signals. The following 
-	 tasks will be performed in this example:</p>
-	<div>
-		<ul>
-			<li>Heartbeat/QRS detection</li>
-			<li>ABP/PPG pulse detection</li>
-			<li>ECG wave delineation</li>
-			<li>Heartbeat classification</li>
-			<li>Report generation</li>
-		</ul>
-	</div>
-	<p>Each automatic step is followed by a manual verification step in 
-	 order to verify the algorithm's results. The script is prepared to 
-	 run locally without arguments, as well as in a cluster environment 
-	 by using &quot;pid_str&quot; argument. The pid_str argument is a char 
-	 with format 'N/M', being N &lt;= M with default value '1/1'. You can 
-	 partition a big job into M pieces in cluster architecture, by starting 
-	 M processes with N ranging from 1 to M.</p>
-	<p>You can watch a typical run of this script for small, local ECG 
-	 recording on <a href="https://www.youtube.com/watch?v=8lJtkGhrqFw&amp;list=PLlD2eDv5CIe9sA2atmnb-DX48FIRG46z7">YouTube</a>.</p>
-	<p><b style="font-weight: normal;">Example</b> of how to run this script</p>
-	<pre class="codeinput">
+<h1 class="r2013b">Example of how to use the ECGkit</h1>
+<!--introduction-->
+		<p>This script exemplifies the use of the ECGkit in a multimodal cardiovascular 
+ recording which includes arterial blood pressure (ABP), plethysmographic 
+ (PPG) and electrocardiogram signals. The following tasks will be performed 
+ in this example:</p>
+<div>
+	<ul>
+		<li>Heartbeat/QRS detection</li>
+		<li>ABP/PPG pulse detection</li>
+		<li>ECG wave delineation</li>
+		<li>Heartbeat classification</li>
+		<li>Report generation</li>
+	</ul>
+</div>
+<p>Each automatic step is followed by a manual verification step in order 
+ to verify the algorithm's results. The script is prepared to run locally 
+ without arguments, as well as in a cluster environment by using &quot;pid_str&quot; 
+ argument. The pid_str argument is a char with format 'N/M', being N &lt;= 
+ M with default value '1/1'. You can partition a big job into M pieces 
+ in cluster architecture, by starting M processes with N ranging from 1 
+ to M.</p>
+<p>You can watch a typical run of this script for small, local ECG recording 
+ on <a href="https://www.youtube.com/watch?v=8lJtkGhrqFw&amp;list=PLlD2eDv5CIe9sA2atmnb-DX48FIRG46z7">YouTube</a>.</p>
+<p><b style="font-weight: normal;">Example</b> of how to run this script</p>
+<pre class="codeinput">
 examples()<?rh-implicit_p ?>examples(<span class="string">'1/1'</span>, <span class="string">'C:\Your_preferred_local_path\'</span>, <span class="string">'arbitrary_string'</span>)
 examples(<span class="string">'1/10'</span>, <span class="string">'/Your_preferred_path_in_cluster/'</span>, <span class="string">'arbitrary_string'</span>)		
 		</pre>
-	<!--/introduction-->
+<!--/introduction-->
 		<h1 class="r2013b">Contents</h1>
-	<div>
-		<ul>
-			<li><a href="#Function_prototype">Function prototype</a></li>
-			<li><a href="#Argument_parsing">Argument parsing</a></li>
-			<li><a href="#QRS_automatic_detection">QRS automatic detection</a></li>
-			<li><a href="#QRS_visual_inspection_and_correction">QRS visual 
-			 inspection and correction</a></li>
-			<li><a href="#PPG_ABP_pulse_detection">PPG/ABP pulse detection</a></li>
-			<li><a href="#PPG_ABP_waves_visual_inspection_and_correction">PPG/ABP 
-			 waves visual inspection and correction</a></li>
-			<li><a href="#ECG_automatic_delineation">ECG automatic delineation</a></li>
-			<li><a href="#Visual_inspection_of_the_detection_delineation">Visual 
-			 inspection of the detection/delineation</a></li>
-			<li><a href="#Automatic_Heartbeat_classification">Automatic 
-			 Heartbeat classification</a></li>
-			<li><a href="#Visual_inspection_of_the_signal">Visual inspection 
-			 of the signal</a></li>
-			<li><a href="#Other_user-defined_tasks_">Other user-defined 
-			 tasks ...</a></li>
-		</ul>
-	</div>
-	<h1 class="r2013b">Function prototype<a name="Function_prototype"></a></h1>
-	<pre class="codeinput">
+<div>
+	<ul>
+		<li><a href="#Function_prototype">Function prototype</a></li>
+		<li><a href="#Argument_parsing">Argument parsing</a></li>
+		<li><a href="#QRS_automatic_detection">QRS automatic detection</a></li>
+		<li><a href="#QRS_visual_inspection_and_correction">QRS visual 
+		 inspection and correction</a></li>
+		<li><a href="#PPG_ABP_pulse_detection">PPG/ABP pulse detection</a></li>
+		<li><a href="#PPG_ABP_waves_visual_inspection_and_correction">PPG/ABP 
+		 waves visual inspection and correction</a></li>
+		<li><a href="#ECG_automatic_delineation">ECG automatic delineation</a></li>
+		<li><a href="#Visual_inspection_of_the_detection_delineation">Visual 
+		 inspection of the detection/delineation</a></li>
+		<li><a href="#Automatic_Heartbeat_classification">Automatic Heartbeat 
+		 classification</a></li>
+		<li><a href="#Visual_inspection_of_the_signal">Visual inspection 
+		 of the signal</a></li>
+		<li><a href="#Other_user-defined_tasks_">Other user-defined tasks 
+		 ...</a></li>
+	</ul>
+</div>
+<h1 class="r2013b">Function prototype<a name="Function_prototype"></a></h1>
+<pre class="codeinput">
 <span class="keyword">function</span> examples(pid_str, examples_path, user_str)
 		</pre>
-	<p><i>examples</i> accepts three <i>optional</i> arguments:</p>
-	<div>
-		<ul>
-			<li><b><i>pid_str</i></b> (optional) string identifier for 
-			 this work instance in a cluster computing or multitask environment. 
-			 The identifier follows the form 'N/M', being N a number which 
-			 identifies this execution instance and M the total amount 
-			 of instances. Default value '1/1'</li>
-			<li><b><i>examples_path</i></b> (optional) string of the path 
-			 with ECG recordings. Default value <tt>['.' filesep 'example_recordings' 
-			 filesep ]</tt>;</li>
-			<li><b><i>user_str</i></b> (optional) string to identify this 
-			 run or experiment.</li>
-		</ul>
-	</div>
-	<h1 class="r2013b">Argument parsing<a name="Argument_parsing"></a></h1>
-	<p>Simple and straight forward.</p>
-	<pre class="codeinput">
+<p><i>examples</i> accepts three <i>optional</i> arguments:</p>
+<div>
+	<ul>
+		<li><b><i>pid_str</i></b> (optional) string identifier for this 
+		 work instance in a cluster computing or multitask environment. 
+		 The identifier follows the form 'N/M', being N a number which 
+		 identifies this execution instance and M the total amount of instances. 
+		 Default value '1/1'</li>
+		<li><b><i>examples_path</i></b> (optional) string of the path with 
+		 ECG recordings. Default value <tt>['.' filesep 'example_recordings' 
+		 filesep ]</tt>;</li>
+		<li><b><i>user_str</i></b> (optional) string to identify this run 
+		 or experiment.</li>
+	</ul>
+</div>
+<h1 class="r2013b">Argument parsing<a name="Argument_parsing"></a></h1>
+<p>Simple and straight forward.</p>
+<pre class="codeinput">
 &#160;&#160;&#160;&#160;<span class="keyword">if</span>( nargin &lt; 1 || ~ischar(pid_str) )
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="comment">% single PID run</span>
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;pid_str = <span class="string">'1/1'</span>;
@@ -229,36 +229,36 @@ examples(<span class="string">'1/10'</span>, <span class="string">'/Your_preferr
 &#160;&#160;&#160;&#160;<span class="keyword">end</span><span class="comment">
 % just for debugging, keep it commented.</span><span class="comment">
 % &#160;&#160;&#160;&#160;bUseDesktop = false</span></pre>
-	<h1 class="r2013b">QRS automatic detection<a name="QRS_automatic_detection"></a></h1>
-	<p>In this example the first step is the location of each heartbeat, 
-	 or QRS complexes detection. To achieve this, the kit includes the 
-	 following algorithms:</p>
-	<div>
-		<ul>
-			<li>Wavedet</li>
-			<li>Pan &amp; Tompkins</li>
-			<li>gqrs</li>
-			<li>sqrs</li>
-			<li>wqrs</li>
-			<li>ecgpuwave</li>
-		</ul>
-	</div>
-	<p>The way of performing QRS detection (or almost any other task in 
-	 this ECGkit) is through an <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGwrapper')">ECGwrapper</a> 
-	 object. The objective of this object is to abstract or sepparate any 
-	 algorithm from the particular details of the ECG signal. This object 
-	 is able to invoque any kind of algorithm through the interface provided 
-	 of other object, called <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGwrapper')">ECGtask</a> 
-	 obejcts.</p>
-	<p>The <i>ECGtask</i> obejcts actually perform specific task on the 
-	 ECG signal, in this case, the QRS complex detection. Each task have 
-	 general properties such as <i>user_string</i>, <i>progress_handle</i> 
-	 (see <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:edit('ECGtask.m')">ECGtask</a> 
-	 class for more details) and other specific for a certain task, such 
-	 as <i>detectors</i>, <i>only_ECG_leads</i>, <i>wavedet_config</i>, 
-	 <i>gqrs_config_filename</i> (see others in <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:edit('ECGtask_QRS_detection.m')">QRS 
-	 detection</a> task source).</p>
-	<pre class="codeinput">
+<h1 class="r2013b">QRS automatic detection<a name="QRS_automatic_detection"></a></h1>
+<p>In this example the first step is the location of each heartbeat, or 
+ QRS complexes detection. To achieve this, the kit includes the following 
+ algorithms:</p>
+<div>
+	<ul>
+		<li>Wavedet</li>
+		<li>Pan &amp; Tompkins</li>
+		<li>gqrs</li>
+		<li>sqrs</li>
+		<li>wqrs</li>
+		<li>ecgpuwave</li>
+	</ul>
+</div>
+<p>The way of performing QRS detection (or almost any other task in this 
+ ECGkit) is through an <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGwrapper')">ECGwrapper</a> 
+ object. The objective of this object is to abstract or sepparate any algorithm 
+ from the particular details of the ECG signal. This object is able to 
+ invoque any kind of algorithm through the interface provided of other 
+ object, called <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGwrapper')">ECGtask</a> 
+ obejcts.</p>
+<p>The <i>ECGtask</i> obejcts actually perform specific task on the ECG 
+ signal, in this case, the QRS complex detection. Each task have general 
+ properties such as <i>user_string</i>, <i>progress_handle</i> (see <a 
+	 href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:edit('ECGtask.m')">ECGtask</a> 
+ class for more details) and other specific for a certain task, such as 
+ <i>detectors</i>, <i>only_ECG_leads</i>, <i>wavedet_config</i>, <i>gqrs_config_filename</i> 
+ (see others in <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:edit('ECGtask_QRS_detection.m')">QRS 
+ detection</a> task source).</p>
+<pre class="codeinput">
 &#160;&#160;&#160;&#160;<span class="comment">% go through all files</span>
 &#160;&#160;&#160;&#160;ECG_all_wrappers = [];
 &#160;&#160;&#160;&#160;jj = 1;
@@ -315,17 +315,16 @@ examples(<span class="string">'1/10'</span>, <span class="string">'/Your_preferr
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ECG_all_wrappers(ii).ReportErrors;
 &#160;&#160;&#160;&#160;<span class="keyword">end</span>
 		</pre>
-	<h1 class="r2013b">QRS visual inspection and correction<a name="QRS_visual_inspection_and_correction"></a></h1>
-	<p>This part of the example uses a graphical user interface (GUI) to 
-	 allow the user correcting mistakes that the previous automatic algorithm 
-	 eventually makes.</p>
-	<p>As can be seen in the following code, the first step is checking 
-	 that the previous QRS detection task finished without problems. Then 
-	 if no errors, the corrector will use as starting point the result 
-	 of this same task, in case the user would like to edit a previously 
-	 edited result, or if not available the result of the QRS detection 
-	 task.</p>
-	<pre class="codeinput">
+<h1 class="r2013b">QRS visual inspection and correction<a name="QRS_visual_inspection_and_correction"></a></h1>
+<p>This part of the example uses a graphical user interface (GUI) to allow 
+ the user correcting mistakes that the previous automatic algorithm eventually 
+ makes.</p>
+<p>As can be seen in the following code, the first step is checking that 
+ the previous QRS detection task finished without problems. Then if no 
+ errors, the corrector will use as starting point the result of this same 
+ task, in case the user would like to edit a previously edited result, 
+ or if not available the result of the QRS detection task.</p>
+<pre class="codeinput">
 &#160;&#160;&#160;&#160;<span class="keyword">if</span>( bUseDesktop )
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="comment">% other task can be performed on the same objects</span>
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="keyword">for</span> ii = 1:lrecnames
@@ -372,25 +371,25 @@ examples(<span class="string">'1/10'</span>, <span class="string">'/Your_preferr
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="keyword">end</span>
 &#160;&#160;&#160;&#160;<span class="keyword">end</span>
 		</pre>
-	<p>Then the task invoked by the wrapper object is changed to <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:edit('ECGtask_QRS_corrector.m')">QRS 
-	 corrector task</a> and the GUI is presented to the user.</p>
-	<p><img src="QRS corrector.PNG" alt="" style="margin-top: 5px; margin-bottom: 5px; 
-			 margin-left: 5px; margin-right: 5px;" border="0" /></p>
-	<p>In this example, the GUI have four plots to represent the RR interval 
-	 series, the two in the top-left show the RR interval versus time at 
-	 different time windows. The bigger in the top-right, shows a <i>Poincaré</i> 
-	 plot, that is the current RR interval versus the following in the 
-	 serie. The plot in the bottom shows the selected signal/s versus time. 
-	 Then the user can interact with the plots according to the <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_QRS_corrector')">QRS 
-	 corrector documentation</a></p>
-	<h1 class="r2013b">PPG/ABP pulse detection<a name="PPG_ABP_pulse_detection"></a></h1>
-	<p>In case the recording includes pulsatile signals, such as plethysmographic 
-	 (PPG) or arterial blood pressure (ABP), this kit includes the <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_PPG_ABP_detector')">PPG/ABP 
-	 automatic detector task</a> which allows the use of two algorithms 
-	 to perform peak detection, <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('PPG_pulses_detector')">WavePPG</a> 
-	 and <a href="wabp-1.htm','-browser')">Physionet's wabp</a>.</p>
-	<p>other task can be performed on the same objects</p>
-	<pre class="codeinput">
+<p>Then the task invoked by the wrapper object is changed to <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:edit('ECGtask_QRS_corrector.m')">QRS 
+ corrector task</a> and the GUI is presented to the user.</p>
+<p><img src="QRS corrector.PNG" alt="" style="margin-top: 5px; margin-bottom: 5px; 
+		 margin-left: 5px; margin-right: 5px;" border="0" /></p>
+<p>In this example, the GUI have four plots to represent the RR interval 
+ series, the two in the top-left show the RR interval versus time at different 
+ time windows. The bigger in the top-right, shows a <i>Poincaré</i> plot, 
+ that is the current RR interval versus the following in the serie. The 
+ plot in the bottom shows the selected signal/s versus time. Then the user 
+ can interact with the plots according to the <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_QRS_corrector')">QRS 
+ corrector documentation</a></p>
+<h1 class="r2013b">PPG/ABP pulse detection<a name="PPG_ABP_pulse_detection"></a></h1>
+<p>In case the recording includes pulsatile signals, such as plethysmographic 
+ (PPG) or arterial blood pressure (ABP), this kit includes the <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_PPG_ABP_detector')">PPG/ABP 
+ automatic detector task</a> which allows the use of two algorithms to 
+ perform peak detection, <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('PPG_pulses_detector')">WavePPG</a> 
+ and <a href="wabp-1.htm','-browser')">Physionet's wabp</a>.</p>
+<p>other task can be performed on the same objects</p>
+<pre class="codeinput">
 &#160;&#160;&#160;&#160;<span class="keyword">for</span> ii = 1:lrecnames
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="comment">% set the delineator task name and run again.</span>
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ECG_all_wrappers(ii).ECGtaskHandle = <span class="string">'PPG_ABP_detector'</span>;
@@ -404,18 +403,16 @@ examples(<span class="string">'1/10'</span>, <span class="string">'/Your_preferr
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ECG_all_wrappers(ii).ReportErrors;
 &#160;&#160;&#160;&#160;<span class="keyword">end</span>
 		</pre>
-	<h1 class="r2013b">PPG/ABP waves visual inspection and correction<a 
-	 name="PPG_ABP_waves_visual_inspection_and_correction"></a></h1>
-	<p>The same manual verification made for automatic QRS detection algorithms 
-	 can be performed with pulsatile signals. The <a href="../../../../../../jsD:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_PPG_ABP_corrector')">PPG/ABP 
-	 corrector task</a> was designed to allow users the verification and 
-	 correction of automatic detections through the same GUI.</p>
-	<p><img src="PPG-ABP corrector.PNG" alt="" style="margin-top: 5px; 
-			 margin-bottom: 5px; margin-left: 5px; margin-right: 5px;" 
-			 border="0" /></p>
-	<p>The following code shows how to use this task. As you can note, 
-	 the interface is almost the same used for the QRS correction task.</p>
-	<pre class="codeinput">
+<h1 class="r2013b">PPG/ABP waves visual inspection and correction<a name="PPG_ABP_waves_visual_inspection_and_correction"></a></h1>
+<p>The same manual verification made for automatic QRS detection algorithms 
+ can be performed with pulsatile signals. The <a href="../../../../../../jsD:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_PPG_ABP_corrector')">PPG/ABP 
+ corrector task</a> was designed to allow users the verification and correction 
+ of automatic detections through the same GUI.</p>
+<p><img src="PPG-ABP corrector.PNG" alt="" style="margin-top: 5px; margin-bottom: 5px; 
+		 margin-left: 5px; margin-right: 5px;" border="0" /></p>
+<p>The following code shows how to use this task. As you can note, the 
+ interface is almost the same used for the QRS correction task.</p>
+<pre class="codeinput">
 &#160;&#160;&#160;&#160;<span class="keyword">if</span>( bUseDesktop )
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="comment">% other task can be performed on the same objects</span>
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="keyword">for</span> ii = 1:lrecnames
@@ -462,16 +459,16 @@ examples(<span class="string">'1/10'</span>, <span class="string">'/Your_preferr
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="keyword">end</span>
 &#160;&#160;&#160;&#160;<span class="keyword">end</span>
 		</pre>
-	<h1 class="r2013b">ECG automatic delineation<a name="ECG_automatic_delineation"></a></h1>
-	<p>Once the QRS complexes were detected, each heartbeat can be segmented 
-	 or delineated into P-QRS-T waves. To achieve this the kit includes 
-	 an <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_ECG_delineation')">ECG 
-	 delineation task</a> to interface with the <a href="articleDetails.jsp?arnumber=1275572','-browser')">wavedet</a> 
-	 and others user-defined algorithms, as described in the <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_ECG_delineation')">task 
-	 help</a>. The interface follows the same guidelines described before, 
-	 as is shown in the following code.</p>
-	<p>other task can be performed on the same objects</p>
-	<pre class="codeinput">
+<h1 class="r2013b">ECG automatic delineation<a name="ECG_automatic_delineation"></a></h1>
+<p>Once the QRS complexes were detected, each heartbeat can be segmented 
+ or delineated into P-QRS-T waves. To achieve this the kit includes an 
+ <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_ECG_delineation')">ECG 
+ delineation task</a> to interface with the <a href="articleDetails.jsp?arnumber=1275572','-browser')">wavedet</a> 
+ and others user-defined algorithms, as described in the <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_ECG_delineation')">task 
+ help</a>. The interface follows the same guidelines described before, 
+ as is shown in the following code.</p>
+<p>other task can be performed on the same objects</p>
+<pre class="codeinput">
 &#160;&#160;&#160;&#160;<span class="keyword">for</span> ii = 1:lrecnames
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="comment">% this is to use previous cached results as starting point</span>
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName(<span class="string">'QRS_corrector'</span>);
@@ -503,20 +500,17 @@ examples(<span class="string">'1/10'</span>, <span class="string">'/Your_preferr
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ECG_all_wrappers(ii).ReportErrors;
 &#160;&#160;&#160;&#160;<span class="keyword">end</span>
 		</pre>
-	<h1 class="r2013b">Visual inspection of the detection/delineation<a 
-	 name="Visual_inspection_of_the_detection_delineation"></a></h1>
-	<p>The same manual verification made for all the previous automatic 
-	 tasks is repeated for ECG delineation. The <a href="../../../../../../jsD:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_ECG_delineation_corrector')">ECG 
-	 delineation corrector task</a> was designed to allow users the verification 
-	 and correction of automatic delineation through the same GUI. The 
-	 only difference with respect to the behaviour of the QRS or PPG/ABP 
-	 correction GUI, is that addition of new events to the P-QRS-T series 
-	 is not allowed, in order to keep the assosiation of a wave fiducial 
-	 point to a heartbeat.</p>
-	<p><img src="ECG delineator corrector.png" alt="" style="margin-top: 5px; 
-			 margin-bottom: 5px; margin-left: 5px; margin-right: 5px;" 
-			 border="0" /></p>
-	<pre class="codeinput">
+<h1 class="r2013b">Visual inspection of the detection/delineation<a name="Visual_inspection_of_the_delineation"></a></h1>
+<p>The same manual verification made for all the previous automatic tasks 
+ is repeated for ECG delineation. The <a href="../../../../../../jsD:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_ECG_delineation_corrector')">ECG 
+ delineation corrector task</a> was designed to allow users the verification 
+ and correction of automatic delineation through the same GUI. The only 
+ difference with respect to the behaviour of the QRS or PPG/ABP correction 
+ GUI, is that addition of new events to the P-QRS-T series is not allowed, 
+ in order to keep the assosiation of a wave fiducial point to a heartbeat.</p>
+<p><img src="ECG delineator corrector.png" alt="" style="margin-top: 5px; 
+		 margin-bottom: 5px; margin-left: 5px; margin-right: 5px;" border="0" /></p>
+<pre class="codeinput">
 &#160;&#160;&#160;&#160;<span class="keyword">if</span>( bUseDesktop )
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="comment">% other task can be performed on the same objects</span>
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="keyword">for</span> ii = 1:lrecnames
@@ -563,26 +557,25 @@ examples(<span class="string">'1/10'</span>, <span class="string">'/Your_preferr
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="keyword">end</span>
 &#160;&#160;&#160;&#160;<span class="keyword">end</span>
 		</pre>
-	<h1 class="r2013b">Automatic Heartbeat classification<a name="Automatic_Heartbeat_classification"></a></h1>
-	<p>The last task described in this example is the classification of 
-	 heartbeats according to the <a href="matlab:web('http://marketplace.aami.org/eseries/scriptcontent/docs/Preview Files/EC57_1212_preview.pdf','-browser')">EC-57 
-	 AAMI recommendation</a>. To achieve this task, the kit includes a 
-	 <a href="../../../../../../jsD:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_heartbeat_classifier')">Heartbeat 
-	 classification task</a> that interfaces with the <a href="','-browser')">Argentino-Aragonés 
-	 heartbeat classifier (a2hbc)</a> project in order to classify heartbeats 
-	 into the following classes:</p>
-	<div>
-		<ul>
-			<li><b>N</b> normal</li>
-			<li><b>S</b> supraventricular</li>
-			<li><b>V</b> ventricular</li>
-			<li><b>F</b> fusion of normal and ventricular</li>
-		</ul>
-	</div>
-	<p>The <i>a2hbc</i> algorithm can opperate automatically or assisted 
-	 by the user, for more details check the <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('a2hbc')">a2hbc 
-	 documentation</a>.</p>
-	<pre class="codeinput">
+<h1 class="r2013b">Automatic Heartbeat classification<a name="Automatic_Heartbeat_classification"></a></h1>
+<p>The last task described in this example is the classification of heartbeats 
+ according to the <a href="matlab:web('http://marketplace.aami.org/eseries/scriptcontent/docs/Preview Files/EC57_1212_preview.pdf','-browser')">EC-57 
+ AAMI recommendation</a>. To achieve this task, the kit includes a <a href="../../../../../../jsD:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_heartbeat_classifier')">Heartbeat 
+ classification task</a> that interfaces with the <a href="','-browser')">Argentino-Aragonés 
+ heartbeat classifier (a2hbc)</a> project in order to classify heartbeats 
+ into the following classes:</p>
+<div>
+	<ul>
+		<li><b>N</b> normal</li>
+		<li><b>S</b> supraventricular</li>
+		<li><b>V</b> ventricular</li>
+		<li><b>F</b> fusion of normal and ventricular</li>
+	</ul>
+</div>
+<p>The <i>a2hbc</i> algorithm can opperate automatically or assisted by 
+ the user, for more details check the <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('a2hbc')">a2hbc 
+ documentation</a>.</p>
+<pre class="codeinput">
 &#160;&#160;&#160;&#160;<span class="keyword">for</span> ii = 1:lrecnames
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="comment">% this is to use previous cached results as starting point</span>
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName({<span class="string">'QRS_corrector'</span> <span class="string">'QRS_detection'</span>});
@@ -609,24 +602,21 @@ examples(<span class="string">'1/10'</span>, <span class="string">'/Your_preferr
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ECG_all_wrappers(ii).ReportErrors;
 &#160;&#160;&#160;&#160;<span class="keyword">end</span>
 		</pre>
-	<h1 class="r2013b">Visual inspection of the signal<a name="Visual_inspection_of_the_signal"></a></h1>
-	<p>Finaly a report is generated with the results of the previous tasks, 
-	 either in a pdf document or several images. The report generated can 
-	 be customized with the interface described in the <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('reportECG')">documentation</a>. 
-	 The following are just three examples of a longer report:</p>
-	<p><img src="ex_ABP_PPG_Registro_01M_full_Pagina_01.png" alt="" style="margin-top: 5px; 
-			 margin-bottom: 5px; margin-left: 5px; margin-right: 5px;" 
-			 border="0" /></p>
-	<p>A snapshot of the center</p>
-	<p><img src="ex_ABP_PPG_Registro_01M_full_Pagina_05.png" alt="" style="margin-top: 5px; 
-			 margin-bottom: 5px; margin-left: 5px; margin-right: 5px;" 
-			 border="0" /></p>
-	<p>And finaly a snapshot of the last part of the recording.</p>
-	<p><img src="ex_ABP_PPG_Registro_01M_full_Pagina_10.png" alt="" style="margin-top: 5px; 
-			 margin-bottom: 5px; margin-left: 5px; margin-right: 5px;" 
-			 border="0" /></p>
-	<p>This is the code used to create a PDF report.</p>
-	<pre class="codeinput">
+<h1 class="r2013b">Visual inspection of the signal<a name="Visual_inspection_of_the_signal"></a></h1>
+<p>Finaly a report is generated with the results of the previous tasks, 
+ either in a pdf document or several images. The report generated can be 
+ customized with the interface described in the <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('reportECG')">documentation</a>. 
+ The following are just three examples of a longer report:</p>
+<p><img src="ex_ABP_PPG_Registro_01M_full_Pagina_01.png" alt="" style="margin-top: 5px; 
+		 margin-bottom: 5px; margin-left: 5px; margin-right: 5px;" border="0" /></p>
+<p>A snapshot of the center</p>
+<p><img src="ex_ABP_PPG_Registro_01M_full_Pagina_05.png" alt="" style="margin-top: 5px; 
+		 margin-bottom: 5px; margin-left: 5px; margin-right: 5px;" border="0" /></p>
+<p>And finaly a snapshot of the last part of the recording.</p>
+<p><img src="ex_ABP_PPG_Registro_01M_full_Pagina_10.png" alt="" style="margin-top: 5px; 
+		 margin-bottom: 5px; margin-left: 5px; margin-right: 5px;" border="0" /></p>
+<p>This is the code used to create a PDF report.</p>
+<pre class="codeinput">
 &#160;&#160;&#160;&#160;filename = []; <span class="comment">% default setting. Let the report function decide.</span><span class="comment">
 % &#160;&#160;&#160;&#160;filename = 'container_filename'; % to put everything in one big file.</span>
 &#160;&#160;&#160;&#160;<span class="comment">% other winlengths can be added to the array in order to further</span>
@@ -648,15 +638,15 @@ examples(<span class="string">'1/10'</span>, <span class="string">'/Your_preferr
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="keyword">end</span>
 &#160;&#160;&#160;&#160;<span class="keyword">end</span>
 		</pre>
-	<h1 class="r2013b">Other user-defined tasks ...<a name="Other_user-defined_tasks_"></a></h1>
-	<p>Maybe the most important and useful aspect of the kit, is that you 
-	 can add your own algorithms. This can be done by following the interface 
-	 documented through the several examples included above. The <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_QRS_detection')">QRS 
-	 detection</a> and <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_ECG_delineation')">ECG 
-	 delineation</a> tasks already include a way to interface your own 
-	 algorithms through the <b>user:function_name</b> method. Check the 
-	 above sections for more details.</p>
-	<pre class="codeinput">
+<h1 class="r2013b">Other user-defined tasks ...<a name="Other_user-defined_tasks_"></a></h1>
+<p>Maybe the most important and useful aspect of the kit, is that you can 
+ add your own algorithms. This can be done by following the interface documented 
+ through the several examples included above. The <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_QRS_detection')">QRS 
+ detection</a> and <a href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_ECG_delineation')">ECG 
+ delineation</a> tasks already include a way to interface your own algorithms 
+ through the <b>user:function_name</b> method. Check the above sections 
+ for more details.</p>
+<pre class="codeinput">
 &#160;&#160;&#160;&#160;<span class="keyword">if</span>( ~bUseDesktop )
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;UnInstallECGkit();
 &#160;&#160;&#160;&#160;<span class="keyword">end</span>

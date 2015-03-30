@@ -266,34 +266,22 @@ gTocUrlIconStyle = "";
 						<p>&#160;</p>
 					</div>
 				</div>
-
-
 				<div itemprop="content">
+					<a name="Name-Value_Pair_Arguments"></a> 
 					<h1 id="inputs" class="r2013b">Input Arguments</h1>
+					<p>Specify optional comma-separated pairs of <tt>Name,Value</tt> 
+					 arguments. <tt>Name</tt> is the argument name and 
+					 <tt>Value</tt> is the corresponding value. <tt>Name</tt> 
+					 must appear inside single quotes (<tt>' '</tt>). You 
+					 can specify several name and value pair arguments 
+					 in any order as <tt>Name1,Value1,...,NameN,ValueN</tt>.</p>
+					<span class="example_desc"><strong>Example: </strong><tt>'recording_name','/ecg_recordings/rec1.dat', 
+					 'ECGtaskHandle', 'QRS_detection' </tt>specifies to 
+					 create an ECGwrapper to detect heartbeats in recording 
+					 '/ecg_recordings/rec1.dat'.</span> 
 					<div class="expandableContent">
 						<div class="arguments">
 							<div class="input_argument_container">
-								<a name="Name-Value_Pair_Arguments"></a> 
-								 
-								<h3 id="namevaluepairs" class="bottom_ruled">Name-Value 
-								 Pair Arguments</h3>
-								<a name="btbgsws"></a> 
-								<div class="namevaluecontainer">
-									<p>Specify optional comma-separated 
-									 pairs of <tt>Name,Value</tt> arguments. 
-									 <tt>Name</tt> is the argument name 
-									 and <tt>Value</tt> is the corresponding 
-									 value. <tt>Name</tt> must appear inside 
-									 single quotes (<tt>' '</tt>). You 
-									 can specify several name and value 
-									 pair arguments in any order as <tt>Name1,Value1,...,NameN,ValueN</tt>.</p>
-									<span class="example_desc"><strong>Example: 
-									 </strong><tt>'recording_name','/ecg_recordings/rec1.dat', 
-									 'ECGtaskHandle', 'QRS_detection' </tt>specifies 
-									 to create an ECGwrapper to detect 
-									 heartbeats in recording '/ecg_recordings/rec1.dat'.</span> 
-									 
-								</div>
 								<div class="expandableContent">
 									<a name="inputarg_outputDir"></a> 
 									<h3 id="input_argument_namevalue_outputdir" 
@@ -598,10 +586,102 @@ gTocUrlIconStyle = "";
 						</div>
 					</div>
 				</div>
+				<div itemprop="content">
+					<h1 id="inputs" class="r2013b">Methods</h1>
+					<p>Some useful methods are described below.</p>
+					<div class="expandableContent">
+						<div class="arguments">
+							<div class="input_argument_container">
+								<div class="namevaluecontainer">
+									<p>&#160;</p>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_outputDir"></a> 
+									<h3 id="input_argument_namevalue_outputdir" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>Run</tt> 
+									 — Execute the ECG task</span></a></span></h3>
+									<div class="collapse">
+										<p>This method executes the configured 
+										 ECG task.</p>
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_outputDir"></a> 
+									<h3 id="input_argument_namevalue_outputdir" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>read_signal</tt> 
+									 — Read signal samples</span></a></span></h3>
+									<div class="collapse">
+										<p>This method allows to easily 
+										 reads samples from a recording</p>
+										<pre class="codeinput">
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="keyword">
+function</span> ECG = read_signal(ECG_start_idx, ECG_end_idx)
+						</pre>
+										<p>where the arguments are:</p>
+										<p style="margin-left: 40px;"><span 
+										 style="font-weight: bold;">ECG_start_idx</span>, 
+										 is the first sample to read. Default 
+										 1.</p>
+										<p style="margin-left: 40px;"><span 
+										 style="font-weight: bold;">ECG_end_idx</span>, 
+										 is the last sample to read. Default 
+										 ECG_header.nsamp</p>
+										<p>and as a result, it returns:</p>
+										<p style="margin-left: 40px;"><span 
+										 style="font-weight: bold;">ECG</span>, 
+										 which is a matrix of size [(ECG_end_idx 
+										 - ECG_start_idx + 1) ECG_header.nsig]</p>
+										<pre class="codeinput">
+<span class="comment">% reads ECG 100 samples</span>
+ECG = ECG_w.read_signal(1, 99);</pre>
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_outputDir"></a> 
+									<h3 id="input_argument_namevalue_outputdir" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>ReportErrors</tt> 
+									 — Display the error report generated during the task execution</span></a></span></h3>
+									<div class="collapse">
+										<p>This method reports error generated during task execution.</p>
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_outputDir"></a> 
+									<h3 id="input_argument_namevalue_outputdir" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>GetCahchedFileName</tt> 
+									 — Find the result files of an specific recording/task</span></a></span></h3>
+									<div class="collapse">
+										<p>This method returns the cached filename for an specific recording, and task, if available.</p>
+										<pre class="codeinput">
+<span class="comment">% Get result filename of previous QRS detection. The corrected/audited version has precedence if available.</span>
+cached_filenames = ECGw.GetCahchedFileName({'QRS_corrector' 'QRS_detection'});</pre>
 
-
-
-
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_outputDir"></a> 
+									<h3 id="input_argument_namevalue_outputdir" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>Run</tt> 
+									 — Execute the ECG task</span></a></span></h3>
+									<div class="collapse">
+										<p>This method executes the configured 
+										 ECG task.</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 				<div itemprop="content">
 					<div class="clear">
 						<p>&#160;</p>

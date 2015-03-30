@@ -76,8 +76,26 @@ var suggestionsObj;
 						<p>&#160;</p>
 					</div>
 					<div class="examples">
-						<a name="Description"></a> 
-						<h1 id="description1" class="r2013b">Description</h1>
+						<div class="clear">
+							<p>&#160;</p>
+						</div>
+						<div class="examples">
+							<a name="Description"></a> 
+							<h1 id="description1" class="r2013b">Description</h1>
+							<p>This task implements a heartbeat classifier 
+							 that follows the <a href="matlab:web('http://marketplace.aami.org/eseries/scriptcontent/docs/Preview Files/EC57_1212_preview.pdf','-browser')">EC-57 
+							 AAMI recommendation</a> classifying heartbeats 
+							 into four classes:</p>
+							<ul>
+								<li><b>N</b> normal</li>
+								<li><b>S</b> supraventricular</li>
+								<li><b>V</b> ventricular</li>
+								<li><b>F</b> fusion of normal and ventricular</li>
+							</ul>
+							<p>Each class and certain background regarding 
+							 this topic are explained in my <a href="http://i3a.unizar.es/postgrado/descarga_tesis_pdf.php?ver=48">PhD 
+							 thesis</a>, which can be useful f</p>
+						</div>
 					</div>
 				</div>
 				<div itemprop="content">
@@ -89,7 +107,75 @@ var suggestionsObj;
 						<div class="arguments">
 							<div class="input_argument_container">
 								<div class="expandableContent">
-									<p>&#160;</p>
+									<a name="inputarg_progress_handle"></a> 
+									 
+									<h3 id="input_argument_namevalue_outputdir" 
+										 class="expand"><span class="argument_name"><a 
+									 href="javascript:void(0);" title="Expand/Collapse" 
+									 style="display: block;"><tt>progress_handle</tt> 
+									 — used to track the progress within 
+									 your function.</a></span><span class="example_desc"><tt>[]</tt> 
+									 (default)</span></h3>
+									<div class="collapse">
+										<p>progress_handle, is a handle 
+										 to a <a href="progress_bar.htm">progress_bar</a> 
+										 object, that can be used to track 
+										 the progress within your function.</p>
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_tmp_path"></a> 
+									<h3 id="input_argument_namevalue_tmp_path" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>tmp_path</tt> 
+									 — The path to store temporary data</span></a><span 
+									 class="example_desc"><tt>'tempdir()'</tt> 
+									 (default)</span></span></h3>
+									<div class="collapse">
+										<p>Full path to a directory with 
+										 write privileges.</p>
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_payload"></a> 
+									<h3 id="input_argument_namevalue_payload" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>payload</tt> 
+									 — An arbitrary format variable to 
+									 be passed to your user-defined algorithm.</span></a><span 
+									 class="example_desc"><tt>[]</tt> (default)</span></span></h3>
+									<div class="collapse">
+										<p>This variable can be useful 
+										 for passing data to your own function, 
+										 not covered in the interface described 
+										 <a href="#Adding_a_custom_detection_algorithm">below</a>.</p>
+									</div>
+								</div>
+								<div class="expandableContent">
+									<a name="inputarg_payload"></a> 
+									<h3 id="input_argument_namevalue_payload" 
+										 class="expand"><span><a href="javascript:void(0);" 
+									 title="Expand/Collapse" style="display: block;"><span 
+									 class="argument_name"><tt>mode</tt> 
+									 — Set the algorithm mode of operation.</span></a><span 
+									 class="example_desc"><tt>'auto'</tt> 
+									 (default)</span></span></h3>
+									<div class="collapse">
+										<p>A string with any of the following 
+										 names</p>
+										<p style="margin-left: 40px;">'auto', 
+										 this mode performs in automatic 
+										 mode.</p>
+										<p style="margin-left: 40px;">'slightly-assisted', 
+										 this mode requires that an expert 
+										 labels several heartbeats</p>
+										<p style="margin-left: 40px;">'assisted', 
+										 this mode is completely assisted. 
+										 An expert must label some heartbeats.</p>
+										<p>A more detailed </p>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -98,12 +184,41 @@ var suggestionsObj;
 				<div itemprop="content">
 					<div class="examples">
 						<h1 id="examples" class="r2013b">Examples</h1>
-						<p>Create the ECGtask_QRS_detection object.</p>
+						<p>Create the <span style="font-style: italic;">ECGtask_heartbeat_classifier</span> 
+						 object.</p>
 						<pre class="codeinput">
-<span class="comment">% comments</span>
-&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;code = <span class="string">'strings'</span>; <span class="comment">% more comments</span>
-						</pre>
+<span class="comment">% with the task name</span>
+	ECG_w.ECGtaskHandle = <span class="string">'ECG_heartbeat_classifier'</span>;<span class="comment">
+% or create an specific handle to have more control</span>
+	ECGt = ECGtask_heartbeat_classifier();</pre>
+						<p>and then you are ready to setup the task</p>
+						<pre class="codeinput">
+<span class="comment">% select a modem, automatic mode does not require assistance</span>
+	ECGt.mode = <span class="string">'auto'</span>;<span class="comment">
+% this is to use QRS detection previously calculated</span>
+	cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName({<span class="string">'QRS_corrector' 'QRS_detection'</span>});
+	ECGt.payload = load(cached_filenames{1})</pre>
+						<p>Finally set the task to the wrapper object, 
+						 and execute the task.</p>
+						<pre class="codeinput">
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ECG_w.ECGtaskHandle= ECGt; <span class="comment">% set the ECG task</span>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ECG_w.Run();</pre>
+						<p>You can check the result of this task, with 
+						 the <a href="plot_ecg_strip.htm">visualization 
+						 functions</a>.</p>
+						<p>Also check this <a href="examples.html#Automatic_Heartbeat_classification">example</a> 
+						 for further information.</p>
 					</div>
+				</div>
+				<div class="content">
+					<div class="clear">
+						<p>&#160;</p>
+					</div>
+					<h1 id="content" class="r2013b">Other assisted modes</h1>
+					<p>Here are some examples about using the assisted modes:</p>
+					<ul style="list-style: disc;">
+						<li><a href="http://www.physionet.org/">Physionet</a></li>
+					</ul>
 				</div>
 				<div class="moreabout">
 					<div class="clear">

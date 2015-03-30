@@ -89,11 +89,8 @@ classdef ECGtask_ECG_delineation < ECGtask
         only_ECG_leads = false;
         delineators = 'all-delineators';
         wavedet_config
-        CalculateArtificialDetections = true;
         payload
         tmp_path
-        
-
     end
     
     methods
@@ -265,11 +262,14 @@ classdef ECGtask_ECG_delineation < ECGtask
 
                             if( exist(this_delineator_name) == 2 )
                                 
-                                ud_func_pointer = eval(['@' this_delineator_name]);
+%                                 ud_func_pointer = eval(['@' this_detector_name]);
+                                ud_func_pointer = str2func(this_detector_name);
 
                                 obj.progress_handle.checkpoint([ 'User defined function: ' this_delineator_name])
 
-                                [positions_single_lead, position_multilead] = ud_func_pointer( double(ECG(:,obj.lead_idx)), trim_ECG_header(ECG_header, obj.lead_idx), obj.progress_handle, obj.payload);
+                                ECG_header_aux = trim_ECG_header(ECG_header, obj.lead_idx);
+                                
+                                [positions_single_lead, position_multilead] = ud_func_pointer( double(ECG(:,obj.lead_idx)), ECG_header_aux, obj.progress_handle, obj.payload);
 
                                 % filter and offset delineation
                                 for jj = 1:length(obj.lead_idx)
@@ -337,11 +337,6 @@ classdef ECGtask_ECG_delineation < ECGtask
         
         function payload = Finish(obj, payload, ECG_header)
 
-            if( obj.CalculateArtificialDetections )
-                % future implementation of an strategy for the construction of
-                % artificial delineations
-%                 payload = calculate_artificial_QRS_detections(payload, ECG_header );
-            end
             
         end
         

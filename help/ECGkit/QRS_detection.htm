@@ -109,14 +109,11 @@ var suggestionsObj;
 						<p>&#160;</p>
 					</div>
 					<h1 id="inputs" class="r2013b">Input Arguments</h1>
-
 					<div class="expandableContent">
 						<div class="arguments">
 							<div class="input_argument_container">
-
-									<p>The properties that this task uses 
-									 are the following:</p>
-
+								<p>The properties that this task uses are 
+								 the following:</p>
 								<div class="expandableContent">
 									<a name="inputarg_progress_handle"></a> 
 									 
@@ -331,7 +328,7 @@ var suggestionsObj;
 						<p>Create the ECGtask_QRS_detection object.</p>
 						<pre class="codeinput">
 <span class="comment">% with the task name</span>
-	ECGt_QRSd = 'QRS_detection';<span class="comment">
+	ECG_w.ECGtaskHandle = <span class="string">'QRS_detection'</span>;<span class="comment">
 % or create an specific handle to have more control</span>
 	ECGt_QRSd = ECGtask_QRS_detection();</pre>
 						<p>and then you are ready to set the algorithms 
@@ -351,6 +348,12 @@ var suggestionsObj;
 						<pre class="codeinput">
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ECG_w.ECGtaskHandle= ECGt_QRSd; <span class="comment">% set the ECG task</span>
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ECG_w.Run();</pre>
+						<p>You can check the result of this task, with 
+						 either the <a href="QRScorrector.htm">detection 
+						 corrector</a> or the <a href="plot_ecg_strip.htm">visualization 
+						 functions</a>.</p>
+						<p>Also check this <a href="examples.html#QRS_automatic_detection">example</a> 
+						 for further information.</p>
 					</div>
 				</div>
 				<div class="moreabout">

@@ -194,7 +194,8 @@ gTocUrlIconStyle = "";
 						<div class="doc_topic_desc">
 						<div class="purpose_container">
 							<p itemprop="purpose">This document describes 
-							 how to perform automatic peak detection in pulsatile signals.</p>
+							 how to perform automatic peak detection in 
+							 pulsatile signals.</p>
 							<div class="switch">
 								<a href="javascript:void(0);" id="expandAllPage">expand 
 								 all in page</a> 
@@ -209,6 +210,11 @@ gTocUrlIconStyle = "";
 					<div class="examples">
 						<a name="Description"></a> 
 						<h1 id="description1" class="r2013b">Description</h1>
+						<p>This task perform peak detection in pulsatile 
+						 signals such as arterial blood pressure (ABP) 
+						 or plethysmographic (PPG). The task uses two algorithms 
+						 to achieve pulse detection, and, as in QRS detection 
+						 task you can choose to use any of them.</p>
 					</div>
 				</div>
 				<div itemprop="content">
@@ -216,24 +222,112 @@ gTocUrlIconStyle = "";
 						<p>&#160;</p>
 					</div>
 					<h1 id="inputs" class="r2013b">Input Arguments</h1>
+					<p>The properties that the <span style="font-style: italic;">ECGtask_PPG_ABP_detector</span> 
+					 class accepts are described below. The usage of these 
+					 properties is restricted to low-level programming, 
+					 you can use this task through the ECGwrapper as is 
+					 shown in the example below.</p>
 					<div class="expandableContent">
-						<div class="arguments">
-							<div class="input_argument_container">
-								<div class="expandableContent">
-									<p>&#160;</p>
-								</div>
-							</div>
+						<a name="inputarg_progress_handle"></a> 
+						<h3 id="input_argument_namevalue_outputdir" class="expand"><span 
+						 class="argument_name"><a href="javascript:void(0);" 
+													 title="Expand/Collapse" 
+													 style="display: block;"><tt>progress_handle</tt> 
+						 — used to track the progress within your function.</a></span><span 
+						 class="example_desc"><tt>[]</tt> (default)</span></h3>
+						<div class="collapse">
+							<p>progress_handle, is a handle to a <a href="progress_bar.htm">progress_bar</a> 
+							 object, that can be used to track the progress 
+							 within your function.</p>
+						</div>
+					</div>
+					<div class="expandableContent">
+						<a name="inputarg_tmp_path"></a> 
+						<h3 id="input_argument_namevalue_tmp_path" class="expand"><span><a 
+						 href="javascript:void(0);" title="Expand/Collapse" 
+						 style="display: block;"><span class="argument_name"><tt>tmp_path</tt> 
+						 — The path to store temporary data</span></a><span 
+						 class="example_desc"><tt>'tempdir()'</tt> (default)</span></span></h3>
+						<div class="collapse">
+							<p>Full path to a directory with write privileges.</p>
+						</div>
+					</div>
+					<div class="expandableContent">
+						<h3 id="input_argument_namevalue_outputdir" class="expand"><span><a 
+						 href="javascript:void(0);" title="Expand/Collapse" 
+						 style="display: block;"><span class="argument_name"><tt>lead_config</tt> 
+						 — Select which signals to process</span></a><span 
+						 class="example_desc"><tt>'PPG-ABP-only'</tt> (default)</span></span></h3>
+						<div class="collapse">
+							<p>A cell string or char with any of the following 
+							 names</p>
+							<p style="margin-left: 40px;">'all-leads'. 
+							 Process all leads</p>
+							<p style="margin-left: 40px;">'PPG-ABP-only'. 
+							 Detect pulsatile signals based on their ECG_header.desc 
+							 description variable.</p>
+							<p style="margin-left: 40px;">'User-defined-leads'. 
+							 Tell the algorithm (with PPG_ABP_idx property) 
+							 which signal indexes to process, from 1 to 
+							 ECG_header.nsig</p>
+						</div>
+					</div>
+					<div class="expandableContent">
+						<a name="inputarg_tmp_path"></a> 
+						<h3 id="input_argument_namevalue_tmp_path" class="expand"><span><a 
+						 href="javascript:void(0);" title="Expand/Collapse" 
+						 style="display: block;"><span class="argument_name"><tt>PPG_ABP_idx</tt> 
+						 — The indexes corresponding to pulsatile signals</span></a><span 
+						 class="example_desc"><tt>[]</tt> (default)</span></span></h3>
+						<div class="collapse">
+							<p>A value from 1 to ECG_header.nsig indicating 
+							 the column indexes (of the signal matrix of 
+							 nsamp x nsig) where pulsatile signals are 
+							 located.</p>
+						</div>
+					</div>
+					<div class="expandableContent">
+						<a name="inputarg_detectors"></a> 
+						<h3 id="input_argument_namevalue_detectors" class="expand"><span 
+						 class="argument_name"><a href="javascript:void(0);" 
+													 title="Expand/Collapse" 
+													 style="display: block;"><tt>detectors</tt> 
+						 — The PPG/ABP detection algorithms to use</a></span><span 
+						 class="example_desc"><tt>'all-detectors'</tt> 
+						 (default)</span></h3>
+						<div class="collapse">
+							<p>A cell string or char with any of the following 
+							 names</p>
+							<p style="margin-left: 40px;">all-detectors</p>
+							<p style="margin-left: 40px;"><a href="http://dx.doi.org/10.1109/JBHI.2013.2267096">wavePPG</a></p>
+							<p style="margin-left: 40px;"><a href="http://www.physionet.org/physiotools/wag/wabp-1.htm">wabp</a></p>
+							<p style="margin-left: 40px;">&#160;</p>
 						</div>
 					</div>
 				</div>
 				<div itemprop="content">
 					<div class="examples">
 						<h1 id="examples" class="r2013b">Examples</h1>
-						<p>Create the ECGtask_QRS_detection object.</p>
+						<p>Create the <span style="font-style: italic;">ECGtask_PPG_ABP_detector</span> 
+						 object.</p>
 						<pre class="codeinput">
-<span class="comment">% comments</span>
-&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;code = <span class="string">'strings'</span>; <span class="comment">% more comments</span>
+<span class="comment">% with the task name</span>
+	ECG_w.ECGtaskHandle = <span class="string">'PPG_ABP_detector'</span>;<span class="comment">
+% or create an specific handle to have more control</span>
+	ECGt_PPG = ECGtask_PPG_ABP_detector();</pre>
+						<p>and then you are ready to set the algorithms 
+						 to use. In the following example you have several 
+						 possible setups.</p>
+						<pre class="codeinput">
+<span class="comment">% select an specific algorithm. Default: Run all detectors</span>
+	ECGt_PPG.detectors = <span class="string">'wavePPG'</span>; <span class="comment">% A J. Lazaro algorithm for peak detection</span>
+	ECGt_PPG.detectors = <span class="string">'wabp'</span>; &#160;<span class="comment">% Another algorithm from Physionet</span>
 						</pre>
+						<p>Finally set the task to the wrapper object, 
+						 and execute the task.</p>
+						<pre class="codeinput">
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ECG_w.ECGtaskHandle= ECGt_PPG; <span class="comment">% set the ECG task</span>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ECG_w.Run();</pre>
 					</div>
 				</div>
 				<div class="moreabout">
@@ -241,19 +335,19 @@ gTocUrlIconStyle = "";
 						<p>&#160;</p>
 					</div>
 					<h1 id="moreabout" class="r2013b">More About</h1>
-					<p>Here are some external references about heartbeat 
-					 detection:</p>
+					<p>Here are some external references about pulse detection:</p>
 					<ul style="list-style: disc;">
-						<li><a href="http://www.physionet.org/">Physionet</a></li>
+						<li><a href="http://physionet.org/challenge/2014/">Physionet 
+						 Challenge 2014</a></li>
 					</ul>
 				</div>
 				<h1 class="r2013b">See Also</h1>
-				<p><span itemprop="seealso"><a itemprop="url" href="ECGtask.html"><span 
-				 itemprop="name"><tt>ECGtask</tt></span></a></span> | <span 
-				 itemprop="seealso"><a itemprop="url" href="ECGdelineation.htm"><span 
-				 itemprop="name"><tt>ECG delineation</tt></span></a></span> 
-				 | <span itemprop="seealso"><a itemprop="url" href="examples.html"><span 
-				 itemprop="name"><tt>examples</tt></span></a></span> </p>
+				<p><a itemprop="url" href="ECGtask.html"><span itemprop="name"><tt>ECGtask</tt></span></a> 
+				 | <span itemprop="name"><tt><a itemprop="url" href="QRS_detection.htm">QRS 
+				 detection</a></tt></span> | <a itemprop="url" href="ECGdelineation.htm"><span 
+				 itemprop="name"><tt>ECG delineation</tt></span></a> | 
+				 <a itemprop="url" href="examples.html"><span itemprop="name"><tt>examples</tt></span></a> 
+				 </p>
 			<!-- close_content_container -->
 			</div>
 		<!-- close_content_frame -->

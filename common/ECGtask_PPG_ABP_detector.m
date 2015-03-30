@@ -49,9 +49,6 @@ classdef ECGtask_PPG_ABP_detector < ECGtask
         detectors = 'all-detectors';
         lead_config = 'PPG-ABP-only';
         PPG_ABP_idx = [];
-        gqrs_config_filename = [];
-        wavedet_config
-        
         
     end
     
@@ -149,15 +146,6 @@ classdef ECGtask_PPG_ABP_detector < ECGtask
                 end
 
                 writeheader(obj.tmp_path_local, ECG_header);   
-
-                if( isempty(obj.gqrs_config_filename) )
-                    aux_str = obj.WFDB_bin_path;
-                    if( aux_str(end) == filesep )
-                        obj.gqrs_config_filename = [aux_str 'gqrs.conf' ];
-                    else
-                        obj.gqrs_config_filename = [aux_str filesep 'gqrs.conf' ];
-                    end
-                end
                 
             end
             
@@ -343,20 +331,6 @@ classdef ECGtask_PPG_ABP_detector < ECGtask
                 obj.detectors = x;
             else
                 warning('ECGtask_QRS_detection:BadArg', 'Invalid detectors.');
-            end
-        end
-        
-        function set.gqrs_config_filename(obj,x)
-            if( ischar(x) )
-                
-                if(exist(x, 'file'))
-                    obj.gqrs_config_filename = x;
-                else
-                    warning('ECGtask_QRS_detection:BadArg', 'obj.gqrs_config_filename does not exist.');
-                end
-                
-            else
-                warning('ECGtask_QRS_detection:BadArg', 'obj.gqrs_config_filename must be a string.');
             end
         end
         
