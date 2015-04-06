@@ -2025,9 +2025,9 @@ function ann_output = QRScorrector(varargin)
             aux_w.cacheResults = false;
             aux_w.ECGtaskHandle.lead_idx = lead_idx;
             aux_w.ECGtaskHandle.signal_payload = true;
-            aux_w.ECGtaskHandle.user_string = ['similarity_calc_for_lead_' num2str(sort(lead_idx)) ];
+            aux_w.user_string = ['similarity_calc_for_lead_' num2str(sort(lead_idx)) ];
             aux_w.ECGtaskHandle.function_pointer = @similarity_calculation;
-            aux_w.ECGtaskHandle.function_payload_in = pattern2detect;
+            aux_w.ECGtaskHandle.payload = pattern2detect;
             aux_w.Run
         end
         
@@ -2115,7 +2115,7 @@ function ann_output = QRScorrector(varargin)
                 aux_w.ECGtaskHandle.lead_idx = lead_idx;
                 % generate QRS detections
                 aux_w.ECGtaskHandle.signal_payload = false;
-                aux_w.ECGtaskHandle.user_string = ['modmax_calc_for_leads_' num2str(sort(lead_idx)) ];
+                aux_w.user_string = ['modmax_calc_for_leads_' num2str(sort(lead_idx)) ];
                 aux_w.ECGtaskHandle.function_pointer = @(a)(modmax(a,QRSxlims, thr, 1, round(detection_threshold*ECG_struct.header.freq)));
                 aux_w.Run
                 

@@ -44,12 +44,11 @@ classdef ECGtask_arbitrary_function < ECGtask
         
         progress_handle 
         tmp_path
-        
-        function_pointer
         only_ECG_leads = false
-        lead_idx
-        function_payload_in
+        payload
+        lead_idx = []
         signal_payload = false
+        function_pointer
         
     end
     
@@ -64,8 +63,10 @@ classdef ECGtask_arbitrary_function < ECGtask
             if( obj.only_ECG_leads )
                 obj.lead_idx = get_ECG_idx_from_header(ECG_header);
             else
-%               'all-signals'
-                obj.lead_idx = 1:ECG_header.nsig;
+                if( isempty(obj.lead_idx) )
+    %               'all-signals'
+                    obj.lead_idx = 1:ECG_header.nsig;
+                end
             end
             
             if( isempty(obj.lead_idx) )
@@ -95,7 +96,7 @@ classdef ECGtask_arbitrary_function < ECGtask
                 payload.result_signal = obj.function_pointer( double(ECG(:,obj.lead_idx)) );
             else
                 ECG_header_aux = trim_ECG_header(ECG_header, obj.lead_idx);
-                payload.result_signal = obj.function_pointer( ECG(:,obj.lead_idx), ECG_header_aux, obj.progress_handle, obj.function_payload_in);
+                payload.result_signal = obj.function_pointer( ECG(:,obj.lead_idx), ECG_header_aux, obj.progress_handle, obj.payload);
             end
             
             if( obj.signal_payload )
