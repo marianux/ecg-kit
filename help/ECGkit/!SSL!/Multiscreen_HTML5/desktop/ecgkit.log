@@ -47,6 +47,7 @@ merged.css
 template\my_layout\Layout.css
 template\my_layout\TOCTreeCloseBook.png
 template\my_layout\TOCTreeOpenBook.png
+2D__Mariano_misc_a2hbc_doc_expert_user_interface.png
 template\my_layout\TOCTreeOpenBookHoverSelected.png
 template\my_layout\Print.png
 template\my_layout\welcome_background.png
@@ -102,6 +103,7 @@ whxdata\package_9_xml.js
 whxdata\package_10_xml.js
 whxdata\package_11_xml.js
 whxdata\package_12_xml.js
+whxdata\package_13_xml.js
 whxdata\packageindex_xml.js
 whxdata\synonym.xml
 whxdata\synonym_xml.js

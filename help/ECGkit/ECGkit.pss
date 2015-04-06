@@ -29,6 +29,8 @@ SSLayoutType=7
 [Target:XML Output]
 ResultFileName=!SSL!\XML_Output\ECGkit.xml
 SSLayoutType=8129
+ActionID For Generation=1003
+Remove Folder with prompt=1
 [Target:FlashHelp Pro]
 ResultFileName=!SSL!\FlashHelp_Pro\ECGkit.htm
 SSLayoutType=2
@@ -44,8 +46,8 @@ SupportMas_MPJ=1
 [Target:Multiscreen HTML5]
 ResultFileName=!SSL!\Multiscreen_HTML5\index.htm
 SSLayoutType=2
-CreateProjectTime=13:33, March 30, 2015
-CreateProjectUser=dplab
+CreateProjectTime=18:10, April 01, 2015
+CreateProjectUser=llamedom
 SupportMas_MPJ=1
 ActionID For Generation=1005
 Remove Folder with prompt=1
@@ -53,8 +55,8 @@ Enable Result Dialog=1
 ViewFileName=!SSL!\Multiscreen_HTML5\index.htm
 ResultStatus=0
 ResultStatusSharePoint=2
-BuildTimeHi=30436103
-BuildTimeLow=1436997214
+BuildTimeHi=30436502
+BuildTimeLow=1621748126
 [Target:eBook]
 ResultFileName=!SSL!\eBook\ECGkit.epub
 SSLayoutType=2
@@ -98,7 +100,7 @@ External URL Settings=D:\Mariano\misc\ecg-kit\help\ECGkit\SearchOptions.xml
 Screen Template File Details=D:\Mariano\misc\ecg-kit\help\ECGkit\ECGkit.sctfdl
 CPSwfToHTML5Map=D:\Mariano\misc\ecg-kit\help\ECGkit\__cpSwf2HTML5ZipMap
 Default Topic=D:\Mariano\misc\ecg-kit\help\ECGkit\Getting_started.htm
-Build Tags0=25594;Online | Print
+Build Tags0=4088;Online | Print
 Build Tags=
 Build Expression=
 Language ID=1033

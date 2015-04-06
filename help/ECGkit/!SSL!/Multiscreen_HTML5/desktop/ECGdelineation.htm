@@ -382,11 +382,33 @@ gTocUrlIconStyle = "";
 				<div itemprop="content">
 					<div class="examples">
 						<h1 id="examples" class="r2013b">Examples</h1>
-						<p>Create the ECGtask_QRS_detection object.</p>
+						<p>Create the <span style="font-style: italic;">ECGtask_ECG_delineation</span> 
+						 object.</p>
 						<pre class="codeinput">
-<span class="comment">% comments</span>
-&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;code = <span class="string">'strings'</span>; <span class="comment">% more comments</span>
+<span class="comment">% with the task name</span>
+	ECG_w.ECGtaskHandle = <span class="string">'ECG_delineation'</span>;<span class="comment">
+% or create an specific handle to have more control</span>
+	ECGt = ECGtask_ECG_delineation();</pre>
+						<p>and then you are ready to set the algorithms 
+						 to use. In the following example you have several 
+						 possible setups.</p>
+						<pre class="codeinput">
+<span class="comment">% select an specific algorithm. Default: Run all detectors</span>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ECGt.delineators = <span class="string">'wavedet'</span>; <span class="comment">% Wavedet algorithm based on</span>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ECGt.delineators = <span class="string">'user:your_delineator_func_name'</span>; &#160;&#160;&#160;<span class="comment">% &quot;your_delineator_func_name&quot; can be your own delineator.</span>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ECGt.delineators = {<span class="string">'wavedet'</span> <span class="string">'user:your_delineator_func_name'</span>};
 						</pre>
+						<p>Finally set the task to the wrapper object, 
+						 and execute the task.</p>
+						<pre class="codeinput">
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ECG_w.ECGtaskHandle= ECGt; <span class="comment">% set the ECG task</span>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ECG_w.Run();</pre>
+						<p>You can check the result of this task, with 
+						 either the <a href="ECG_delineation_corrector.htm">delineation 
+						 corrector</a> or the <a href="plot_ecg_strip.htm">visualization 
+						 functions</a>.</p>
+						<p>Also check this <a href="examples.html#ECG_automatic_delineation">example</a> 
+						 for further information.</p>
 					</div>
 				</div>
 				<div class="moreabout">
@@ -394,19 +416,15 @@ gTocUrlIconStyle = "";
 						<p>&#160;</p>
 					</div>
 					<h1 id="moreabout" class="r2013b">More About</h1>
-					<p>Here are some external references about heartbeat 
-					 detection:</p>
-					<ul style="list-style: disc;">
-						<li><a href="http://www.physionet.org/">Physionet</a></li>
-					</ul>
+					<p>This publication describes the <a href="http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf">wavedet</a> 
+					 algorithm:</p>
 				</div>
 				<h1 class="r2013b">See Also</h1>
-				<p><span itemprop="seealso"><a itemprop="url" href="ECGtask.html"><span 
-				 itemprop="name"><tt>ECGtask</tt></span></a></span> | <span 
-				 itemprop="seealso"><a itemprop="url" href="ECGdelineation.htm"><span 
-				 itemprop="name"><tt>ECG delineation</tt></span></a></span> 
-				 | <span itemprop="seealso"><a itemprop="url" href="examples.html"><span 
-				 itemprop="name"><tt>examples</tt></span></a></span> </p>
+				<p><span itemprop="seealso"><a itemprop="url" href="ECGtask.html"><tt>ECGtask</tt></a></span> 
+				 | <span itemprop="seealso"><tt><a itemprop="url" href="QRS_detection.htm">QRS 
+				 detection</a></tt></span> | <span itemprop="seealso"><a 
+				 itemprop="url" href="examples.html"><tt>examples</tt></a></span> 
+				 </p>
 			<!-- close_content_container -->
 			</div>
 		<!-- close_content_frame -->

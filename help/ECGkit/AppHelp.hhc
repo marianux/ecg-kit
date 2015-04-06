@@ -16,21 +16,21 @@
 				<item name="ECGwrapper" link="ECGwrapper.html">
 				</item>
 				<item name="ECGtask" link="ECGtask.htm">
-					<item name="QRS_detection" link="QRS_detection.htm">
+					<item name="QRS detection" link="QRS_detection.htm">
 					</item>
-					<item name="QRS_correction" link="QRScorrector.htm">
+					<item name="QRS correction" link="QRScorrector.htm">
 					</item>
-					<item name="ABP_PPG_peak_detection" link="ABP_PPG_peak_detection.htm">
+					<item name="ABP/PPG peak detection" link="ABP_PPG_peak_detection.htm">
 					</item>
-					<item name="ABP_PPG_peak_correction" link="ABP_PPG_peak_correction.htm">
+					<item name="ABP/PPG peak correction" link="ABP_PPG_peak_correction.htm">
 					</item>
-					<item name="ECG_delineation" link="ECGdelineation.htm">
+					<item name="ECG delineation" link="ECGdelineation.htm">
 					</item>
-					<item name="ECG_delineation_corrector" link="ECG_delineation_corrector.htm">
+					<item name="ECG delineation corrector" link="ECG_delineation_corrector.htm">
 					</item>
-					<item name="ECG_heartbeat_classifier" link="ECG_heartbeat_classifier.htm">
+					<item name="Heartbeat classification" link="ECG_heartbeat_classifier.htm">
 					</item>
-					<item name="Arbitrary_tasks" link="Arbitrary_tasks.htm">
+					<item name="Arbitrary tasks" link="Arbitrary_tasks.htm">
 					</item>
 				</item>
 			</item>
