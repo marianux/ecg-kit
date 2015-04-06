@@ -1,0 +1,247 @@
+ 
+
++--------------------------------------+--------------------------------------+
+| |image2|                             |
+| |image3|                             |
+| `Show <javascript:onShowHideClick()> |
+| `__\ `Hide <javascript:onShowHideCli |
+| ck()>`__                             |
++--------------------------------------+--------------------------------------+
+
+-  Contents
+-  Index
+-  Glossary
+
+| 
+
+QRS detection
+=============
+
+This document describes how to perform QRS detection.
+
+`expand all in page <javascript:void(0);>`__
+
+ 
+
+Description
+===========
+
+Heartbeat detection is probably one of the first and most important
+tasks when you process cardiovascular recordings. The ECGkit has several
+algorithms implemented:
+
+-  `Wavedet <http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf>`__
+-  `gqrs <http://www.physionet.org/physiotools/wag/gqrs-1.htm>`__
+-  `wqrs <http://www.physionet.org/physiotools/wag/wqrs-1.htm>`__
+-  `Pan and
+   Tompkins <http://ieeexplore.ieee.org/xpl/articleDetails.jsp?reload=true&arnumber=4122029>`__ 
+-  `ECGpuwave <http://www.physionet.org/physiotools/ecgpuwave/>`__
+-  Aristotle
+
+You can use any or all the algorithms as you will see below or you can
+even add your own algorithms if you follow an easy interface, as
+described `below <#Adding_a_custom_detection_algorithm>`__. The results
+are stored in a single file, that you can use to perform other
+subsequent tasks, such as `ECG delineation <ECGdelineation.htm>`__ or
+even the visual `inspection <plot_ecg_strip.htm>`__ or
+`correction <QRScorrector.htm>`__ of the algorithms results. For a quick
+reference about  heartbeat detection you may want to check  this
+`example <examples.html#QRS_automatic_detection>`__
+
+ 
+
+Input Arguments
+===============
+
+The properties that this task uses are the following:
+
+```progress_handle`` — used to track the progress within your function. <javascript:void(0);>`__\ ``[]`` (default)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+progress\_handle, is a handle to a `progress\_bar <progress_bar.htm>`__
+object, that can be used to track the progress within your function.
+
+```tmp_path`` — The path to store temporary data <javascript:void(0);>`__\ ``'tempdir()'`` (default)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Full path to a directory with write privileges.
+
+```detectors`` — The QRS detection algorithms to use <javascript:void(0);>`__\ ``'all-detectors'`` (default)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A cell string or char with any of the following names
+
+all-detectors
+
+`wavedet <http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf>`__
+
+`pantom <http://ieeexplore.ieee.org/xpl/articleDetails.jsp?reload=true&arnumber=4122029>`__
+
+aristotle
+
+`gqrs <http://www.physionet.org/physiotools/wag/gqrs-1.htm>`__
+
+`sqrs <http://www.physionet.org/physiotools/wag/sqrs-1.htm>`__
+
+`wqrs <http://www.physionet.org/physiotools/wag/wqrs-1.htm>`__
+
+`ecgpuwave <http://www.physionet.org/physiotools/ecgpuwave/>`__
+
+ 
+
+```only_ECG_leads`` — Process only ECG signals <javascript:void(0);>`__\ ``true`` (default)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Boolean value. Find out which signals are ECG based on their header
+description.
+
+```gqrs_config_filename`` — A configuration filename for the gqrs algorithm. <javascript:void(0);>`__\ ``[]`` (default)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A full filename with the configuration for the gqrs algorithm. See the
+algorithm `web <http://www.physionet.org/physiotools/wag/gqrs-1.htm>`__
+page for details.
+
+```wavedet_config`` — A structure for customizing wavedet algorithm. <javascript:void(0);>`__\ ``[]`` (default)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Undocumented yet, use only if you know what you are doing.
+
+```payload`` — An arbitrary format variable to be passed to your user-defined algorithm. <javascript:void(0);>`__\ ``[]`` (default)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This variable can be useful for passing data to your own function, not
+covered in the interface described
+`below <#Adding_a_custom_detection_algorithm>`__.
+
+```CalculatePerformance`` — Calculate algorithm performances based on gold standard reference detections. <javascript:void(0);>`__\ ``false`` (default)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Boolean value. Calculate the algorithm performance based on the
+reference annotations found by the ECGwrapper object in the same folder
+where the signals are. This reference annotations are loaded, if
+detected, in the ECG\_annotations property.
+
+ 
+
+Adding a custom detection algorithm
+===================================
+
+Adding your own QRS detectors to the kit is very simple. Ensure that
+your function implements this interface:
+
+.. code:: codeinput
+
+    function [positions_single_lead, position_multilead] = your_QRS_detector( ECG_matrix, ECG_header, progress_handle, payload_in) 
+                            
+
+where the arguments are:
+
+ECG\_matrix, is a matrix size [ECG\_header.nsamp ECG\_header.nsig]
+
+ECG\_header, is a struct with info about the ECG signal, such as:
+
+freq, the sampling frequency
+
+desc, description about the signals.
+
+and others described `here <Copy_of_ECGtask.htm>`__
+
+progress\_handle, is a handle to a `progress\_bar <progress_bar.htm>`__
+object, that can be used to track the progress within your function.
+
+payload\_in, is a user variable, of arbitrary format, allowed to be sent
+to your function. It is sent, via the `payload
+property <#payload_prop>`__ of this class, for example:
+
+.. code:: codeinput
+
+        % One variable
+        this_ECG_wrapper.ECGtaskHandle.payload = your_variable;
+        
+        % Several variables with a cell container
+        this_ECG_wrapper.ECGtaskHandle.payload = {your_var1 your_var2};
+        
+        % Or the result of a previous task, in this case QRS manual correction (if available)
+        % or the automatic detection if not.
+        cached_filenames = this_ECG_wrapper.GetCahchedFileName({'QRS_corrector' 'QRS_detection'});
+        this_ECG_wrapper.ECGtaskHandle.payload = load(cached_filenames);
+
+and the output of your function must be:
+
+positions\_single\_lead, a cell array size ECG\_header.nsig with the QRS
+sample locations found in each lead.
+
+position\_multilead, a numeric vector with the QRS locations calculated
+using multilead rules.
+
+ 
+
+Examples
+========
+
+Create the ECGtask\_QRS\_detection object.
+
+.. code:: codeinput
+
+    % with the task name
+        ECG_w.ECGtaskHandle = 'QRS_detection';
+    % or create an specific handle to have more control
+        ECGt_QRSd = ECGtask_QRS_detection();
+
+and then you are ready to set the algorithms to use. In the following
+example you have several possible setups.
+
+.. code:: codeinput
+
+    % select an specific algorithm. Default: Run all detectors
+            ECGt_QRSd.detectors = 'wavedet'; % Wavedet algorithm based on
+            ECGt_QRSd.detectors = 'pantom';  % Pan-Tompkins alg.
+            ECGt_QRSd.detectors = 'gqrs';    % WFDB gqrs algorithm.
+            ECGt_QRSd.detectors = 'user:example_worst_ever_QRS_detector';    % Example of how you can add your own QRS detector.
+            ECGt_QRSd.detectors = 'user:your_QRS_detector_func_name';    % "your_QRS_detector_func_name" can be your own detector.
+            ECGt_QRSd.detectors = {'wavedet' 'gqrs' 'user:example_worst_ever_QRS_detector'};
+                            
+
+Finally set the task to the wrapper object, and execute the task.
+
+.. code:: codeinput
+
+            ECG_w.ECGtaskHandle= ECGt_QRSd; % set the ECG task
+            ECG_w.Run();
+
+You can check the result of this task, with either the `detection
+corrector <QRScorrector.htm>`__ or the `visualization
+functions <plot_ecg_strip.htm>`__.
+
+Also check this `example <examples.html#QRS_automatic_detection>`__ for
+further information.
+
+ 
+
+More About
+==========
+
+Here are some external references about heartbeat detection:
+
+-  `PhysioNet/Computing in Cardiology Challenge
+   2014 <http://physionet.org/challenge/2014/>`__
+-  `Physionet <http://www.physionet.org/>`__
+
+See Also
+========
+
+```ECGtask`` <ECGtask.html>`__ \|
+```ECG delineation`` <ECGdelineation.htm>`__ \|
+```examples`` <examples.html>`__
+
+ 
+
+.. |image0| image:: template/my_layout/Search.png
+   :target: #
+.. |image1| image:: template/my_layout/Print.png
+   :target: javascript:window.print()
+.. |image2| image:: template/my_layout/Search.png
+   :target: #
+.. |image3| image:: template/my_layout/Print.png
+   :target: javascript:window.print()
