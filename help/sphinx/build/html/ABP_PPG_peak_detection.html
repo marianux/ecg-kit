@@ -1,0 +1,269 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ABP/PPG peak detection &mdash; ECGkit 1.0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> ECGkit</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html#uninstallation">Uninstallation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#example-of-how-to-use-the-ecgkit">Example of how to use the ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#contents">Contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#function-prototype">Function prototype</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#argument-parsing">Argument parsing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#qrs-automatic-detection">QRS automatic detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#qrs-visual-inspection-and-correction">QRS visual inspection and correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#ppg-abp-pulse-detection">PPG/ABP pulse detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#ppg-abp-waves-visual-inspection-and-correction">PPG/ABP waves visual inspection and correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#ecg-automatic-delineation">ECG automatic delineation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#visual-inspection-of-the-detection-delineation">Visual inspection of the detection/delineation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#automatic-heartbeat-classification">Automatic Heartbeat classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#visual-inspection-of-the-signal">Visual inspection of the signal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#other-user-defined-tasks">Other user-defined tasks ...</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html#release-notes">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html#contact">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functionlist.html">ECGkit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="functionlist.html#base-classes">Base classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functionlist.html#signal-processing">Signal processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functionlist.html#plotting-and-reporting">Plotting and reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functionlist.html#ecgkit-extension">ECGkit extension</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">ECGkit</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>ABP/PPG peak detection</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/ABP_PPG_peak_detection.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <ul class="simple">
+<li>Contents</li>
+<li>Index</li>
+<li>Glossary</li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="section" id="abp-ppg-peak-detection">
+<h1>ABP/PPG peak detection<a class="headerlink" href="#abp-ppg-peak-detection" title="Permalink to this headline">¶</a></h1>
+<p>This document describes how to perform automatic peak detection in
+pulsatile signals.</p>
+<p><a class="reference external" href="javascript:void(0);">expand all in page</a></p>
+</div>
+<div class="section" id="description">
+<h1>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h1>
+<p>This task perform peak detection in pulsatile signals such as arterial
+blood pressure (ABP) or plethysmographic (PPG). The task uses two
+algorithms to achieve pulse detection, and, as in QRS detection task you
+can choose to use any of them.</p>
+</div>
+<div class="section" id="input-arguments">
+<h1>Input Arguments<a class="headerlink" href="#input-arguments" title="Permalink to this headline">¶</a></h1>
+<p>The properties that the ECGtask_PPG_ABP_detector class accepts are
+described below. The usage of these properties is restricted to
+low-level programming, you can use this task through the ECGwrapper as
+is shown in the example below.</p>
+<div class="section" id="progress-handle-used-to-track-the-progress-within-your-function-javascript-void-0-default">
+<h2><code class="docutils literal"><span class="pre">`progress_handle</span></code> — used to track the progress within your function. &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">[]</span></code> (default)<a class="headerlink" href="#progress-handle-used-to-track-the-progress-within-your-function-javascript-void-0-default" title="Permalink to this headline">¶</a></h2>
+<p>progress_handle, is a handle to a <a class="reference external" href="progress_bar.htm">progress_bar</a>
+object, that can be used to track the progress within your function.</p>
+</div>
+<div class="section" id="tmp-path-the-path-to-store-temporary-data-javascript-void-0-tempdir-default">
+<h2><code class="docutils literal"><span class="pre">`tmp_path</span></code> — The path to store temporary data &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">'tempdir()'</span></code> (default)<a class="headerlink" href="#tmp-path-the-path-to-store-temporary-data-javascript-void-0-tempdir-default" title="Permalink to this headline">¶</a></h2>
+<p>Full path to a directory with write privileges.</p>
+</div>
+<div class="section" id="lead-config-select-which-signals-to-process-javascript-void-0-ppg-abp-only-default">
+<h2><code class="docutils literal"><span class="pre">`lead_config</span></code> — Select which signals to process &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">'PPG-ABP-only'</span></code> (default)<a class="headerlink" href="#lead-config-select-which-signals-to-process-javascript-void-0-ppg-abp-only-default" title="Permalink to this headline">¶</a></h2>
+<p>A cell string or char with any of the following names</p>
+<p>&#8216;all-leads&#8217;. Process all leads</p>
+<p>&#8216;PPG-ABP-only&#8217;. Detect pulsatile signals based on their ECG_header.desc
+description variable.</p>
+<p>&#8216;User-defined-leads&#8217;. Tell the algorithm (with PPG_ABP_idx property)
+which signal indexes to process, from 1 to ECG_header.nsig</p>
+</div>
+<div class="section" id="ppg-abp-idx-the-indexes-corresponding-to-pulsatile-signals-javascript-void-0-default">
+<h2><code class="docutils literal"><span class="pre">`PPG_ABP_idx</span></code> — The indexes corresponding to pulsatile signals &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">[]</span></code> (default)<a class="headerlink" href="#ppg-abp-idx-the-indexes-corresponding-to-pulsatile-signals-javascript-void-0-default" title="Permalink to this headline">¶</a></h2>
+<p>A value from 1 to ECG_header.nsig indicating the column indexes (of the
+signal matrix of nsamp x nsig) where pulsatile signals are located.</p>
+</div>
+<div class="section" id="detectors-the-ppg-abp-detection-algorithms-to-use-javascript-void-0-all-detectors-default">
+<h2><code class="docutils literal"><span class="pre">`detectors</span></code> — The PPG/ABP detection algorithms to use &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">'all-detectors'</span></code> (default)<a class="headerlink" href="#detectors-the-ppg-abp-detection-algorithms-to-use-javascript-void-0-all-detectors-default" title="Permalink to this headline">¶</a></h2>
+<p>A cell string or char with any of the following names</p>
+<p>all-detectors</p>
+<p><a class="reference external" href="http://dx.doi.org/10.1109/JBHI.2013.2267096">wavePPG</a></p>
+<p><a class="reference external" href="http://www.physionet.org/physiotools/wag/wabp-1.htm">wabp</a></p>
+</div>
+</div>
+<div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>Create the ECGtask_PPG_ABP_detector object.</p>
+<p>and then you are ready to set the algorithms to use. In the following
+example you have several possible setups.</p>
+<p>Finally set the task to the wrapper object, and execute the task.</p>
+<p>You can check the result of this task, with either the <a class="reference external" href="ABP_PPG_peak_correction.htm">detection
+corrector</a> or the <a class="reference external" href="plot_ecg_strip.htm">visualization
+functions</a>.</p>
+<p>Also check this <a class="reference external" href="examples.html#PPG_ABP_pulse_detection">example</a> for
+further information.</p>
+</div>
+<div class="section" id="more-about">
+<h1>More About<a class="headerlink" href="#more-about" title="Permalink to this headline">¶</a></h1>
+<p>Here are some external references about pulse detection:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://physionet.org/challenge/2014/">Physionet Challenge 2014</a></li>
+</ul>
+</div>
+<div class="section" id="see-also">
+<h1>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal"><span class="pre">`ECGtask</span></code> &lt;ECGtask.html&gt;`__ | <code class="docutils literal"><span class="pre">QRS</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">detection</span></code> |
+<code class="docutils literal"><span class="pre">`ECG</span> <span class="pre">delineation</span></code> &lt;ECGdelineation.htm&gt;`__ |
+<code class="docutils literal"><span class="pre">`examples</span></code> &lt;examples.html&gt;`__</p>
+</div>
+
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Mariano Llamedo Soria.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

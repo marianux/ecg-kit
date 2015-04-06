@@ -1,0 +1,307 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ECG heartbeat classification &mdash; ECGkit 1.0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> ECGkit</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html#uninstallation">Uninstallation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#example-of-how-to-use-the-ecgkit">Example of how to use the ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#contents">Contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#function-prototype">Function prototype</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#argument-parsing">Argument parsing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#qrs-automatic-detection">QRS automatic detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#qrs-visual-inspection-and-correction">QRS visual inspection and correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#ppg-abp-pulse-detection">PPG/ABP pulse detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#ppg-abp-waves-visual-inspection-and-correction">PPG/ABP waves visual inspection and correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#ecg-automatic-delineation">ECG automatic delineation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#visual-inspection-of-the-detection-delineation">Visual inspection of the detection/delineation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#automatic-heartbeat-classification">Automatic Heartbeat classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#visual-inspection-of-the-signal">Visual inspection of the signal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#other-user-defined-tasks">Other user-defined tasks ...</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html#release-notes">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html#contact">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functionlist.html">ECGkit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="functionlist.html#base-classes">Base classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functionlist.html#signal-processing">Signal processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functionlist.html#plotting-and-reporting">Plotting and reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functionlist.html#ecgkit-extension">ECGkit extension</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">ECGkit</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>ECG heartbeat classification</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/ECG_heartbeat_classifier.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <ul class="simple">
+<li>Contents</li>
+<li>Index</li>
+<li>Glossary</li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="section" id="ecg-heartbeat-classification">
+<h1>ECG heartbeat classification<a class="headerlink" href="#ecg-heartbeat-classification" title="Permalink to this headline">¶</a></h1>
+<p>This document describes how to classify heartbeats according to its
+origin.</p>
+<p><a class="reference external" href="javascript:void(0);">expand all in page</a></p>
+</div>
+<div class="section" id="description">
+<h1>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h1>
+<p>This task implements a heartbeat classifier that follows the <a class="reference external" href="http://marketplace.aami.org/eseries/scriptcontent/docs/Preview%20Files/EC57_1212_preview.pdf">EC-57 AAMI
+recommendation</a>
+classifying heartbeats into four classes:</p>
+<ul class="simple">
+<li><strong>N</strong> normal</li>
+<li><strong>S</strong> supraventricular</li>
+<li><strong>V</strong> ventricular</li>
+<li><strong>F</strong> fusion of normal and ventricular</li>
+</ul>
+<p>Each class and certain background regarding this topic are explained in
+my <a class="reference external" href="http://i3a.unizar.es/postgrado/descarga_tesis_pdf.php?ver=48">PhD
+thesis</a>,
+which can be useful f</p>
+</div>
+<div class="section" id="input-arguments">
+<h1>Input Arguments<a class="headerlink" href="#input-arguments" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="progress-handle-used-to-track-the-progress-within-your-function-javascript-void-0-default">
+<h2><code class="docutils literal"><span class="pre">`progress_handle</span></code> — used to track the progress within your function. &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">[]</span></code> (default)<a class="headerlink" href="#progress-handle-used-to-track-the-progress-within-your-function-javascript-void-0-default" title="Permalink to this headline">¶</a></h2>
+<p>progress_handle, is a handle to a <a class="reference external" href="progress_bar.htm">progress_bar</a>
+object, that can be used to track the progress within your function.</p>
+</div>
+<div class="section" id="tmp-path-the-path-to-store-temporary-data-javascript-void-0-tempdir-default">
+<h2><code class="docutils literal"><span class="pre">`tmp_path</span></code> — The path to store temporary data &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">'tempdir()'</span></code> (default)<a class="headerlink" href="#tmp-path-the-path-to-store-temporary-data-javascript-void-0-tempdir-default" title="Permalink to this headline">¶</a></h2>
+<p>Full path to a directory with write privileges.</p>
+</div>
+<div class="section" id="payload-an-arbitrary-format-variable-to-be-passed-to-your-user-defined-algorithm-javascript-void-0-default">
+<h2><code class="docutils literal"><span class="pre">`payload</span></code> — An arbitrary format variable to be passed to your user-defined algorithm. &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">[]</span></code> (default)<a class="headerlink" href="#payload-an-arbitrary-format-variable-to-be-passed-to-your-user-defined-algorithm-javascript-void-0-default" title="Permalink to this headline">¶</a></h2>
+<p>This variable can be useful for passing data to your own function, not
+covered in the interface described
+<a class="reference external" href="#Adding_a_custom_detection_algorithm">below</a>.</p>
+</div>
+<div class="section" id="mode-set-the-algorithm-mode-of-operation-javascript-void-0-auto-default">
+<h2><code class="docutils literal"><span class="pre">`mode</span></code> — Set the algorithm mode of operation. &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">'auto'</span></code> (default)<a class="headerlink" href="#mode-set-the-algorithm-mode-of-operation-javascript-void-0-auto-default" title="Permalink to this headline">¶</a></h2>
+<p>A string with any of the following names</p>
+<p>&#8216;auto&#8217;, this mode performs in automatic mode.</p>
+<p>&#8216;slightly-assisted&#8217;, this mode requires that an expert labels several
+heartbeats</p>
+<p>&#8216;assisted&#8217;, this mode is completely assisted. An expert must label some
+heartbeats.</p>
+<p>A more detailed</p>
+</div>
+</div>
+<div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>The first example shows the simplest setup of the
+ECGtask_heartbeat_classifier object, while at the end of this section
+a complete example with a real signal is shown.</p>
+<p>and then you are ready to setup the task</p>
+<p>Finally set the task to the wrapper object, and execute the task.</p>
+<p>This example shows in first place, the previous configuration used in
+recording 208 from MIT Arrhythmia database.</p>
+<p>You can follow the evolution in the progress bar, and after a while, it
+ends and display the classification results</p>
+<p>This is possible because this recording include the expert annotations,
+or &#8216;&#8217;ground truth&#8217;&#8216;, for each heartbeat. The manual annotations in MIT
+format are typically included in &#8216;&#8217;.atr&#8217;&#8217; files (in this case
+&#8216;&#8216;208.atr&#8217;&#8216;). Now you can try &#8216;&#8217;slightly-assisted&#8217;&#8217; mode, where the
+algorithm may ask you for help in case of cluster heterogeneity. If this
+happens, a window like this will appear:</p>
+<p><img alt="image4" src="_images/2D__Mariano_misc_a2hbc_doc_expert_user_interface.png" /></p>
+<p>In this window the algorithm is asking you to label the centroid of the
+cluster, that is showed in the left panel. In the top of each panel some
+information is showed, as the amount of heartbeats in the current
+cluster. In the middle panel, you have some examples of heartbeats close
+to the centroid in a likelihood sense. The same is repeated in the right
+panel, but with examples far from the centroid. This manner you can have
+an idea of the dispersion of heartbeats within a cluster. Large
+differences across the panels indicates large cluster dispersion. If you
+decide to label the cluster, you can use one of the 4 buttons on your
+right. The unknown class is reserved for the cases where you can not
+make a confident decision. At the same time, in the command window, a
+suggestion appears:</p>
+<p>This means that the centroid heartbeat in the &#8216;&#8217;.atr&#8217;&#8217; file is labeled
+as &#8216;&#8217;Normal&#8217;&#8216;. You will see this suggestion for each cluster analyzed,
+if there are annotations previously available. You are informed about
+the percentage of heartbeats already labeled with a progress bar, in the
+bottom of the control panel window.</p>
+<p>In case you believe that a cluster includes several classes of
+heartbeats, you can decide to &#8216;&#8217;skip&#8217;&#8217; the classification, and try to
+re-cluster those heartbeats in the next iteration. You are free to
+perform as many iterations as you decide, by skipping clusters. The
+refresh button resamples heartbeats close and far from the centroid, and
+then redraw the middle and right panels. This feature is useful for
+large clusters.</p>
+<p>You can check the result of this task for every heartbeat in the
+recording using the <a class="reference external" href="plot_ecg_strip.htm">visualization functions</a>.</p>
+<p>Also check this
+<a class="reference external" href="examples.html#Automatic_Heartbeat_classification">example</a> for
+further information.</p>
+</div>
+<div class="section" id="more-about">
+<h1>More About<a class="headerlink" href="#more-about" title="Permalink to this headline">¶</a></h1>
+<p>Here are some external references about heartbeat classification:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://marketplace.aami.org/eseries/scriptcontent/docs/Preview%20Files/EC57_1212_preview.pdf">EC-57 AAMI
+recommendation</a></li>
+<li><a class="reference external" href="http://www.eplimited.com/confirmation.htm">EP limited</a> software</li>
+</ul>
+</div>
+<div class="section" id="see-also">
+<h1>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal"><span class="pre">`ECGtask</span></code> &lt;ECGtask.html&gt;`__ |
+<code class="docutils literal"><span class="pre">`ECG</span> <span class="pre">delineation</span></code> &lt;ECGdelineation.htm&gt;`__ |
+<code class="docutils literal"><span class="pre">`examples</span></code> &lt;examples.html&gt;`__</p>
+</div>
+
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Mariano Llamedo Soria.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

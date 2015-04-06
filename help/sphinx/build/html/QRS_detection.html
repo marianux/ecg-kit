@@ -1,0 +1,324 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>QRS detection &mdash; ECGkit 1.0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> ECGkit</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html#uninstallation">Uninstallation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#example-of-how-to-use-the-ecgkit">Example of how to use the ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#contents">Contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#function-prototype">Function prototype</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#argument-parsing">Argument parsing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#qrs-automatic-detection">QRS automatic detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#qrs-visual-inspection-and-correction">QRS visual inspection and correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#ppg-abp-pulse-detection">PPG/ABP pulse detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#ppg-abp-waves-visual-inspection-and-correction">PPG/ABP waves visual inspection and correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#ecg-automatic-delineation">ECG automatic delineation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#visual-inspection-of-the-detection-delineation">Visual inspection of the detection/delineation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#automatic-heartbeat-classification">Automatic Heartbeat classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#visual-inspection-of-the-signal">Visual inspection of the signal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html#other-user-defined-tasks">Other user-defined tasks ...</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html#release-notes">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html#contact">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functionlist.html">ECGkit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="functionlist.html#base-classes">Base classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functionlist.html#signal-processing">Signal processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functionlist.html#plotting-and-reporting">Plotting and reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functionlist.html#ecgkit-extension">ECGkit extension</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">ECGkit</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>QRS detection</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/QRS_detection.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <ul class="simple">
+<li>Contents</li>
+<li>Index</li>
+<li>Glossary</li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="section" id="qrs-detection">
+<h1>QRS detection<a class="headerlink" href="#qrs-detection" title="Permalink to this headline">¶</a></h1>
+<p>This document describes how to perform QRS detection.</p>
+<p><a class="reference external" href="javascript:void(0);">expand all in page</a></p>
+</div>
+<div class="section" id="description">
+<h1>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h1>
+<p>Heartbeat detection is probably one of the first and most important
+tasks when you process cardiovascular recordings. The ECGkit has several
+algorithms implemented:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf">Wavedet</a></li>
+<li><a class="reference external" href="http://www.physionet.org/physiotools/wag/gqrs-1.htm">gqrs</a></li>
+<li><a class="reference external" href="http://www.physionet.org/physiotools/wag/wqrs-1.htm">wqrs</a></li>
+<li><a class="reference external" href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?reload=true&amp;arnumber=4122029">Pan and
+Tompkins</a></li>
+<li><a class="reference external" href="http://www.physionet.org/physiotools/ecgpuwave/">ECGpuwave</a></li>
+<li>Aristotle</li>
+</ul>
+<p>You can use any or all the algorithms as you will see below or you can
+even add your own algorithms if you follow an easy interface, as
+described <a class="reference external" href="#Adding_a_custom_detection_algorithm">below</a>. The results
+are stored in a single file, that you can use to perform other
+subsequent tasks, such as <a class="reference external" href="ECGdelineation.htm">ECG delineation</a> or
+even the visual <a class="reference external" href="plot_ecg_strip.htm">inspection</a> or
+<a class="reference external" href="QRScorrector.htm">correction</a> of the algorithms results. For a quick
+reference about &nbsp;heartbeat detection you may want to check &nbsp;this
+<a class="reference external" href="examples.html#QRS_automatic_detection">example</a></p>
+</div>
+<div class="section" id="input-arguments">
+<h1>Input Arguments<a class="headerlink" href="#input-arguments" title="Permalink to this headline">¶</a></h1>
+<p>The properties that this task uses are the following:</p>
+<div class="section" id="progress-handle-used-to-track-the-progress-within-your-function-javascript-void-0-default">
+<h2><code class="docutils literal"><span class="pre">`progress_handle</span></code> — used to track the progress within your function. &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">[]</span></code> (default)<a class="headerlink" href="#progress-handle-used-to-track-the-progress-within-your-function-javascript-void-0-default" title="Permalink to this headline">¶</a></h2>
+<p>progress_handle, is a handle to a <a class="reference external" href="progress_bar.htm">progress_bar</a>
+object, that can be used to track the progress within your function.</p>
+</div>
+<div class="section" id="tmp-path-the-path-to-store-temporary-data-javascript-void-0-tempdir-default">
+<h2><code class="docutils literal"><span class="pre">`tmp_path</span></code> — The path to store temporary data &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">'tempdir()'</span></code> (default)<a class="headerlink" href="#tmp-path-the-path-to-store-temporary-data-javascript-void-0-tempdir-default" title="Permalink to this headline">¶</a></h2>
+<p>Full path to a directory with write privileges.</p>
+</div>
+<div class="section" id="detectors-the-qrs-detection-algorithms-to-use-javascript-void-0-all-detectors-default">
+<h2><code class="docutils literal"><span class="pre">`detectors</span></code> — The QRS detection algorithms to use &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">'all-detectors'</span></code> (default)<a class="headerlink" href="#detectors-the-qrs-detection-algorithms-to-use-javascript-void-0-all-detectors-default" title="Permalink to this headline">¶</a></h2>
+<p>A cell string or char with any of the following names</p>
+<p>all-detectors</p>
+<p><a class="reference external" href="http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf">wavedet</a></p>
+<p><a class="reference external" href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?reload=true&amp;arnumber=4122029">pantom</a></p>
+<p>aristotle</p>
+<p><a class="reference external" href="http://www.physionet.org/physiotools/wag/gqrs-1.htm">gqrs</a></p>
+<p><a class="reference external" href="http://www.physionet.org/physiotools/wag/sqrs-1.htm">sqrs</a></p>
+<p><a class="reference external" href="http://www.physionet.org/physiotools/wag/wqrs-1.htm">wqrs</a></p>
+<p><a class="reference external" href="http://www.physionet.org/physiotools/ecgpuwave/">ecgpuwave</a></p>
+</div>
+<div class="section" id="only-ecg-leads-process-only-ecg-signals-javascript-void-0-true-default">
+<h2><code class="docutils literal"><span class="pre">`only_ECG_leads</span></code> — Process only ECG signals &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">true</span></code> (default)<a class="headerlink" href="#only-ecg-leads-process-only-ecg-signals-javascript-void-0-true-default" title="Permalink to this headline">¶</a></h2>
+<p>Boolean value. Find out which signals are ECG based on their header
+description.</p>
+</div>
+<div class="section" id="gqrs-config-filename-a-configuration-filename-for-the-gqrs-algorithm-javascript-void-0-default">
+<h2><code class="docutils literal"><span class="pre">`gqrs_config_filename</span></code> — A configuration filename for the gqrs algorithm. &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">[]</span></code> (default)<a class="headerlink" href="#gqrs-config-filename-a-configuration-filename-for-the-gqrs-algorithm-javascript-void-0-default" title="Permalink to this headline">¶</a></h2>
+<p>A full filename with the configuration for the gqrs algorithm. See the
+algorithm <a class="reference external" href="http://www.physionet.org/physiotools/wag/gqrs-1.htm">web</a>
+page for details.</p>
+</div>
+<div class="section" id="wavedet-config-a-structure-for-customizing-wavedet-algorithm-javascript-void-0-default">
+<h2><code class="docutils literal"><span class="pre">`wavedet_config</span></code> — A structure for customizing wavedet algorithm. &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">[]</span></code> (default)<a class="headerlink" href="#wavedet-config-a-structure-for-customizing-wavedet-algorithm-javascript-void-0-default" title="Permalink to this headline">¶</a></h2>
+<p>Undocumented yet, use only if you know what you are doing.</p>
+</div>
+<div class="section" id="payload-an-arbitrary-format-variable-to-be-passed-to-your-user-defined-algorithm-javascript-void-0-default">
+<h2><code class="docutils literal"><span class="pre">`payload</span></code> — An arbitrary format variable to be passed to your user-defined algorithm. &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">[]</span></code> (default)<a class="headerlink" href="#payload-an-arbitrary-format-variable-to-be-passed-to-your-user-defined-algorithm-javascript-void-0-default" title="Permalink to this headline">¶</a></h2>
+<p>This variable can be useful for passing data to your own function, not
+covered in the interface described
+<a class="reference external" href="#Adding_a_custom_detection_algorithm">below</a>.</p>
+</div>
+<div class="section" id="calculateperformance-calculate-algorithm-performances-based-on-gold-standard-reference-detections-javascript-void-0-false-default">
+<h2><code class="docutils literal"><span class="pre">`CalculatePerformance</span></code> — Calculate algorithm performances based on gold standard reference detections. &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">false</span></code> (default)<a class="headerlink" href="#calculateperformance-calculate-algorithm-performances-based-on-gold-standard-reference-detections-javascript-void-0-false-default" title="Permalink to this headline">¶</a></h2>
+<p>Boolean value. Calculate the algorithm performance based on the
+reference annotations found by the ECGwrapper object in the same folder
+where the signals are. This reference annotations are loaded, if
+detected, in the ECG_annotations property.</p>
+</div>
+</div>
+<div class="section" id="adding-a-custom-detection-algorithm">
+<h1>Adding a custom detection algorithm<a class="headerlink" href="#adding-a-custom-detection-algorithm" title="Permalink to this headline">¶</a></h1>
+<p>Adding your own QRS detectors to the kit is very simple. Ensure that
+your function implements this interface:</p>
+<p>where the arguments are:</p>
+<p>ECG_matrix, is a matrix size [ECG_header.nsamp ECG_header.nsig]</p>
+<p>ECG_header, is a struct with info about the ECG signal, such as:</p>
+<p>freq, the sampling frequency</p>
+<p>desc, description about the signals.</p>
+<p>and others described <a class="reference external" href="Copy_of_ECGtask.htm">here</a></p>
+<p>progress_handle, is a handle to a <a class="reference external" href="progress_bar.htm">progress_bar</a>
+object, that can be used to track the progress within your function.</p>
+<p>payload_in, is a user variable, of arbitrary format, allowed to be sent
+to your function. It is sent, via the <a class="reference external" href="#payload_prop">payload
+property</a> of this class, for example:</p>
+<p>and the output of your function must be:</p>
+<p>positions_single_lead, a cell array size ECG_header.nsig with the&nbsp;QRS
+sample locations found in each lead.</p>
+<p>position_multilead, a numeric vector with the QRS locations calculated
+using multilead rules.</p>
+</div>
+<div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>Create the ECGtask_QRS_detection object.</p>
+<p>and then you are ready to set the algorithms to use. In the following
+example you have several possible setups.</p>
+<p>Finally set the task to the wrapper object, and execute the task.</p>
+<p>You can check the result of this task, with either the <a class="reference external" href="QRScorrector.htm">detection
+corrector</a> or the <a class="reference external" href="plot_ecg_strip.htm">visualization
+functions</a>.</p>
+<p>Also check this <a class="reference external" href="examples.html#QRS_automatic_detection">example</a> for
+further information.</p>
+</div>
+<div class="section" id="more-about">
+<h1>More About<a class="headerlink" href="#more-about" title="Permalink to this headline">¶</a></h1>
+<p>Here are some external references about heartbeat detection:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://physionet.org/challenge/2014/">PhysioNet/Computing in Cardiology Challenge
+2014</a></li>
+<li><a class="reference external" href="http://www.physionet.org/">Physionet</a></li>
+</ul>
+</div>
+<div class="section" id="see-also">
+<h1>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal"><span class="pre">`ECGtask</span></code> &lt;ECGtask.html&gt;`__ |
+<code class="docutils literal"><span class="pre">`ECG</span> <span class="pre">delineation</span></code> &lt;ECGdelineation.htm&gt;`__ |
+<code class="docutils literal"><span class="pre">`examples</span></code> &lt;examples.html&gt;`__</p>
+</div>
+
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Mariano Llamedo Soria.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

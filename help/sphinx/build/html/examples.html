@@ -1,0 +1,418 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ECGkit &mdash; ECGkit 1.0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/>
+        <link rel="next" title="ECGkit" href="release-notes.html"/>
+        <link rel="prev" title="ECGkit" href="getting_started.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> ECGkit</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html#uninstallation">Uninstallation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#example-of-how-to-use-the-ecgkit">Example of how to use the ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#contents">Contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#function-prototype">Function prototype</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#argument-parsing">Argument parsing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#qrs-automatic-detection">QRS automatic detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#qrs-visual-inspection-and-correction">QRS visual inspection and correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#ppg-abp-pulse-detection">PPG/ABP pulse detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#ppg-abp-waves-visual-inspection-and-correction">PPG/ABP waves visual inspection and correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#ecg-automatic-delineation">ECG automatic delineation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#visual-inspection-of-the-detection-delineation">Visual inspection of the detection/delineation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#automatic-heartbeat-classification">Automatic Heartbeat classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#visual-inspection-of-the-signal">Visual inspection of the signal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#other-user-defined-tasks">Other user-defined tasks ...</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html#release-notes">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">ECGkit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html#contact">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functionlist.html">ECGkit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="functionlist.html#base-classes">Base classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functionlist.html#signal-processing">Signal processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functionlist.html#plotting-and-reporting">Plotting and reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functionlist.html#ecgkit-extension">ECGkit extension</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">ECGkit</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>ECGkit</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/examples.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <ul class="simple">
+<li>Contents</li>
+<li>Index</li>
+<li>Glossary</li>
+</ul>
+<div class="section" id="ecgkit">
+<h1>ECGkit<a class="headerlink" href="#ecgkit" title="Permalink to this headline">¶</a></h1>
+<p>A toolbox for cardiovascular signal processing</p>
+</div>
+<div class="section" id="example-of-how-to-use-the-ecgkit">
+<h1>Example of how to use the ECGkit<a class="headerlink" href="#example-of-how-to-use-the-ecgkit" title="Permalink to this headline">¶</a></h1>
+<p>This script exemplifies the use of the ECGkit in a multimodal
+cardiovascular recording which includes arterial blood pressure (ABP),
+plethysmographic (PPG) and electrocardiogram signals. The following
+tasks will be performed in this example:</p>
+<ul class="simple">
+<li>Heartbeat/QRS detection</li>
+<li>ABP/PPG pulse detection</li>
+<li>ECG wave delineation</li>
+<li>Heartbeat classification</li>
+<li>Report generation</li>
+</ul>
+<p>Each automatic step is followed by a manual verification step in order
+to verify the algorithm&#8217;s results. The script is prepared to run locally
+without arguments, as well as in a cluster environment by using
+&#8220;pid_str&#8221; argument. The pid_str argument is a char with format &#8216;N/M&#8217;,
+being N &lt;= M with default value &#8216;1/1&#8217;. You can partition a big job into
+M pieces in cluster architecture, by starting M processes with N ranging
+from 1 to M.</p>
+<p>You can watch a typical run of this script for small, local ECG
+recording on
+<a class="reference external" href="https://www.youtube.com/watch?v=8lJtkGhrqFw&amp;list=PLlD2eDv5CIe9sA2atmnb-DX48FIRG46z7">YouTube</a>.</p>
+<p><strong>Example</strong> of how to run this script</p>
+</div>
+<div class="section" id="contents">
+<h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference external" href="#Function_prototype">Function prototype</a></li>
+<li><a class="reference external" href="#Argument_parsing">Argument parsing</a></li>
+<li><a class="reference external" href="#QRS_automatic_detection">QRS automatic detection</a></li>
+<li><a class="reference external" href="#QRS_visual_inspection_and_correction">QRS visual inspection and
+correction</a></li>
+<li><a class="reference external" href="#PPG_ABP_pulse_detection">PPG/ABP pulse detection</a></li>
+<li><a class="reference external" href="#PPG_ABP_waves_visual_inspection_and_correction">PPG/ABP waves visual inspection and
+correction</a></li>
+<li><a class="reference external" href="#ECG_automatic_delineation">ECG automatic delineation</a></li>
+<li><a class="reference external" href="#Visual_inspection_of_the_detection_delineation">Visual inspection of the
+detection/delineation</a></li>
+<li><a class="reference external" href="#Automatic_Heartbeat_classification">Automatic Heartbeat
+classification</a></li>
+<li><a class="reference external" href="#Visual_inspection_of_the_signal">Visual inspection of the
+signal</a></li>
+<li><a href="#id1"><span class="problematic" id="id2">`Other user-defined tasks ... &lt;#Other_user-defined_tasks_&gt;`__</span></a></li>
+</ul>
+</div>
+<div class="section" id="function-prototype">
+<h1>Function prototype<a class="headerlink" href="#function-prototype" title="Permalink to this headline">¶</a></h1>
+<p><em>examples</em> accepts three <em>optional</em> arguments:</p>
+<ul class="simple">
+<li><strong>*pid_str*</strong> (optional) string identifier for this work instance in
+a cluster computing or multitask environment. The identifier follows
+the form &#8216;N/M&#8217;, being N a number which identifies this execution
+instance and M the total amount of instances. Default value &#8216;1/1&#8217;</li>
+<li><strong>*examples_path*</strong> (optional) string of the path with ECG
+recordings. Default value
+<code class="docutils literal"><span class="pre">['.'</span> <span class="pre">filesep</span> <span class="pre">'example_recordings'</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">filesep</span> <span class="pre">]</span></code>;</li>
+<li><strong>*user_str*</strong> (optional) string to identify this run or experiment.</li>
+</ul>
+</div>
+<div class="section" id="argument-parsing">
+<h1>Argument parsing<a class="headerlink" href="#argument-parsing" title="Permalink to this headline">¶</a></h1>
+<p>Simple and straight forward.</p>
+</div>
+<div class="section" id="qrs-automatic-detection">
+<h1>QRS automatic detection<a class="headerlink" href="#qrs-automatic-detection" title="Permalink to this headline">¶</a></h1>
+<p>In this example the first step is the location of each heartbeat, or QRS
+complexes detection. To achieve this, the kit includes the following
+algorithms:</p>
+<ul class="simple">
+<li>Wavedet</li>
+<li>Pan &amp; Tompkins</li>
+<li>gqrs</li>
+<li>sqrs</li>
+<li>wqrs</li>
+<li>ecgpuwave</li>
+</ul>
+<p>The way of performing QRS detection (or almost any other task in this
+ECGkit) is through an
+<a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGwrapper')">ECGwrapper</a>
+object. The objective of this object is to abstract or sepparate any
+algorithm from the particular details of the ECG signal. This object is
+able to invoque any kind of algorithm through the interface provided of
+other object, called
+<a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGwrapper')">ECGtask</a>
+obejcts.</p>
+<p>The <em>ECGtask</em> obejcts actually perform specific task on the ECG signal,
+in this case, the QRS complex detection. Each task have general
+properties such as <em>user_string</em>, <em>progress_handle</em> (see
+<a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:edit('ECGtask.m')">ECGtask</a>
+class for more details) and other specific for a certain task, such as
+<em>detectors</em>, <em>only_ECG_leads</em>, <em>wavedet_config</em>,
+<em>gqrs_config_filename</em> (see others in <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:edit('ECGtask_QRS_detection.m')">QRS
+detection</a>
+task source).</p>
+</div>
+<div class="section" id="qrs-visual-inspection-and-correction">
+<h1>QRS visual inspection and correction<a class="headerlink" href="#qrs-visual-inspection-and-correction" title="Permalink to this headline">¶</a></h1>
+<p>This part of the example uses a graphical user interface (GUI) to allow
+the user correcting mistakes that the previous automatic algorithm
+eventually makes.</p>
+<p>As can be seen in the following code, the first step is checking that
+the previous QRS detection task finished without problems. Then if no
+errors, the corrector will use as starting point the result of this same
+task, in case the user would like to edit a previously edited result, or
+if not available the result of the QRS detection task.</p>
+<p>Then the task invoked by the wrapper object is changed to <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:edit('ECGtask_QRS_corrector.m')">QRS corrector
+task</a>
+and the GUI is presented to the user.</p>
+<p><img alt="image4" src="_images/QRS_corrector.PNG" /></p>
+<p>In this example, the GUI have four plots to represent the RR interval
+series, the two in the top-left show the RR interval versus time at
+different time windows. The bigger in the top-right, shows a <em>Poincaré</em>
+plot, that is the current RR interval versus the following in the serie.
+The plot in the bottom shows the selected signal/s versus time. Then the
+user can interact with the plots according to the <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_QRS_corrector')">QRS corrector
+documentation</a></p>
+</div>
+<div class="section" id="ppg-abp-pulse-detection">
+<h1>PPG/ABP pulse detection<a class="headerlink" href="#ppg-abp-pulse-detection" title="Permalink to this headline">¶</a></h1>
+<p>In case the recording includes pulsatile signals, such as
+plethysmographic (PPG) or arterial blood pressure (ABP), this kit
+includes the <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_PPG_ABP_detector')">PPG/ABP automatic detector
+task</a>
+which allows the use of two algorithms to perform peak detection,
+<a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('PPG_pulses_detector')">WavePPG</a>
+and <a class="reference external" href="wabp-1.htm','-browser')">Physionet&#8217;s wabp</a>.</p>
+<p>other task can be performed on the same objects</p>
+</div>
+<div class="section" id="ppg-abp-waves-visual-inspection-and-correction">
+<h1>PPG/ABP waves visual inspection and correction<a class="headerlink" href="#ppg-abp-waves-visual-inspection-and-correction" title="Permalink to this headline">¶</a></h1>
+<p>The same manual verification made for automatic QRS detection algorithms
+can be performed with pulsatile signals. The <a class="reference external" href="../../../../../../jsD:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_PPG_ABP_corrector')">PPG/ABP corrector
+task</a>
+was designed to allow users the verification and correction of automatic
+detections through the same GUI.</p>
+<p><img alt="image5" src="_images/PPG-ABP_corrector.PNG" /></p>
+<p>The following code shows how to use this task. As you can note, the
+interface is almost the same used for the QRS correction task.</p>
+</div>
+<div class="section" id="ecg-automatic-delineation">
+<h1>ECG automatic delineation<a class="headerlink" href="#ecg-automatic-delineation" title="Permalink to this headline">¶</a></h1>
+<p>Once the QRS complexes were detected, each heartbeat can be segmented or
+delineated into P-QRS-T waves. To achieve this the kit includes an <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_ECG_delineation')">ECG
+delineation
+task</a>
+to interface with the
+<a class="reference external" href="articleDetails.jsp?arnumber=1275572','-browser')">wavedet</a> and
+others user-defined algorithms, as described in the <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_ECG_delineation')">task
+help</a>.
+The interface follows the same guidelines described before, as is shown
+in the following code.</p>
+<p>other task can be performed on the same objects</p>
+</div>
+<div class="section" id="visual-inspection-of-the-detection-delineation">
+<h1>Visual inspection of the detection/delineation<a class="headerlink" href="#visual-inspection-of-the-detection-delineation" title="Permalink to this headline">¶</a></h1>
+<p>The same manual verification made for all the previous automatic tasks
+is repeated for ECG delineation. The <a class="reference external" href="../../../../../../jsD:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_ECG_delineation_corrector')">ECG delineation corrector
+task</a>
+was designed to allow users the verification and correction of automatic
+delineation through the same GUI. The only difference with respect to
+the behaviour of the QRS or PPG/ABP correction GUI, is that addition of
+new events to the P-QRS-T series is not allowed, in order to keep the
+assosiation of a wave fiducial point to a heartbeat.</p>
+<p><img alt="image6" src="_images/ECG_delineator_corrector.png" /></p>
+</div>
+<div class="section" id="automatic-heartbeat-classification">
+<h1>Automatic Heartbeat classification<a class="headerlink" href="#automatic-heartbeat-classification" title="Permalink to this headline">¶</a></h1>
+<p>The last task described in this example is the classification of
+heartbeats according to the <a class="reference external" href="matlab:web('http://marketplace.aami.org/eseries/scriptcontent/docs/Preview%20Files/EC57_1212_preview.pdf','-browser')">EC-57 AAMI
+recommendation</a>.
+To achieve this task, the kit includes a <a class="reference external" href="../../../../../../jsD:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_heartbeat_classifier')">Heartbeat classification
+task</a>
+that interfaces with the <a class="reference external" href="','-browser')">Argentino-Aragonés heartbeat classifier
+(a2hbc)</a> project in order to classify heartbeats into
+the following classes:</p>
+<ul class="simple">
+<li><strong>N</strong> normal</li>
+<li><strong>S</strong> supraventricular</li>
+<li><strong>V</strong> ventricular</li>
+<li><strong>F</strong> fusion of normal and ventricular</li>
+</ul>
+<p>The <em>a2hbc</em> algorithm can opperate automatically or assisted by the
+user, for more details check the <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('a2hbc')">a2hbc
+documentation</a>.</p>
+</div>
+<div class="section" id="visual-inspection-of-the-signal">
+<h1>Visual inspection of the signal<a class="headerlink" href="#visual-inspection-of-the-signal" title="Permalink to this headline">¶</a></h1>
+<p>Finaly a report is generated with the results of the previous tasks,
+either in a pdf document or several images. The report generated can be
+customized with the interface described in the
+<a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('reportECG')">documentation</a>.
+The following are just three examples of a longer report:</p>
+<p><img alt="image7" src="_images/ex_ABP_PPG_Registro_01M_full_Pagina_01.png" /></p>
+<p>A snapshot of the center</p>
+<p><img alt="image8" src="_images/ex_ABP_PPG_Registro_01M_full_Pagina_05.png" /></p>
+<p>And finaly a snapshot of the last part of the recording.</p>
+<p><img alt="image9" src="_images/ex_ABP_PPG_Registro_01M_full_Pagina_10.png" /></p>
+<p>This is the code used to create a PDF report.</p>
+</div>
+<div class="section" id="other-user-defined-tasks">
+<h1>Other user-defined tasks ...<a class="headerlink" href="#other-user-defined-tasks" title="Permalink to this headline">¶</a></h1>
+<p>Maybe the most important and useful aspect of the kit, is that you can
+add your own algorithms. This can be done by following the interface
+documented through the several examples included above. The <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_QRS_detection')">QRS
+detection</a>
+and <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_ECG_delineation')">ECG
+delineation</a>
+tasks already include a way to interface your own algorithms through the
+<strong>user:function_name</strong> method. Check the above sections for more
+details.</p>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="release-notes.html" class="btn btn-neutral float-right" title="ECGkit">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="getting_started.html" class="btn btn-neutral" title="ECGkit"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Mariano Llamedo Soria.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
