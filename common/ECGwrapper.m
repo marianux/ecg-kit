@@ -1057,6 +1057,7 @@ classdef ECGwrapper < handle
                 if( obj.ECGtaskHandle.started )
                     if( obj.cant_pids == 1 || obj.this_pid == obj.cant_pids )
                         obj.Error = true;
+                        obj.ErrorReport = [obj.ErrorReport {sprintf('No payload generated for recording %s\n', obj.recording_name )}];
                         disp_string_framed(2, 'No payload generated');
                     else
                         disp_string_framed('*Blue', 'Work done!');
@@ -1173,8 +1174,11 @@ classdef ECGwrapper < handle
                     
                     fprintf(2, 'Some error happened in %s\n', obj.ECGtaskHandle.name );
                     
-                    for ii = 1:length(obj.ErrorReport)
-                        disp_string_framed(2, sprintf('Error %d', ii));
+                    cant_errors = length(obj.ErrorReport);
+                    for ii = 1:cant_errors
+                        if( cant_errors > 1)
+                            disp_string_framed(2, sprintf('Error %d', ii));
+                        end
                         fprintf(2, '\n%s\n', obj.ErrorReport{ii} );
                     end
                     

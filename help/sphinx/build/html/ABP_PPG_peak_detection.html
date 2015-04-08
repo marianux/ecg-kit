@@ -62,32 +62,22 @@
           
           
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html#uninstallation">Uninstallation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#example-of-how-to-use-the-ecgkit">Example of how to use the ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#contents">Contents</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#function-prototype">Function prototype</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#argument-parsing">Argument parsing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#qrs-automatic-detection">QRS automatic detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#qrs-visual-inspection-and-correction">QRS visual inspection and correction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#ppg-abp-pulse-detection">PPG/ABP pulse detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#ppg-abp-waves-visual-inspection-and-correction">PPG/ABP waves visual inspection and correction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#ecg-automatic-delineation">ECG automatic delineation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#visual-inspection-of-the-detection-delineation">Visual inspection of the detection/delineation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#automatic-heartbeat-classification">Automatic Heartbeat classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#visual-inspection-of-the-signal">Visual inspection of the signal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#other-user-defined-tasks">Other user-defined tasks ...</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html#release-notes">Release Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contact.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contact.html#contact">Contact</a></li>
-<li class="toctree-l1"><a class="reference internal" href="functionlist.html">ECGkit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="functionlist.html#base-classes">Base classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="functionlist.html#signal-processing">Signal processing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="functionlist.html#plotting-and-reporting">Plotting and reporting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="functionlist.html#ecgkit-extension">ECGkit extension</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">An example</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release notes</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Be in touch</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="functionlist.html">Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ECGwrapper.html">Base classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reportECG.html">Plotting and reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_formats.html">ECGkit extension</a></li>
 </ul>
 </li>
 </ul>
@@ -125,44 +115,35 @@
 </div>
           <div role="main" class="document">
             
-  <ul class="simple">
-<li>Contents</li>
-<li>Index</li>
-<li>Glossary</li>
-</ul>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-<div class="section" id="abp-ppg-peak-detection">
+  <div class="section" id="abp-ppg-peak-detection">
 <h1>ABP/PPG peak detection<a class="headerlink" href="#abp-ppg-peak-detection" title="Permalink to this headline">¶</a></h1>
 <p>This document describes how to perform automatic peak detection in
 pulsatile signals.</p>
-<p><a class="reference external" href="javascript:void(0);">expand all in page</a></p>
-</div>
+<p><a href="#id1"><span class="problematic" id="id2">`</span></a>expand all in page <a href="#id3"><span class="problematic" id="id4">`</span></a>__</p>
 <div class="section" id="description">
-<h1>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h1>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p>This task perform peak detection in pulsatile signals such as arterial
 blood pressure (ABP) or plethysmographic (PPG). The task uses two
 algorithms to achieve pulse detection, and, as in QRS detection task you
 can choose to use any of them.</p>
 </div>
 <div class="section" id="input-arguments">
-<h1>Input Arguments<a class="headerlink" href="#input-arguments" title="Permalink to this headline">¶</a></h1>
+<h2>Input Arguments<a class="headerlink" href="#input-arguments" title="Permalink to this headline">¶</a></h2>
 <p>The properties that the ECGtask_PPG_ABP_detector class accepts are
 described below. The usage of these properties is restricted to
 low-level programming, you can use this task through the ECGwrapper as
 is shown in the example below.</p>
-<div class="section" id="progress-handle-used-to-track-the-progress-within-your-function-javascript-void-0-default">
-<h2><code class="docutils literal"><span class="pre">`progress_handle</span></code> — used to track the progress within your function. &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">[]</span></code> (default)<a class="headerlink" href="#progress-handle-used-to-track-the-progress-within-your-function-javascript-void-0-default" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="progress-handle-used-to-track-the-progress-within-your-function-default">
+<h3><code class="docutils literal"><span class="pre">`progress_handle</span></code> — used to track the progress within your function. <cite>__``[]`</cite> (default)<a class="headerlink" href="#progress-handle-used-to-track-the-progress-within-your-function-default" title="Permalink to this headline">¶</a></h3>
 <p>progress_handle, is a handle to a <a class="reference external" href="progress_bar.htm">progress_bar</a>
 object, that can be used to track the progress within your function.</p>
 </div>
-<div class="section" id="tmp-path-the-path-to-store-temporary-data-javascript-void-0-tempdir-default">
-<h2><code class="docutils literal"><span class="pre">`tmp_path</span></code> — The path to store temporary data &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">'tempdir()'</span></code> (default)<a class="headerlink" href="#tmp-path-the-path-to-store-temporary-data-javascript-void-0-tempdir-default" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="tmp-path-the-path-to-store-temporary-data-tempdir-default">
+<h3><code class="docutils literal"><span class="pre">`tmp_path</span></code> — The path to store temporary data <cite>__`</cite>&#8216;tempdir()&#8217;`` (default)<a class="headerlink" href="#tmp-path-the-path-to-store-temporary-data-tempdir-default" title="Permalink to this headline">¶</a></h3>
 <p>Full path to a directory with write privileges.</p>
 </div>
-<div class="section" id="lead-config-select-which-signals-to-process-javascript-void-0-ppg-abp-only-default">
-<h2><code class="docutils literal"><span class="pre">`lead_config</span></code> — Select which signals to process &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">'PPG-ABP-only'</span></code> (default)<a class="headerlink" href="#lead-config-select-which-signals-to-process-javascript-void-0-ppg-abp-only-default" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="lead-config-select-which-signals-to-process-ppg-abp-only-default">
+<h3><code class="docutils literal"><span class="pre">`lead_config</span></code> — Select which signals to process <cite>__`</cite>&#8216;PPG-ABP-only&#8217;`` (default)<a class="headerlink" href="#lead-config-select-which-signals-to-process-ppg-abp-only-default" title="Permalink to this headline">¶</a></h3>
 <p>A cell string or char with any of the following names</p>
 <p>&#8216;all-leads&#8217;. Process all leads</p>
 <p>&#8216;PPG-ABP-only&#8217;. Detect pulsatile signals based on their ECG_header.desc
@@ -170,13 +151,13 @@ description variable.</p>
 <p>&#8216;User-defined-leads&#8217;. Tell the algorithm (with PPG_ABP_idx property)
 which signal indexes to process, from 1 to ECG_header.nsig</p>
 </div>
-<div class="section" id="ppg-abp-idx-the-indexes-corresponding-to-pulsatile-signals-javascript-void-0-default">
-<h2><code class="docutils literal"><span class="pre">`PPG_ABP_idx</span></code> — The indexes corresponding to pulsatile signals &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">[]</span></code> (default)<a class="headerlink" href="#ppg-abp-idx-the-indexes-corresponding-to-pulsatile-signals-javascript-void-0-default" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ppg-abp-idx-the-indexes-corresponding-to-pulsatile-signals-default">
+<h3><code class="docutils literal"><span class="pre">`PPG_ABP_idx</span></code> — The indexes corresponding to pulsatile signals <cite>__``[]`</cite> (default)<a class="headerlink" href="#ppg-abp-idx-the-indexes-corresponding-to-pulsatile-signals-default" title="Permalink to this headline">¶</a></h3>
 <p>A value from 1 to ECG_header.nsig indicating the column indexes (of the
 signal matrix of nsamp x nsig) where pulsatile signals are located.</p>
 </div>
-<div class="section" id="detectors-the-ppg-abp-detection-algorithms-to-use-javascript-void-0-all-detectors-default">
-<h2><code class="docutils literal"><span class="pre">`detectors</span></code> — The PPG/ABP detection algorithms to use &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">'all-detectors'</span></code> (default)<a class="headerlink" href="#detectors-the-ppg-abp-detection-algorithms-to-use-javascript-void-0-all-detectors-default" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="detectors-the-ppg-abp-detection-algorithms-to-use-all-detectors-default">
+<h3><code class="docutils literal"><span class="pre">`detectors</span></code> — The PPG/ABP detection algorithms to use <cite>__`</cite>&#8216;all-detectors&#8217;`` (default)<a class="headerlink" href="#detectors-the-ppg-abp-detection-algorithms-to-use-all-detectors-default" title="Permalink to this headline">¶</a></h3>
 <p>A cell string or char with any of the following names</p>
 <p>all-detectors</p>
 <p><a class="reference external" href="http://dx.doi.org/10.1109/JBHI.2013.2267096">wavePPG</a></p>
@@ -184,7 +165,7 @@ signal matrix of nsamp x nsig) where pulsatile signals are located.</p>
 </div>
 </div>
 <div class="section" id="examples">
-<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>Create the ECGtask_PPG_ABP_detector object.</p>
 <p>and then you are ready to set the algorithms to use. In the following
 example you have several possible setups.</p>
@@ -196,17 +177,18 @@ functions</a>.</p>
 further information.</p>
 </div>
 <div class="section" id="more-about">
-<h1>More About<a class="headerlink" href="#more-about" title="Permalink to this headline">¶</a></h1>
+<h2>More About<a class="headerlink" href="#more-about" title="Permalink to this headline">¶</a></h2>
 <p>Here are some external references about pulse detection:</p>
 <ul class="simple">
 <li><a class="reference external" href="http://physionet.org/challenge/2014/">Physionet Challenge 2014</a></li>
 </ul>
 </div>
 <div class="section" id="see-also">
-<h1>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h1>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal"><span class="pre">`ECGtask</span></code> &lt;ECGtask.html&gt;`__ | <code class="docutils literal"><span class="pre">QRS</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">detection</span></code> |
 <code class="docutils literal"><span class="pre">`ECG</span> <span class="pre">delineation</span></code> &lt;ECGdelineation.htm&gt;`__ |
 <code class="docutils literal"><span class="pre">`examples</span></code> &lt;examples.html&gt;`__</p>
+</div>
 </div>
 
 

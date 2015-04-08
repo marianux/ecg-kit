@@ -62,32 +62,22 @@
           
           
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html#uninstallation">Uninstallation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#example-of-how-to-use-the-ecgkit">Example of how to use the ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#contents">Contents</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#function-prototype">Function prototype</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#argument-parsing">Argument parsing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#qrs-automatic-detection">QRS automatic detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#qrs-visual-inspection-and-correction">QRS visual inspection and correction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#ppg-abp-pulse-detection">PPG/ABP pulse detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#ppg-abp-waves-visual-inspection-and-correction">PPG/ABP waves visual inspection and correction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#ecg-automatic-delineation">ECG automatic delineation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#visual-inspection-of-the-detection-delineation">Visual inspection of the detection/delineation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#automatic-heartbeat-classification">Automatic Heartbeat classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#visual-inspection-of-the-signal">Visual inspection of the signal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#other-user-defined-tasks">Other user-defined tasks ...</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html#release-notes">Release Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contact.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contact.html#contact">Contact</a></li>
-<li class="toctree-l1"><a class="reference internal" href="functionlist.html">ECGkit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="functionlist.html#base-classes">Base classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="functionlist.html#signal-processing">Signal processing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="functionlist.html#plotting-and-reporting">Plotting and reporting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="functionlist.html#ecgkit-extension">ECGkit extension</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">An example</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release notes</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Be in touch</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="functionlist.html">Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ECGwrapper.html">Base classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reportECG.html">Plotting and reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_formats.html">ECGkit extension</a></li>
 </ul>
 </li>
 </ul>
@@ -125,19 +115,11 @@
 </div>
           <div role="main" class="document">
             
-  <ul class="simple">
-<li>Contents</li>
-<li>Index</li>
-<li>Glossary</li>
-</ul>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-<div class="section" id="ecg-delineation">
+  <div class="section" id="ecg-delineation">
 <h1>ECG delineation<a class="headerlink" href="#ecg-delineation" title="Permalink to this headline">¶</a></h1>
 <p>This document describes how to perform automatic delineation or wave
 segmentation on ECG signals.</p>
-<p><a class="reference external" href="javascript:void(0);">expand all in page</a></p>
+<p><a href="#id1"><span class="problematic" id="id2">`</span></a>expand all in page <a href="#id3"><span class="problematic" id="id4">`</span></a>__</p>
 </div>
 <div class="section" id="description">
 <h1>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h1>
@@ -147,39 +129,37 @@ wavedet algorithm.</p>
 <div class="section" id="input-arguments">
 <h1>Input Arguments<a class="headerlink" href="#input-arguments" title="Permalink to this headline">¶</a></h1>
 <p>The properties that this task uses are the following:</p>
-<div class="section" id="progress-handle-used-to-track-the-progress-within-your-function-javascript-void-0-default">
-<h2><code class="docutils literal"><span class="pre">`progress_handle</span></code> — used to track the progress within your function. &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">[]</span></code> (default)<a class="headerlink" href="#progress-handle-used-to-track-the-progress-within-your-function-javascript-void-0-default" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="progress-handle-used-to-track-the-progress-within-your-function-default">
+<h2><code class="docutils literal"><span class="pre">`progress_handle</span></code> — used to track the progress within your function. <cite>__``[]`</cite> (default)<a class="headerlink" href="#progress-handle-used-to-track-the-progress-within-your-function-default" title="Permalink to this headline">¶</a></h2>
 <p>progress_handle, is a handle to a <a class="reference external" href="progress_bar.htm">progress_bar</a>
 object, that can be used to track the progress within your function.</p>
 </div>
-<div class="section" id="tmp-path-the-path-to-store-temporary-data-javascript-void-0-tempdir-default">
-<h2><code class="docutils literal"><span class="pre">`tmp_path</span></code> — The path to store temporary data &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">'tempdir()'</span></code> (default)<a class="headerlink" href="#tmp-path-the-path-to-store-temporary-data-javascript-void-0-tempdir-default" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="tmp-path-the-path-to-store-temporary-data-tempdir-default">
+<h2><code class="docutils literal"><span class="pre">`tmp_path</span></code> — The path to store temporary data <cite>__`</cite>&#8216;tempdir()&#8217;`` (default)<a class="headerlink" href="#tmp-path-the-path-to-store-temporary-data-tempdir-default" title="Permalink to this headline">¶</a></h2>
 <p>Full path to a directory with write privileges.</p>
 </div>
-<div class="section" id="delineators-the-ecg-delineation-algorithms-to-use-javascript-void-0-all-delineators-default">
-<h2><code class="docutils literal"><span class="pre">`delineators</span></code> — The ECG delineation algorithms to use &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">'all-delineators'</span></code> (default)<a class="headerlink" href="#delineators-the-ecg-delineation-algorithms-to-use-javascript-void-0-all-delineators-default" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="delineators-the-ecg-delineation-algorithms-to-use-all-delineators-default">
+<h2><code class="docutils literal"><span class="pre">`delineators</span></code> — The ECG delineation algorithms to use <cite>__`</cite>&#8216;all-delineators&#8217;`` (default)<a class="headerlink" href="#delineators-the-ecg-delineation-algorithms-to-use-all-delineators-default" title="Permalink to this headline">¶</a></h2>
 <p>A cell string or char with any of the following names</p>
 <p>all-delineators</p>
 <p><a class="reference external" href="http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf">wavedet</a></p>
 </div>
-<div class="section" id="only-ecg-leads-process-only-ecg-signals-javascript-void-0-true-default">
-<h2><code class="docutils literal"><span class="pre">`only_ECG_leads</span></code> — Process only ECG signals &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">true</span></code> (default)<a class="headerlink" href="#only-ecg-leads-process-only-ecg-signals-javascript-void-0-true-default" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="only-ecg-leads-process-only-ecg-signals-true-default">
+<h2><code class="docutils literal"><span class="pre">`only_ECG_leads</span></code> — Process only ECG signals <cite>__``true`</cite> (default)<a class="headerlink" href="#only-ecg-leads-process-only-ecg-signals-true-default" title="Permalink to this headline">¶</a></h2>
 <p>Boolean value. Find out which signals are ECG based on their header
 description.</p>
 </div>
-<div class="section" id="wavedet-config-a-structure-for-customizing-wavedet-algorithm-javascript-void-0-default">
-<h2><code class="docutils literal"><span class="pre">`wavedet_config</span></code> — A structure for customizing wavedet algorithm. &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">[]</span></code> (default)<a class="headerlink" href="#wavedet-config-a-structure-for-customizing-wavedet-algorithm-javascript-void-0-default" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="wavedet-config-a-structure-for-customizing-wavedet-algorithm-default">
+<h2><code class="docutils literal"><span class="pre">`wavedet_config</span></code> — A structure for customizing wavedet algorithm. <cite>__``[]`</cite> (default)<a class="headerlink" href="#wavedet-config-a-structure-for-customizing-wavedet-algorithm-default" title="Permalink to this headline">¶</a></h2>
 <p>Undocumented yet, use only if you know what you are doing.</p>
 </div>
-<div class="section" id="payload-an-arbitrary-format-variable-javascript-void-0-default">
-<h2><code class="docutils literal"><span class="pre">`payload</span></code> — An arbitrary format variable. &lt;<a class="reference external" href="javascript:void(0);">javascript:void(0);</a>&gt;`__<code class="docutils literal"><span class="pre">[]</span></code> (default)<a class="headerlink" href="#payload-an-arbitrary-format-variable-javascript-void-0-default" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="payload-an-arbitrary-format-variable-default">
+<h2><code class="docutils literal"><span class="pre">`payload</span></code> — An arbitrary format variable. <cite>__``[]`</cite> (default)<a class="headerlink" href="#payload-an-arbitrary-format-variable-default" title="Permalink to this headline">¶</a></h2>
 <p>This variable can be useful for passing data to your own function
 (described <a class="reference external" href="#Adding_a_custom_detection_algorithm">below</a>) or to
 provide delineation algorithms visually audited QRS detections.</p>
-</div>
-</div>
 <div class="section" id="adding-a-custom-delineation-algorithm">
-<h1>Adding a custom delineation algorithm<a class="headerlink" href="#adding-a-custom-delineation-algorithm" title="Permalink to this headline">¶</a></h1>
+<h3>Adding a custom delineation algorithm<a class="headerlink" href="#adding-a-custom-delineation-algorithm" title="Permalink to this headline">¶</a></h3>
 <p>Adding your own delineator to the kit is very simple. Ensure that your
 function implements this interface:</p>
 <p>where the arguments are:</p>
@@ -198,6 +178,8 @@ property</a> of this class, for example:</p>
 sample locations found in each lead.</p>
 <p>position_multilead, a numeric vector with the QRS locations calculated
 using multilead rules.</p>
+</div>
+</div>
 </div>
 <div class="section" id="examples">
 <h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>

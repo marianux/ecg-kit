@@ -10,18 +10,18 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :includehidden:
+   :titlesonly:
 
-   getting_started
-   examples
-   release-notes
-   contact
-   functionlist
-	
+   Getting started <getting_started>
+   An example <examples>
+   Release notes <release-notes>
+   Be in touch <contact>
+   Functions <functionlist>
 
-Indices and tables
-==================
+Indices 
+-------
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
 

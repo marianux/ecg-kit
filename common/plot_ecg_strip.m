@@ -963,13 +963,13 @@ bPaperModeOn = false;
 major_tick_values_time = round([0.5 1 2 5 10 30 60]*heasig.freq); % seconds
 major_tick_values_time = unique([major_tick_values_time major_tick_values_time*60 ]);
 major_tick_values_voltage = [ [1 2 5 ] [1 2 5 ] * 10^1 [1 2 5 ] * 10^1 [1 2 5 ] * 10^2 [1 2 5] * 10^3 [1 2 5] * 10^4 [1 2 5] * 10^5 [1 2 5] * 10^6  ]; % seconds
-paperModeHdl = [];
-topLevelHdl = [];
+paperModeHdl = {};
+topLevelHdl = {};
 ECGd_hdl = [];
 
 bPlotScales = false;
 PrevStateWindowButtonMotionFcn = [];
-UserChnageViewHdls = [];
+UserChnageViewHdls = {};
 %store user data.
 start_sample = aux_idx(1);
 end_sample = aux_idx(end);
@@ -981,14 +981,14 @@ prev_Yrange = plotYmax - plotYmin;
 original_plot_lims = [ plotXmin plotXmax plotYmin plotYmax ];
 plotYtimeAxis = [];
 plotYindexesAxis = [];
-PwaveHdls = [];
-TwaveHdls = [];
-QRScplxHdls = [];
+PwaveHdls = {};
+TwaveHdls = {};
+QRScplxHdls = {};
 PwaveGlblHdls = cell(heasig.nsig,1);
 TwaveGlblHdls = cell(heasig.nsig,1);
 QRScplxGlblHdls = cell(heasig.nsig,1);
-QRSfpHdls = [];
-QRSfpFarHdls = [];
+QRSfpHdls = {};
+QRSfpFarHdls = {};
 titleExtent = nan;
 timeAxisTop = nan;
 startSignalX = nan;
@@ -1510,7 +1510,8 @@ end
             else
                 str_aux = 'off';
             end
-            set( cell2mat(QRSfpFarHdls), 'Visible', str_aux );
+            cellfun(@(a)(set(a, 'Visible', str_aux )), QRSfpFarHdls);
+            
         end
 
         % for closer zoom views
@@ -1566,7 +1567,7 @@ end
             else
                 str_aux = 'off';
             end
-            set(PwaveHdls, 'Visible', str_aux );
+            cellfun( @(a)(set(a, 'Visible', str_aux )), PwaveHdls);
         end
 
         % QRS complex
@@ -1586,7 +1587,9 @@ end
             else
                 str_aux = 'off';
             end
-            set( cell2mat(QRSfpFarHdls), 'Visible', str_aux );
+            
+            cellfun(@(a)(set(a, 'Visible', str_aux )), QRSfpFarHdls);
+            
         end
 
         bAux = eDetailLevel ~= kNoDetail && ( ( eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) && plotXrange < mediumDetailSampSize);
@@ -1596,7 +1599,7 @@ end
                 QRSfpHdls = colvec(cellfun( @(a,b,c)( plot(axes_hdl, repmat(rowvec(a(b(c))), 2,1), [ repmat(plotYmin + (0.06 * plotYrange), 1,length(c)); repmat(titleYposition - (0.1 * plotYrange), 1,length(c)) ] ) ), qrs_ploted, qrs2plot, aux_seq , 'UniformOutput', false));
 %                 aux_val = cellfun( @(a)(set_rand_linespec(a(1), '^', ':', [], 5 )), QRSfpHdls, 'UniformOutput', false);
                 cellfun( @(a,b)(set_a_linespec(a, b)), QRSfpHdls, cLinespecs(1:length(QRSfpHdls)) );
-                set(cell2mat(QRSfpHdls), 'LineWidth', 0.25)
+                cellfun( @(a)(set(a, 'LineWidth', 0.25)), QRSfpHdls);
                 hb_classifier_idx = find(strcmpi(qrs_ploted_names, 'hb_classifier'));
                 if( ~isempty(hb_classifier_idx) )
                     
@@ -1613,7 +1616,7 @@ end
                                     'Color', 1-cBeatLabelsColorCode{hb_labels_idx(b)}, ... 
                                     'BackgroundColor', cBeatLabelsColorCode{hb_labels_idx(b)}, ... 
                                     'EdgeColor', cBeatLabelsColorCode{hb_labels_idx(b)} ) ...
-                                ), qrs2plot_classifier(aux_seq_classifier) ) ];
+                                ), qrs2plot_classifier(aux_seq_classifier), 'UniformOutput', false ) ];
                 end
                 
             end
@@ -1623,7 +1626,7 @@ end
             else
                 str_aux = 'off';
             end
-            set(cell2mat(QRSfpHdls), 'Visible', str_aux );
+            cellfun(@(a)(set(a, 'Visible', str_aux )), QRSfpHdls);
         end
 
         bAux = eDetailLevel ~= kNoDetail && ( ( eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) && plotXrange <= closeDetailSampSize );
@@ -1640,7 +1643,8 @@ end
             else
                 str_aux = 'off';
             end
-            set(QRScplxHdls, 'Visible', str_aux );
+            cellfun(@(a)(set(a, 'Visible', str_aux )), QRScplxHdls);
+            
         end
 
         % T wave
@@ -1658,7 +1662,8 @@ end
             else
                 str_aux = 'off';
             end
-            set(TwaveHdls, 'Visible', str_aux );
+            cellfun(@(a)(set(a, 'Visible', str_aux )), TwaveHdls);
+            
         end    
 
     end
@@ -1764,7 +1769,8 @@ end
                 else
                     str_aux = 'off';
                 end
-                set(PwaveGlblHdls{jj}, 'Visible', str_aux );
+                cellfun(@(a)(set(a, 'Visible', str_aux )), PwaveGlblHdls{jj});
+                
             end
             
             % QRS complex
@@ -1780,7 +1786,8 @@ end
                 else
                     str_aux = 'off';
                 end
-                set(QRScplxGlblHdls{jj}, 'Visible', str_aux );
+                cellfun(@(a)(set(a, 'Visible', str_aux )), QRScplxGlblHdls{jj});
+                
             end
 
             % T wave
@@ -1796,7 +1803,8 @@ end
                 else
                     str_aux = 'off';
                 end
-                set(TwaveGlblHdls{jj}, 'Visible', str_aux );
+                cellfun(@(a)(set(a, 'Visible', str_aux )), TwaveGlblHdls{jj});
+                
             end    
         end    
     end
@@ -2500,10 +2508,10 @@ end
 %==========================================================================
     function PaperModeOff()
         bPaperModeOn = false;
-        bAux = ishandle(paperModeHdl);
+        bAux = cellfun(@(a)(ishandle(a)), paperModeHdl );
         if( any(bAux) )
-            delete(paperModeHdl(bAux));
-            paperModeHdl = [];
+            cellfun(@(a)(delete(a)), paperModeHdl(bAux) );
+            paperModeHdl = {};
         end
         if( ishandle(ECGd_hdl) )
             delete(ECGd_hdl);
@@ -2573,37 +2581,37 @@ end
         % background
         % left
         paperModeHdl = [paperModeHdl; ...
-            patch('Faces', [1 2 3 4], ... 
+            {patch('Faces', [1 2 3 4], ... 
             'Vertices', [ [plotXmin; plotXmin; left_frame; left_frame ] [plotYmin; plotYmax; plotYmax; plotYmin ] ], ... 
-            'FaceColor', [1 1 1], 'EdgeColor', [1 1 1] ) ];
+            'FaceColor', [1 1 1], 'EdgeColor', [1 1 1] )} ];
         
         % right
         paperModeHdl = [paperModeHdl; ...
-            patch('Faces', [1 2 3 4], ... 
+            {patch('Faces', [1 2 3 4], ... 
             'Vertices', [ [right_frame; right_frame; plotXmax; plotXmax ] [plotYmin; plotYmax; plotYmax; plotYmin ] ], ... 
-            'FaceColor', [1 1 1], 'EdgeColor', [1 1 1] ) ];
+            'FaceColor', [1 1 1], 'EdgeColor', [1 1 1] )} ];
         
         % top
         paperModeHdl = [paperModeHdl; ...
-            patch('Faces', [1 2 3 4], ... 
+            {patch('Faces', [1 2 3 4], ... 
             'Vertices', [ [plotXmin; plotXmax; plotXmax; plotXmin ] [plotYmax; plotYmax; top_frame; top_frame ] ], ... 
-            'FaceColor', [1 1 1], 'EdgeColor', [1 1 1] ) ];
+            'FaceColor', [1 1 1], 'EdgeColor', [1 1 1] )} ];
         
         % bottom
         paperModeHdl = [paperModeHdl; ...
-            patch('Faces', [1 2 3 4], ... 
+            {patch('Faces', [1 2 3 4], ... 
             'Vertices', [ [plotXmin; plotXmax; plotXmax; plotXmin ] [bottom_frame; bottom_frame; plotYmin; plotYmin ] ], ... 
-            'FaceColor', [1 1 1], 'EdgeColor', [1 1 1] ) ];
+            'FaceColor', [1 1 1], 'EdgeColor', [1 1 1] )} ];
         
         % grid
         % time
         aux_grid_idx = length(paperModeHdl) + 1;
-        paperModeHdl = [paperModeHdl; plot(axes_hdl, repmat(major_tick_x,2,1), repmat([bottom_frame; top_frame],1,length(major_tick_x)), '-', 'Color', [1 0.6 0.6], 'LineWidth', 0.5 )];
-        paperModeHdl = [paperModeHdl; plot(axes_hdl, repmat(minor_tick_x,2,1), repmat([bottom_frame; top_frame],1,length(minor_tick_x)), ':', 'Color', [1 0.6 0.6], 'LineWidth', 0.3 )];
+        paperModeHdl = [paperModeHdl; colvec(arrayfun(@(a,b)(plot(axes_hdl, a, b, '-', 'Color', [1 0.6 0.6], 'LineWidth', 0.5 )), repmat(major_tick_x,2,1), repmat([bottom_frame; top_frame],1,length(major_tick_x)), 'UniformOutput', false)) ];
+        paperModeHdl = [paperModeHdl; colvec(arrayfun(@(a,b)(plot(axes_hdl, a, b, ':', 'Color', [1 0.6 0.6], 'LineWidth', 0.3 )), repmat(minor_tick_x,2,1), repmat([bottom_frame; top_frame],1,length(minor_tick_x)), 'UniformOutput', false))];
         
         %voltage
-        paperModeHdl = [paperModeHdl; plot(axes_hdl, repmat([left_frame; right_frame],1,length(major_tick_voltage)), repmat(major_tick_voltage,2,1), 'Color', [1 0.6 0.6], 'LineWidth', 0.5 )];
-        paperModeHdl = [paperModeHdl; plot(axes_hdl, repmat([left_frame; right_frame],1,length(minor_tick_voltage)), repmat(minor_tick_voltage,2,1), ':', 'Color', [1 0.6 0.6], 'LineWidth', 0.3 )];
+        paperModeHdl = [paperModeHdl; colvec(arrayfun(@(a,b)(plot(axes_hdl, a, b, 'Color', [1 0.6 0.6], 'LineWidth', 0.5 )), repmat([left_frame; right_frame],1,length(major_tick_voltage)), repmat(major_tick_voltage,2,1), 'UniformOutput', false)) ];
+        paperModeHdl = [paperModeHdl; colvec(arrayfun(@(a,b)(plot(axes_hdl, a, b, ':', 'Color', [1 0.6 0.6], 'LineWidth', 0.3 )), repmat([left_frame; right_frame],1,length(minor_tick_voltage)), repmat(minor_tick_voltage,2,1), 'UniformOutput', false)) ];
         
         aux_grid_idx = aux_grid_idx:length(paperModeHdl);
 
@@ -2621,8 +2629,8 @@ end
             Vscale_y = mean(major_tick_voltage([2,3]));
             Vscale_x = right_frame - 2*xTextOffset;
             Vscale_arrow_x = right_frame - 1*xTextOffset;
-            paperModeHdl = [paperModeHdl; text( Vscale_x, Vscale_y , sprintf([ '%d ' voltage_major_tick_preffix 'V' ], voltage_major_tick), 'FontSize', 8, 'HorizontalAlignment', 'center', 'Rotation', 90, 'BackGroundColor', [1 1 1], 'EdgeColor', [1 1 1] )];
-            paperModeHdl = [paperModeHdl; arrow( [Vscale_arrow_x; major_tick_voltage(2)], [Vscale_arrow_x; major_tick_voltage(3)], 2, 1, [0 0 0], axes_hdl )];
+            paperModeHdl = [paperModeHdl; {text( Vscale_x, Vscale_y , sprintf([ '%d ' voltage_major_tick_preffix 'V' ], voltage_major_tick), 'FontSize', 8, 'HorizontalAlignment', 'center', 'Rotation', 90, 'BackGroundColor', [1 1 1], 'EdgeColor', [1 1 1] )}];
+            paperModeHdl = [paperModeHdl; {arrow( [Vscale_arrow_x; major_tick_voltage(2)], [Vscale_arrow_x; major_tick_voltage(3)], 2, 1, [0 0 0], axes_hdl )}];
         end
         
         % restore error status
@@ -2643,21 +2651,20 @@ end
         
         paperModeHdl = [ ... 
                             paperModeHdl; ...
-                            colvec(arrayfun( @(a)(text( a, bottom_frame + yTextOffset, Seconds2HMS( (a + base_time )/heasig.freq, precision ) , 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', [1 1 1])), major_tick_x)) ...
+                            colvec(arrayfun( @(a)(text( a, bottom_frame + yTextOffset, Seconds2HMS( (a + base_time )/heasig.freq, precision ) , 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', [1 1 1])), major_tick_x, 'UniformOutput', false)) ...
                             ];
         
         % frame
         aux_frame_idx = length(paperModeHdl) + 1;
         
-        paperModeHdl = [paperModeHdl; plot(axes_hdl, [left_frame left_frame right_frame right_frame left_frame ], [bottom_frame top_frame top_frame bottom_frame bottom_frame], 'Color', [1 0.6 0.6], 'LineWidth', 2.5 )];
+        paperModeHdl = [paperModeHdl; {plot(axes_hdl, [left_frame left_frame right_frame right_frame left_frame ], [bottom_frame top_frame top_frame bottom_frame bottom_frame], 'Color', [1 0.6 0.6], 'LineWidth', 2.5 )}];
         
         aux_frame_idx = aux_frame_idx:length(paperModeHdl);
         
         hold(axes_hdl, 'off');
         
-        uistack(paperModeHdl(aux_grid_idx),'bottom');
-        uistack([paperModeHdl(aux_frame_idx); topLevelHdl] ,'top');
-
+        cellfun(@(a)(uistack(a,'bottom')), paperModeHdl(aux_grid_idx));
+        cellfun(@(a)(uistack(a,'top')), [paperModeHdl(aux_frame_idx); topLevelHdl]);
         
     end
 %--------------------------------------------------------------------------
@@ -4033,7 +4040,7 @@ end
 
     function this_hdl = PlotWaveMarks( this_annotation, field_names, lead, vertTextOffset, this_color)
 
-        this_hdl = [];
+        this_hdl = {};
         
         if( isfield(this_annotation, field_names{1} ) )
             aux_on = colvec(this_annotation.(field_names{1}));
@@ -4061,18 +4068,18 @@ end
             % wave start
             bOn = ~isnan(aux_on) & aux_on >= start_sample & aux_on <= end_sample;
             aux_on_idx = find(bOn);
-            this_hdl = [ this_hdl; plot(axes_hdl, repmat(rowvec(aux_on(aux_on_idx)), 2, 1 ), bsxfun( @plus, repmat([-vertTextOffset; vertTextOffset], 1, length(aux_on_idx)), rowvec( (ECG(aux_on(aux_on_idx) - start_sample + 1, lead) * gains(lead)) - offsets(lead) ) ), 'Color' , this_color, 'LineStyle', ':', 'Marker', '<' , 'MarkerSize', 2, 'LineWidth', 0.25)];
+            this_hdl = [ this_hdl; colvec(arrayfun(@(a,b)(plot(axes_hdl, a, b, 'Color' , this_color, 'LineStyle', ':', 'Marker', '<' , 'MarkerSize', 2, 'LineWidth', 0.25) ), repmat(rowvec(aux_on(aux_on_idx)), 2, 1 ), bsxfun( @plus, repmat([-vertTextOffset; vertTextOffset], 1, length(aux_on_idx)), rowvec( (ECG(aux_on(aux_on_idx) - start_sample + 1, lead) * gains(lead)) - offsets(lead) ) ), 'UniformOutput', false ) ),  ];
 
             % wave end
             bOff = ~isnan(aux_off) & aux_off >= start_sample & aux_off <= end_sample;
             aux_off_idx = find(bOff);
-            this_hdl = [ this_hdl; plot(axes_hdl, repmat(rowvec(aux_off(aux_off_idx)), 2, 1 ), bsxfun( @plus, repmat([-vertTextOffset; vertTextOffset], 1, length(aux_off_idx)), rowvec((ECG(aux_off(aux_off_idx) - start_sample + 1, lead) * gains(lead)) - offsets(lead)  ) ), 'Color' , this_color, 'LineStyle', ':', 'Marker', '>', 'MarkerSize', 2, 'LineWidth', 0.25 )];
+            this_hdl = [ this_hdl; colvec(arrayfun(@(a,b)(plot(axes_hdl, a, b, 'Color' , this_color, 'LineStyle', ':', 'Marker', '>', 'MarkerSize', 2, 'LineWidth', 0.25 )), repmat(rowvec(aux_off(aux_off_idx)), 2, 1 ), bsxfun( @plus, repmat([-vertTextOffset; vertTextOffset], 1, length(aux_off_idx)), rowvec((ECG(aux_off(aux_off_idx) - start_sample + 1, lead) * gains(lead)) - offsets(lead)  ) ), 'UniformOutput', false)) ];
 
             % wave peak
             bPeak = ~isnan(aux_peak) & aux_peak >= start_sample & aux_peak <= end_sample;
             aux_peak_idx = find(bPeak);
-            this_hdl = [ this_hdl; plot(axes_hdl, repmat(rowvec(aux_peak(aux_peak_idx)), 2, 1 ), bsxfun( @plus, repmat([-vertTextOffset; vertTextOffset]*1.3, 1, length(aux_peak_idx)), rowvec( (ECG(aux_peak(aux_peak_idx) - start_sample + 1, lead) * gains(lead)) - offsets(lead) ) ), 'Color' , this_color, 'LineStyle', ':', 'Marker', '^', 'MarkerSize', 2, 'LineWidth', 0.25 )];
-            this_hdl = [ this_hdl; arrayfun( @(a)(text(a + 0.5*xTextOffset, (ECG(a - start_sample + 1, lead) * gains(lead)) - offsets(lead) + sign(ECG(a - start_sample + 1, lead)) * yTextOffset, field_names{2}, 'FontSize', 8, 'Color', this_color ) ), aux_peak(aux_peak_idx) ) ];
+            this_hdl = [ this_hdl; colvec(arrayfun(@(a,b)(plot(axes_hdl, a, b, 'Color' , this_color, 'LineStyle', ':', 'Marker', '^', 'MarkerSize', 2, 'LineWidth', 0.25 )), repmat(rowvec(aux_peak(aux_peak_idx)), 2, 1 ), bsxfun( @plus, repmat([-vertTextOffset; vertTextOffset]*1.3, 1, length(aux_peak_idx)), rowvec( (ECG(aux_peak(aux_peak_idx) - start_sample + 1, lead) * gains(lead)) - offsets(lead) ) ), 'UniformOutput', false)) ];
+            this_hdl = [ this_hdl; arrayfun( @(a)(text(a + 0.5*xTextOffset, (ECG(a - start_sample + 1, lead) * gains(lead)) - offsets(lead) + sign(ECG(a - start_sample + 1, lead)) * yTextOffset, field_names{2}, 'FontSize', 8, 'Color', this_color ) ), aux_peak(aux_peak_idx), 'UniformOutput', false ) ];
 
             % wave conection between start-end
             aux_complete_idx = find(bOn & bOff);
@@ -4089,7 +4096,7 @@ end
             % wave peak
             bPeak = ~isnan(aux_peak) & aux_peak >= start_sample & aux_peak <= end_sample;
             aux_peak_idx = find(bPeak);
-            this_hdl = [ this_hdl; plot(axes_hdl, repmat(rowvec(aux_peak(aux_peak_idx)), 2, 1 ), bsxfun( @plus, repmat([-vertTextOffset; vertTextOffset]*1.3, 1, length(aux_peak_idx)), rowvec( (ECG(aux_peak(aux_peak_idx) - start_sample + 1, lead) * gains(lead)) - offsets(lead) ) ), 'Color' , this_color, 'LineStyle', ':', 'Marker', '^', 'MarkerSize', 2, 'LineWidth', 0.25 )];
+            this_hdl = [ this_hdl; colvec(arrayfun(@(a,b)(plot(axes_hdl, a, b, 'Color' , this_color, 'LineStyle', ':', 'Marker', '^', 'MarkerSize', 2, 'LineWidth', 0.25 )), repmat(rowvec(aux_peak(aux_peak_idx)), 2, 1 ), bsxfun( @plus, repmat([-vertTextOffset; vertTextOffset]*1.3, 1, length(aux_peak_idx)), rowvec( (ECG(aux_peak(aux_peak_idx) - start_sample + 1, lead) * gains(lead)) - offsets(lead) ) ), 'UniformOutput', false)) ];
 %             this_hdl = [ this_hdl; arrayfun( @(a)(text(a + 0.5*xTextOffset, (ECG(a - start_sample + 1, lead) * gains(lead)) - offsets(lead) + sign(ECG(a - start_sample + 1, lead)) * yTextOffset, field_names{2}, 'FontSize', 8, 'Color', this_color ) ), aux_peak(aux_peak_idx) ) ];
 
             % wave conection between start-end
@@ -4120,7 +4127,7 @@ end
 
                 this_edge_color = repmat({0.8*this_color}, length(aux_complete_idxx), 1 );
 
-                this_hdl = [ this_hdl; cellfun( @(a,b,c,d)( patch( [a(1) a(1) a(end) a(end) ], ( [ c b b c ] * gains(lead) )- offsets(lead), this_color, 'EdgeColor', d)), aux_complete_idxx, max_vals, min_vals, this_edge_color) ];
+                this_hdl = [ this_hdl; cellfun( @(a,b,c,d)( patch( [a(1) a(1) a(end) a(end) ], ( [ c b b c ] * gains(lead) )- offsets(lead), this_color, 'EdgeColor', d)), aux_complete_idxx, max_vals, min_vals, this_edge_color, 'UniformOutput', false) ];
             
             end
             

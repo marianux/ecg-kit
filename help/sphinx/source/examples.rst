@@ -1,24 +1,20 @@
- 
 
-+--------------------------------------+--------------------------------------+
-| |image2|                             |
-| |image3|                             |
-| `Show <javascript:onShowHideClick()> |
-| `__\ `Hide <javascript:onShowHideCli |
-| ck()>`__                             |
-+--------------------------------------+--------------------------------------+
+Examples
+========
 
--  Contents
--  Index
--  Glossary
+.. toctree::
+   :hidden:
+   
+   QRS automatic detection <examples:QRS_automatic_detection>
+   PPG/ABP pulse detection <examples:PPG_ABP_pulse_detection>
+   ECG delineation <ECG_automatic_delineation>
+   Heartbeat classification <Automatic_Heartbeat_classification>
+   Signal visualization <Visual_inspection_of_the_signal>
+   User-defined tasks <Other_user-defined_tasks>
 
-ECGkit
-======
-
-A toolbox for cardiovascular signal processing
-
+   
 Example of how to use the ECGkit
-================================
+--------------------------------
 
 This script exemplifies the use of the ECGkit in a multimodal
 cardiovascular recording which includes arterial blood pressure (ABP),
@@ -43,38 +39,42 @@ You can watch a typical run of this script for small, local ECG
 recording on
 `YouTube <https://www.youtube.com/watch?v=8lJtkGhrqFw&list=PLlD2eDv5CIe9sA2atmnb-DX48FIRG46z7>`__.
 
-**Example** of how to run this script
+Example of how to run this script
 
-.. code:: codeinput
+.. code::
 
-    examples()examples('1/1', 'C:\Your_preferred_local_path\', 'arbitrary_string')
-    examples('1/10', '/Your_preferred_path_in_cluster/', 'arbitrary_string')        
-            
+	examples()
+	examples('1/1', 'C:\Your_preferred_local_path\', 'arbitrary_string')
+	examples('1/10', '/Your_preferred_path_in_cluster/', 'arbitrary_string')        
+
 
 Contents
-========
+--------
+	
 
--  `Function prototype <#Function_prototype>`__
--  `Argument parsing <#Argument_parsing>`__
--  `QRS automatic detection <#QRS_automatic_detection>`__
--  `QRS visual inspection and
-   correction <#QRS_visual_inspection_and_correction>`__
--  `PPG/ABP pulse detection <#PPG_ABP_pulse_detection>`__
--  `PPG/ABP waves visual inspection and
-   correction <#PPG_ABP_waves_visual_inspection_and_correction>`__
--  `ECG automatic delineation <#ECG_automatic_delineation>`__
--  `Visual inspection of the
-   detection/delineation <#Visual_inspection_of_the_detection_delineation>`__
--  `Automatic Heartbeat
-   classification <#Automatic_Heartbeat_classification>`__
--  `Visual inspection of the
-   signal <#Visual_inspection_of_the_signal>`__
--  `Other user-defined tasks ... <#Other_user-defined_tasks_>`__
+-  :ref:`Function prototype <Function_prototype>`
+-  :ref:`Argument parsing <Argument_parsing>`
+-  :ref:`QRS automatic detection <QRS_automatic_detection>`
+-  :ref:`QRS visual inspection and
+   correction <QRS_visual_inspection_and_correction>`
+-  :ref:`PPG/ABP pulse detection <PPG_ABP_pulse_detection>`
+-  :ref:`PPG/ABP waves visual inspection and
+   correction <PPG_ABP_waves_visual_inspection_and_correction>`
+-  :ref:`ECG automatic delineation <ECG_automatic_delineation>`
+-  :ref:`Visual inspection of the
+   detection/delineation <Visual_inspection_of_the_detection_delineation>`
+-  :ref:`Automatic Heartbeat
+   classification <Automatic_Heartbeat_classification>`
+-  :ref:`Visual inspection of the
+   signal <#Visual_inspection_of_the_signal>`
+-  :ref:`Other user-defined tasks ... <Other_user-defined_tasks>`
+
+.. _Function_prototype:
 
 Function prototype
-==================
+------------------
 
-.. code:: codeinput
+.. code::
 
     function examples(pid_str, examples_path, user_str)
             
@@ -90,12 +90,14 @@ Function prototype
    ``['.' filesep 'example_recordings'           filesep ]``;
 -  ***user\_str*** (optional) string to identify this run or experiment.
 
+.. _Argument_parsing:
+
 Argument parsing
-================
+----------------
 
 Simple and straight forward.
 
-.. code:: codeinput
+.. code::
 
         if( nargin < 1 || ~ischar(pid_str) )
             % single PID run
@@ -145,8 +147,10 @@ Simple and straight forward.
     % just for debugging, keep it commented.
     %     bUseDesktop = false
 
+.. _QRS_automatic_detection:
+
 QRS automatic detection
-=======================
+-----------------------
 
 In this example the first step is the location of each heartbeat, or QRS
 complexes detection. To achieve this, the kit includes the following
@@ -179,7 +183,7 @@ class for more details) and other specific for a certain task, such as
 detection <../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:edit('ECGtask_QRS_detection.m')>`__
 task source).
 
-.. code:: codeinput
+.. code::
 
         % go through all files
         ECG_all_wrappers = [];
@@ -238,8 +242,10 @@ task source).
         end
             
 
+.. _QRS_visual_inspection_and_correction:
+			
 QRS visual inspection and correction
-====================================
+------------------------------------
 
 This part of the example uses a graphical user interface (GUI) to allow
 the user correcting mistakes that the previous automatic algorithm
@@ -251,7 +257,7 @@ errors, the corrector will use as starting point the result of this same
 task, in case the user would like to edit a previously edited result, or
 if not available the result of the QRS detection task.
 
-.. code:: codeinput
+.. code::
 
         if( bUseDesktop )
             % other task can be performed on the same objects
@@ -314,8 +320,10 @@ The plot in the bottom shows the selected signal/s versus time. Then the
 user can interact with the plots according to the `QRS corrector
 documentation <../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_QRS_corrector')>`__
 
+.. _PPG_ABP_pulse_detection:
+
 PPG/ABP pulse detection
-=======================
+-----------------------
 
 In case the recording includes pulsatile signals, such as
 plethysmographic (PPG) or arterial blood pressure (ABP), this kit
@@ -327,7 +335,7 @@ and `Physionet's wabp <wabp-1.htm','-browser')>`__.
 
 other task can be performed on the same objects
 
-.. code:: codeinput
+.. code::
 
         for ii = 1:lrecnames
             % set the delineator task name and run again.
@@ -343,8 +351,10 @@ other task can be performed on the same objects
         end
             
 
+.. _PPG_ABP_waves_visual_inspection_and_correction:
+			
 PPG/ABP waves visual inspection and correction
-==============================================
+----------------------------------------------
 
 The same manual verification made for automatic QRS detection algorithms
 can be performed with pulsatile signals. The `PPG/ABP corrector
@@ -357,7 +367,7 @@ detections through the same GUI.
 The following code shows how to use this task. As you can note, the
 interface is almost the same used for the QRS correction task.
 
-.. code:: codeinput
+.. code::
 
         if( bUseDesktop )
             % other task can be performed on the same objects
@@ -406,8 +416,10 @@ interface is almost the same used for the QRS correction task.
         end
             
 
+.. _ECG_automatic_delineation:
+			
 ECG automatic delineation
-=========================
+-------------------------
 
 Once the QRS complexes were detected, each heartbeat can be segmented or
 delineated into P-QRS-T waves. To achieve this the kit includes an `ECG
@@ -422,7 +434,7 @@ in the following code.
 
 other task can be performed on the same objects
 
-.. code:: codeinput
+.. code::
 
         for ii = 1:lrecnames
             % this is to use previous cached results as starting point
@@ -455,9 +467,10 @@ other task can be performed on the same objects
             ECG_all_wrappers(ii).ReportErrors;
         end
             
+.. _Visual_inspection_of_the_detection_delineation:
 
 Visual inspection of the detection/delineation
-==============================================
+----------------------------------------------
 
 The same manual verification made for all the previous automatic tasks
 is repeated for ECG delineation. The `ECG delineation corrector
@@ -470,7 +483,7 @@ assosiation of a wave fiducial point to a heartbeat.
 
 |image6|
 
-.. code:: codeinput
+.. code::
 
         if( bUseDesktop )
             % other task can be performed on the same objects
@@ -518,9 +531,10 @@ assosiation of a wave fiducial point to a heartbeat.
             end
         end
             
-
+.. _Automatic_Heartbeat_classification:
+			
 Automatic Heartbeat classification
-==================================
+----------------------------------
 
 The last task described in this example is the classification of
 heartbeats according to the `EC-57 AAMI
@@ -540,7 +554,7 @@ The *a2hbc* algorithm can opperate automatically or assisted by the
 user, for more details check the `a2hbc
 documentation <../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('a2hbc')>`__.
 
-.. code:: codeinput
+.. code::
 
         for ii = 1:lrecnames
             % this is to use previous cached results as starting point
@@ -568,9 +582,10 @@ documentation <../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/ma
             ECG_all_wrappers(ii).ReportErrors;
         end
             
-
+.. _Visual_inspection_of_the_signal:
+			
 Visual inspection of the signal
-===============================
+-------------------------------
 
 Finaly a report is generated with the results of the previous tasks,
 either in a pdf document or several images. The report generated can be
@@ -590,7 +605,7 @@ And finaly a snapshot of the last part of the recording.
 
 This is the code used to create a PDF report.
 
-.. code:: codeinput
+.. code::
 
         filename = []; % default setting. Let the report function decide.
     %     filename = 'container_filename'; % to put everything in one big file.
@@ -613,9 +628,10 @@ This is the code used to create a PDF report.
             end
         end
             
-
+.. _Other_user-defined_tasks:
+			
 Other user-defined tasks ...
-============================
+----------------------------
 
 Maybe the most important and useful aspect of the kit, is that you can
 add your own algorithms. This can be done by following the interface
@@ -627,23 +643,13 @@ tasks already include a way to interface your own algorithms through the
 **user:function\_name** method. Check the above sections for more
 details.
 
-.. code:: codeinput
+.. code::
 
         if( ~bUseDesktop )
             UnInstallECGkit();
         end
             
 
- 
-
-.. |image0| image:: template/my_layout/Search.png
-   :target: #
-.. |image1| image:: template/my_layout/Print.png
-   :target: javascript:window.print()
-.. |image2| image:: template/my_layout/Search.png
-   :target: #
-.. |image3| image:: template/my_layout/Print.png
-   :target: javascript:window.print()
 .. |image4| image:: QRS_corrector.PNG
 .. |image5| image:: PPG-ABP_corrector.PNG
 .. |image6| image:: ECG_delineator_corrector.png

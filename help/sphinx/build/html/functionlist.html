@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>ECGkit &mdash; ECGkit 1.0.1 documentation</title>
+  <title>Functions &mdash; ECGkit 1.0.1 documentation</title>
   
 
   
@@ -31,7 +31,8 @@
 
   
     <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/>
-        <link rel="prev" title="ECGkit" href="contact.html"/> 
+        <link rel="next" title="ECGwrapper" href="ECGwrapper.html"/>
+        <link rel="prev" title="Be in touch" href="contact.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -63,32 +64,22 @@
           
           
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html#uninstallation">Uninstallation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#example-of-how-to-use-the-ecgkit">Example of how to use the ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#contents">Contents</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#function-prototype">Function prototype</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#argument-parsing">Argument parsing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#qrs-automatic-detection">QRS automatic detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#qrs-visual-inspection-and-correction">QRS visual inspection and correction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#ppg-abp-pulse-detection">PPG/ABP pulse detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#ppg-abp-waves-visual-inspection-and-correction">PPG/ABP waves visual inspection and correction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#ecg-automatic-delineation">ECG automatic delineation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#visual-inspection-of-the-detection-delineation">Visual inspection of the detection/delineation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#automatic-heartbeat-classification">Automatic Heartbeat classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#visual-inspection-of-the-signal">Visual inspection of the signal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#other-user-defined-tasks">Other user-defined tasks ...</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html#release-notes">Release Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contact.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contact.html#contact">Contact</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">ECGkit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#base-classes">Base classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#signal-processing">Signal processing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#plotting-and-reporting">Plotting and reporting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ecgkit-extension">ECGkit extension</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">An example</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release notes</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Be in touch</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ECGwrapper.html">Base classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reportECG.html">Plotting and reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_formats.html">ECGkit extension</a></li>
 </ul>
 </li>
 </ul>
@@ -115,7 +106,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>ECGkit</li>
+    <li>Functions</li>
       <li class="wy-breadcrumbs-aside">
         
           <a href="_sources/functionlist.txt" rel="nofollow"> View page source</a>
@@ -126,43 +117,37 @@
 </div>
           <div role="main" class="document">
             
-  <ul class="simple">
-<li>Contents</li>
-<li>Index</li>
-<li>Glossary</li>
-</ul>
-<div class="section" id="ecgkit">
-<h1>ECGkit<a class="headerlink" href="#ecgkit" title="Permalink to this headline">¶</a></h1>
-<p>A toolbox for cardiovascular signal processing</p>
+  <div class="section" id="functions">
+<h1>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
 <div class="section" id="base-classes">
 <h2>Base classes<a class="headerlink" href="#base-classes" title="Permalink to this headline">¶</a></h2>
 <p>The base classes to access signal recordings and perform ECG, PPG and
 ABP tasks.</p>
-<ul class="simple">
-<li><a class="reference external" href="ECGwrapper.html">ECG wrapper</a></li>
-<li><a class="reference external" href="ECGtask.htm">ECG task</a></li>
+<ul>
+<li><p class="first"><a class="reference external" href="ECGwrapper">ECG wrapper</a></p>
+</li>
+<li><dl class="first docutils">
+<dt><a class="reference external" href="ECGtask">ECG task</a></dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="QRS_detection">QRS detection task</a></li>
+<li><a class="reference external" href="ABP_PPG_peak_detection">PPG/ABP pulse detection task</a></li>
+<li><a class="reference external" href="ECGdelineation">ECG delineation task</a></li>
+<li><a class="reference external" href="ECG_heartbeat_classifier">Heartbeat classification task</a></li>
 </ul>
-</div>
-<div class="section" id="signal-processing">
-<h2>Signal processing<a class="headerlink" href="#signal-processing" title="Permalink to this headline">¶</a></h2>
-<p>Methods to perform QRS and pulse detection, classification and wave
-delineation.</p>
-<ul class="simple">
-<li><a class="reference external" href="QRS_detection.htm">QRS detection task</a></li>
-<li><a class="reference external" href="ABP_PPG_peak_detection.htm">PPG/ABP pulse detection task</a></li>
-<li><a class="reference external" href="ECGdelineation.htm">ECG delineation task</a></li>
-<li><a class="reference external" href="ECG_heartbeat_classifier.htm">Heartbeat classification task</a></li>
+</dd>
+</dl>
+</li>
 </ul>
 </div>
 <div class="section" id="plotting-and-reporting">
 <h2>Plotting and reporting<a class="headerlink" href="#plotting-and-reporting" title="Permalink to this headline">¶</a></h2>
 <p>Plot signals, annotations, allow GUI interaction and reporting.</p>
 <ul class="simple">
-<li><a class="reference external" href="QRScorrector.htm">QRS manual correction task</a></li>
-<li><a class="reference external" href="ABP_PPG_peak_correction.htm">PPG/ABP manual correction task</a></li>
-<li><a class="reference external" href="ECG_delineation_corrector.htm">ECG delineation correction task</a></li>
-<li><a class="reference external" href="plot_ecg_strip.htm">ECG strip visualization</a></li>
-<li><a class="reference external" href="plot_ecg_mosaic.htm">ECG mosaic visualization</a></li>
+<li><a class="reference external" href="reportECG">Reporting tool</a></li>
+<li><a class="reference external" href="plot_ecg_strip">ECG strip visualization</a></li>
+<li><a class="reference external" href="plot_ecg_mosaic">ECG mosaic visualization</a></li>
 </ul>
 </div>
 <div class="section" id="ecgkit-extension">
@@ -170,8 +155,8 @@ delineation.</p>
 <p>Howto extend the ECGwrapper to new recording formats, create/modify ECG
 tasks.</p>
 <ul class="simple">
-<li><a class="reference external" href="custom_formats.htm">Custom signal recording format</a></li>
-<li><a class="reference external" href="extensions.htm">Adding new ECGtasks</a></li>
+<li><a class="reference external" href="custom_formats">Custom signal recording format</a></li>
+<li><a class="reference external" href="extensions">Adding new ECGtasks</a></li>
 </ul>
 </div>
 </div>
@@ -182,8 +167,10 @@ tasks.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="ECGwrapper.html" class="btn btn-neutral float-right" title="ECGwrapper">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="contact.html" class="btn btn-neutral" title="ECGkit"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="contact.html" class="btn btn-neutral" title="Be in touch"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

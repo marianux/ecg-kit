@@ -262,8 +262,8 @@ classdef ECGtask_ECG_delineation < ECGtask
 
                             if( exist(this_delineator_name) == 2 )
                                 
-%                                 ud_func_pointer = eval(['@' this_detector_name]);
-                                ud_func_pointer = str2func(this_detector_name);
+%                                 ud_func_pointer = eval(['@' this_delineator_name]);
+                                ud_func_pointer = str2func(this_delineator_name);
 
                                 obj.progress_handle.checkpoint([ 'User defined function: ' this_delineator_name])
 

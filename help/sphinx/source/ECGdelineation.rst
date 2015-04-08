@@ -1,31 +1,16 @@
- 
-
-+--------------------------------------+--------------------------------------+
-| |image2|                             |
-| |image3|                             |
-| `Show <javascript:onShowHideClick()> |
-| `__\ `Hide <javascript:onShowHideCli |
-| ck()>`__                             |
-+--------------------------------------+--------------------------------------+
-
--  Contents
--  Index
--  Glossary
-
-| 
 
 ECG delineation
-===============
+---------------
 
 This document describes how to perform automatic delineation or wave
 segmentation on ECG signals.
 
-`expand all in page <javascript:void(0);>`__
+`expand all in page `__
 
  
 
 Description
-===========
+-----------
 
 Automatic wave segmentation or delineation is exclusively performed by
 wavedet algorithm.
@@ -33,22 +18,22 @@ wavedet algorithm.
  
 
 Input Arguments
-===============
+---------------
 
 The properties that this task uses are the following:
 
-```progress_handle`` — used to track the progress within your function. <javascript:void(0);>`__\ ``[]`` (default)
+```progress_handle`` — used to track the progress within your function. `__\ ``[]`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 progress\_handle, is a handle to a `progress\_bar <progress_bar.htm>`__
 object, that can be used to track the progress within your function.
 
-```tmp_path`` — The path to store temporary data <javascript:void(0);>`__\ ``'tempdir()'`` (default)
+```tmp_path`` — The path to store temporary data `__\ ``'tempdir()'`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Full path to a directory with write privileges.
 
-```delineators`` — The ECG delineation algorithms to use <javascript:void(0);>`__\ ``'all-delineators'`` (default)
+```delineators`` — The ECG delineation algorithms to use `__\ ``'all-delineators'`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A cell string or char with any of the following names
@@ -59,18 +44,18 @@ all-delineators
 
  
 
-```only_ECG_leads`` — Process only ECG signals <javascript:void(0);>`__\ ``true`` (default)
+```only_ECG_leads`` — Process only ECG signals `__\ ``true`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Boolean value. Find out which signals are ECG based on their header
 description.
 
-```wavedet_config`` — A structure for customizing wavedet algorithm. <javascript:void(0);>`__\ ``[]`` (default)
+```wavedet_config`` — A structure for customizing wavedet algorithm. `__\ ``[]`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Undocumented yet, use only if you know what you are doing.
 
-```payload`` — An arbitrary format variable. <javascript:void(0);>`__\ ``[]`` (default)
+```payload`` — An arbitrary format variable. `__\ ``[]`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This variable can be useful for passing data to your own function
@@ -85,8 +70,7 @@ Adding a custom delineation algorithm
 Adding your own delineator to the kit is very simple. Ensure that your
 function implements this interface:
 
-.. code:: codeinput
-
+.. code::
     function [positions_single_lead, position_multilead] = your_ECG_delineation( ECG_matrix, ECG_header, progress_handle, payload_in)  
                             
 
@@ -109,8 +93,7 @@ payload\_in, is a user variable, of arbitrary format, allowed to be sent
 to your function. It is sent, via the `payload
 property <#payload_prop>`__ of this class, for example:
 
-.. code:: codeinput
-
+.. code::
         % One variable
         this_ECG_wrapper.ECGtaskHandle.payload = your_variable;
         
@@ -131,12 +114,11 @@ position\_multilead, a numeric vector with the QRS locations calculated
 using multilead rules.
 
 Examples
-========
+--------
 
 Create the ECGtask\_ECG\_delineation object.
 
-.. code:: codeinput
-
+.. code::
     % with the task name
         ECG_w.ECGtaskHandle = 'ECG_delineation';
     % or create an specific handle to have more control
@@ -145,8 +127,7 @@ Create the ECGtask\_ECG\_delineation object.
 and then you are ready to set the algorithms to use. In the following
 example you have several possible setups.
 
-.. code:: codeinput
-
+.. code::
     % select an specific algorithm. Default: Run all detectors
             ECGt.delineators = 'wavedet'; % Wavedet algorithm based on
             ECGt.delineators = 'user:your_delineator_func_name';    % "your_delineator_func_name" can be your own delineator.
@@ -155,8 +136,7 @@ example you have several possible setups.
 
 Finally set the task to the wrapper object, and execute the task.
 
-.. code:: codeinput
-
+.. code::
             ECG_w.ECGtaskHandle= ECGt; % set the ECG task
             ECG_w.Run();
 
@@ -170,25 +150,15 @@ for further information.
  
 
 More About
-==========
+----------
 
 This publication describes the
 `wavedet <http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf>`__
 algorithm:
 
 See Also
-========
+--------
 
 ```ECGtask`` <ECGtask.html>`__ \| ``QRS                   detection`` \|
 ```examples`` <examples.html>`__
 
- 
-
-.. |image0| image:: template/my_layout/Search.png
-   :target: #
-.. |image1| image:: template/my_layout/Print.png
-   :target: javascript:window.print()
-.. |image2| image:: template/my_layout/Search.png
-   :target: #
-.. |image3| image:: template/my_layout/Print.png
-   :target: javascript:window.print()

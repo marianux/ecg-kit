@@ -344,10 +344,14 @@ if decrease_depth                         % update admin
       %we don't delete but preserve the waitbar for future use
       %so the following cleanup is needed
       p=get(get(WHANDLE,'children'),'children');
-      set(p(2),'erasemode','normal');
+      if( length(p) > 1 )
+          set(p(2),'erasemode','normal');
+      end
       waitbar(0,WHANDLE,sprintf(' \n \n \n' ));
       set(WHANDLE,'name',['                         PRWAITBAR:      ']);
-      set(p(2),'erasemode','none');
+      if( length(p) > 1 )
+        set(p(2),'erasemode','none');
+      end
       prwaitbar;  
       lasterror('reset');
       %now we are ready to leave

@@ -1,18 +1,3 @@
- 
-
-+--------------------------------------+--------------------------------------+
-| |image2|                             |
-| |image3|                             |
-| `Show <javascript:onShowHideClick()> |
-| `__\ `Hide <javascript:onShowHideCli |
-| ck()>`__                             |
-+--------------------------------------+--------------------------------------+
-
--  Contents
--  Index
--  Glossary
-
-| 
 
 ECG heartbeat classification
 ============================
@@ -20,14 +5,14 @@ ECG heartbeat classification
 This document describes how to classify heartbeats according to its
 origin.
 
-`expand all in page <javascript:void(0);>`__
+`expand all in page `__
 
  
 
  
 
 Description
-===========
+-----------
 
 This task implements a heartbeat classifier that follows the `EC-57 AAMI
 recommendation <http://marketplace.aami.org/eseries/scriptcontent/docs/Preview%20Files/EC57_1212_preview.pdf>`__
@@ -46,27 +31,27 @@ which can be useful f
  
 
 Input Arguments
-===============
+---------------
 
-```progress_handle`` — used to track the progress within your function. <javascript:void(0);>`__\ ``[]`` (default)
+```progress_handle`` — used to track the progress within your function. `__\ ``[]`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 progress\_handle, is a handle to a `progress\_bar <progress_bar.htm>`__
 object, that can be used to track the progress within your function.
 
-```tmp_path`` — The path to store temporary data <javascript:void(0);>`__\ ``'tempdir()'`` (default)
+```tmp_path`` — The path to store temporary data `__\ ``'tempdir()'`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Full path to a directory with write privileges.
 
-```payload`` — An arbitrary format variable to be passed to your user-defined algorithm. <javascript:void(0);>`__\ ``[]`` (default)
+```payload`` — An arbitrary format variable to be passed to your user-defined algorithm. `__\ ``[]`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This variable can be useful for passing data to your own function, not
 covered in the interface described
 `below <#Adding_a_custom_detection_algorithm>`__.
 
-```mode`` — Set the algorithm mode of operation. <javascript:void(0);>`__\ ``'auto'`` (default)
+```mode`` — Set the algorithm mode of operation. `__\ ``'auto'`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A string with any of the following names
@@ -82,14 +67,13 @@ heartbeats.
 A more detailed
 
 Examples
-========
+--------
 
 The first example shows the simplest setup of the
 ECGtask\_heartbeat\_classifier object, while at the end of this section
 a complete example with a real signal is shown.
 
-.. code:: codeinput
-
+.. code::
 
     % with the task name
         ECG_w.ECGtaskHandle = 'ECG_heartbeat_classifier';
@@ -98,8 +82,7 @@ a complete example with a real signal is shown.
 
 and then you are ready to setup the task
 
-.. code:: codeinput
-
+.. code::
     % select a mode, automatic mode does not require assistance
         ECGt.mode = 'auto';
     % this is to use QRS detection previously calculated
@@ -108,16 +91,14 @@ and then you are ready to setup the task
 
 Finally set the task to the wrapper object, and execute the task.
 
-.. code:: codeinput
-
+.. code::
             ECG_w.ECGtaskHandle= ECGt; % set the ECG task
             ECG_w.Run();
 
 This example shows in first place, the previous configuration used in
 recording 208 from MIT Arrhythmia database.
 
-.. code:: codeinput
-
+.. code::
     >> ECG_w = ECGwrapper( ...
             'recording_name', 'some_path\208', ...
             'recording_format', 'MIT', ...
@@ -138,8 +119,7 @@ recording 208 from MIT Arrhythmia database.
 You can follow the evolution in the progress bar, and after a while, it
 ends and display the classification results
 
-.. code:: codeinput
-
+.. code::
     Configuration 
     ------------- 
     + Recording: ... \example recordings\208.dat (MIT) 
@@ -189,8 +169,7 @@ right. The unknown class is reserved for the cases where you can not
 make a confident decision. At the same time, in the command window, a
 suggestion appears:
 
-.. code:: codeinput
-
+.. code::
     Configuration 
     ------------- 
     + Recording: .\example recordings\208.dat (MIT) 
@@ -222,7 +201,7 @@ further information.
  
 
 More About
-==========
+----------
 
 Here are some external references about heartbeat classification:
 
@@ -232,20 +211,10 @@ Here are some external references about heartbeat classification:
 -  `EP limited <http://www.eplimited.com/confirmation.htm>`__ software
 
 See Also
-========
+--------
 
 ```ECGtask`` <ECGtask.html>`__ \|
 ```ECG delineation`` <ECGdelineation.htm>`__ \|
 ```examples`` <examples.html>`__
 
- 
-
-.. |image0| image:: template/my_layout/Search.png
-   :target: #
-.. |image1| image:: template/my_layout/Print.png
-   :target: javascript:window.print()
-.. |image2| image:: template/my_layout/Search.png
-   :target: #
-.. |image3| image:: template/my_layout/Print.png
-   :target: javascript:window.print()
 .. |image4| image:: 2D__Mariano_misc_a2hbc_doc_expert_user_interface.png

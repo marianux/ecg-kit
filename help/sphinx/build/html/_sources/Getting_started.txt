@@ -1,11 +1,9 @@
 
-ECGkit
-======
-
-A toolbox for cardiovascular signal processing
+Getting Started
+===============
 
 Installation
-============
+------------
 
 To install the kit unpack or checkout the kit to
 'your\_installation\_folder' and type in Matlab::
@@ -30,7 +28,8 @@ The use of this script is explained more in detail in the
 `Examples <examples.html>`__ section.
 
 Uninstallation
-==============
+--------------
+
 
 Uninstallation is as easy as typing:
 

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>ECGkit &mdash; ECGkit 1.0.1 documentation</title>
+  <title>Getting Started &mdash; ECGkit 1.0.1 documentation</title>
   
 
   
@@ -31,7 +31,7 @@
 
   
     <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/>
-        <link rel="next" title="ECGkit" href="examples.html"/>
+        <link rel="next" title="Examples" href="examples.html"/>
         <link rel="prev" title="Welcome to ECGkit’s documentation!" href="index.html"/> 
 
   
@@ -64,32 +64,22 @@
           
           
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#uninstallation">Uninstallation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#example-of-how-to-use-the-ecgkit">Example of how to use the ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#contents">Contents</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#function-prototype">Function prototype</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#argument-parsing">Argument parsing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#qrs-automatic-detection">QRS automatic detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#qrs-visual-inspection-and-correction">QRS visual inspection and correction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#ppg-abp-pulse-detection">PPG/ABP pulse detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#ppg-abp-waves-visual-inspection-and-correction">PPG/ABP waves visual inspection and correction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#ecg-automatic-delineation">ECG automatic delineation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#visual-inspection-of-the-detection-delineation">Visual inspection of the detection/delineation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#automatic-heartbeat-classification">Automatic Heartbeat classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#visual-inspection-of-the-signal">Visual inspection of the signal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html#other-user-defined-tasks">Other user-defined tasks ...</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html#release-notes">Release Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contact.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contact.html#contact">Contact</a></li>
-<li class="toctree-l1"><a class="reference internal" href="functionlist.html">ECGkit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="functionlist.html#base-classes">Base classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="functionlist.html#signal-processing">Signal processing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="functionlist.html#plotting-and-reporting">Plotting and reporting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="functionlist.html#ecgkit-extension">ECGkit extension</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Getting started</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">An example</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release notes</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Be in touch</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="functionlist.html">Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ECGwrapper.html">Base classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reportECG.html">Plotting and reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_formats.html">ECGkit extension</a></li>
 </ul>
 </li>
 </ul>
@@ -116,7 +106,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>ECGkit</li>
+    <li>Getting Started</li>
       <li class="wy-breadcrumbs-aside">
         
           <a href="_sources/getting_started.txt" rel="nofollow"> View page source</a>
@@ -127,35 +117,34 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="ecgkit">
-<h1>ECGkit<a class="headerlink" href="#ecgkit" title="Permalink to this headline">¶</a></h1>
-<p>A toolbox for cardiovascular signal processing</p>
-</div>
+  <div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>To install the kit unpack or checkout the kit to
 &#8216;your_installation_folder&#8217; and type in Matlab:</p>
-<div class="highlight-python"><div class="highlight"><pre>cd &#39;your_installation_folder&#39;
-InstallECGkit()
+<div class="highlight-Matlab"><div class="highlight"><pre><span class="n">cd</span> <span class="s">&#39;your_installation_folder&#39;</span>
+<span class="n">InstallECGkit</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>You can try then the examples.m script in order to check the correct
 installation in some included recordings:</p>
-<div class="code highlight-python"><div class="highlight"><pre><span class="n">examples</span><span class="p">()</span>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">examples</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>or if you want to try in your own recordings:</p>
-<div class="code highlight-python"><div class="highlight"><pre>examples(&#39;1/1&#39;, &#39;C:\Your_own_recordings\&#39;)
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">examples</span><span class="p">(</span><span class="s">&#39;1/1&#39;</span><span class="p">,</span> <span class="s">&#39;C:\Your_own_recordings\&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The use of this script is explained more in detail in the
 <a class="reference external" href="examples.html">Examples</a> section.</p>
 </div>
 <div class="section" id="uninstallation">
-<h1>Uninstallation<a class="headerlink" href="#uninstallation" title="Permalink to this headline">¶</a></h1>
+<h2>Uninstallation<a class="headerlink" href="#uninstallation" title="Permalink to this headline">¶</a></h2>
 <p>Uninstallation is as easy as typing:</p>
-<div class="code highlight-python"><div class="highlight"><pre><span class="n">UnInstallECGkit</span><span class="p">()</span>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">UnInstallECGkit</span><span class="p">()</span>
 </pre></div>
+</div>
 </div>
 </div>
 
@@ -165,7 +154,7 @@ installation in some included recordings:</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="examples.html" class="btn btn-neutral float-right" title="ECGkit">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="examples.html" class="btn btn-neutral float-right" title="Examples">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral" title="Welcome to ECGkit’s documentation!"><span class="fa fa-arrow-circle-left"></span> Previous</a>

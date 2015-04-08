@@ -89,27 +89,30 @@ classdef ECGtask_Delineation_corrector < ECGtask
                 AnnNames = {};
                 kk = 1;
 
-                for fn = rowvec(fieldnames(Ann_struct))
+                % Algorithm name
+                for alg_name = rowvec(fieldnames(Ann_struct))
 
-                    for wave_chosen = rowvec(obj.cAnnotationOutputFields)
+                    for lead_name = rowvec(fieldnames(Ann_struct.(alg_name{1})))
+                    
+                        for wave_chosen = rowvec(obj.cAnnotationOutputFields)
 
-                        wave_name = wave_chosen{1};
+                            wave_name = wave_chosen{1};
 
-                        if( isfield(Ann_struct.(fn{1}), wave_name ) )
-                            aux_val = Ann_struct.(fn{1});
-                            if( isfield(aux_val, wave_name) )
-                                for jj = 1:length( aux_val )
-                                    aux_val2 = ( aux_val(jj).(wave_name) - aux_val(jj).qrs ) * 1/ECG_header.freq;
-                                    bAux = aux_val(jj).qrs >= this_start_end(1) & aux_val(jj).qrs <= this_start_end(2);
-                                    lead_str = strrep(strtrim(ECG_header.desc(jj,:)), ' ', '_' );
-                                    aux_str = [ wave_name '_' lead_str '_' fn{1}  ];
-                                    Ann_struct2.(aux_str).time = [ (colvec(aux_val(jj).qrs(bAux)) - ECG_start_offset + 1)  colvec(aux_val2(bAux))];
+                            if( isfield(Ann_struct.(alg_name{1}).(lead_name{1}), wave_name ) )
+                                aux_val = Ann_struct.(alg_name{1}).(lead_name{1});
+                                if( isfield(aux_val, wave_name) )
+                                    aux_val2 = ( aux_val.(wave_name) - aux_val.qrs ) * 1/ECG_header.freq;
+                                    bAux = aux_val.qrs >= this_start_end(1) & aux_val.qrs <= this_start_end(2);
+                                    lead_str = strrep(lead_name{1}, ' ', '_' );
+                                    aux_str = [ wave_name '_' lead_str '_' alg_name{1}  ];
+                                    Ann_struct2.(aux_str).time = [ (colvec(aux_val.qrs(bAux)) - ECG_start_offset + 1)  colvec(aux_val2(bAux))];
                                     AnnNames(kk,:) = { aux_str 'time' };
                                     kk = kk + 1;
                                 end
                             end
-                        end
 
+                        end
+                        
                     end
                 end
 

@@ -1,28 +1,15 @@
- 
-
-+--------------------------------------+--------------------------------------+
-| |image2|                             |
-| |image3|                             |
-| `Show <javascript:onShowHideClick()> |
-| `__\ `Hide <javascript:onShowHideCli |
-| ck()>`__                             |
-+--------------------------------------+--------------------------------------+
-
--  Contents
--  Index
--  Glossary
 
 ECGtask
-=======
+-------
 
 Perform an specific task to an ECG signal.
 
-`expand all in page <javascript:void(0);>`__
+`expand all in page `__
 
  
 
 Description
-===========
+-----------
 
 The ECGtask is an abstract class definition where the minimum interface
 requirements are specified, in order that your own tasks can be safely
@@ -47,7 +34,7 @@ before you extend the functionality with your own tasks.
  
 
 More About
-==========
+----------
 
 -  `Physionet.org <http://physionet.org/>`__
 -  `Telemetric and Holter ECG Warehouse
@@ -59,19 +46,9 @@ More About
  
 
 See Also
-========
+--------
 
 `ECGwrapper <ECGwrapper.html>`__ \|
 `ECG\_delineation <ECGdelineation.htm>`__ \|
 `list\_all\_ECGtask <list_all_ECGtask.htm>`__
 
- 
-
-.. |image0| image:: template/my_layout/Search.png
-   :target: #
-.. |image1| image:: template/my_layout/Print.png
-   :target: javascript:window.print()
-.. |image2| image:: template/my_layout/Search.png
-   :target: #
-.. |image3| image:: template/my_layout/Print.png
-   :target: javascript:window.print()

@@ -1,30 +1,15 @@
- 
-
-+--------------------------------------+--------------------------------------+
-| |image2|                             |
-| |image3|                             |
-| `Show <javascript:onShowHideClick()> |
-| `__\ `Hide <javascript:onShowHideCli |
-| ck()>`__                             |
-+--------------------------------------+--------------------------------------+
-
--  Contents
--  Index
--  Glossary
-
-| 
 
 Arbitrary tasks
-===============
+---------------
 
 This document describes how to use arbitrary tasks with the ECGkit.
 
-`expand all in page <javascript:void(0);>`__
+`expand all in page `__
 
  
 
 Description
-===========
+-----------
 
 Sometimes the task you need to perform on ECG signals is too simple to
 develop a new ECGtask, like computing some statistics, or apply a linear
@@ -34,52 +19,51 @@ signal. For those cases you may found arbitrary tasks useful.
  
 
 Input Arguments
-===============
+---------------
 
 The properties that this task uses are the following:
 
-```progress_handle`` — used to track the progress within your function. <javascript:void(0);>`__\ ``[]`` (default)
+```progress_handle`` — used to track the progress within your function. `__\ ``[]`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 progress\_handle, is a handle to a `progress\_bar <progress_bar.htm>`__
 object, that can be used to track the progress within your function.
 
-```tmp_path`` — The path to store temporary data <javascript:void(0);>`__\ ``'tempdir()'`` (default)
+```tmp_path`` — The path to store temporary data `__\ ``'tempdir()'`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Full path to a directory with write privileges.
 
-```only_ECG_leads`` — Process only ECG signals <javascript:void(0);>`__\ ``true`` (default)
+```only_ECG_leads`` — Process only ECG signals `__\ ``true`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Boolean value. Find out which signals are ECG based on their header
 description.
 
-```payload`` — An arbitrary format variable to be passed to your user-defined algorithm. <javascript:void(0);>`__\ ``[]`` (default)
+```payload`` — An arbitrary format variable to be passed to your user-defined algorithm. `__\ ``[]`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This variable can be useful for passing data to your own function, not
 covered in the interface described
 `below <#Adding_a_custom_detection_algorithm>`__.
 
-```signal_payload`` — Treat the result of your arbitrary function as a signal. <javascript:void(0);>`__\ ``false`` (default)
+```signal_payload`` — Treat the result of your arbitrary function as a signal. `__\ ``false`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Boolean value that indicates the ECGwrapper to produce a signal or
 result payload.
 
-```lead_idx`` — The signal indexes that your function will affect. <javascript:void(0);>`__\ ``[]`` (default)
+```lead_idx`` — The signal indexes that your function will affect. `__\ ``[]`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A positive integer array with values from 1 to ECG\_header.nsig.
 
-```function_pointer`` — The pointer to your arbitrary function. <javascript:void(0);>`__\ ``[]`` (default)
+```function_pointer`` — The pointer to your arbitrary function. `__\ ``[]`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Your function must follow this prototype:
 
-.. code:: codeinput
-
+.. code::
     function result = your_function( ECG_matrix, ECG_header, progress_handle, payload_in)  
                             
 
@@ -104,8 +88,7 @@ payload\_in, is a user variable, of arbitrary format, allowed to be sent
 to your function. It is sent, via the `payload
 property <#payload_prop>`__ of this class, for example:
 
-.. code:: codeinput
-
+.. code::
         % One variable
         this_ECG_wrapper.ECGtaskHandle.payload = your_variable;
         
@@ -116,13 +99,12 @@ and the output of your function must be a result (struct) variable, or
 can be handled as a signal with signal\_payload property.
 
 Examples
-========
+--------
 
 This example is used in the QRScorrector function to perform
 template-matching on an ECGwrapper (arbitrary big recording) object.
 
-.. code:: codeinput
-
+.. code::
     aux_w = ECGwrapper('recording_name', 'your_path/recname');
     aux_w.ECGtaskHandle = 'arbitrary_function';
     % This is in case you want always to recalculate results, no cachingaux_w.cacheResults = false;
@@ -135,18 +117,8 @@ template-matching on an ECGwrapper (arbitrary big recording) object.
                             
 
 See Also
-========
+--------
 
 ```ECGtask`` <ECGtask.html>`__ \| ``ECGwrapper`` \|
 ```examples`` <examples.html>`__
 
- 
-
-.. |image0| image:: template/my_layout/Search.png
-   :target: #
-.. |image1| image:: template/my_layout/Print.png
-   :target: javascript:window.print()
-.. |image2| image:: template/my_layout/Search.png
-   :target: #
-.. |image3| image:: template/my_layout/Print.png
-   :target: javascript:window.print()

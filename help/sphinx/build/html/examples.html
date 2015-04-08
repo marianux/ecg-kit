@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>ECGkit &mdash; ECGkit 1.0.1 documentation</title>
+  <title>Examples &mdash; ECGkit 1.0.1 documentation</title>
   
 
   
@@ -31,8 +31,8 @@
 
   
     <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/>
-        <link rel="next" title="ECGkit" href="release-notes.html"/>
-        <link rel="prev" title="ECGkit" href="getting_started.html"/> 
+        <link rel="next" title="Release notes" href="release-notes.html"/>
+        <link rel="prev" title="Getting Started" href="getting_started.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -64,32 +64,22 @@
           
           
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html#uninstallation">Uninstallation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#example-of-how-to-use-the-ecgkit">Example of how to use the ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#contents">Contents</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#function-prototype">Function prototype</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#argument-parsing">Argument parsing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#qrs-automatic-detection">QRS automatic detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#qrs-visual-inspection-and-correction">QRS visual inspection and correction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#ppg-abp-pulse-detection">PPG/ABP pulse detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#ppg-abp-waves-visual-inspection-and-correction">PPG/ABP waves visual inspection and correction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#ecg-automatic-delineation">ECG automatic delineation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#visual-inspection-of-the-detection-delineation">Visual inspection of the detection/delineation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#automatic-heartbeat-classification">Automatic Heartbeat classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#visual-inspection-of-the-signal">Visual inspection of the signal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#other-user-defined-tasks">Other user-defined tasks ...</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html#release-notes">Release Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contact.html">ECGkit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contact.html#contact">Contact</a></li>
-<li class="toctree-l1"><a class="reference internal" href="functionlist.html">ECGkit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="functionlist.html#base-classes">Base classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="functionlist.html#signal-processing">Signal processing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="functionlist.html#plotting-and-reporting">Plotting and reporting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="functionlist.html#ecgkit-extension">ECGkit extension</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">An example</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release notes</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Be in touch</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="functionlist.html">Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ECGwrapper.html">Base classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reportECG.html">Plotting and reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_formats.html">ECGkit extension</a></li>
 </ul>
 </li>
 </ul>
@@ -116,7 +106,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>ECGkit</li>
+    <li>Examples</li>
       <li class="wy-breadcrumbs-aside">
         
           <a href="_sources/examples.txt" rel="nofollow"> View page source</a>
@@ -127,17 +117,12 @@
 </div>
           <div role="main" class="document">
             
-  <ul class="simple">
-<li>Contents</li>
-<li>Index</li>
-<li>Glossary</li>
-</ul>
-<div class="section" id="ecgkit">
-<h1>ECGkit<a class="headerlink" href="#ecgkit" title="Permalink to this headline">¶</a></h1>
-<p>A toolbox for cardiovascular signal processing</p>
+  <div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
 </div>
 <div class="section" id="example-of-how-to-use-the-ecgkit">
-<h1>Example of how to use the ECGkit<a class="headerlink" href="#example-of-how-to-use-the-ecgkit" title="Permalink to this headline">¶</a></h1>
+<h2>Example of how to use the ECGkit<a class="headerlink" href="#example-of-how-to-use-the-ecgkit" title="Permalink to this headline">¶</a></h2>
 <p>This script exemplifies the use of the ECGkit in a multimodal
 cardiovascular recording which includes arterial blood pressure (ABP),
 plethysmographic (PPG) and electrocardiogram signals. The following
@@ -159,31 +144,39 @@ from 1 to M.</p>
 <p>You can watch a typical run of this script for small, local ECG
 recording on
 <a class="reference external" href="https://www.youtube.com/watch?v=8lJtkGhrqFw&amp;list=PLlD2eDv5CIe9sA2atmnb-DX48FIRG46z7">YouTube</a>.</p>
-<p><strong>Example</strong> of how to run this script</p>
+<p>Example of how to run this script</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">examples</span><span class="p">()</span>
+<span class="n">examples</span><span class="p">(</span><span class="s">&#39;1/1&#39;</span><span class="p">,</span> <span class="s">&#39;C:\Your_preferred_local_path\&#39;</span><span class="p">,</span> <span class="s">&#39;arbitrary_string&#39;</span><span class="p">)</span>
+<span class="n">examples</span><span class="p">(</span><span class="s">&#39;1/10&#39;</span><span class="p">,</span> <span class="s">&#39;/Your_preferred_path_in_cluster/&#39;</span><span class="p">,</span> <span class="s">&#39;arbitrary_string&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="contents">
-<h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><a class="reference external" href="#Function_prototype">Function prototype</a></li>
-<li><a class="reference external" href="#Argument_parsing">Argument parsing</a></li>
-<li><a class="reference external" href="#QRS_automatic_detection">QRS automatic detection</a></li>
-<li><a class="reference external" href="#QRS_visual_inspection_and_correction">QRS visual inspection and
-correction</a></li>
-<li><a class="reference external" href="#PPG_ABP_pulse_detection">PPG/ABP pulse detection</a></li>
-<li><a class="reference external" href="#PPG_ABP_waves_visual_inspection_and_correction">PPG/ABP waves visual inspection and
-correction</a></li>
-<li><a class="reference external" href="#ECG_automatic_delineation">ECG automatic delineation</a></li>
-<li><a class="reference external" href="#Visual_inspection_of_the_detection_delineation">Visual inspection of the
-detection/delineation</a></li>
-<li><a class="reference external" href="#Automatic_Heartbeat_classification">Automatic Heartbeat
-classification</a></li>
-<li><a class="reference external" href="#Visual_inspection_of_the_signal">Visual inspection of the
-signal</a></li>
-<li><a href="#id1"><span class="problematic" id="id2">`Other user-defined tasks ... &lt;#Other_user-defined_tasks_&gt;`__</span></a></li>
+<li><a class="reference internal" href="#function-prototype"><span>Function prototype</span></a></li>
+<li><a class="reference internal" href="#argument-parsing"><span>Argument parsing</span></a></li>
+<li><a class="reference internal" href="#qrs-automatic-detection"><span>QRS automatic detection</span></a></li>
+<li><a class="reference internal" href="#qrs-visual-inspection-and-correction"><span>QRS visual inspection and
+correction</span></a></li>
+<li><a class="reference internal" href="#ppg-abp-pulse-detection"><span>PPG/ABP pulse detection</span></a></li>
+<li><a class="reference internal" href="#ppg-abp-waves-visual-inspection-and-correction"><span>PPG/ABP waves visual inspection and
+correction</span></a></li>
+<li><a class="reference internal" href="#ecg-automatic-delineation"><span>ECG automatic delineation</span></a></li>
+<li><a class="reference internal" href="#visual-inspection-of-the-detection-delineation"><span>Visual inspection of the
+detection/delineation</span></a></li>
+<li><a class="reference internal" href="#automatic-heartbeat-classification"><span>Automatic Heartbeat
+classification</span></a></li>
+<li><span class="xref std std-ref">Visual inspection of the
+signal</span></li>
+<li><a class="reference internal" href="#other-user-defined-tasks"><span>Other user-defined tasks ...</span></a></li>
 </ul>
 </div>
 <div class="section" id="function-prototype">
-<h1>Function prototype<a class="headerlink" href="#function-prototype" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h2>Function prototype<a class="headerlink" href="#function-prototype" title="Permalink to this headline">¶</a></h2>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="k">function</span><span class="w"> </span><span class="nf">examples</span><span class="p">(</span>pid_str, examples_path, user_str<span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
 <p><em>examples</em> accepts three <em>optional</em> arguments:</p>
 <ul class="simple">
 <li><strong>*pid_str*</strong> (optional) string identifier for this work instance in
@@ -197,11 +190,60 @@ recordings. Default value
 </ul>
 </div>
 <div class="section" id="argument-parsing">
-<h1>Argument parsing<a class="headerlink" href="#argument-parsing" title="Permalink to this headline">¶</a></h1>
+<span id="id2"></span><h2>Argument parsing<a class="headerlink" href="#argument-parsing" title="Permalink to this headline">¶</a></h2>
 <p>Simple and straight forward.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre>    <span class="k">if</span><span class="p">(</span> <span class="n">nargin</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="o">||</span> <span class="o">~</span><span class="n">ischar</span><span class="p">(</span><span class="n">pid_str</span><span class="p">)</span> <span class="p">)</span>
+        <span class="c">% single PID run</span>
+        <span class="n">pid_str</span> <span class="p">=</span> <span class="s">&#39;1/1&#39;</span><span class="p">;</span>
+    <span class="k">end</span>
+    <span class="k">if</span><span class="p">(</span> <span class="n">nargin</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">||</span> <span class="o">~</span><span class="n">exist</span><span class="p">(</span><span class="n">examples_path</span><span class="p">,</span> <span class="s">&#39;dir&#39;</span><span class="p">)</span> <span class="p">)</span>
+        <span class="c">% inspect ECG files in rootpath\example_recordings\ folder</span>
+        <span class="n">root_path</span> <span class="p">=</span> <span class="n">fileparts</span><span class="p">(</span><span class="n">mfilename</span><span class="p">(</span><span class="s">&#39;fullpath&#39;</span><span class="p">));</span>
+        <span class="c">% default folder to look at</span>
+        <span class="n">examples_path</span> <span class="p">=</span> <span class="p">[</span><span class="n">root_path</span> <span class="n">filesep</span> <span class="s">&#39;example_recordings&#39;</span> <span class="n">filesep</span> <span class="p">];</span>
+        <span class="k">if</span><span class="p">(</span><span class="o">~</span><span class="n">exist</span><span class="p">(</span><span class="n">examples_path</span><span class="p">,</span> <span class="s">&#39;dir&#39;</span><span class="p">))</span>
+            <span class="n">disp_string_framed</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#39;Please provide a valid path with ECG recordings&#39;</span><span class="p">);</span>
+            <span class="k">return</span>
+        <span class="k">end</span>
+    <span class="k">else</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">examples_path</span><span class="p">(</span><span class="k">end</span><span class="p">)</span> <span class="o">~=</span> <span class="n">filesep</span> <span class="p">)</span>
+            <span class="n">examples_path</span> <span class="p">=</span> <span class="p">[</span><span class="n">examples_path</span> <span class="n">filesep</span><span class="p">];</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="k">if</span><span class="p">(</span> <span class="n">nargin</span> <span class="o">&lt;</span> <span class="mi">3</span>  <span class="p">)</span>
+        <span class="n">user_str</span> <span class="p">=</span> <span class="s">&#39;&#39;</span><span class="p">;</span>
+    <span class="k">end</span>
+<span class="c">% Explore the *examples_path* for ECG recordings.</span>
+    <span class="n">filenames</span> <span class="p">=</span> <span class="n">dir</span><span class="p">(</span><span class="n">examples_path</span><span class="p">);</span>
+    <span class="n">recnames</span> <span class="p">=</span> <span class="p">{</span><span class="n">filenames</span><span class="p">(:).</span><span class="n">name</span><span class="p">};</span>
+<span class="c">% In this case I hardcoded only one recording</span>
+    <span class="n">recnames</span> <span class="p">=</span> <span class="p">{</span><span class="s">&#39;ex_ABP_PPG_Registro_01M&#39;</span><span class="p">};</span>
+<span class="c">% But you can use this to iterate for all of them.</span>
+<span class="c">%     [~,recnames] = cellfun(@(a)(fileparts(a)), recnames, &#39;UniformOutput&#39;, false);</span>
+<span class="c">%     recnames = unique(recnames);</span>
+<span class="c">%     recnames = setdiff(recnames, {&#39;&#39; &#39;.&#39; &#39;..&#39; &#39;results&#39; &#39;condor&#39; });</span>
+<span class="c">%     recnames = recnames(1)</span>
+    <span class="n">lrecnames</span> <span class="p">=</span> <span class="nb">length</span><span class="p">(</span><span class="n">recnames</span><span class="p">);</span>
+    <span class="c">% In case of running in a user-assisted fashion.</span>
+    <span class="n">bUseDesktop</span> <span class="p">=</span> <span class="n">usejava</span><span class="p">(</span><span class="s">&#39;desktop&#39;</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span> <span class="n">bUseDesktop</span> <span class="p">)</span>
+        <span class="n">tmp_path</span> <span class="p">=</span> <span class="n">tempdir</span><span class="p">;</span>
+        <span class="n">output_path</span> <span class="p">=</span> <span class="p">[</span> <span class="n">examples_path</span> <span class="s">&#39;results&#39;</span> <span class="n">filesep</span> <span class="p">];</span>
+    <span class="k">else</span>
+        <span class="c">% For cluster or distributed environment processing.</span>
+        <span class="n">InstallECGkit</span><span class="p">();</span>
+        <span class="c">% this is a local path, usually faster to reach than output_path</span>
+        <span class="n">tmp_path</span> <span class="p">=</span> <span class="s">&#39;/scratch/&#39;</span><span class="p">;</span>
+        <span class="c">% distributed or cluster-wide accesible path</span>
+        <span class="n">output_path</span> <span class="p">=</span> <span class="p">[</span> <span class="n">examples_path</span> <span class="s">&#39;results&#39;</span> <span class="n">filesep</span> <span class="p">];</span>
+    <span class="k">end</span>
+<span class="c">% just for debugging, keep it commented.</span>
+<span class="c">%     bUseDesktop = false</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="qrs-automatic-detection">
-<h1>QRS automatic detection<a class="headerlink" href="#qrs-automatic-detection" title="Permalink to this headline">¶</a></h1>
+<span id="id3"></span><h2>QRS automatic detection<a class="headerlink" href="#qrs-automatic-detection" title="Permalink to this headline">¶</a></h2>
 <p>In this example the first step is the location of each heartbeat, or QRS
 complexes detection. To achieve this, the kit includes the following
 algorithms:</p>
@@ -231,9 +273,66 @@ class for more details) and other specific for a certain task, such as
 <em>gqrs_config_filename</em> (see others in <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:edit('ECGtask_QRS_detection.m')">QRS
 detection</a>
 task source).</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre>    <span class="c">% go through all files</span>
+    <span class="n">ECG_all_wrappers</span> <span class="p">=</span> <span class="p">[];</span>
+    <span class="n">jj</span> <span class="p">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">lrecnames</span>
+        <span class="n">rec_filename</span> <span class="p">=</span> <span class="p">[</span><span class="n">examples_path</span> <span class="n">recnames</span><span class="p">{</span><span class="n">ii</span><span class="p">}];</span>
+        <span class="c">% task name,</span>
+<span class="c">%         ECGt_QRSd = &#39;QRS_detection&#39;;</span>
+        <span class="c">% or create an specific handle to have more control</span>
+        <span class="n">ECGt_QRSd</span> <span class="p">=</span> <span class="n">ECGtask_QRS_detection</span><span class="p">();</span>
+<span class="c">%         % select an specific algorithm. Default: Run all detectors</span>
+<span class="c">%         ECGt_QRSd.detectors = &#39;wavedet&#39;; % Wavedet algorithm based on</span>
+<span class="c">%         ECGt_QRSd.detectors = &#39;pantom&#39;;  % Pan-Tompkins alg.</span>
+<span class="c">%         ECGt_QRSd.detectors = &#39;gqrs&#39;;    % WFDB gqrs algorithm.</span>
+<span class="c">%         ECGt_QRSd.detectors = &#39;user:example_worst_ever_QRS_detector&#39;;    % Example of how you can add your own QRS detector.</span>
+<span class="c">%         ECGt_QRSd.detectors = &#39;user:your_QRS_detector_func_name&#39;;    %</span>
+<span class="c">%         &quot;your_QRS_detector_func_name&quot; can be your own detector.</span>
+        <span class="n">ECGt_QRSd</span><span class="p">.</span><span class="n">detectors</span> <span class="p">=</span> <span class="p">{</span><span class="s">&#39;wavedet&#39;</span> <span class="s">&#39;gqrs&#39;</span> <span class="s">&#39;wqrs&#39;</span> <span class="s">&#39;user:example_worst_ever_QRS_detector&#39;</span><span class="p">};</span>
+        <span class="c">% you can individualize each run of the QRS detector with an</span>
+        <span class="c">% external string</span>
+        <span class="n">ECGt_QRSd</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
+        <span class="c">% or group by the config used</span>
+<span class="c">%         ECGt_QRSd.user_string = ECGt_QRSd.detectors;</span>
+<span class="c">%         ECGt_QRSd.only_ECG_leads = false;    % consider all signals ECG</span>
+        <span class="n">ECGt_QRSd</span><span class="p">.</span><span class="n">only_ECG_leads</span> <span class="p">=</span> <span class="n">true</span><span class="p">;</span>    <span class="c">% Identify ECG signals based on their header description.</span>
+        <span class="n">ECG_w</span> <span class="p">=</span> <span class="n">ECGwrapper</span><span class="p">(</span> <span class="s">&#39;recording_name&#39;</span><span class="p">,</span> <span class="n">rec_filename</span><span class="p">,</span> <span class="c">...</span>
+                            <span class="s">&#39;this_pid&#39;</span><span class="p">,</span> <span class="n">pid_str</span><span class="p">,</span> <span class="c">...</span>
+                            <span class="s">&#39;tmp_path&#39;</span><span class="p">,</span> <span class="n">tmp_path</span><span class="p">,</span> <span class="c">...</span>
+                            <span class="s">&#39;output_path&#39;</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="c">...</span>
+                            <span class="s">&#39;ECGtaskHandle&#39;</span><span class="p">,</span> <span class="n">ECGt_QRSd</span><span class="p">);</span>
+        <span class="k">try</span>
+            <span class="c">% process the task</span>
+            <span class="n">ECG_w</span><span class="p">.</span><span class="n">Run</span><span class="p">;</span>
+            <span class="c">% collect object if were recognized as ECG recordings.</span>
+            <span class="k">if</span><span class="p">(</span> <span class="n">jj</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">ECG_all_wrappers</span> <span class="p">=</span> <span class="n">ECG_w</span><span class="p">;</span>
+            <span class="k">else</span>
+                <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">jj</span><span class="p">)</span> <span class="p">=</span> <span class="n">ECG_w</span><span class="p">;</span>
+            <span class="k">end</span>
+            <span class="n">jj</span> <span class="p">=</span> <span class="n">jj</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="k">catch</span> <span class="n">MException</span>
+            <span class="k">if</span><span class="p">(</span> <span class="n">strfind</span><span class="p">(</span><span class="n">MException</span><span class="p">.</span><span class="n">identifier</span><span class="p">,</span> <span class="s">&#39;ECGwrapper:ArgCheck:InvalidFormat&#39;</span><span class="p">)</span> <span class="p">)</span>
+                <span class="n">disp_string_framed</span><span class="p">(</span><span class="s">&#39;*Red&#39;</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span> <span class="s">&#39;Could not guess the format of %s&#39;</span><span class="p">,</span> <span class="n">ECG_w</span><span class="p">.</span><span class="n">recording_name</span><span class="p">)</span> <span class="p">);</span>
+            <span class="k">else</span>
+                <span class="c">% report just in case</span>
+                <span class="n">report</span> <span class="p">=</span> <span class="n">getReport</span><span class="p">(</span><span class="n">MException</span><span class="p">);</span>
+                <span class="n">fprintf</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#39;\n%s\n&#39;</span><span class="p">,</span> <span class="n">report</span><span class="p">);</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="c">% recognized recordings</span>
+    <span class="n">lrecnames</span> <span class="p">=</span> <span class="nb">length</span><span class="p">(</span><span class="n">ECG_all_wrappers</span><span class="p">);</span>
+    <span class="c">% at the end, report problems if happened.</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">lrecnames</span>
+        <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ReportErrors</span><span class="p">;</span>
+    <span class="k">end</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="qrs-visual-inspection-and-correction">
-<h1>QRS visual inspection and correction<a class="headerlink" href="#qrs-visual-inspection-and-correction" title="Permalink to this headline">¶</a></h1>
+<span id="id4"></span><h2>QRS visual inspection and correction<a class="headerlink" href="#qrs-visual-inspection-and-correction" title="Permalink to this headline">¶</a></h2>
 <p>This part of the example uses a graphical user interface (GUI) to allow
 the user correcting mistakes that the previous automatic algorithm
 eventually makes.</p>
@@ -242,6 +341,53 @@ the previous QRS detection task finished without problems. Then if no
 errors, the corrector will use as starting point the result of this same
 task, in case the user would like to edit a previously edited result, or
 if not available the result of the QRS detection task.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="k">if</span><span class="p">(</span> <span class="n">bUseDesktop</span> <span class="p">)</span>
+    <span class="c">% other task can be performed on the same objects</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">lrecnames</span>
+        <span class="c">% last worker is the responsible of the visual correction.</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">this_pid</span> <span class="o">==</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">cant_pids</span><span class="p">)</span>
+            <span class="c">% if there are not any previous error.</span>
+            <span class="k">if</span><span class="p">(</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">Processed</span> <span class="o">&amp;&amp;</span> <span class="o">~</span><span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">Error</span> <span class="p">)</span>
+                <span class="c">% this is to use previous saved results as starting point,</span>
+                <span class="c">% if any available</span>
+                <span class="n">cached_filenames</span> <span class="p">=</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">GetCahchedFileName</span><span class="p">({</span><span class="s">&#39;QRS_corrector&#39;</span> <span class="s">&#39;QRS_detection&#39;</span><span class="p">});</span>
+                <span class="c">% if no previous correction work, try the automatic</span>
+                <span class="c">% detection task</span>
+                <span class="c">% if any, do the correction</span>
+                <span class="k">if</span><span class="p">(</span> <span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">cached_filenames</span><span class="p">)</span> <span class="p">)</span>
+                    <span class="c">% this is to use previous saved results as starting point,</span>
+                    <span class="c">% if any available</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span> <span class="p">=</span> <span class="s">&#39;QRS_corrector&#39;</span><span class="p">;</span>
+                    <span class="c">% This task is supposed to be supervised, so only one pid is enough.</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">this_pid</span> <span class="p">=</span> <span class="s">&#39;1/1&#39;</span><span class="p">;</span>
+                    <span class="c">% user provided name to individualize each run</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
+                    <span class="c">% to avoid loading cached results and exit, this flag</span>
+                    <span class="c">% allows the re-editing of the current state of the</span>
+                    <span class="c">% detections.</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">cacheResults</span> <span class="p">=</span> <span class="n">false</span><span class="p">;</span>
+                    <span class="c">% maybe in your application you should run this for</span>
+                    <span class="c">% all files.</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">payload</span> <span class="p">=</span> <span class="n">load</span><span class="p">(</span><span class="n">cached_filenames</span><span class="p">{</span><span class="mi">1</span><span class="p">});</span>
+                    <span class="c">% process the task</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">Run</span><span class="p">;</span>
+                    <span class="c">% restore the original pids configuration</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">this_pid</span> <span class="p">=</span> <span class="n">pid_str</span><span class="p">;</span>
+                    <span class="c">% As we changed for &quot;QRS correction&quot; task, we have to enable this</span>
+                    <span class="c">% value again in order to avoid performing the following tasks every time.</span>
+                    <span class="c">% If you want to recalculate any task, change it to false</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">cacheResults</span> <span class="p">=</span> <span class="n">true</span><span class="p">;</span>
+                <span class="k">end</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="c">% at the end, report problems if happened.</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">lrecnames</span>
+        <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ReportErrors</span><span class="p">;</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</div>
 <p>Then the task invoked by the wrapper object is changed to <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:edit('ECGtask_QRS_corrector.m')">QRS corrector
 task</a>
 and the GUI is presented to the user.</p>
@@ -255,7 +401,7 @@ user can interact with the plots according to the <a class="reference external" 
 documentation</a></p>
 </div>
 <div class="section" id="ppg-abp-pulse-detection">
-<h1>PPG/ABP pulse detection<a class="headerlink" href="#ppg-abp-pulse-detection" title="Permalink to this headline">¶</a></h1>
+<span id="id5"></span><h2>PPG/ABP pulse detection<a class="headerlink" href="#ppg-abp-pulse-detection" title="Permalink to this headline">¶</a></h2>
 <p>In case the recording includes pulsatile signals, such as
 plethysmographic (PPG) or arterial blood pressure (ABP), this kit
 includes the <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_PPG_ABP_detector')">PPG/ABP automatic detector
@@ -264,9 +410,23 @@ which allows the use of two algorithms to perform peak detection,
 <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('PPG_pulses_detector')">WavePPG</a>
 and <a class="reference external" href="wabp-1.htm','-browser')">Physionet&#8217;s wabp</a>.</p>
 <p>other task can be performed on the same objects</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="k">for</span> <span class="n">ii</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">lrecnames</span>
+    <span class="c">% set the delineator task name and run again.</span>
+    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span> <span class="p">=</span> <span class="s">&#39;PPG_ABP_detector&#39;</span><span class="p">;</span>
+    <span class="c">% user provided name to individualize each run</span>
+    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
+    <span class="c">% process the task</span>
+    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">Run</span><span class="p">;</span>
+<span class="k">end</span>
+<span class="c">% at the end, report problems if happened.</span>
+<span class="k">for</span> <span class="n">ii</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">lrecnames</span>
+    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ReportErrors</span><span class="p">;</span>
+<span class="k">end</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="ppg-abp-waves-visual-inspection-and-correction">
-<h1>PPG/ABP waves visual inspection and correction<a class="headerlink" href="#ppg-abp-waves-visual-inspection-and-correction" title="Permalink to this headline">¶</a></h1>
+<span id="id6"></span><h2>PPG/ABP waves visual inspection and correction<a class="headerlink" href="#ppg-abp-waves-visual-inspection-and-correction" title="Permalink to this headline">¶</a></h2>
 <p>The same manual verification made for automatic QRS detection algorithms
 can be performed with pulsatile signals. The <a class="reference external" href="../../../../../../jsD:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_PPG_ABP_corrector')">PPG/ABP corrector
 task</a>
@@ -275,9 +435,56 @@ detections through the same GUI.</p>
 <p><img alt="image5" src="_images/PPG-ABP_corrector.PNG" /></p>
 <p>The following code shows how to use this task. As you can note, the
 interface is almost the same used for the QRS correction task.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="k">if</span><span class="p">(</span> <span class="n">bUseDesktop</span> <span class="p">)</span>
+    <span class="c">% other task can be performed on the same objects</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">lrecnames</span>
+        <span class="c">% last worker is the responsible of the visual correction.</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">this_pid</span> <span class="o">==</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">cant_pids</span><span class="p">)</span>
+            <span class="c">% if there are not any previous error.</span>
+            <span class="k">if</span><span class="p">(</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">Processed</span> <span class="o">&amp;&amp;</span> <span class="o">~</span><span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">Error</span> <span class="p">)</span>
+                <span class="c">% this is to use previous saved results as starting point,</span>
+                <span class="c">% if any available</span>
+                <span class="n">cached_filenames</span> <span class="p">=</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">GetCahchedFileName</span><span class="p">({</span><span class="s">&#39;PPG_ABP_corrector&#39;</span> <span class="s">&#39;PPG_ABP_detector&#39;</span><span class="p">});</span>
+                <span class="c">% if no previous correction work, try the automatic</span>
+                <span class="c">% detection task</span>
+                <span class="c">% if any, do the correction</span>
+                <span class="k">if</span><span class="p">(</span> <span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">cached_filenames</span><span class="p">)</span> <span class="p">)</span>
+                    <span class="c">% this is to use previous saved results as starting point,</span>
+                    <span class="c">% if any available</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span> <span class="p">=</span> <span class="s">&#39;PPG_ABP_corrector&#39;</span><span class="p">;</span>
+                    <span class="c">% This task is supposed to be supervised, so only one pid is enough.</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">this_pid</span> <span class="p">=</span> <span class="s">&#39;1/1&#39;</span><span class="p">;</span>
+                    <span class="c">% user provided name to individualize each run</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
+                    <span class="c">% to avoid loading cached results and exit, this flag</span>
+                    <span class="c">% allows the re-editing of the current state of the</span>
+                    <span class="c">% detections.</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">cacheResults</span> <span class="p">=</span> <span class="n">false</span><span class="p">;</span>
+                    <span class="c">% maybe in your application you should run this for</span>
+                    <span class="c">% all files.</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">payload</span> <span class="p">=</span> <span class="n">load</span><span class="p">(</span><span class="n">cached_filenames</span><span class="p">{</span><span class="mi">1</span><span class="p">});</span>
+                    <span class="c">% process the task</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">Run</span><span class="p">;</span>
+                    <span class="c">% restore the original pids configuration</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">this_pid</span> <span class="p">=</span> <span class="n">pid_str</span><span class="p">;</span>
+                    <span class="c">% As we changed for &quot;QRS correction&quot; task, we have to enable this</span>
+                    <span class="c">% value again in order to avoid performing the following tasks every time.</span>
+                    <span class="c">% If you want to recalculate any task, change it to false</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">cacheResults</span> <span class="p">=</span> <span class="n">true</span><span class="p">;</span>
+                <span class="k">end</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="c">% at the end, report problems if happened.</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">lrecnames</span>
+        <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ReportErrors</span><span class="p">;</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="ecg-automatic-delineation">
-<h1>ECG automatic delineation<a class="headerlink" href="#ecg-automatic-delineation" title="Permalink to this headline">¶</a></h1>
+<span id="id7"></span><h2>ECG automatic delineation<a class="headerlink" href="#ecg-automatic-delineation" title="Permalink to this headline">¶</a></h2>
 <p>Once the QRS complexes were detected, each heartbeat can be segmented or
 delineated into P-QRS-T waves. To achieve this the kit includes an <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_ECG_delineation')">ECG
 delineation
@@ -289,9 +496,41 @@ help</a>.
 The interface follows the same guidelines described before, as is shown
 in the following code.</p>
 <p>other task can be performed on the same objects</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre>    <span class="k">for</span> <span class="n">ii</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">lrecnames</span>
+        <span class="c">% this is to use previous cached results as starting point</span>
+        <span class="n">cached_filenames</span> <span class="p">=</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">GetCahchedFileName</span><span class="p">(</span><span class="s">&#39;QRS_corrector&#39;</span><span class="p">);</span>
+        <span class="c">% if corrected QRS detections are not available, wavedet</span>
+        <span class="c">% performs automatic QRS detection.</span>
+        <span class="k">if</span><span class="p">(</span> <span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">cached_filenames</span><span class="p">)</span> <span class="p">)</span>
+            <span class="c">% this is to use previous result from the automatic QRS</span>
+            <span class="c">% detection</span>
+            <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">payload</span> <span class="p">=</span> <span class="n">load</span><span class="p">(</span><span class="n">cached_filenames</span><span class="p">{</span><span class="mi">1</span><span class="p">});</span>
+        <span class="k">end</span>
+        <span class="c">% set the delineator task name and run again.</span>
+        <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span> <span class="p">=</span> <span class="s">&#39;ECG_delineation&#39;</span><span class="p">;</span>
+        <span class="c">% user provided name to individualize each run</span>
+        <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
+        <span class="c">% Identify ECG signals based on their header description and</span>
+        <span class="c">% perform delineation in those leads.</span>
+        <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">only_ECG_leads</span> <span class="p">=</span> <span class="n">true</span><span class="p">;</span>
+<span class="c">%         ECGt_QRSd.detectors = &#39;wavedet&#39;; % Wavedet algorithm based on</span>
+<span class="c">%         ECGt_QRSd.detectors = &#39;user:example_worst_ever_ECG_delineator&#39;;</span>
+<span class="c">%         % Example of how you can add your own ECG delineator.</span>
+<span class="c">%         ECGt_QRSd.detectors = &#39;user:your_ECG_delineator_func_name&#39;;</span>
+<span class="c">%         &quot;your_ECG_delineator_func_name&quot; can be your own delineator.</span>
+        <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">delineators</span> <span class="p">=</span> <span class="p">{</span><span class="s">&#39;wavedet&#39;</span> <span class="s">&#39;user:example_worst_ever_ECG_delineator&#39;</span><span class="p">};</span>
+        <span class="c">% process the task</span>
+        <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">Run</span><span class="p">;</span>
+    <span class="k">end</span>
+    <span class="c">% at the end, report problems if happened.</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">lrecnames</span>
+        <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ReportErrors</span><span class="p">;</span>
+    <span class="k">end</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="visual-inspection-of-the-detection-delineation">
-<h1>Visual inspection of the detection/delineation<a class="headerlink" href="#visual-inspection-of-the-detection-delineation" title="Permalink to this headline">¶</a></h1>
+<span id="id8"></span><h2>Visual inspection of the detection/delineation<a class="headerlink" href="#visual-inspection-of-the-detection-delineation" title="Permalink to this headline">¶</a></h2>
 <p>The same manual verification made for all the previous automatic tasks
 is repeated for ECG delineation. The <a class="reference external" href="../../../../../../jsD:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_ECG_delineation_corrector')">ECG delineation corrector
 task</a>
@@ -301,9 +540,56 @@ the behaviour of the QRS or PPG/ABP correction GUI, is that addition of
 new events to the P-QRS-T series is not allowed, in order to keep the
 assosiation of a wave fiducial point to a heartbeat.</p>
 <p><img alt="image6" src="_images/ECG_delineator_corrector.png" /></p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="k">if</span><span class="p">(</span> <span class="n">bUseDesktop</span> <span class="p">)</span>
+    <span class="c">% other task can be performed on the same objects</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">lrecnames</span>
+        <span class="c">% last worker is the responsible of the visual correction.</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">this_pid</span> <span class="o">==</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">cant_pids</span><span class="p">)</span>
+            <span class="c">% if there are not any previous error.</span>
+            <span class="k">if</span><span class="p">(</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">Processed</span> <span class="o">&amp;&amp;</span> <span class="o">~</span><span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">Error</span> <span class="p">)</span>
+                <span class="c">% this is to use previous saved results as starting point,</span>
+                <span class="c">% if any available</span>
+                <span class="n">cached_filenames</span> <span class="p">=</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">GetCahchedFileName</span><span class="p">(</span> <span class="p">{</span><span class="s">&#39;ECG_delineation_corrector&#39;</span> <span class="s">&#39;ECG_delineation&#39;</span><span class="p">}</span> <span class="p">);</span>
+                <span class="c">% if no previous correction work, try the automatic</span>
+                <span class="c">% detection task</span>
+                <span class="c">% if any, do the correction</span>
+                <span class="k">if</span><span class="p">(</span> <span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">cached_filenames</span><span class="p">)</span> <span class="p">)</span>
+                    <span class="c">% this is to use previous saved results as starting point,</span>
+                    <span class="c">% if any available</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span> <span class="p">=</span> <span class="s">&#39;ECG_delineation_corrector&#39;</span><span class="p">;</span>
+                    <span class="c">% This task is supposed to be supervised, so only one pid is enough.</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">this_pid</span> <span class="p">=</span> <span class="s">&#39;1/1&#39;</span><span class="p">;</span>
+                    <span class="c">% user provided name to individualize each run</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
+                    <span class="c">% to avoid loading cached results and exit, this flag</span>
+                    <span class="c">% allows the re-editing of the current state of the</span>
+                    <span class="c">% detections.</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">cacheResults</span> <span class="p">=</span> <span class="n">false</span><span class="p">;</span>
+                    <span class="c">% maybe in your application you should run this for</span>
+                    <span class="c">% all files.</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">payload</span> <span class="p">=</span> <span class="n">load</span><span class="p">(</span><span class="n">cached_filenames</span><span class="p">{</span><span class="mi">1</span><span class="p">});</span>
+                    <span class="c">% process the task</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">Run</span><span class="p">;</span>
+                    <span class="c">% restore the original pids configuration</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">this_pid</span> <span class="p">=</span> <span class="n">pid_str</span><span class="p">;</span>
+                    <span class="c">% As we changed for &quot;QRS correction&quot; task, we have to enable this</span>
+                    <span class="c">% value again in order to avoid performing the following tasks every time.</span>
+                    <span class="c">% If you want to recalculate any task, change it to false</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">cacheResults</span> <span class="p">=</span> <span class="n">true</span><span class="p">;</span>
+                <span class="k">end</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="c">% at the end, report problems if happened.</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">lrecnames</span>
+        <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ReportErrors</span><span class="p">;</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="automatic-heartbeat-classification">
-<h1>Automatic Heartbeat classification<a class="headerlink" href="#automatic-heartbeat-classification" title="Permalink to this headline">¶</a></h1>
+<span id="id9"></span><h2>Automatic Heartbeat classification<a class="headerlink" href="#automatic-heartbeat-classification" title="Permalink to this headline">¶</a></h2>
 <p>The last task described in this example is the classification of
 heartbeats according to the <a class="reference external" href="matlab:web('http://marketplace.aami.org/eseries/scriptcontent/docs/Preview%20Files/EC57_1212_preview.pdf','-browser')">EC-57 AAMI
 recommendation</a>.
@@ -321,9 +607,36 @@ the following classes:</p>
 <p>The <em>a2hbc</em> algorithm can opperate automatically or assisted by the
 user, for more details check the <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('a2hbc')">a2hbc
 documentation</a>.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre>    <span class="k">for</span> <span class="n">ii</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">lrecnames</span>
+        <span class="c">% this is to use previous cached results as starting point</span>
+        <span class="n">cached_filenames</span> <span class="p">=</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">GetCahchedFileName</span><span class="p">({</span><span class="s">&#39;QRS_corrector&#39;</span> <span class="s">&#39;QRS_detection&#39;</span><span class="p">});</span>
+        <span class="c">% if corrected QRS detections are not available, wavedet</span>
+        <span class="c">% performs automatic QRS detection.</span>
+        <span class="k">if</span><span class="p">(</span> <span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">cached_filenames</span><span class="p">)</span> <span class="p">)</span>
+            <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span> <span class="p">=</span> <span class="s">&#39;ECG_heartbeat_classifier&#39;</span><span class="p">;</span>
+            <span class="c">% the heartbeat classifier uses the QRS detection performed</span>
+            <span class="c">% before, if available the task will use the corrected</span>
+            <span class="c">% detections.</span>
+            <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">payload</span> <span class="p">=</span> <span class="n">load</span><span class="p">(</span><span class="n">cached_filenames</span><span class="p">{</span><span class="mi">1</span><span class="p">});</span>
+            <span class="c">% modes of operation of the a2hbc algorithm</span>
+            <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">mode</span> <span class="p">=</span> <span class="s">&#39;auto&#39;</span><span class="p">;</span>
+<span class="c">%             ECG_all_wrappers(ii).ECGtaskHandle.mode = &#39;slightly-assisted&#39;;</span>
+<span class="c">%             ECG_all_wrappers(ii).ECGtaskHandle.mode = &#39;assisted&#39;;</span>
+            <span class="c">% user provided name to individualize each run</span>
+            <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
+            <span class="c">% process the task</span>
+            <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">Run</span><span class="p">;</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="c">% at the end, report problems if happened.</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">lrecnames</span>
+        <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ReportErrors</span><span class="p">;</span>
+    <span class="k">end</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="visual-inspection-of-the-signal">
-<h1>Visual inspection of the signal<a class="headerlink" href="#visual-inspection-of-the-signal" title="Permalink to this headline">¶</a></h1>
+<span id="id10"></span><h2>Visual inspection of the signal<a class="headerlink" href="#visual-inspection-of-the-signal" title="Permalink to this headline">¶</a></h2>
 <p>Finaly a report is generated with the results of the previous tasks,
 either in a pdf document or several images. The report generated can be
 customized with the interface described in the
@@ -335,9 +648,31 @@ The following are just three examples of a longer report:</p>
 <p>And finaly a snapshot of the last part of the recording.</p>
 <p><img alt="image9" src="_images/ex_ABP_PPG_Registro_01M_full_Pagina_10.png" /></p>
 <p>This is the code used to create a PDF report.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre>    <span class="n">filename</span> <span class="p">=</span> <span class="p">[];</span> <span class="c">% default setting. Let the report function decide.</span>
+<span class="c">%     filename = &#39;container_filename&#39;; % to put everything in one big file.</span>
+    <span class="c">% other winlengths can be added to the array in order to further</span>
+    <span class="c">% explore the recordings, and the algorithm results.</span>
+<span class="c">%     winlengths = []; % default setting</span>
+    <span class="n">winlengths</span> <span class="p">=</span> <span class="p">[</span> <span class="mi">7</span> <span class="p">];</span> <span class="c">%seconds</span>
+    <span class="c">% go through all files</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">lrecnames</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">this_pid</span> <span class="o">==</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">cant_pids</span><span class="p">)</span>
+            <span class="c">% last worker is the responsible of the reporting.</span>
+            <span class="k">if</span><span class="p">(</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">this_pid</span> <span class="o">==</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">cant_pids</span><span class="p">)</span>
+                <span class="k">try</span>
+                    <span class="n">reportECG</span><span class="p">(</span><span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">),</span> <span class="s">&#39;LowDetail&#39;</span><span class="p">,</span> <span class="s">&#39;full&#39;</span><span class="p">,</span> <span class="n">winlengths</span><span class="p">,</span> <span class="s">&#39;pdf&#39;</span><span class="p">,</span> <span class="n">filename</span> <span class="p">);</span>
+                <span class="k">catch</span> <span class="n">MException</span>
+                    <span class="n">report</span> <span class="p">=</span> <span class="n">getReport</span><span class="p">(</span><span class="n">MException</span><span class="p">);</span>
+                    <span class="n">fprintf</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#39;\n%s\n&#39;</span><span class="p">,</span> <span class="n">report</span><span class="p">);</span>
+                <span class="k">end</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="other-user-defined-tasks">
-<h1>Other user-defined tasks ...<a class="headerlink" href="#other-user-defined-tasks" title="Permalink to this headline">¶</a></h1>
+<span id="id11"></span><h2>Other user-defined tasks ...<a class="headerlink" href="#other-user-defined-tasks" title="Permalink to this headline">¶</a></h2>
 <p>Maybe the most important and useful aspect of the kit, is that you can
 add your own algorithms. This can be done by following the interface
 documented through the several examples included above. The <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_QRS_detection')">QRS
@@ -347,6 +682,12 @@ delineation</a>
 tasks already include a way to interface your own algorithms through the
 <strong>user:function_name</strong> method. Check the above sections for more
 details.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="k">if</span><span class="p">(</span> <span class="o">~</span><span class="n">bUseDesktop</span> <span class="p">)</span>
+    <span class="n">UnInstallECGkit</span><span class="p">();</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -355,10 +696,10 @@ details.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="release-notes.html" class="btn btn-neutral float-right" title="ECGkit">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="release-notes.html" class="btn btn-neutral float-right" title="Release notes">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="getting_started.html" class="btn btn-neutral" title="ECGkit"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="getting_started.html" class="btn btn-neutral" title="Getting Started"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

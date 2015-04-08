@@ -323,6 +323,9 @@ function examples(pid_str, examples_path, user_str)
         
         % this is to use previous cached results as starting point
         cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName('QRS_corrector');
+
+        % set the delineator task name and run again.
+        ECG_all_wrappers(ii).ECGtaskHandle = 'ECG_delineation';
         
         % if corrected QRS detections are not available, wavedet
         % performs automatic QRS detection.
@@ -332,9 +335,6 @@ function examples(pid_str, examples_path, user_str)
             ECG_all_wrappers(ii).ECGtaskHandle.payload = load(cached_filenames{1});
 
         end
-
-        % set the delineator task name and run again.
-        ECG_all_wrappers(ii).ECGtaskHandle = 'ECG_delineation';
 
 %         ECGt_QRSd.detectors = 'wavedet'; % Wavedet algorithm based on
 %         ECGt_QRSd.detectors = 'user:example_worst_ever_ECG_delineator';
