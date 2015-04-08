@@ -368,7 +368,7 @@ function examples(pid_str, examples_path, user_str)
 
                     % this is to use previous saved results as starting point,
                     % if any available
-                    cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName( {'Delineation_corrector' 'ECG_delineation'} );
+                    cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName( {'ECG_delineation_corrector' 'ECG_delineation'} );
 
                     % if no previous correction work, try the automatic
                     % detection task
@@ -378,7 +378,7 @@ function examples(pid_str, examples_path, user_str)
 
                         % this is to use previous saved results as starting point,
                         % if any available
-                        ECG_all_wrappers(ii).ECGtaskHandle = 'Delineation_corrector';
+                        ECG_all_wrappers(ii).ECGtaskHandle = 'ECG_delineation_corrector';
                         
                         % This task is supposed to be supervised, so only one pid is enough.
                         ECG_all_wrappers(ii).this_pid = '1/1';
