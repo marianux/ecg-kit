@@ -2606,12 +2606,12 @@ end
         % grid
         % time
         aux_grid_idx = length(paperModeHdl) + 1;
-        paperModeHdl = [paperModeHdl; colvec(arrayfun(@(a,b)(plot(axes_hdl, a, b, '-', 'Color', [1 0.6 0.6], 'LineWidth', 0.5 )), repmat(major_tick_x,2,1), repmat([bottom_frame; top_frame],1,length(major_tick_x)), 'UniformOutput', false)) ];
-        paperModeHdl = [paperModeHdl; colvec(arrayfun(@(a,b)(plot(axes_hdl, a, b, ':', 'Color', [1 0.6 0.6], 'LineWidth', 0.3 )), repmat(minor_tick_x,2,1), repmat([bottom_frame; top_frame],1,length(minor_tick_x)), 'UniformOutput', false))];
+        paperModeHdl = [paperModeHdl; colvec(arrayfun(@(a)(plot(axes_hdl, repmat(a,2,1), [bottom_frame; top_frame], '-', 'Color', [1 0.6 0.6], 'LineWidth', 0.5 )), major_tick_x, 'UniformOutput', false)) ];
+        paperModeHdl = [paperModeHdl; colvec(arrayfun(@(a)(plot(axes_hdl, repmat(a,2,1), [bottom_frame; top_frame], ':', 'Color', [1 0.6 0.6], 'LineWidth', 0.3 )), minor_tick_x, 'UniformOutput', false))];
         
         %voltage
-        paperModeHdl = [paperModeHdl; colvec(arrayfun(@(a,b)(plot(axes_hdl, a, b, 'Color', [1 0.6 0.6], 'LineWidth', 0.5 )), repmat([left_frame; right_frame],1,length(major_tick_voltage)), repmat(major_tick_voltage,2,1), 'UniformOutput', false)) ];
-        paperModeHdl = [paperModeHdl; colvec(arrayfun(@(a,b)(plot(axes_hdl, a, b, ':', 'Color', [1 0.6 0.6], 'LineWidth', 0.3 )), repmat([left_frame; right_frame],1,length(minor_tick_voltage)), repmat(minor_tick_voltage,2,1), 'UniformOutput', false)) ];
+        paperModeHdl = [paperModeHdl; colvec(arrayfun(@(a)(plot(axes_hdl, [left_frame; right_frame], repmat(a,2,1), 'Color', [1 0.6 0.6], 'LineWidth', 0.5 )), major_tick_voltage, 'UniformOutput', false)) ];
+        paperModeHdl = [paperModeHdl; colvec(arrayfun(@(a)(plot(axes_hdl, [left_frame; right_frame], repmat(a,2,1), ':', 'Color', [1 0.6 0.6], 'LineWidth', 0.3 )), minor_tick_voltage, 'UniformOutput', false)) ];
         
         aux_grid_idx = aux_grid_idx:length(paperModeHdl);
 
