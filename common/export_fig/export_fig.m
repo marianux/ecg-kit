@@ -1,8 +1,8 @@
-%EXPORT_FIG  Exports figures in a publication-quality format
+%EXPORT_FIG  Exports figures suitable for publication
 %
 % Examples:
-%   imageData = export_fig
-%   [imageData, alpha] = export_fig
+%   im = export_fig
+%   [im alpha] = export_fig
 %   export_fig filename
 %   export_fig filename -format1 -format2
 %   export_fig ... -nocrop
@@ -12,7 +12,6 @@
 %   export_fig ... -r<val>
 %   export_fig ... -a<val>
 %   export_fig ... -q<val>
-%   export_fig ... -p<val>
 %   export_fig ... -<renderer>
 %   export_fig ... -<colorspace>
 %   export_fig ... -append
@@ -20,8 +19,8 @@
 %   export_fig(..., handle)
 %
 % This function saves a figure or single axes to one or more vector and/or
-% bitmap file formats, and/or outputs a rasterized version to the workspace,
-% with the following properties:
+% bitmap file formats, and/or outputs a rasterized version to the
+% workspace, with the following properties:
 %   - Figure/axes reproduced as it appears on screen
 %   - Cropped borders (optional)
 %   - Embedded fonts (vector formats)
@@ -34,8 +33,8 @@
 %   - Variable image compression, including lossless (pdf, eps, jpg)
 %   - Optionally append to file (pdf, tiff)
 %   - Vector formats: pdf, eps
-%   - Bitmap formats: png, tiff, jpg, bmp, export to workspace
-%
+%   - Bitmap formats: png, tiff, jpg, bmp, export to workspace 
+%   
 % This function is especially suited to exporting figures for use in
 % publications and presentations, because of the high quality and
 % portability of media produced.
@@ -45,20 +44,21 @@
 % output file. For transparent background (and semi-transparent patch
 % objects), use the -transparent option or set the figure 'Color' property
 % to 'none'. To make axes transparent set the axes 'Color' property to
-% 'none'. PDF, EPS and PNG are the only formats that support a transparent
-% background, while only PNG format supports transparency of patch objects.
+% 'none'. Pdf, eps and png are the only file formats to support a
+% transparent background, whilst the png format alone supports transparency
+% of patch objects.
 %
 % The choice of renderer (opengl, zbuffer or painters) has a large impact
-% on the quality of output. The default value (opengl for bitmaps, painters
-% for vector formats) generally gives good results, but if you aren't
-% satisfied then try another renderer.  Notes: 1) For vector formats (EPS,
-% PDF), only painters generates vector graphics. 2) For bitmaps, only
+% on the quality of output. Whilst the default value (opengl for bitmaps,
+% painters for vector formats) generally gives good results, if you aren't
+% satisfied then try another renderer.  Notes: 1) For vector formats (eps,
+% pdf), only painters generates vector graphics. 2) For bitmaps, only
 % opengl can render transparent patch objects correctly. 3) For bitmaps,
 % only painters will correctly scale line dash and dot lengths when
 % magnifying or anti-aliasing. 4) Fonts may be substitued with Courier when
 % using painters.
 %
-% When exporting to vector format (PDF & EPS) and bitmap format using the
+% When exporting to vector format (pdf & eps) and bitmap format using the
 % painters renderer, this function requires that ghostscript is installed
 % on your system. You can download this from:
 %   http://www.ghostscript.com
@@ -66,7 +66,7 @@
 % suite of functions. You can download this from:
 %   http://www.foolabs.com/xpdf
 %
-% Inputs:
+%IN:
 %   filename - string containing the name (optionally including full or
 %              relative path) of the file the figure is to be saved as. If
 %              a path is not specified, the figure is saved in the current
@@ -104,10 +104,9 @@
 %   -a1, -a2, -a3, -a4 - option indicating the amount of anti-aliasing to
 %                        use for bitmap outputs. '-a1' means no anti-
 %                        aliasing; '-a4' is the maximum amount (default).
-%   -<renderer> - option to force a particular renderer (painters, opengl or
-%                 zbuffer). Default value: opengl for bitmap formats or
-%                 figures with patches and/or transparent annotations;
-%                 painters for vector formats without patches/transparencies.
+%   -<renderer> - option to force a particular renderer (painters, opengl
+%                 or zbuffer) to be used over the default: opengl for
+%                 bitmaps; painters for vector formats.
 %   -<colorspace> - option indicating which colorspace color figures should
 %                   be saved in: RGB (default), CMYK or gray. CMYK is only
 %                   supported in pdf, eps and tiff output.
@@ -118,35 +117,26 @@
 %             default for pdf & eps. Note: lossless compression can
 %             sometimes give a smaller file size than the default lossy
 %             compression, depending on the type of images.
-%   -p<val> - option to pad a border of width val to exported files, where
-%             val is either a relative size with respect to cropped image
-%             size (i.e. p=0.01 adds a 1% border). For EPS & PDF formats,
-%             val can also be integer in units of 1/72" points (abs(val)>1).
-%             val can be positive (padding) or negative (extra cropping).
-%             If used, the -nocrop flag will be ignored, i.e. the image will
-%             always be cropped and then padded. Default: 0 (i.e. no padding).
 %   -append - option indicating that if the file (pdfs only) already
 %             exists, the figure is to be appended as a new page, instead
 %             of being overwritten (default).
 %   -bookmark - option to indicate that a bookmark with the name of the
 %               figure is to be created in the output file (pdf only).
-%   -d<gs_option> - option to indicate a ghostscript setting. For example,
-%                   -dMaxBitmap=0 or -dNoOutputFonts (Ghostscript 9.15+).
 %   handle - The handle of the figure, axes or uipanels (can be an array of
 %            handles, but the objects must be in the same figure) to be
 %            saved. Default: gcf.
 %
-% Outputs:
-%   imageData - MxNxC uint8 image array of the exported image.
-%   alpha     - MxN single array of alphamatte values in the range [0,1],
-%               for the case when the background is transparent.
+%OUT:
+%   im - MxNxC uint8 image array of the figure.
+%   alpha - MxN single array of alphamatte values in range [0,1], for the
+%           case when the background is transparent.
 %
 %   Some helpful examples and tips can be found at:
-%      https://github.com/altmany/export_fig
+%      http://sites.google.com/site/oliverwoodford/software/export_fig
 %
-%   See also PRINT, SAVEAS, ScreenCapture (on the Matlab File Exchange)
+%   See also PRINT, SAVEAS.
 
-% Copyright (C) Oliver Woodford 2008-2014, Yair Altman 2015-
+% Copyright (C) Oliver Woodford 2008-2012
 
 % The idea of using ghostscript is inspired by Peder Axensten's SAVEFIG
 % (fex id: 10889) which is itself inspired by EPS2PDF (fex id: 5782).
@@ -179,841 +169,662 @@
 %           suggesting it.
 % 25/09/13: Add support for changing resolution in vector formats. Thanks
 %           to Jan Jaap Meijer for suggesting it.
-% 07/05/14: Add support for '~' at start of path. Thanks to Sally Warner
-%           for suggesting it.
-% 24/02/15: Fix Matlab R2014b bug (issue #34): plot markers are not
-%           displayed when ZLimMode='manual'
-% 25/02/15: Fix issue #4 (using HG2 on R2014a and earlier)
-% 25/02/15: Fix issue #21 (bold TeX axes labels/titles in R2014b)
-% 26/02/15: If temp dir is not writable, use the user-specified folder
-%           for temporary EPS/PDF files (Javier Paredes)
-% 27/02/15: Modified repository URL from github.com/ojwoodford to /altmany
-%           Indented main function
-%           Added top-level try-catch block to display useful workarounds
-% 28/02/15: Enable users to specify optional ghostscript options (issue #36)
-% 06/03/15: Improved image padding & cropping thanks to Oscar Hartogensis
-% 26/03/15: Fixed issue #49 (bug with transparent grayscale images); fixed out-of-memory issue
-% 26/03/15: Fixed issue #42: non-normalized annotations on HG1
-% 26/03/15: Fixed issue #46: Ghostscript crash if figure units <> pixels
-% 27/03/15: Fixed issue #39: bad export of transparent annotations/patches
-% 28/03/15: Fixed issue #50: error on some Matlab versions with the fix for issue #42
-% 29/03/15: Fixed issue #33: bugs in Matlab's print() function with -cmyk
-% 29/03/15: Improved processing of input args (accept space between param name & value, related to issue #51)
-% 30/03/15: When exporting *.fig files, then saveas *.fig if figure is open, otherwise export the specified fig file
-% 30/03/15: Fixed edge case bug introduced yesterday (commit #ae1755bd2e11dc4e99b95a7681f6e211b3fa9358)
 
-function [imageData, alpha] = export_fig(varargin)
-    [imageData, alpha] = deal([]);
-    hadError = false;
-    displaySuggestedWorkarounds = true;
-
-    % Make sure the figure is rendered correctly _now_ so that properties like
-    % axes limits are up-to-date.
-    drawnow;
-
-    % Parse the input arguments
-    fig = get(0, 'CurrentFigure');
-    [fig, options] = parse_args(nargout, fig, varargin{:});
-
-    % Ensure that we have a figure handle
-    if isequal(fig,-1)
-        return;  % silent bail-out
-    elseif isempty(fig)
-        error('No figure found');
+function [im, alpha] = export_fig(varargin)
+% Make sure the figure is rendered correctly _now_ so that properties like
+% axes limits are up-to-date.
+drawnow;
+% Parse the input arguments
+[fig, options] = parse_args(nargout, varargin{:});
+% Isolate the subplot, if it is one
+cls = all(ismember(get(fig, 'Type'), {'axes', 'uipanel'}));
+if cls
+    % Given handles of one or more axes, so isolate them from the rest
+    fig = isolate_axes(fig);
+else
+    % Check we have a figure
+    if ~isequal(get(fig, 'Type'), 'figure');
+        error('Handle must be that of a figure, axes or uipanel');
     end
-
-    % Isolate the subplot, if it is one
-    cls = all(ismember(get(fig, 'Type'), {'axes', 'uipanel'}));
-    if cls
-        % Given handles of one or more axes, so isolate them from the rest
-        fig = isolate_axes(fig);
-    else
-        % Check we have a figure
-        if ~isequal(get(fig, 'Type'), 'figure');
-            error('Handle must be that of a figure, axes or uipanel');
-        end
-        % Get the old InvertHardcopy mode
-        old_mode = get(fig, 'InvertHardcopy');
-    end
-
-    % Hack the font units where necessary (due to a font rendering bug in print?).
-    % This may not work perfectly in all cases.
-    % Also it can change the figure layout if reverted, so use a copy.
-    magnify = options.magnify * options.aa_factor;
-    if isbitmap(options) && magnify ~= 1
-        fontu = findall(fig, 'FontUnits', 'normalized');
-        if ~isempty(fontu)
-            % Some normalized font units found
-            if ~cls
-                fig = copyfig(fig);
-                set(fig, 'Visible', 'off');
-                fontu = findall(fig, 'FontUnits', 'normalized');
-                cls = true;
-            end
-            set(fontu, 'FontUnits', 'points');
-        end
-    end
-
-    try
-        % MATLAB "feature": axes limits and tick marks can change when printing
-        Hlims = findall(fig, 'Type', 'axes');
+    % Get the old InvertHardcopy mode
+    old_mode = get(fig, 'InvertHardcopy');
+end
+% Hack the font units where necessary (due to a font rendering bug in
+% print?). This may not work perfectly in all cases. Also it can change the
+% figure layout if reverted, so use a copy.
+magnify = options.magnify * options.aa_factor;
+if isbitmap(options) && magnify ~= 1
+    fontu = findobj(fig, 'FontUnits', 'normalized');
+    if ~isempty(fontu)
+        % Some normalized font units found
         if ~cls
-            % Record the old axes limit and tick modes
-            Xlims = make_cell(get(Hlims, 'XLimMode'));
-            Ylims = make_cell(get(Hlims, 'YLimMode'));
-            Zlims = make_cell(get(Hlims, 'ZLimMode'));
-            Xtick = make_cell(get(Hlims, 'XTickMode'));
-            Ytick = make_cell(get(Hlims, 'YTickMode'));
-            Ztick = make_cell(get(Hlims, 'ZTickMode'));
+            fig = copyfig(fig);
+            set(fig, 'Visible', 'off');
+            fontu = findobj(fig, 'FontUnits', 'normalized');
+            cls = true;
         end
+        set(fontu, 'FontUnits', 'points');
+    end
+end
+% MATLAB "feature": axes limits and tick marks can change when printing
+Hlims = findall(fig, 'Type', 'axes');
+if ~cls
+    % Record the old axes limit and tick modes
+    Xlims = make_cell(get(Hlims, 'XLimMode'));
+    Ylims = make_cell(get(Hlims, 'YLimMode'));
+    Zlims = make_cell(get(Hlims, 'ZLimMode'));
+    Xtick = make_cell(get(Hlims, 'XTickMode'));
+    Ytick = make_cell(get(Hlims, 'YTickMode'));
+    Ztick = make_cell(get(Hlims, 'ZTickMode'));
+end
+% Set all axes limit and tick modes to manual, so the limits and ticks can't change
+set(Hlims, 'XLimMode', 'manual', 'YLimMode', 'manual', 'ZLimMode', 'manual', 'XTickMode', 'manual', 'YTickMode', 'manual', 'ZTickMode', 'manual');
+% Set to print exactly what is there
+set(fig, 'InvertHardcopy', 'off');
+% Set the renderer
+switch options.renderer
+    case 1
+        renderer = '-opengl';
+    case 2
+        renderer = '-zbuffer';
+    case 3
+        renderer = '-painters';
+    otherwise
+        renderer = '-opengl'; % Default for bitmaps
+end
 
-        % Set all axes limit and tick modes to manual, so the limits and ticks can't change
-        % Fix Matlab R2014b bug (issue #34): plot markers are not displayed when ZLimMode='manual'
-        set(Hlims, 'XLimMode', 'manual', 'YLimMode', 'manual');
-        set_tick_mode(Hlims, 'X');
-        set_tick_mode(Hlims, 'Y');
-        if ~using_hg2(fig)
-            set(Hlims,'ZLimMode', 'manual');
-            set_tick_mode(Hlims, 'Z');
+% Do the bitmap formats first
+if isbitmap(options)
+    % Get the background colour
+    if options.transparent && (options.png || options.alpha)
+        % Get out an alpha channel
+        % MATLAB "feature": black colorbar axes can change to white and vice versa!
+        hCB = findobj(fig, 'Type', 'axes', 'Tag', 'Colorbar');
+        if isempty(hCB)
+            yCol = [];
+            xCol = [];
+        else
+            yCol = get(hCB, 'YColor');
+            xCol = get(hCB, 'XColor');
+            if iscell(yCol)
+                yCol = cell2mat(yCol);
+                xCol = cell2mat(xCol);
+            end
+            yCol = sum(yCol, 2);
+            xCol = sum(xCol, 2);
         end
-    catch
-        % ignore - fix issue #4 (using HG2 on R2014a and earlier)
-    end
-
-    % Fix issue #21 (bold TeX axes labels/titles in R2014b)
-    try
-        if using_hg2(fig)
-            % Set the FontWeight of axes labels/titles to 'normal'
-            texLabels = findall(fig, 'type','text', 'FontWeight','bold');
-            set(texLabels, 'FontWeight','normal');
+        % MATLAB "feature": apparently figure size can change when changing
+        % colour in -nodisplay mode
+        pos = get(fig, 'Position');
+        % Set the background colour to black, and set size in case it was
+        % changed internally
+        tcol = get(fig, 'Color');
+        set(fig, 'Color', 'k', 'Position', pos);
+        % Correct the colorbar axes colours
+        set(hCB(yCol==0), 'YColor', [0 0 0]);
+        set(hCB(xCol==0), 'XColor', [0 0 0]);
+        % Print large version to array
+        B = print2array(fig, magnify, renderer);
+        % Downscale the image
+        B = downsize(single(B), options.aa_factor);
+        % Set background to white (and set size)
+        set(fig, 'Color', 'w', 'Position', pos);
+        % Correct the colorbar axes colours
+        set(hCB(yCol==3), 'YColor', [1 1 1]);
+        set(hCB(xCol==3), 'XColor', [1 1 1]);
+        % Print large version to array
+        A = print2array(fig, magnify, renderer);
+        % Downscale the image
+        A = downsize(single(A), options.aa_factor);
+        % Set the background colour (and size) back to normal
+        set(fig, 'Color', tcol, 'Position', pos);
+        % Compute the alpha map
+        alpha = round(sum(B - A, 3)) / (255 * 3) + 1;
+        A = alpha;
+        A(A==0) = 1;
+        A = B ./ A(:,:,[1 1 1]);
+        clear B
+        % Convert to greyscale
+        if options.colourspace == 2
+            A = rgb2grey(A);
         end
-    catch
-        % ignore
-    end
-
-    % Fix issue #42: non-normalized annotations on HG1 (internal Matlab bug)
-    annotationHandles = [];
-    try
-        if ~using_hg2(fig)
-            annotationHandles = findall(fig,'Type','hggroup','-and','-property','Units','-and','-not','Units','norm');
-            originalUnits = get(annotationHandles,'Units');
-            set(annotationHandles,'Units','norm');
+        A = uint8(A);
+        % Crop the background
+        if options.crop
+            [alpha, v] = crop_background(alpha, 0);
+            A = A(v(1):v(2),v(3):v(4),:);
         end
-    catch
-        % should never happen, but ignore in any case - issue #50
-    end
-
-    % Fix issue #46: Ghostscript crash if figure units <> pixels
-    oldFigUnits = get(fig,'Units');
-    set(fig,'Units','pixels');
-
-    % Set to print exactly what is there
-    set(fig, 'InvertHardcopy', 'off');
-    % Set the renderer
-    switch options.renderer
-        case 1
-            renderer = '-opengl';
-        case 2
-            renderer = '-zbuffer';
-        case 3
-            renderer = '-painters';
-        otherwise
-            renderer = '-opengl'; % Default for bitmaps
-    end
-
-    try
-        % Do the bitmap formats first
+        if options.png
+            % Compute the resolution
+            res = options.magnify * get(0, 'ScreenPixelsPerInch') / 25.4e-3;
+            % Save the png
+            imwrite(A, [options.name '.png'], 'Alpha', double(alpha), 'ResolutionUnit', 'meter', 'XResolution', res, 'YResolution', res);
+            % Clear the png bit
+            options.png = false;
+        end
+        % Return only one channel for greyscale
         if isbitmap(options)
-            if abs(options.bb_padding) > 1
-                displaySuggestedWorkarounds = false;
-                error('For bitmap output (png,jpg,tif,bmp) the padding value (-p) must be between -1<p<1')
-            end
-            % Get the background colour
-            if options.transparent && (options.png || options.alpha)
-                % Get out an alpha channel
-                % MATLAB "feature": black colorbar axes can change to white and vice versa!
-                hCB = findall(fig, 'Type','axes', 'Tag','Colorbar');
-                if isempty(hCB)
-                    yCol = [];
-                    xCol = [];
-                else
-                    yCol = get(hCB, 'YColor');
-                    xCol = get(hCB, 'XColor');
-                    if iscell(yCol)
-                        yCol = cell2mat(yCol);
-                        xCol = cell2mat(xCol);
-                    end
-                    yCol = sum(yCol, 2);
-                    xCol = sum(xCol, 2);
-                end
-                % MATLAB "feature": apparently figure size can change when changing
-                % colour in -nodisplay mode
-                pos = get(fig, 'Position');
-                % Set the background colour to black, and set size in case it was
-                % changed internally
-                tcol = get(fig, 'Color');
-                set(fig, 'Color', 'k', 'Position', pos);
-                % Correct the colorbar axes colours
-                set(hCB(yCol==0), 'YColor', [0 0 0]);
-                set(hCB(xCol==0), 'XColor', [0 0 0]);
-
-                % The following code might cause out-of-memory errors, so it was chanegd
-                % Print large version to array
-                %B = print2array(fig, magnify, renderer);
-                % Downscale the image
-                %B = downsize(single(B), options.aa_factor);
-                B = single(print2array(fig, magnify/options.aa_factor, renderer));
-
-                % Set background to white (and set size)
-                set(fig, 'Color', 'w', 'Position', pos);
-                % Correct the colorbar axes colours
-                set(hCB(yCol==3), 'YColor', [1 1 1]);
-                set(hCB(xCol==3), 'XColor', [1 1 1]);
-
-                % The following code might cause out-of-memory errors, so it was chanegd
-                % Print large version to array
-                %A = print2array(fig, magnify, renderer);
-                % Downscale the image
-                %A = downsize(single(A), options.aa_factor);
-                A = single(print2array(fig, magnify/options.aa_factor, renderer));
-
-                % Set the background colour (and size) back to normal
-                set(fig, 'Color', tcol, 'Position', pos);
-                % Compute the alpha map
-                alpha = round(sum(B - A, 3)) / (255 * 3) + 1;
-                A = alpha;
-                A(A==0) = 1;
-                A = B ./ A(:,:,[1 1 1]);
-                clear B
-                % Convert to greyscale
-                if options.colourspace == 2
-                    A = rgb2grey(A);
-                end
-                A = uint8(A);
-                % Crop the background
-                if options.crop
-                    %[alpha, v] = crop_borders(alpha, 0, 1);
-                    %A = A(v(1):v(2),v(3):v(4),:);
-                    [alpha, vA, vB] = crop_borders(alpha, 0, options.bb_padding);
-                    if ~any(isnan(vB)) % positive padding
-                        B = repmat(uint8(zeros(1,1,size(A,3))),size(alpha));
-                        B(vB(1):vB(2), vB(3):vB(4), :) = A(vA(1):vA(2), vA(3):vA(4), :); % ADDED BY OH
-                        A = B;
-                    else  % negative padding
-                        A = A(vA(1):vA(2), vA(3):vA(4), :);
-                    end
-                end
-                if options.png
-                    % Compute the resolution
-                    res = options.magnify * get(0, 'ScreenPixelsPerInch') / 25.4e-3;
-                    % Save the png
-                    imwrite(A, [options.name '.png'], 'Alpha', double(alpha), 'ResolutionUnit', 'meter', 'XResolution', res, 'YResolution', res);
-                    % Clear the png bit
-                    options.png = false;
-                end
-                % Return only one channel for greyscale
-                if isbitmap(options)
-                    A = check_greyscale(A);
-                end
-                if options.alpha
-                    % Store the image
-                    imageData = A;
-                    % Clear the alpha bit
-                    options.alpha = false;
-                end
-                % Get the non-alpha image
-                if isbitmap(options)
-                    alph = alpha(:,:,ones(1, size(A, 3)));
-                    A = uint8(single(A) .* alph + 255 * (1 - alph));
-                    clear alph
-                end
-                if options.im
-                    % Store the new image
-                    imageData = A;
-                end
-            else
-                % Print large version to array
-                if options.transparent
-                    % MATLAB "feature": apparently figure size can change when changing
-                    % colour in -nodisplay mode
-                    pos = get(fig, 'Position');
-                    tcol = get(fig, 'Color');
-                    set(fig, 'Color', 'w', 'Position', pos);
-                    A = print2array(fig, magnify, renderer);
-                    set(fig, 'Color', tcol, 'Position', pos);
-                    tcol = 255;
-                else
-                    [A, tcol] = print2array(fig, magnify, renderer);
-                end
-                % Crop the background
-                if options.crop
-                    A = crop_borders(A, tcol, options.bb_padding);
-                end
-                % Downscale the image
-                A = downsize(A, options.aa_factor);
-                if options.colourspace == 2
-                    % Convert to greyscale
-                    A = rgb2grey(A);
-                else
-                    % Return only one channel for greyscale
-                    A = check_greyscale(A);
-                end
-                % Outputs
-                if options.im
-                    imageData = A;
-                end
-                if options.alpha
-                    imageData = A;
-                    alpha = zeros(size(A, 1), size(A, 2), 'single');
-                end
-            end
-            % Save the images
-            if options.png
-                res = options.magnify * get(0, 'ScreenPixelsPerInch') / 25.4e-3;
-                imwrite(A, [options.name '.png'], 'ResolutionUnit', 'meter', 'XResolution', res, 'YResolution', res);
-            end
-            if options.bmp
-                imwrite(A, [options.name '.bmp']);
-            end
-            % Save jpeg with given quality
-            if options.jpg
-                quality = options.quality;
-                if isempty(quality)
-                    quality = 95;
-                end
-                if quality > 100
-                    imwrite(A, [options.name '.jpg'], 'Mode', 'lossless');
-                else
-                    imwrite(A, [options.name '.jpg'], 'Quality', quality);
-                end
-            end
-            % Save tif images in cmyk if wanted (and possible)
-            if options.tif
-                if options.colourspace == 1 && size(A, 3) == 3
-                    A = double(255 - A);
-                    K = min(A, [], 3);
-                    K_ = 255 ./ max(255 - K, 1);
-                    C = (A(:,:,1) - K) .* K_;
-                    M = (A(:,:,2) - K) .* K_;
-                    Y = (A(:,:,3) - K) .* K_;
-                    A = uint8(cat(3, C, M, Y, K));
-                    clear C M Y K K_
-                end
-                append_mode = {'overwrite', 'append'};
-                imwrite(A, [options.name '.tif'], 'Resolution', options.magnify*get(0, 'ScreenPixelsPerInch'), 'WriteMode', append_mode{options.append+1});
-            end
+            A = check_greyscale(A);
         end
-        % Now do the vector formats
-        if isvector(options)
-            % Set the default renderer to painters
-            if ~options.renderer
-                if isempty(findall(fig,'-property','FaceAlpha','-and','-not','FaceAlpha','1')) && ...
-                        isempty(findall(fig,'type','patch'))
-                    renderer = '-painters';
-                else
-                    % This is *MUCH* slower, but more accurate for patches and transparent annotations (issue #39)
-                    renderer = '-opengl';
-                end
-            end
-            % Generate some filenames
-            tmp_nam = [tempname '.eps'];
-            try
-                % Ensure that the temp dir is writable (Javier Paredes 30/1/15)
-                fid = fopen(tmp_nam,'w');
-                fwrite(fid,1);
-                fclose(fid);
-                delete(tmp_nam);
-                isTempDirOk = true;
-            catch
-                % Temp dir is not writable, so use the user-specified folder
-                [dummy,fname,fext] = fileparts(tmp_nam); %#ok<ASGLU>
-                fpath = fileparts(options.name);
-                tmp_nam = fullfile(fpath,[fname fext]);
-                isTempDirOk = false;
-            end
-            if options.pdf
-                pdf_nam = [options.name '.pdf'];
-            elseif isTempDirOk
-                pdf_nam = [tempname '.pdf'];
-            else
-                pdf_nam = fullfile(fpath,[fname '.pdf']);
-            end
-            % Generate the options for print
-            p2eArgs = {renderer, sprintf('-r%d', options.resolution)};
-            if options.colourspace == 1  % CMYK
-                % Issue #33: due to internal bugs in Matlab's print() function, we can't use its -cmyk option
-                %p2eArgs = [p2eArgs {'-cmyk'}];
-            end
-            if ~options.crop
-                p2eArgs = [p2eArgs {'-loose'}];
-            end
-            try
-                % Generate an eps
-                print2eps(tmp_nam, fig, [options.bb_padding, options.crop], p2eArgs{:});
-                % Remove the background, if desired
-                if options.transparent && ~isequal(get(fig, 'Color'), 'none')
-                    eps_remove_background(tmp_nam, 1 + using_hg2(fig));
-                end
-                % Fix colorspace to CMYK, if requested (workaround for issue #33)
-                if options.colourspace == 1  % CMYK
-                    % Issue #33: due to internal bugs in Matlab's print() function, we can't use its -cmyk option
-                    change_rgb_to_cmyk(tmp_nam);
-                end
-                % Add a bookmark to the PDF if desired
-                if options.bookmark
-                    fig_nam = get(fig, 'Name');
-                    if isempty(fig_nam)
-                        warning('export_fig:EmptyBookmark', 'Bookmark requested for figure with no name. Bookmark will be empty.');
-                    end
-                    add_bookmark(tmp_nam, fig_nam);
-                end
-                % Generate a pdf
-                eps2pdf(tmp_nam, pdf_nam, 1, options.append, options.colourspace==2, options.quality, options.gs_options);
-            catch ex
-                % Delete the eps
-                delete(tmp_nam);
-                rethrow(ex);
-            end
-            % Delete the eps
-            delete(tmp_nam);
-            if options.eps
-                try
-                    % Generate an eps from the pdf
-                    pdf2eps(pdf_nam, [options.name '.eps']);
-                catch ex
-                    if ~options.pdf
-                        % Delete the pdf
-                        delete(pdf_nam);
-                    end
-                    rethrow(ex);
-                end
-                if ~options.pdf
-                    % Delete the pdf
-                    delete(pdf_nam);
-                end
-            end
+        if options.alpha
+            % Store the image
+            im = A;
+            % Clear the alpha bit
+            options.alpha = false;
         end
-        if cls || options.closeFig
-            % Close the created figure
-            close(fig);
+        % Get the non-alpha image
+        if isbitmap(options)
+            alph = alpha(:,:,ones(1, size(A, 3)));
+            A = uint8(single(A) .* alph + 255 * (1 - alph));
+            clear alph
+        end
+        if options.im
+            % Store the new image
+            im = A;
+        end
+    else
+        % Print large version to array
+        if options.transparent
+            % MATLAB "feature": apparently figure size can change when changing
+            % colour in -nodisplay mode
+            pos = get(fig, 'Position');
+            tcol = get(fig, 'Color');
+            set(fig, 'Color', 'w', 'Position', pos);
+            A = print2array(fig, magnify, renderer);
+            set(fig, 'Color', tcol, 'Position', pos);
+            tcol = 255;
         else
-            % Reset the hardcopy mode
-            set(fig, 'InvertHardcopy', old_mode);
-            % Reset the axes limit and tick modes
-            for a = 1:numel(Hlims)
-                try
-                    set(Hlims(a), 'XLimMode', Xlims{a}, 'YLimMode', Ylims{a}, 'ZLimMode', Zlims{a}, 'XTickMode', Xtick{a}, 'YTickMode', Ytick{a}, 'ZTickMode', Ztick{a});
-                catch
-                    % ignore - fix issue #4 (using HG2 on R2014a and earlier)
-                end
-            end
-            % Revert the tex-labels font weights
-            try set(texLabels, 'FontWeight','bold'); catch, end
-            % Revert annotation units
-            for handleIdx = 1 : numel(annotationHandles)
-                try
-                    oldUnits = originalUnits{handleIdx};
-                catch
-                    oldUnits = originalUnits;
-                end
-                try set(annotationHandles(handleIdx),'Units',oldUnits); catch, end
-            end
-            % Revert figure units
-            set(fig,'Units',oldFigUnits);
+            [A, tcol] = print2array(fig, magnify, renderer);
         end
-    catch err
-        % Display possible workarounds before the error message
-        if displaySuggestedWorkarounds
-            if ~hadError,  fprintf(2, 'export_fig error. ');  end
-            fprintf(2, 'Please ensure:\n');
-            fprintf(2, '  that you are using the <a href="https://github.com/altmany/export_fig/archive/master.zip">latest version</a> of export_fig\n');
-            fprintf(2, '  and that you have <a href="http://www.ghostscript.com">Ghostscript</a> installed\n');
-            try
-                if options.eps
-                    fprintf(2, '  and that you have <a href="http://www.foolabs.com/xpdf">pdftops</a> installed\n');
-                end
-            catch
-                % ignore - probably an error in parse_args
-            end
-            fprintf(2, '  and that you do not have <a href="matlab:which export_fig -all">multiple versions</a> of export_fig installed by mistake\n');
-            fprintf(2, '  and that you did not made a mistake in the <a href="matlab:help export_fig">expected input arguments</a>\n');
-            fprintf(2, '\nIf the problem persists, then please <a href="https://github.com/altmany/export_fig/issues">report a new issue</a>.\n\n');
+        % Crop the background
+        if options.crop
+            A = crop_background(A, tcol);
         end
-        rethrow(err)
+        % Downscale the image
+        A = downsize(A, options.aa_factor);
+        if options.colourspace == 2
+            % Convert to greyscale
+            A = rgb2grey(A);
+        else
+            % Return only one channel for greyscale
+            A = check_greyscale(A);
+        end
+        % Outputs
+        if options.im
+            im = A;
+        end
+        if options.alpha
+            im = A;
+            alpha = zeros(size(A, 1), size(A, 2), 'single');
+        end
+    end
+    % Save the images
+    if options.png
+        res = options.magnify * get(0, 'ScreenPixelsPerInch') / 25.4e-3;
+        imwrite(A, [options.name '.png'], 'ResolutionUnit', 'meter', 'XResolution', res, 'YResolution', res);
+    end
+    if options.bmp
+        imwrite(A, [options.name '.bmp']);
+    end
+    % Save jpeg with given quality
+    if options.jpg
+        quality = options.quality;
+        if isempty(quality)
+            quality = 95;
+        end
+        if quality > 100
+            imwrite(A, [options.name '.jpg'], 'Mode', 'lossless');
+        else
+            imwrite(A, [options.name '.jpg'], 'Quality', quality);
+        end
+    end
+    % Save tif images in cmyk if wanted (and possible)
+    if options.tif
+        if options.colourspace == 1 && size(A, 3) == 3
+            A = double(255 - A);
+            K = min(A, [], 3);
+            K_ = 255 ./ max(255 - K, 1);
+            C = (A(:,:,1) - K) .* K_;
+            M = (A(:,:,2) - K) .* K_;
+            Y = (A(:,:,3) - K) .* K_;
+            A = uint8(cat(3, C, M, Y, K));
+            clear C M Y K K_
+        end
+        append_mode = {'overwrite', 'append'};
+        imwrite(A, [options.name '.tif'], 'Resolution', options.magnify*get(0, 'ScreenPixelsPerInch'), 'WriteMode', append_mode{options.append+1});
     end
 end
+% Now do the vector formats
+if isvector(options)
+    % Set the default renderer to painters
+    if ~options.renderer
+        renderer = '-painters';
+    end
+    % Generate some filenames
+    tmp_nam = [tempname '.eps'];
+    if options.pdf
+        pdf_nam = [options.name '.pdf'];
+    else
+        pdf_nam = [tempname '.pdf'];
+    end
+    % Generate the options for print
+    p2eArgs = {renderer, sprintf('-r%d', options.resolution)};
+    if options.colourspace == 1
+        p2eArgs = [p2eArgs {'-cmyk'}];
+    end
+    if ~options.crop
+        p2eArgs = [p2eArgs {'-loose'}];
+    end
 
-function [fig, options] = parse_args(nout, fig, varargin)
-    % Parse the input arguments
-    % Set the defaults
-    options = struct(...
-        'name', 'export_fig_out', ...
-        'crop', true, ...
-        'transparent', false, ...
-        'renderer', 0, ... % 0: default, 1: OpenGL, 2: ZBuffer, 3: Painters
-        'pdf', false, ...
-        'eps', false, ...
-        'png', false, ...
-        'tif', false, ...
-        'jpg', false, ...
-        'bmp', false, ...
-        'colourspace', 0, ... % 0: RGB/gray, 1: CMYK, 2: gray
-        'append', false, ...
-        'im', nout == 1, ...
-        'alpha', nout == 2, ...
-        'aa_factor', 0, ...
-        'bb_padding', 0, ...
-        'magnify', [], ...
-        'resolution', [], ...
-        'bookmark', false, ...
-        'closeFig', false, ...
-        'quality', [], ...
-        'gs_options', {{}});
-    native = false; % Set resolution to native of an image
-
-    % Go through the other arguments
-    skipNext = false;
-    for a = 1:nargin-2
-        if skipNext
-            skipNext = false;
-            continue;
+    
+    try
+        % Generate an eps
+        print2eps(tmp_nam, fig, p2eArgs{:});
+        % Remove the background, if desired
+        if options.transparent && ~isequal(get(fig, 'Color'), 'none')
+            eps_remove_background(tmp_nam);
         end
-        if all(ishandle(varargin{a}))
-            fig = varargin{a};
-        elseif ischar(varargin{a}) && ~isempty(varargin{a})
-            if varargin{a}(1) == '-'
-                switch lower(varargin{a}(2:end))
-                    case 'nocrop'
-                        options.crop = false;
-                    case {'trans', 'transparent'}
-                        options.transparent = true;
-                    case 'opengl'
-                        options.renderer = 1;
-                    case 'zbuffer'
-                        options.renderer = 2;
-                    case 'painters'
-                        options.renderer = 3;
-                    case 'pdf'
-                        options.pdf = true;
-                    case 'eps'
-                        options.eps = true;
-                    case 'png'
-                        options.png = true;
-                    case {'tif', 'tiff'}
-                        options.tif = true;
-                    case {'jpg', 'jpeg'}
-                        options.jpg = true;
-                    case 'bmp'
-                        options.bmp = true;
-                    case 'rgb'
-                        options.colourspace = 0;
-                    case 'cmyk'
-                        options.colourspace = 1;
-                    case {'gray', 'grey'}
-                        options.colourspace = 2;
-                    case {'a1', 'a2', 'a3', 'a4'}
-                        options.aa_factor = str2double(varargin{a}(3));
-                    case 'append'
-                        options.append = true;
-                    case 'bookmark'
-                        options.bookmark = true;
-                    case 'native'
-                        native = true;
-                    otherwise
-                        if strcmpi(varargin{a}(1:2),'-d')
-                            varargin{a}(2) = 'd';  % ensure lowercase 'd'
-                            options.gs_options{end+1} = varargin{a};
-                        else
-                            val = str2double(regexp(varargin{a}, '(?<=-(m|M|r|R|q|Q|p|P))-?\d*.?\d+', 'match'));
-                            if isempty(val)
-                                % Issue #51: improved processing of input args (accept space between param name & value)
-                                val = str2double(varargin{a+1});
-                                if isscalar(val) && ~isnan(val)
-                                    skipNext = true;
-                                end
-                            end
-                            if ~isscalar(val) && ~isnan(val)
-                                error('option %s not recognised or cannot be parsed', varargin{a});
-                            end
-                            switch lower(varargin{a}(2))
-                                case 'm'
-                                    options.magnify = val;
-                                case 'r'
-                                    options.resolution = val;
-                                case 'q'
-                                    options.quality = max(val, 0);
-                                case 'p'
-                                    options.bb_padding = val;
-                            end
-                        end
-                end
-            else
-                [p, options.name, ext] = fileparts(varargin{a});
-                if ~isempty(p)
-                    options.name = [p filesep options.name];
-                end
-                switch lower(ext)
-                    case {'.tif', '.tiff'}
-                        options.tif = true;
-                    case {'.jpg', '.jpeg'}
-                        options.jpg = true;
-                    case '.png'
-                        options.png = true;
-                    case '.bmp'
-                        options.bmp = true;
-                    case '.eps'
-                        options.eps = true;
-                    case '.pdf'
-                        options.pdf = true;
-                    case '.fig'
-                        % If no open figure, then load the specified .fig file and continue
-                        if isempty(fig)
-                            fig = openfig(varargin{a},'invisible');
-                            varargin{a} = fig;
-                            options.closeFig = true;
-                        else
-                            % save the current figure as the specified .fig file and exit
-                            saveas(fig(1),varargin{a});
-                            fig = -1;
-                            return
-                        end
-                    otherwise
-                        options.name = varargin{a};
-                end
+        % Add a bookmark to the PDF if desired
+        if( ~isempty(options.bookmark) )
+            add_bookmark(tmp_nam, options.bookmark);
+        end
+        % Generate a pdf
+        eps2pdf(tmp_nam, pdf_nam, 1, options.append, options.colourspace==2, options.quality);
+    catch ex
+        % Delete the eps
+        delete(tmp_nam);
+        rethrow(ex);
+    end
+    
+    
+    % Delete the eps
+    delete(tmp_nam);
+    if options.eps
+        try
+            % Generate an eps from the pdf
+            pdf2eps(pdf_nam, [options.name '.eps']);
+        catch ex
+            if ~options.pdf
+                % Delete the pdf
+                delete(pdf_nam);
+            end
+            rethrow(ex);
+        end
+        if ~options.pdf
+            % Delete the pdf
+            delete(pdf_nam);
+        end
+    end
+end
+if cls
+    % Close the created figure
+    close(fig);
+else
+    % Reset the hardcopy mode
+    set(fig, 'InvertHardcopy', old_mode);
+    % Reset the axes limit and tick modes
+    for a = 1:numel(Hlims)
+        set(Hlims(a), 'XLimMode', Xlims{a}, 'YLimMode', Ylims{a}, 'ZLimMode', Zlims{a}, 'XTickMode', Xtick{a}, 'YTickMode', Ytick{a}, 'ZTickMode', Ztick{a});
+    end
+end
+return
+
+function [fig, options] = parse_args(nout, varargin)
+% Parse the input arguments
+% Set the defaults
+fig = get(0, 'CurrentFigure');
+options = struct('name', 'export_fig_out', ...
+                 'crop', true, ...
+                 'transparent', false, ...
+                 'renderer', 0, ... % 0: default, 1: OpenGL, 2: ZBuffer, 3: Painters
+                 'pdf', false, ...
+                 'eps', false, ...
+                 'png', false, ...
+                 'tif', false, ...
+                 'jpg', false, ...
+                 'bmp', false, ...
+                 'colourspace', 0, ... % 0: RGB/gray, 1: CMYK, 2: gray
+                 'append', false, ...
+                 'im', nout == 1, ...
+                 'alpha', nout == 2, ...
+                 'aa_factor', 3, ...
+                 'magnify', [], ...
+                 'resolution', [], ...
+                 'bookmark', '', ...
+                 'quality', []);
+native = false; % Set resolution to native of an image
+
+% Go through the other arguments
+a = 1;
+while( a <= nargin-1 )
+    if all(ishandle(varargin{a}))
+        fig = varargin{a};
+    elseif ischar(varargin{a}) && ~isempty(varargin{a})
+        if varargin{a}(1) == '-'
+            switch lower(varargin{a}(2:end))
+                case 'nocrop'
+                    options.crop = false;
+                case {'trans', 'transparent'}
+                    options.transparent = true;
+                case 'opengl'
+                    options.renderer = 1;
+                case 'zbuffer'
+                    options.renderer = 2;
+                case 'painters'
+                    options.renderer = 3;
+                case 'pdf'
+                    options.pdf = true;
+                case 'eps'
+                    options.eps = true;
+                case 'png'
+                    options.png = true;
+                case {'tif', 'tiff'}
+                    options.tif = true;
+                case {'jpg', 'jpeg'}
+                    options.jpg = true;
+                case 'bmp'
+                    options.bmp = true;
+                case 'rgb'
+                    options.colourspace = 0;
+                case 'cmyk'
+                    options.colourspace = 1;
+                case {'gray', 'grey'}
+                    options.colourspace = 2;
+                case {'a1', 'a2', 'a3', 'a4'}
+                    options.aa_factor = str2double(varargin{a}(3));
+                case 'append'
+                    options.append = true;
+                case 'bookmark'
+                    a = a + 1;
+                    options.bookmark = varargin{a};
+                case 'native'
+                    native = true;
+                otherwise
+                    val = str2double(regexp(varargin{a}, '(?<=-(m|M|r|R|q|Q))(\d*\.)?\d+(e-?\d+)?', 'match'));
+                    if ~isscalar(val)
+                        error('option %s not recognised', varargin{a});
+                    end
+                    switch lower(varargin{a}(2))
+                        case 'm'
+                            options.magnify = val;
+                        case 'r'
+                            options.resolution = val;
+                        case 'q'
+                            options.quality = max(val, 0);
+                    end
+            end
+        else
+            [p, options.name, ext] = fileparts(varargin{a});
+            if ~isempty(p)
+                options.name = [p filesep options.name];
+            end
+            switch lower(ext)
+                case {'.tif', '.tiff'}
+                    options.tif = true;
+                case {'.jpg', '.jpeg'}
+                    options.jpg = true;
+                case '.png'
+                    options.png = true;
+                case '.bmp'
+                    options.bmp = true;
+                case '.eps'
+                    options.eps = true;
+                case '.pdf'
+                    options.pdf = true;
+                otherwise
+                    options.name = varargin{a};
             end
         end
     end
+    a = a + 1;
+end
 
-    % Quick bail-out if no figure found
-    if isempty(fig),  return;  end
-
-    % Do border padding with repsect to a cropped image
-    if options.bb_padding
-        options.crop = true;
-    end
-
-    % Set default anti-aliasing now we know the renderer
-    if options.aa_factor == 0
-        options.aa_factor = 1 + 2 * (~(using_hg2(fig) && strcmp(get(ancestor(fig, 'figure'), 'GraphicsSmoothing'), 'on')) | (options.renderer == 3));
-    end
-
-    % Convert user dir '~' to full path
-    if numel(options.name) > 2 && options.name(1) == '~' && (options.name(2) == '/' || options.name(2) == '\')
-        options.name = fullfile(char(java.lang.System.getProperty('user.home')), options.name(2:end));
-    end
-
-    % Compute the magnification and resolution
-    if isempty(options.magnify)
-        if isempty(options.resolution)
-            options.magnify = 1;
-            options.resolution = 864;
-        else
-            options.magnify = options.resolution ./ get(0, 'ScreenPixelsPerInch');
-        end
-    elseif isempty(options.resolution)
+% Compute the magnification and resolution
+if isempty(options.magnify)
+    if isempty(options.resolution)
+        options.magnify = 1;
         options.resolution = 864;
+    else
+        options.magnify = options.resolution ./ get(0, 'ScreenPixelsPerInch');
     end
+elseif isempty(options.resolution)
+    options.resolution = 864;
+end
+    
 
-    % Set the default format
-    if ~isvector(options) && ~isbitmap(options)
-        options.png = true;
+% Check we have a figure handle
+if isempty(fig)
+    error('No figure found');
+end
+
+% Set the default format
+if ~isvector(options) && ~isbitmap(options)
+    options.png = true;
+end
+
+% Check whether transparent background is wanted (old way)
+if isequal(get(ancestor(fig(1), 'figure'), 'Color'), 'none')
+    options.transparent = true;
+end
+
+% If requested, set the resolution to the native vertical resolution of the
+% first suitable image found
+if native && isbitmap(options)
+    % Find a suitable image
+    list = findobj(fig, 'Type', 'image', 'Tag', 'export_fig_native');
+    if isempty(list)
+        list = findobj(fig, 'Type', 'image', 'Visible', 'on');
     end
-
-    % Check whether transparent background is wanted (old way)
-    if isequal(get(ancestor(fig(1), 'figure'), 'Color'), 'none')
-        options.transparent = true;
-    end
-
-    % If requested, set the resolution to the native vertical resolution of the
-    % first suitable image found
-    if native && isbitmap(options)
-        % Find a suitable image
-        list = findall(fig, 'Type','image', 'Tag','export_fig_native');
-        if isempty(list)
-            list = findall(fig, 'Type','image', 'Visible','on');
+    for hIm = list(:)'
+        % Check height is >= 2
+        height = size(get(hIm, 'CData'), 1);
+        if height < 2
+            continue
         end
-        for hIm = list(:)'
-            % Check height is >= 2
-            height = size(get(hIm, 'CData'), 1);
-            if height < 2
+        % Account for the image filling only part of the axes, or vice
+        % versa
+        yl = get(hIm, 'YData');
+        if isscalar(yl)
+            yl = [yl(1)-0.5 yl(1)+height+0.5];
+        else
+            if ~diff(yl)
                 continue
             end
-            % Account for the image filling only part of the axes, or vice
-            % versa
-            yl = get(hIm, 'YData');
-            if isscalar(yl)
-                yl = [yl(1)-0.5 yl(1)+height+0.5];
-            else
-                if ~diff(yl)
-                    continue
-                end
-                yl = yl + [-0.5 0.5] * (diff(yl) / (height - 1));
-            end
-            hAx = get(hIm, 'Parent');
-            yl2 = get(hAx, 'YLim');
-            % Find the pixel height of the axes
-            oldUnits = get(hAx, 'Units');
-            set(hAx, 'Units', 'pixels');
-            pos = get(hAx, 'Position');
-            set(hAx, 'Units', oldUnits);
-            if ~pos(4)
-                continue
-            end
-            % Found a suitable image
-            % Account for stretch-to-fill being disabled
-            pbar = get(hAx, 'PlotBoxAspectRatio');
-            pos = min(pos(4), pbar(2)*pos(3)/pbar(1));
-            % Set the magnification to give native resolution
-            options.magnify = (height * diff(yl2)) / (pos * diff(yl));
-            break
+            yl = yl + [-0.5 0.5] * (diff(yl) / (height - 1));
         end
+        hAx = get(hIm, 'Parent');
+        yl2 = get(hAx, 'YLim');
+        % Find the pixel height of the axes
+        oldUnits = get(hAx, 'Units');
+        set(hAx, 'Units', 'pixels');
+        pos = get(hAx, 'Position');
+        set(hAx, 'Units', oldUnits);
+        if ~pos(4)
+            continue
+        end
+        % Found a suitable image
+        % Account for stretch-to-fill being disabled
+        pbar = get(hAx, 'PlotBoxAspectRatio');
+        pos = min(pos(4), pbar(2)*pos(3)/pbar(1));
+        % Set the magnification to give native resolution
+        options.magnify = (height * diff(yl2)) / (pos * diff(yl));
+        break
     end
 end
+return
 
 function A = downsize(A, factor)
-    % Downsample an image
-    if factor == 1
-        % Nothing to do
-        return
-    end
-    try
-        % Faster, but requires image processing toolbox
-        A = imresize(A, 1/factor, 'bilinear');
-    catch
-        % No image processing toolbox - resize manually
-        % Lowpass filter - use Gaussian as is separable, so faster
-        % Compute the 1d Gaussian filter
-        filt = (-factor-1:factor+1) / (factor * 0.6);
-        filt = exp(-filt .* filt);
-        % Normalize the filter
-        filt = single(filt / sum(filt));
-        % Filter the image
-        padding = floor(numel(filt) / 2);
-        for a = 1:size(A, 3)
-            A(:,:,a) = conv2(filt, filt', single(A([ones(1, padding) 1:end repmat(end, 1, padding)],[ones(1, padding) 1:end repmat(end, 1, padding)],a)), 'valid');
-        end
-        % Subsample
-        A = A(1+floor(mod(end-1, factor)/2):factor:end,1+floor(mod(end-1, factor)/2):factor:end,:);
-    end
+% Downsample an image
+if factor == 1
+    % Nothing to do
+    return
 end
+try
+    % Faster, but requires image processing toolbox
+    A = imresize(A, 1/factor, 'bilinear');
+catch
+    % No image processing toolbox - resize manually
+    % Lowpass filter - use Gaussian as is separable, so faster
+    % Compute the 1d Gaussian filter
+    filt = (-factor-1:factor+1) / (factor * 0.6);
+    filt = exp(-filt .* filt);
+    % Normalize the filter
+    filt = single(filt / sum(filt));
+    % Filter the image
+    padding = floor(numel(filt) / 2);
+    for a = 1:size(A, 3)
+        A(:,:,a) = conv2(filt, filt', single(A([ones(1, padding) 1:end repmat(end, 1, padding)],[ones(1, padding) 1:end repmat(end, 1, padding)],a)), 'valid');
+    end
+    % Subsample
+    A = A(1+floor(mod(end-1, factor)/2):factor:end,1+floor(mod(end-1, factor)/2):factor:end,:);
+end
+return
 
 function A = rgb2grey(A)
-    A = cast(reshape(reshape(single(A), [], 3) * single([0.299; 0.587; 0.114]), size(A, 1), size(A, 2)), class(A)); %#ok<ZEROLIKE>
-end
+A = cast(reshape(reshape(single(A), [], 3) * single([0.299; 0.587; 0.114]), size(A, 1), size(A, 2)), class(A));
+return
 
 function A = check_greyscale(A)
-    % Check if the image is greyscale
-    if size(A, 3) == 3 && ...
-            all(reshape(A(:,:,1) == A(:,:,2), [], 1)) && ...
-            all(reshape(A(:,:,2) == A(:,:,3), [], 1))
-        A = A(:,:,1); % Save only one channel for 8-bit output
-    end
+% Check if the image is greyscale
+if size(A, 3) == 3 && ...
+        all(reshape(A(:,:,1) == A(:,:,2), [], 1)) && ...
+        all(reshape(A(:,:,2) == A(:,:,3), [], 1))
+    A = A(:,:,1); % Save only one channel for 8-bit output
 end
+return
 
-function eps_remove_background(fname, count)
-    % Remove the background of an eps file
-    % Open the file
-    fh = fopen(fname, 'r+');
-    if fh == -1
-        error('Not able to open file %s.', fname);
-    end
-    % Read the file line by line
-    while count
-        % Get the next line
-        l = fgets(fh);
-        if isequal(l, -1)
-            break; % Quit, no rectangle found
-        end
-        % Check if the line contains the background rectangle
-        if isequal(regexp(l, ' *0 +0 +\d+ +\d+ +r[fe] *[\n\r]+', 'start'), 1)
-            % Set the line to whitespace and quit
-            l(1:regexp(l, '[\n\r]', 'start', 'once')-1) = ' ';
-            fseek(fh, -numel(l), 0);
-            fprintf(fh, l);
-            % Reduce the count
-            count = count - 1;
-        end
-    end
-    % Close the file
-    fclose(fh);
+function [A, v] = crop_background(A, bcol)
+% Map the foreground pixels
+[h, w, c] = size(A);
+if isscalar(bcol) && c > 1
+    bcol = bcol(ones(1, c));
 end
+bail = false;
+for l = 1:w
+    for a = 1:c
+        if ~all(A(:,l,a) == bcol(a))
+            bail = true;
+            break;
+        end
+    end
+    if bail
+        break;
+    end
+end
+bail = false;
+for r = w:-1:l
+    for a = 1:c
+        if ~all(A(:,r,a) == bcol(a))
+            bail = true;
+            break;
+        end
+    end
+    if bail
+        break;
+    end
+end
+bail = false;
+for t = 1:h
+    for a = 1:c
+        if ~all(A(t,:,a) == bcol(a))
+            bail = true;
+            break;
+        end
+    end
+    if bail
+        break;
+    end
+end
+bail = false;
+for b = h:-1:t
+    for a = 1:c
+        if ~all(A(b,:,a) == bcol(a))
+            bail = true;
+            break;
+        end
+    end
+    if bail
+        break;
+    end
+end
+% Crop the background, leaving one boundary pixel to avoid bleeding on
+% resize
+v = [max(t-1, 1) min(b+1, h) max(l-1, 1) min(r+1, w)];
+A = A(v(1):v(2),v(3):v(4),:);
+return
+
+function eps_remove_background(fname)
+% Remove the background of an eps file
+% Open the file
+fh = fopen(fname, 'r+');
+if fh == -1
+    error('Not able to open file %s.', fname);
+end
+% Read the file line by line
+while true
+    % Get the next line
+    l = fgets(fh);
+    if isequal(l, -1)
+        break; % Quit, no rectangle found
+    end
+    % Check if the line contains the background rectangle
+    if isequal(regexp(l, ' *0 +0 +\d+ +\d+ +rf *[\n\r]+', 'start'), 1)
+        % Set the line to whitespace and quit
+        l(1:regexp(l, '[\n\r]', 'start', 'once')-1) = ' ';
+        fseek(fh, -numel(l), 0);
+        fprintf(fh, l);
+        break;
+    end
+end
+% Close the file
+fclose(fh);
+return
 
 function b = isvector(options)
-    b = options.pdf || options.eps;
-end
+b = options.pdf || options.eps;
+return
 
 function b = isbitmap(options)
-    b = options.png || options.tif || options.jpg || options.bmp || options.im || options.alpha;
-end
+b = options.png || options.tif || options.jpg || options.bmp || options.im || options.alpha;
+return
 
 % Helper function
 function A = make_cell(A)
-    if ~iscell(A)
-        A = {A};
-    end
+if ~iscell(A)
+    A = {A};
 end
+return
 
 function add_bookmark(fname, bookmark_text)
-    % Adds a bookmark to the temporary EPS file after %%EndPageSetup
-    % Read in the file
-    fh = fopen(fname, 'r');
-    if fh == -1
-        error('File %s not found.', fname);
-    end
-    try
-        fstrm = fread(fh, '*char')';
-    catch ex
-        fclose(fh);
-        rethrow(ex);
-    end
+% Adds a bookmark to the temporary EPS file after %%EndPageSetup
+% Read in the file
+fh = fopen(fname, 'r');
+if fh == -1
+    error('File %s not found.', fname);
+end
+try
+    fstrm = fread(fh, '*char')';
+catch ex
     fclose(fh);
+    rethrow(ex);
+end
+fclose(fh);
 
-    % Include standard pdfmark prolog to maximize compatibility
-    fstrm = strrep(fstrm, '%%BeginProlog', sprintf('%%%%BeginProlog\n/pdfmark where {pop} {userdict /pdfmark /cleartomark load put} ifelse'));
-    % Add page bookmark
-    fstrm = strrep(fstrm, '%%EndPageSetup', sprintf('%%%%EndPageSetup\n[ /Title (%s) /OUT pdfmark',bookmark_text));
+% Include standard pdfmark prolog to maximize compatibility
+fstrm = strrep(fstrm, '%%BeginProlog', sprintf('%%%%BeginProlog\n/pdfmark where {pop} {userdict /pdfmark /cleartomark load put} ifelse'));
+% Add page bookmark
+fstrm = strrep(fstrm, '%%EndPageSetup', sprintf('%%%%EndPageSetup\n[ /Title (%s) /OUT pdfmark',bookmark_text));
 
-    % Write out the updated file
-    fh = fopen(fname, 'w');
-    if fh == -1
-        error('Unable to open %s for writing.', fname);
-    end
-    try
-        fwrite(fh, fstrm, 'char*1');
-    catch ex
-        fclose(fh);
-        rethrow(ex);
-    end
+% Write out the updated file
+fh = fopen(fname, 'w');
+if fh == -1
+    error('Unable to open %s for writing.', fname);
+end
+try
+    fwrite(fh, fstrm, 'char*1');
+catch ex
     fclose(fh);
+    rethrow(ex);
 end
-
-function set_tick_mode(Hlims, ax)
-    % Set the tick mode of linear axes to manual
-    % Leave log axes alone as these are tricky
-    M = get(Hlims, [ax 'Scale']);
-    if ~iscell(M)
-        M = {M};
-    end
-    M = cellfun(@(c) strcmp(c, 'linear'), M);
-    set(Hlims(M), [ax 'TickMode'], 'manual');
-end
-
-function change_rgb_to_cmyk(fname)  % convert RGB => CMYK within an EPS file
-    % Do post-processing on the eps file
-    try
-        % Read the EPS file into memory
-        fstrm = read_write_entire_textfile(fname);
-
-        % Replace all gray-scale colors
-        fstrm = regexprep(fstrm, '\n([\d.]+) +GC\n', '\n0 0 0 ${num2str(1-str2num($1))} CC\n');
-        
-        % Replace all RGB colors
-        fstrm = regexprep(fstrm, '\n[0.]+ +[0.]+ +[0.]+ +RC\n', '\n0 0 0 1 CC\n');  % pure black
-        fstrm = regexprep(fstrm, '\n([\d.]+) +([\d.]+) +([\d.]+) +RC\n', '\n${sprintf(''%.4g '',[1-[str2num($1),str2num($2),str2num($3)]/max([str2num($1),str2num($2),str2num($3)]),1-max([str2num($1),str2num($2),str2num($3)])])} CC\n');
-
-        % Overwrite the file with the modified contents
-        read_write_entire_textfile(fname, fstrm);
-    catch
-        % never mind - leave as is...
-    end
-end
+fclose(fh);
+return

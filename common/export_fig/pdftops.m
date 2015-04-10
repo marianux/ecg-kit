@@ -31,7 +31,7 @@ function varargout = pdftops(cmd)
 
 % Call pdftops
 [varargout{1:nargout}] = system(sprintf('"%s" %s', xpdf_path, cmd));
-end
+return
 
 function path_ = xpdf_path
 % Return a valid path
@@ -85,7 +85,6 @@ while 1
     end
 end
 error('pdftops executable not found.');
-end
 
 function good = check_store_xpdf_path(path_)
 % Check the path is valid
@@ -98,7 +97,7 @@ if ~user_string('pdftops', path_)
     warning('Path to pdftops executable could not be saved. Enter it manually in %s.', fullfile(fileparts(which('user_string.m')), '.ignore', 'pdftops.txt'));
     return
 end
-end
+return
 
 function good = check_xpdf_path(path_)
 % Check the path is valid
@@ -106,4 +105,4 @@ function good = check_xpdf_path(path_)
 % system returns good = 1 even when the command runs
 % Look for something distinct in the help text
 good = ~isempty(strfind(message, 'PostScript'));
-end
+return
