@@ -74,8 +74,8 @@ end
 
 if( nargin < 6 || isempty(filename) )
 
-    [report_path, file_recname ]= fileparts(ECG_w.recording_name);
-    report_path = [report_path filesep];
+    [~, file_recname ]= fileparts(ECG_w.recording_name);
+    report_path = ECG_w.output_path;
     
     if( isfield(heasig, 'recname') )
         filename = [report_path heasig.recname file_suffix '.' report_format];

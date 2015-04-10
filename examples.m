@@ -424,7 +424,7 @@ function examples(pid_str, examples_path, user_str)
     for ii = 1:lrecnames
         
         % this is to use previous cached results as starting point
-        cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName('QRS_corrector');
+        cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName({'QRS_corrector' 'QRS_detection'});
         % if corrected QRS detections are not available, wavedet
         % performs automatic QRS detection.
         

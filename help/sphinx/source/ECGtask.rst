@@ -1,6 +1,19 @@
 
 ECGtask
--------
+=======
+
+.. toctree::
+   :hidden:
+   :titlesonly:
+   
+   QRS detection <QRS_detection>
+   QRS correction <QRScorrector>
+   ABP/PPG peak detection <ABP_PPG_peak_detection>
+   ABP/PPG peak correction <ABP_PPG_peak_correction>
+   ECG delineation <ECGdelineation>
+   ECG delineation correction <ECG_delineation_corrector>
+   Heartbeat classification <ECG_heartbeat_classifier>
+   Arbitrary tasks <Arbitrary_tasks>
 
 Perform an specific task to an ECG signal.
 

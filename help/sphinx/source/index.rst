@@ -9,14 +9,15 @@ Welcome to ECGkit's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 5
    :includehidden:
    :titlesonly:
 
    Getting started <getting_started>
-   An example <examples>
    Release notes <release-notes>
    Be in touch <contact>
+   A small example <examples>
+   A big example <examples>
    Functions <functionlist>
 
 Indices 

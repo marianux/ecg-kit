@@ -30,7 +30,10 @@
   
 
   
-    <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/> 
+    <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/>
+        <link rel="up" title="Base Classes" href="base_classes.html"/>
+        <link rel="next" title="QRS detection" href="QRS_detection.html"/>
+        <link rel="prev" title="Arbitrary tasks" href="Arbitrary_tasks.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -61,11 +64,8 @@
         
           
           
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">An example</a><ul class="simple">
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release notes</a><ul class="simple">
@@ -74,8 +74,14 @@
 <li class="toctree-l1"><a class="reference internal" href="contact.html">Be in touch</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="functionlist.html">Functions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ECGwrapper.html">Base classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">A small example</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">A big example</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="functionlist.html">Functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="base_classes.html">Base classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reportECG.html">Plotting and reporting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="custom_formats.html">ECGkit extension</a></li>
 </ul>
@@ -104,6 +110,10 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
+          <li><a href="functionlist.html">Functions</a> &raquo;</li>
+      
+          <li><a href="base_classes.html">Base Classes</a> &raquo;</li>
+      
     <li>ECGtask</li>
       <li class="wy-breadcrumbs-aside">
         
@@ -117,11 +127,12 @@
             
   <div class="section" id="ecgtask">
 <h1>ECGtask<a class="headerlink" href="#ecgtask" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
 <p>Perform an specific task to an ECG signal.</p>
 <p><a href="#id1"><span class="problematic" id="id2">`</span></a>expand all in page <a href="#id3"><span class="problematic" id="id4">`</span></a>__</p>
-</div>
 <div class="section" id="description">
-<h1>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h1>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p>The ECGtask is an abstract class definition where the minimum interface
 requirements are specified, in order that your own tasks can be safely
 plugged into <a class="reference external" href="ECGwrapper.html">ECGwrapper</a> objects. As an example of
@@ -143,7 +154,7 @@ with the <a class="reference external" href="list_all_ECGtask.htm">list_all_ECGt
 before you extend the functionality with your own tasks.</p>
 </div>
 <div class="section" id="more-about">
-<h1>More About<a class="headerlink" href="#more-about" title="Permalink to this headline">¶</a></h1>
+<h2>More About<a class="headerlink" href="#more-about" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference external" href="http://physionet.org/">Physionet.org</a></li>
 <li><a class="reference external" href="http://thew-project.org/">Telemetric and Holter ECG Warehouse
@@ -154,15 +165,25 @@ Zaragoza</a></li>
 </ul>
 </div>
 <div class="section" id="see-also">
-<h1>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h1>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="ECGwrapper.html">ECGwrapper</a> |
 <a class="reference external" href="ECGdelineation.htm">ECG_delineation</a> |
 <a class="reference external" href="list_all_ECGtask.htm">list_all_ECGtask</a></p>
+</div>
 </div>
 
 
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="QRS_detection.html" class="btn btn-neutral float-right" title="QRS detection">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Arbitrary_tasks.html" class="btn btn-neutral" title="Arbitrary tasks"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

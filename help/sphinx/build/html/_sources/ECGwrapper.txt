@@ -2,6 +2,13 @@
 ECGwrapper
 ==========
 
+.. toctree::
+   :hidden:
+   :titlesonly:
+   
+   ECGwrapper
+   ECGtask
+
 Allow the access to ECG recordings of arbitrary format and length.
 
 Syntax

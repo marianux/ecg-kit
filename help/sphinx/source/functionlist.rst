@@ -4,8 +4,9 @@ Functions
 
 .. toctree::
    :hidden:
+   :titlesonly:
    
-   Base classes <ECGwrapper>
+   Base classes <base_classes>
    Plotting and reporting <reportECG>
    ECGkit extension <custom_formats>
    
