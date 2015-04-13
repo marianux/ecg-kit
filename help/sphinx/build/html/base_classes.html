@@ -30,10 +30,7 @@
   
 
   
-    <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/>
-        <link rel="up" title="Functions" href="functionlist.html"/>
-        <link rel="next" title="ECGwrapper" href="ECGwrapper.html"/>
-        <link rel="prev" title="Functions" href="functionlist.html"/> 
+    <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -64,7 +61,7 @@
         
           
           
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul class="simple">
 </ul>
 </li>
@@ -74,16 +71,30 @@
 <li class="toctree-l1"><a class="reference internal" href="contact.html">Be in touch</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">A small example</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">A simple example</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">A big example</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Another example</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="functionlist.html">Functions</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="">Base classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reportECG.html">Plotting and reporting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="custom_formats.html">ECGkit extension</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ECGwrapper.html">Accessing signals</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ECGtask.html">Performing tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="QRS_detection.html">QRS detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QRScorrector.html">QRS correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_detection.html">ABP/PPG peak detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_correction.html">ABP/PPG peak correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECGdelineation.html">ECG delineation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_delineation_corrector.html">ECG delineation correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_heartbeat_classifier.html">Heartbeat classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Arbitrary_tasks.html">Arbitrary tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reportECG.html">Plotting and reporting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="custom_formats.html">Extensions</a><ul class="simple">
 </ul>
 </li>
 </ul>
@@ -110,8 +121,6 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-          <li><a href="functionlist.html">Functions</a> &raquo;</li>
-      
     <li>Base Classes</li>
       <li class="wy-breadcrumbs-aside">
         
@@ -126,6 +135,38 @@
   <div class="section" id="base-classes">
 <h1>Base Classes<a class="headerlink" href="#base-classes" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ECGwrapper.html">ECGwrapper</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ECGtask.html">ECGtask</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="QRS_detection.html">QRS detection</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="QRScorrector.html">QRS correction</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_detection.html">ABP/PPG peak detection</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_correction.html">ABP/PPG peak correction</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ECGdelineation.html">ECG delineation</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_delineation_corrector.html">ECG delineation correction</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_heartbeat_classifier.html">Heartbeat classification</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Arbitrary_tasks.html">Arbitrary tasks</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 </div>
 <p>pepepepe</p>
 <div class="section" id="base">
@@ -137,15 +178,6 @@
 
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="ECGwrapper.html" class="btn btn-neutral float-right" title="ECGwrapper">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="functionlist.html" class="btn btn-neutral" title="Functions"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>

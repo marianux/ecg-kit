@@ -2,22 +2,18 @@
 ECGwrapper
 ==========
 
-.. toctree::
-   :hidden:
-   :titlesonly:
-   
-   ECGwrapper
-   ECGtask
-
-Allow the access to ECG recordings of arbitrary format and length.
+This class allows the access to ECG recordings of several :ref:`formats <ECG_formats>` and length.
 
 Syntax
 ------
 
--  ``ECGw = ECGwrapper()`` `example <ECGwrapper.html#ecgw_ex_noarg>`__
--  ``ECGw = ECGwrapper(Name,Value)``
-   `example <ECGwrapper.html#ecgw_ex_namevalue>`__
+You can create an object without arguments, configuring its properties later. Or you can create it via pairs of PropertyName-PropertyValue pairs.
 
+.. code::
+
+  ECGw = ECGwrapper() 
+  
+  ECGw = ECGwrapper( 'PropertyName', PropertyValue )
  
 
 Description
@@ -53,35 +49,43 @@ be used of subsequent tasks as shown in the
 Input Arguments
 ---------------
 
-Specify optional comma-separated pairs of ``Name,Value`` arguments.
-``Name`` is the argument name and ``Value`` is the corresponding value.
-``Name`` must appear inside single quotes (``' '``). You can specify
+Specify optional comma-separated pairs of ``'Name', Value`` arguments.
+``'Name'`` is the argument/property name and ``Value`` is the corresponding value.
+``'Name'`` must appear inside single quotes ``' '``. You can specify
 several name and value pair arguments in any order as
 ``Name1,Value1,...,NameN,ValueN``.
 
 **Example:**
-``'recording_name','/ecg_recordings/rec1.dat',                       'ECGtaskHandle', 'QRS_detection' ``\ specifies
-to create an ECGwrapper to detect heartbeats in recording
-'/ecg\_recordings/rec1.dat'.
 
-```'recording_name'`` — ECG Recording full name `__\ ``''`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. code::
 
-The full path filename of the ECG recording.
+	% specifies to create an ECGwrapper to detect heartbeats in recording '/ecg_recordings/rec1.dat'
+	ECGwrapper('recording_name','/ecg_recordings/rec1.dat', 'ECGtaskHandle', 'QRS_detection') 
 
-```'recording_format'`` — ECG recording format `__\ ``''`` (default auto-detect) \| ``'MIT'`` \| ``'ISHNE'`` \| ``'AHA'`` \| ``'HES'`` \| ``'MAT'``\ \| ``'Mortara'``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The format of the ECG recording. By default or if not specified, the
-wrapper will attemp to auto-detect the format.
+The available properties are listed below
+	
+	
+ ``'recording_name'`` — The ECG recording full name. Default value ``''``
 
-+--------------------------------------------------------------------+----------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+----------------------------------------------------------------------------+---------------------------------------------------------------------------------+
-| Output Format                                                      |
-| String Value                                                       |
-+====================================================================+======================================================================+===================================================================================================================================================================================================================+=========================================================================+============================================================================+=================================================================================+
-| 'MIT'                                                              | 'ISHNE'                                                              | 'AHA'                                                                                                                                                                                                             | 'HES'                                                                   | 'MAT'                                                                      | 'Mortara'                                                                       |
-| ``MIT                                                   format``   | ``ISHNE                                                   format``   | ``American                                                   Heart Association ECG                                                   Database or Physionet                                                   ``   | ``Biosigna                                                   format``   | ``Matlab                                                   file format``   | ``Mortara                                                   SuperECG format``   |
-+--------------------------------------------------------------------+----------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+----------------------------------------------------------------------------+---------------------------------------------------------------------------------+
+  The full path filename of the ECG recording.
+
+ ``'recording_format'`` — ECG recording format. Default value: ``auto-detect format``
+
+.. _ECG_formats:
+
+    The format of the ECG recording. By default or if not specified, the wrapper will attempt to auto-detect the format among the following table:
+
+=============  ======================================================================================================================================================================================================	
+Output Format  String Value
+=============  ======================================================================================================================================================================================================
+'MIT'	       `MIT format <http://www.physionet.org/physiotools/wag/signal-5.htm>`
+'ISHNE'	       `ISHNE format <http://thew-project.org/THEWFileFormat.htm>`
+'AHA'	       `American Heart Association ECG Database  <https://www.ecri.org/Products/Pages/AHA_ECG_DVD.aspx>` or `Physionet  <http://www.physionet.org/physiotools/old/dbpg/dbu_84.htm>` 
+'HES'	       Biosigna format
+'MAT'	       `Matlab file format <Matlab_format>`
+'Mortara'      Mortara SuperECG format
+=========      ======================================================================================================================================================================================================	
 
 ```'this_pid'`` — Process identification `__\ ``'1/1'`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -3,7 +3,7 @@ Base Classes
 ============
 
 .. toctree::
-   :hidden:
+   :maxdepth: 4
    :titlesonly:
    
    ECGwrapper

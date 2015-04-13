@@ -3,7 +3,7 @@ ECGtask
 =======
 
 .. toctree::
-   :hidden:
+   :maxdepth: 4
    :titlesonly:
    
    QRS detection <QRS_detection>
@@ -17,9 +17,6 @@ ECGtask
 
 Perform an specific task to an ECG signal.
 
-`expand all in page `__
-
- 
 
 Description
 -----------

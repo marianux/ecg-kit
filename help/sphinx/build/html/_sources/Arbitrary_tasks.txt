@@ -1,12 +1,9 @@
 
 Arbitrary tasks
----------------
+===============
 
 This document describes how to use arbitrary tasks with the ECGkit.
 
-`expand all in page `__
-
- 
 
 Description
 -----------

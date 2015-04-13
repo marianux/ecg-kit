@@ -1,6 +1,6 @@
 
 ECG delineation
----------------
+===============
 
 This document describes how to perform automatic delineation or wave
 segmentation on ECG signals.
@@ -65,7 +65,7 @@ provide delineation algorithms visually audited QRS detections.
  
 
 Adding a custom delineation algorithm
-=====================================
+-------------------------------------
 
 Adding your own delineator to the kit is very simple. Ensure that your
 function implements this interface:

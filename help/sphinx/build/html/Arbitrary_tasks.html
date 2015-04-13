@@ -74,16 +74,30 @@
 <li class="toctree-l1"><a class="reference internal" href="contact.html">Be in touch</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">A small example</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">A simple example</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">A big example</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Another example</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="functionlist.html">Functions</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="base_classes.html">Base classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reportECG.html">Plotting and reporting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="custom_formats.html">ECGkit extension</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ECGwrapper.html">Accessing signals</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="ECGtask.html">Performing tasks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="QRS_detection.html">QRS detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QRScorrector.html">QRS correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_detection.html">ABP/PPG peak detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_correction.html">ABP/PPG peak correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECGdelineation.html">ECG delineation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_delineation_corrector.html">ECG delineation correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_heartbeat_classifier.html">Heartbeat classification</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Arbitrary tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reportECG.html">Plotting and reporting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="custom_formats.html">Extensions</a><ul class="simple">
 </ul>
 </li>
 </ul>
@@ -110,10 +124,6 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-          <li><a href="functionlist.html">Functions</a> &raquo;</li>
-      
-          <li><a href="base_classes.html">Base Classes</a> &raquo;</li>
-      
           <li><a href="ECGtask.html">ECGtask</a> &raquo;</li>
       
     <li>Arbitrary tasks</li>
@@ -130,49 +140,47 @@
   <div class="section" id="arbitrary-tasks">
 <h1>Arbitrary tasks<a class="headerlink" href="#arbitrary-tasks" title="Permalink to this headline">¶</a></h1>
 <p>This document describes how to use arbitrary tasks with the ECGkit.</p>
-<p><a href="#id1"><span class="problematic" id="id2">`</span></a>expand all in page <a href="#id3"><span class="problematic" id="id4">`</span></a>__</p>
-</div>
 <div class="section" id="description">
-<h1>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h1>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p>Sometimes the task you need to perform on ECG signals is too simple to
 develop a new ECGtask, like computing some statistics, or apply a linear
 filter, or any type of transformation you may need to perform to the
 signal. For those cases you may found arbitrary tasks useful.</p>
 </div>
 <div class="section" id="input-arguments">
-<h1>Input Arguments<a class="headerlink" href="#input-arguments" title="Permalink to this headline">¶</a></h1>
+<h2>Input Arguments<a class="headerlink" href="#input-arguments" title="Permalink to this headline">¶</a></h2>
 <p>The properties that this task uses are the following:</p>
 <div class="section" id="progress-handle-used-to-track-the-progress-within-your-function-default">
-<h2><code class="docutils literal"><span class="pre">`progress_handle</span></code> — used to track the progress within your function. <cite>__``[]`</cite> (default)<a class="headerlink" href="#progress-handle-used-to-track-the-progress-within-your-function-default" title="Permalink to this headline">¶</a></h2>
+<h3><code class="docutils literal"><span class="pre">`progress_handle</span></code> — used to track the progress within your function. <cite>__``[]`</cite> (default)<a class="headerlink" href="#progress-handle-used-to-track-the-progress-within-your-function-default" title="Permalink to this headline">¶</a></h3>
 <p>progress_handle, is a handle to a <a class="reference external" href="progress_bar.htm">progress_bar</a>
 object, that can be used to track the progress within your function.</p>
 </div>
 <div class="section" id="tmp-path-the-path-to-store-temporary-data-tempdir-default">
-<h2><code class="docutils literal"><span class="pre">`tmp_path</span></code> — The path to store temporary data <cite>__`</cite>&#8216;tempdir()&#8217;`` (default)<a class="headerlink" href="#tmp-path-the-path-to-store-temporary-data-tempdir-default" title="Permalink to this headline">¶</a></h2>
+<h3><code class="docutils literal"><span class="pre">`tmp_path</span></code> — The path to store temporary data <cite>__`</cite>&#8216;tempdir()&#8217;`` (default)<a class="headerlink" href="#tmp-path-the-path-to-store-temporary-data-tempdir-default" title="Permalink to this headline">¶</a></h3>
 <p>Full path to a directory with write privileges.</p>
 </div>
 <div class="section" id="only-ecg-leads-process-only-ecg-signals-true-default">
-<h2><code class="docutils literal"><span class="pre">`only_ECG_leads</span></code> — Process only ECG signals <cite>__``true`</cite> (default)<a class="headerlink" href="#only-ecg-leads-process-only-ecg-signals-true-default" title="Permalink to this headline">¶</a></h2>
+<h3><code class="docutils literal"><span class="pre">`only_ECG_leads</span></code> — Process only ECG signals <cite>__``true`</cite> (default)<a class="headerlink" href="#only-ecg-leads-process-only-ecg-signals-true-default" title="Permalink to this headline">¶</a></h3>
 <p>Boolean value. Find out which signals are ECG based on their header
 description.</p>
 </div>
 <div class="section" id="payload-an-arbitrary-format-variable-to-be-passed-to-your-user-defined-algorithm-default">
-<h2><code class="docutils literal"><span class="pre">`payload</span></code> — An arbitrary format variable to be passed to your user-defined algorithm. <cite>__``[]`</cite> (default)<a class="headerlink" href="#payload-an-arbitrary-format-variable-to-be-passed-to-your-user-defined-algorithm-default" title="Permalink to this headline">¶</a></h2>
+<h3><code class="docutils literal"><span class="pre">`payload</span></code> — An arbitrary format variable to be passed to your user-defined algorithm. <cite>__``[]`</cite> (default)<a class="headerlink" href="#payload-an-arbitrary-format-variable-to-be-passed-to-your-user-defined-algorithm-default" title="Permalink to this headline">¶</a></h3>
 <p>This variable can be useful for passing data to your own function, not
 covered in the interface described
 <a class="reference external" href="#Adding_a_custom_detection_algorithm">below</a>.</p>
 </div>
 <div class="section" id="signal-payload-treat-the-result-of-your-arbitrary-function-as-a-signal-false-default">
-<h2><code class="docutils literal"><span class="pre">`signal_payload</span></code> — Treat the result of your arbitrary function as a signal. <cite>__``false`</cite> (default)<a class="headerlink" href="#signal-payload-treat-the-result-of-your-arbitrary-function-as-a-signal-false-default" title="Permalink to this headline">¶</a></h2>
+<h3><code class="docutils literal"><span class="pre">`signal_payload</span></code> — Treat the result of your arbitrary function as a signal. <cite>__``false`</cite> (default)<a class="headerlink" href="#signal-payload-treat-the-result-of-your-arbitrary-function-as-a-signal-false-default" title="Permalink to this headline">¶</a></h3>
 <p>Boolean value that indicates the ECGwrapper to produce a signal or
 result payload.</p>
 </div>
 <div class="section" id="lead-idx-the-signal-indexes-that-your-function-will-affect-default">
-<h2><code class="docutils literal"><span class="pre">`lead_idx</span></code> — The signal indexes that your function will affect. <cite>__``[]`</cite> (default)<a class="headerlink" href="#lead-idx-the-signal-indexes-that-your-function-will-affect-default" title="Permalink to this headline">¶</a></h2>
+<h3><code class="docutils literal"><span class="pre">`lead_idx</span></code> — The signal indexes that your function will affect. <cite>__``[]`</cite> (default)<a class="headerlink" href="#lead-idx-the-signal-indexes-that-your-function-will-affect-default" title="Permalink to this headline">¶</a></h3>
 <p>A positive integer array with values from 1 to ECG_header.nsig.</p>
 </div>
 <div class="section" id="function-pointer-the-pointer-to-your-arbitrary-function-default">
-<h2><code class="docutils literal"><span class="pre">`function_pointer</span></code> — The pointer to your arbitrary function. <cite>__``[]`</cite> (default)<a class="headerlink" href="#function-pointer-the-pointer-to-your-arbitrary-function-default" title="Permalink to this headline">¶</a></h2>
+<h3><code class="docutils literal"><span class="pre">`function_pointer</span></code> — The pointer to your arbitrary function. <cite>__``[]`</cite> (default)<a class="headerlink" href="#function-pointer-the-pointer-to-your-arbitrary-function-default" title="Permalink to this headline">¶</a></h3>
 <p>Your function must follow this prototype:</p>
 <p>where the arguments are:</p>
 <p>ECG_matrix, is a matrix size [nsamp length(lead_idx)], where nsamp is
@@ -192,14 +200,15 @@ can be handled as a signal with signal_payload property.</p>
 </div>
 </div>
 <div class="section" id="examples">
-<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>This example is used in the QRScorrector function to perform
 template-matching on an ECGwrapper (arbitrary big recording) object.</p>
 </div>
 <div class="section" id="see-also">
-<h1>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h1>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal"><span class="pre">`ECGtask</span></code> &lt;ECGtask.html&gt;`__ | <code class="docutils literal"><span class="pre">ECGwrapper</span></code> |
 <code class="docutils literal"><span class="pre">`examples</span></code> &lt;examples.html&gt;`__</p>
+</div>
 </div>
 
 

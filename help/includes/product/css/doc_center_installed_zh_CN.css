@@ -1,7 +1,0 @@
-/* Overrides for Installed Doc Center in the Product */
-/* Languages */
-html body { font-family: Microsoft YaHei, Segoe UI, Arial, Helvetica; }
-
-/* Expand - Collapse: Reveal */
-.reveal .more_results p:after { content:"more"; }
-.reveal .expanded .more_results p:after { content:"less"; }

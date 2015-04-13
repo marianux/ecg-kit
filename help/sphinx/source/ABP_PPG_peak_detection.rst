@@ -5,9 +5,6 @@ ABP/PPG peak detection
 This document describes how to perform automatic peak detection in
 pulsatile signals.
 
-`expand all in page `__
-
- 
 
 Description
 -----------

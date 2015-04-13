@@ -4,10 +4,6 @@ QRS detection
 
 This document describes how to perform QRS detection.
 
-`expand all in page `__
-
- 
-
 Description
 -----------
 
@@ -110,7 +106,7 @@ detected, in the ECG\_annotations property.
  
 
 Adding a custom detection algorithm
-===================================
+-----------------------------------
 
 Adding your own QRS detectors to the kit is very simple. Ensure that
 your function implements this interface:

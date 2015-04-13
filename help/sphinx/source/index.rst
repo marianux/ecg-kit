@@ -9,16 +9,18 @@ Welcome to ECGkit's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 5
-   :includehidden:
+   :maxdepth: 4
    :titlesonly:
 
    Getting started <getting_started>
    Release notes <release-notes>
    Be in touch <contact>
-   A small example <examples>
-   A big example <examples>
-   Functions <functionlist>
+   A simple example <examples>
+   Another example <examples>
+   Accessing signals  <ECGwrapper>
+   Performing tasks  <ECGtask>
+   Plotting and reporting <reportECG>
+   Extensions <custom_formats>
 
 Indices 
 -------

@@ -74,16 +74,30 @@
 <li class="toctree-l1"><a class="reference internal" href="contact.html">Be in touch</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">A small example</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">A simple example</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">A big example</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Another example</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="functionlist.html">Functions</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="base_classes.html">Base classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reportECG.html">Plotting and reporting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="custom_formats.html">ECGkit extension</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ECGwrapper.html">Accessing signals</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="ECGtask.html">Performing tasks</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">QRS detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QRScorrector.html">QRS correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_detection.html">ABP/PPG peak detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_correction.html">ABP/PPG peak correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECGdelineation.html">ECG delineation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_delineation_corrector.html">ECG delineation correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_heartbeat_classifier.html">Heartbeat classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Arbitrary_tasks.html">Arbitrary tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reportECG.html">Plotting and reporting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="custom_formats.html">Extensions</a><ul class="simple">
 </ul>
 </li>
 </ul>
@@ -110,10 +124,6 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-          <li><a href="functionlist.html">Functions</a> &raquo;</li>
-      
-          <li><a href="base_classes.html">Base Classes</a> &raquo;</li>
-      
           <li><a href="ECGtask.html">ECGtask</a> &raquo;</li>
       
     <li>QRS detection</li>
@@ -130,7 +140,6 @@
   <div class="section" id="qrs-detection">
 <h1>QRS detection<a class="headerlink" href="#qrs-detection" title="Permalink to this headline">¶</a></h1>
 <p>This document describes how to perform QRS detection.</p>
-<p><a href="#id1"><span class="problematic" id="id2">`</span></a>expand all in page <a href="#id3"><span class="problematic" id="id4">`</span></a>__</p>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p>Heartbeat detection is probably one of the first and most important
@@ -208,9 +217,8 @@ where the signals are. This reference annotations are loaded, if
 detected, in the ECG_annotations property.</p>
 </div>
 </div>
-</div>
 <div class="section" id="adding-a-custom-detection-algorithm">
-<h1>Adding a custom detection algorithm<a class="headerlink" href="#adding-a-custom-detection-algorithm" title="Permalink to this headline">¶</a></h1>
+<h2>Adding a custom detection algorithm<a class="headerlink" href="#adding-a-custom-detection-algorithm" title="Permalink to this headline">¶</a></h2>
 <p>Adding your own QRS detectors to the kit is very simple. Ensure that
 your function implements this interface:</p>
 <p>where the arguments are:</p>
@@ -229,6 +237,7 @@ property</a> of this class, for example:</p>
 sample locations found in each lead.</p>
 <p>position_multilead, a numeric vector with the QRS locations calculated
 using multilead rules.</p>
+</div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>Create the ECGtask_QRS_detection object.</p>

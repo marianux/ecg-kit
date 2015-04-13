@@ -31,9 +31,8 @@
 
   
     <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/>
-        <link rel="up" title="Base Classes" href="base_classes.html"/>
-        <link rel="next" title="ECGwrapper" href=""/>
-        <link rel="prev" title="Base Classes" href="base_classes.html"/> 
+        <link rel="next" title="ECGtask" href="ECGtask.html"/>
+        <link rel="prev" title="Examples" href="examples.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -74,16 +73,30 @@
 <li class="toctree-l1"><a class="reference internal" href="contact.html">Be in touch</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">A small example</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">A simple example</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">A big example</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Another example</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="functionlist.html">Functions</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="base_classes.html">Base classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reportECG.html">Plotting and reporting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="custom_formats.html">ECGkit extension</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Accessing signals</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ECGtask.html">Performing tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="QRS_detection.html">QRS detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QRScorrector.html">QRS correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_detection.html">ABP/PPG peak detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_correction.html">ABP/PPG peak correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECGdelineation.html">ECG delineation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_delineation_corrector.html">ECG delineation correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_heartbeat_classifier.html">Heartbeat classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Arbitrary_tasks.html">Arbitrary tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reportECG.html">Plotting and reporting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="custom_formats.html">Extensions</a><ul class="simple">
 </ul>
 </li>
 </ul>
@@ -110,10 +123,6 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-          <li><a href="functionlist.html">Functions</a> &raquo;</li>
-      
-          <li><a href="base_classes.html">Base Classes</a> &raquo;</li>
-      
     <li>ECGwrapper</li>
       <li class="wy-breadcrumbs-aside">
         
@@ -127,16 +136,15 @@
             
   <div class="section" id="ecgwrapper">
 <h1>ECGwrapper<a class="headerlink" href="#ecgwrapper" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-</div>
-<p>Allow the access to ECG recordings of arbitrary format and length.</p>
+<p>This class allows the access to ECG recordings of several <a class="reference internal" href="#ecg-formats"><span>formats</span></a> and length.</p>
 <div class="section" id="syntax">
 <h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><code class="docutils literal"><span class="pre">ECGw</span> <span class="pre">=</span> <span class="pre">ECGwrapper()</span></code> <a class="reference external" href="ECGwrapper.html#ecgw_ex_noarg">example</a></li>
-<li><code class="docutils literal"><span class="pre">ECGw</span> <span class="pre">=</span> <span class="pre">ECGwrapper(Name,Value)</span></code>
-<a class="reference external" href="ECGwrapper.html#ecgw_ex_namevalue">example</a></li>
-</ul>
+<p>You can create an object without arguments, configuring its properties later. Or you can create it via pairs of PropertyName-PropertyValue pairs.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">ECGw</span> <span class="p">=</span> <span class="n">ECGwrapper</span><span class="p">()</span>
+
+<span class="n">ECGw</span> <span class="p">=</span> <span class="n">ECGwrapper</span><span class="p">(</span> <span class="s">&#39;PropertyName&#39;</span><span class="p">,</span> <span class="n">PropertyValue</span> <span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
@@ -165,24 +173,25 @@ be used of subsequent tasks as shown in the
 </div>
 <div class="section" id="input-arguments">
 <h2>Input Arguments<a class="headerlink" href="#input-arguments" title="Permalink to this headline">¶</a></h2>
-<p>Specify optional comma-separated pairs of <code class="docutils literal"><span class="pre">Name,Value</span></code> arguments.
-<code class="docutils literal"><span class="pre">Name</span></code> is the argument name and <code class="docutils literal"><span class="pre">Value</span></code> is the corresponding value.
-<code class="docutils literal"><span class="pre">Name</span></code> must appear inside single quotes (<code class="docutils literal"><span class="pre">'</span> <span class="pre">'</span></code>). You can specify
+<p>Specify optional comma-separated pairs of <code class="docutils literal"><span class="pre">'Name',</span> <span class="pre">Value</span></code> arguments.
+<code class="docutils literal"><span class="pre">'Name'</span></code> is the argument/property name and <code class="docutils literal"><span class="pre">Value</span></code> is the corresponding value.
+<code class="docutils literal"><span class="pre">'Name'</span></code> must appear inside single quotes <code class="docutils literal"><span class="pre">'</span> <span class="pre">'</span></code>. You can specify
 several name and value pair arguments in any order as
 <code class="docutils literal"><span class="pre">Name1,Value1,...,NameN,ValueN</span></code>.</p>
-<p><strong>Example:</strong>
-<a href="#id1"><span class="problematic" id="id2">``</span></a>&#8216;recording_name&#8217;,&#8217;/ecg_recordings/rec1.dat&#8217;,                       &#8216;ECGtaskHandle&#8217;, &#8216;QRS_detection&#8217; <a href="#id3"><span class="problematic" id="id4">``</span></a>specifies
-to create an ECGwrapper to detect heartbeats in recording
-&#8216;/ecg_recordings/rec1.dat&#8217;.</p>
-<div class="section" id="recording-name-ecg-recording-full-name-default">
-<h3><code class="docutils literal"><span class="pre">`'recording_name'</span></code> — ECG Recording full name <cite>__`</cite>&#8216;&#8217;`` (default)<a class="headerlink" href="#recording-name-ecg-recording-full-name-default" title="Permalink to this headline">¶</a></h3>
-<p>The full path filename of the ECG recording.</p>
+<p><strong>Example:</strong></p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% specifies to create an ECGwrapper to detect heartbeats in recording &#39;/ecg_recordings/rec1.dat&#39;</span>
+<span class="n">ECGwrapper</span><span class="p">(</span><span class="s">&#39;recording_name&#39;</span><span class="p">,</span><span class="s">&#39;/ecg_recordings/rec1.dat&#39;</span><span class="p">,</span> <span class="s">&#39;ECGtaskHandle&#39;</span><span class="p">,</span> <span class="s">&#39;QRS_detection&#39;</span><span class="p">)</span>
+</pre></div>
 </div>
-<div class="section" id="recording-format-ecg-recording-format-default-auto-detect-mit-ishne-aha-hes-mat-mortara">
-<h3><code class="docutils literal"><span class="pre">`'recording_format'</span></code> — ECG recording format <cite>__`</cite>&#8216;&#8217;`` (default auto-detect) | <code class="docutils literal"><span class="pre">'MIT'</span></code> | <code class="docutils literal"><span class="pre">'ISHNE'</span></code> | <code class="docutils literal"><span class="pre">'AHA'</span></code> | <code class="docutils literal"><span class="pre">'HES'</span></code> | <code class="docutils literal"><span class="pre">'MAT'</span></code>| <code class="docutils literal"><span class="pre">'Mortara'</span></code><a class="headerlink" href="#recording-format-ecg-recording-format-default-auto-detect-mit-ishne-aha-hes-mat-mortara" title="Permalink to this headline">¶</a></h3>
-<p>The format of the ECG recording. By default or if not specified, the
-wrapper will attemp to auto-detect the format.</p>
-</div>
+<p>The available properties are listed below</p>
+<blockquote>
+<div><p><code class="docutils literal"><span class="pre">'recording_name'</span></code> — The ECG recording full name. Default value <code class="docutils literal"><span class="pre">''</span></code></p>
+<blockquote>
+<div>The full path filename of the ECG recording.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'recording_format'</span></code> — ECG recording format. Default value: <code class="docutils literal"><span class="pre">auto-detect</span> <span class="pre">format</span></code></p>
+</div></blockquote>
+<blockquote id="ecg-formats">
+<div>The format of the ECG recording. By default or if not specified, the wrapper will attempt to auto-detect the format among the following table:</div></blockquote>
 <div class="section" id="this-pid-process-identification-1-1-default">
 <h3><code class="docutils literal"><span class="pre">`'this_pid'</span></code> — Process identification <cite>__`</cite>&#8216;1/1&#8217;`` (default)<a class="headerlink" href="#this-pid-process-identification-1-1-default" title="Permalink to this headline">¶</a></h3>
 <p>In case working in a multiprocess environment, this value will identify
@@ -247,11 +256,11 @@ to repeat the task several times.</p>
 <h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
 <p>Some useful methods are described below.</p>
 <div class="section" id="run-execute-the-ecg-task">
-<h3><code class="docutils literal"><span class="pre">`Run</span></code> — Execute the ECG task <a href="#id5"><span class="problematic" id="id6">`</span></a>__<a class="headerlink" href="#run-execute-the-ecg-task" title="Permalink to this headline">¶</a></h3>
+<h3><code class="docutils literal"><span class="pre">`Run</span></code> — Execute the ECG task <a href="#id1"><span class="problematic" id="id2">`</span></a>__<a class="headerlink" href="#run-execute-the-ecg-task" title="Permalink to this headline">¶</a></h3>
 <p>This method executes the configured ECG task.</p>
 </div>
 <div class="section" id="read-signal-read-signal-samples">
-<h3><code class="docutils literal"><span class="pre">`read_signal</span></code> — Read signal samples <a href="#id7"><span class="problematic" id="id8">`</span></a>__<a class="headerlink" href="#read-signal-read-signal-samples" title="Permalink to this headline">¶</a></h3>
+<h3><code class="docutils literal"><span class="pre">`read_signal</span></code> — Read signal samples <a href="#id3"><span class="problematic" id="id4">`</span></a>__<a class="headerlink" href="#read-signal-read-signal-samples" title="Permalink to this headline">¶</a></h3>
 <p>This method allows to easily reads samples from a recording</p>
 <div class="code highlight-Matlab"><div class="highlight"><pre><span class="k">function</span><span class="w"> </span>ECG <span class="p">=</span><span class="w"> </span><span class="nf">read_signal</span><span class="p">(</span>ECG_start_idx, ECG_end_idx<span class="p">)</span><span class="w"></span>
 </pre></div>
@@ -264,20 +273,20 @@ to repeat the task several times.</p>
 ECG_header.nsig]</p>
 </div>
 <div class="section" id="reporterrors-display-the-error-report-generated-during-the-task-execution">
-<h3><code class="docutils literal"><span class="pre">`ReportErrors</span></code> — Display the error report generated during the task execution <a href="#id9"><span class="problematic" id="id10">`</span></a>__<a class="headerlink" href="#reporterrors-display-the-error-report-generated-during-the-task-execution" title="Permalink to this headline">¶</a></h3>
+<h3><code class="docutils literal"><span class="pre">`ReportErrors</span></code> — Display the error report generated during the task execution <a href="#id5"><span class="problematic" id="id6">`</span></a>__<a class="headerlink" href="#reporterrors-display-the-error-report-generated-during-the-task-execution" title="Permalink to this headline">¶</a></h3>
 <p>This method reports error generated during task execution.</p>
 </div>
 <div class="section" id="getcahchedfilename-find-the-result-files-of-an-specific-recording-task">
-<h3><code class="docutils literal"><span class="pre">`GetCahchedFileName</span></code> — Find the result files of an specific recording/task <a href="#id11"><span class="problematic" id="id12">`</span></a>__<a class="headerlink" href="#getcahchedfilename-find-the-result-files-of-an-specific-recording-task" title="Permalink to this headline">¶</a></h3>
+<h3><code class="docutils literal"><span class="pre">`GetCahchedFileName</span></code> — Find the result files of an specific recording/task <a href="#id7"><span class="problematic" id="id8">`</span></a>__<a class="headerlink" href="#getcahchedfilename-find-the-result-files-of-an-specific-recording-task" title="Permalink to this headline">¶</a></h3>
 <p>This method returns the cached filename for an specific recording, and
 task, if available.</p>
 </div>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p><a href="#id13"><span class="problematic" id="id14">`</span></a>collapse all <a href="#id15"><span class="problematic" id="id16">`</span></a>__</p>
+<p><a href="#id9"><span class="problematic" id="id10">`</span></a>collapse all <a href="#id11"><span class="problematic" id="id12">`</span></a>__</p>
 <div class="section" id="create-the-simplest-ecg-wrapper-object">
-<h3><a href="#id17"><span class="problematic" id="id18">`</span></a>Create the simplest ECG wrapper object <a href="#id19"><span class="problematic" id="id20">`</span></a>__<a class="headerlink" href="#create-the-simplest-ecg-wrapper-object" title="Permalink to this headline">¶</a></h3>
+<h3><a href="#id13"><span class="problematic" id="id14">`</span></a>Create the simplest ECG wrapper object <a href="#id15"><span class="problematic" id="id16">`</span></a>__<a class="headerlink" href="#create-the-simplest-ecg-wrapper-object" title="Permalink to this headline">¶</a></h3>
 <p>Create the ECGwrapper object.</p>
 <div class="code highlight-Matlab"><div class="highlight"><pre><span class="o">&gt;&gt;</span> <span class="n">ECG_w</span> <span class="p">=</span> <span class="n">ECGwrapper</span><span class="p">()</span>
 <span class="n">ECG_w</span> <span class="p">=</span>
@@ -313,7 +322,7 @@ task, if available.</p>
 </div>
 </div>
 <div class="section" id="create-an-ecgwrapper-object-for-an-specific-recording-and-task">
-<h3><a href="#id21"><span class="problematic" id="id22">`</span></a>Create an ECGwrapper object for an specific recording and task <a href="#id23"><span class="problematic" id="id24">`</span></a>__<a class="headerlink" href="#create-an-ecgwrapper-object-for-an-specific-recording-and-task" title="Permalink to this headline">¶</a></h3>
+<h3><a href="#id17"><span class="problematic" id="id18">`</span></a>Create an ECGwrapper object for an specific recording and task <a href="#id19"><span class="problematic" id="id20">`</span></a>__<a class="headerlink" href="#create-an-ecgwrapper-object-for-an-specific-recording-and-task" title="Permalink to this headline">¶</a></h3>
 <p>In this case, we create the same object of the previous example but
 using the name-value .</p>
 <div class="code highlight-Matlab"><div class="highlight"><pre><span class="o">&gt;&gt;</span> <span class="n">ECG_w</span> <span class="p">=</span> <span class="n">ECGwrapper</span><span class="p">(</span> <span class="c">...</span>
@@ -339,7 +348,7 @@ using the name-value .</p>
 </div>
 <div class="section" id="more-about">
 <h2>More About<a class="headerlink" href="#more-about" title="Permalink to this headline">¶</a></h2>
-<p><a href="#id25"><span class="problematic" id="id26">`</span></a>expand all <a href="#id27"><span class="problematic" id="id28">`</span></a>__</p>
+<p><a href="#id21"><span class="problematic" id="id22">`</span></a>expand all <a href="#id23"><span class="problematic" id="id24">`</span></a>__</p>
 </div>
 <div class="section" id="other-resources">
 <h2>Other resources<a class="headerlink" href="#other-resources" title="Permalink to this headline">¶</a></h2>
@@ -364,10 +373,10 @@ Zaragoza</a></li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="" class="btn btn-neutral float-right" title="ECGwrapper">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="ECGtask.html" class="btn btn-neutral float-right" title="ECGtask">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="base_classes.html" class="btn btn-neutral" title="Base Classes"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="examples.html" class="btn btn-neutral" title="Examples"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

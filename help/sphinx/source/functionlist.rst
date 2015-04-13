@@ -1,14 +1,7 @@
 
 Functions
 =========
-
-.. toctree::
-   :hidden:
-   :titlesonly:
    
-   Base classes <base_classes>
-   Plotting and reporting <reportECG>
-   ECGkit extension <custom_formats>
    
 Base classes
 ^^^^^^^^^^^^

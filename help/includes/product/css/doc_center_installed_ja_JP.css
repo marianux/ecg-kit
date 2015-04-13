@@ -1,7 +1,0 @@
-/* Overrides for Installed Doc Center in the Product */
-/* Languages */
-html body { font-family: Meiryo, Verdana, Arial, Helvetica,"MS P ゴシック"; }
-
-/* Expand - Collapse: Reveal */
-.reveal .more_results p:after { content:"展開する"; }
-.reveal .expanded .more_results p:after { content:"折りたたむ"; }
