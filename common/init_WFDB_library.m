@@ -1,7 +1,7 @@
 function WFDB_bin_path =  init_WFDB_library(tmp_path_local)
 
     WFDB_paths = { ...
-                    ['wfdb' filesep 'linux-amd64' filesep 'bin' ] ...
+                    ['wfdb' filesep 'linux-amd64' filesep ] ...
                     ['wfdb' filesep 'macosx-x86_64' filesep 'bin' ] ...
                     ['wfdb' filesep 'windows-amd64' filesep 'bin' ] ...
                     };
@@ -18,8 +18,10 @@ function WFDB_bin_path =  init_WFDB_library(tmp_path_local)
 
     elseif( isunix()  )            
         path_OS_var = 'PATH';
+        libpath_OS_var = 'LD_LIBRARY_PATH';
         path_sep = ':';
-        bin_path  = WFDB_paths{WFDB_UNIX_idx};
+        bin_path  = [ WFDB_paths{WFDB_UNIX_idx} 'bin'];
+        lib_path  = [ WFDB_paths{WFDB_UNIX_idx} 'lib64'];
 
     elseif( ismac() )            
         path_OS_var = 'PATH';
@@ -55,6 +57,13 @@ function WFDB_bin_path =  init_WFDB_library(tmp_path_local)
         this_path = getenv(path_OS_var);
         if( isempty(strfind(this_path, WFDB_bin_path ) ))
             setenv(path_OS_var, [this_path path_sep WFDB_bin_path]);
+        end
+        
+        % WFDB paths required to locate shared libraries
+        if( isunix() )
+            WFDB_lib_path = [common_path filesep lib_path filesep ]   
+            this_path = getenv(libpath_OS_var);
+            setenv(libpath_OS_var, [this_path path_sep WFDB_lib_path ]);
         end
         
         WFDB_initiated = true;
