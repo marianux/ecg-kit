@@ -81,14 +81,13 @@ Function prototype
 
 *examples* accepts three *optional* arguments:
 
--  ***pid\_str*** (optional) string identifier for this work instance in
+-  **pid\_str** (optional) string identifier for this work instance in
    a cluster computing or multitask environment. The identifier follows
    the form 'N/M', being N a number which identifies this execution
-   instance and M the total amount of instances. Default value '1/1'
--  ***examples\_path*** (optional) string of the path with ECG
-   recordings. Default value
-   ``['.' filesep 'example_recordings'           filesep ]``;
--  ***user\_str*** (optional) string to identify this run or experiment.
+   instance and M the total amount of instances. ``'1/1' (default)``
+-  **examples\_path** (optional) string of the path with ECG
+   recordings. ``['.' filesep 'example_recordings' filesep ] (default)``;
+-  **user\_str** (optional) string to identify this run or experiment.
 
 .. _Argument_parsing:
 
@@ -185,61 +184,62 @@ task source).
 
 .. code::
 
-        % go through all files
-        ECG_all_wrappers = [];
-        jj = 1;
-        for ii = 1:lrecnames
-            rec_filename = [examples_path recnames{ii}];
-            % task name,
-    %         ECGt_QRSd = 'QRS_detection';
-            % or create an specific handle to have more control
-            ECGt_QRSd = ECGtask_QRS_detection();
-    %         % select an specific algorithm. Default: Run all detectors
-    %         ECGt_QRSd.detectors = 'wavedet'; % Wavedet algorithm based on
-    %         ECGt_QRSd.detectors = 'pantom';  % Pan-Tompkins alg.
-    %         ECGt_QRSd.detectors = 'gqrs';    % WFDB gqrs algorithm.
-    %         ECGt_QRSd.detectors = 'user:example_worst_ever_QRS_detector';    % Example of how you can add your own QRS detector.
-    %         ECGt_QRSd.detectors = 'user:your_QRS_detector_func_name';    %
-    %         "your_QRS_detector_func_name" can be your own detector.
-            ECGt_QRSd.detectors = {'wavedet' 'gqrs' 'wqrs' 'user:example_worst_ever_QRS_detector'};
-            % you can individualize each run of the QRS detector with an
-            % external string
-            ECGt_QRSd.user_string = user_str;
-            % or group by the config used
-    %         ECGt_QRSd.user_string = ECGt_QRSd.detectors;
-    %         ECGt_QRSd.only_ECG_leads = false;    % consider all signals ECG
-            ECGt_QRSd.only_ECG_leads = true;    % Identify ECG signals based on their header description.
-            ECG_w = ECGwrapper( 'recording_name', rec_filename, ...
-                                'this_pid', pid_str, ...
-                                'tmp_path', tmp_path, ...
-                                'output_path', output_path, ...
-                                'ECGtaskHandle', ECGt_QRSd);
-            try
-                % process the task
-                ECG_w.Run;
-                % collect object if were recognized as ECG recordings.
-                if( jj == 1)
-                    ECG_all_wrappers = ECG_w;
-                else
-                    ECG_all_wrappers(jj) = ECG_w;
-                end
-                jj = jj + 1;
-            catch MException
-                if( strfind(MException.identifier, 'ECGwrapper:ArgCheck:InvalidFormat') )
-                    disp_string_framed('*Red', sprintf( 'Could not guess the format of %s', ECG_w.recording_name) );
-                else
-                    % report just in case
-                    report = getReport(MException);
-                    fprintf(2, '\n%s\n', report);
-                end
-            end
-        end
-        % recognized recordings
-        lrecnames = length(ECG_all_wrappers);
-        % at the end, report problems if happened.
-        for ii = 1:lrecnames
-            ECG_all_wrappers(ii).ReportErrors;
-        end
+    % go through all files
+    ECG_all_wrappers = [];
+    jj = 1;
+    for ii = 1:lrecnames
+        rec_filename = [examples_path recnames{ii}];
+        % task name,
+%         ECGt_QRSd = 'QRS_detection';
+        % or create an specific handle to have more control
+        ECGt_QRSd = ECGtask_QRS_detection();
+%         % select an specific algorithm. Default: Run all detectors
+%         ECGt_QRSd.detectors = 'wavedet'; % Wavedet algorithm based on
+%         ECGt_QRSd.detectors = 'pantom';  % Pan-Tompkins alg.
+%         ECGt_QRSd.detectors = 'gqrs';    % WFDB gqrs algorithm.
+%         % Example of how you can add your own QRS detector.
+%         ECGt_QRSd.detectors = 'user:example_worst_ever_QRS_detector';    
+%         ECGt_QRSd.detectors = 'user:your_QRS_detector_func_name';    %
+%         "your_QRS_detector_func_name" can be your own detector.
+        ECGt_QRSd.detectors = {'wavedet' 'gqrs' 'wqrs' 'user:example_worst_ever_QRS_detector'};
+        % you can individualize each run of the QRS detector with an
+        % external string
+        ECGt_QRSd.user_string = user_str;
+        % or group by the config used
+%         ECGt_QRSd.user_string = ECGt_QRSd.detectors;
+%         ECGt_QRSd.only_ECG_leads = false;    % consider all signals ECG
+        ECGt_QRSd.only_ECG_leads = true;    % Identify ECG signals based on their header description.
+        ECG_w = ECGwrapper( 'recording_name', rec_filename, ...
+                            'this_pid', pid_str, ...
+                            'tmp_path', tmp_path, ...
+                            'output_path', output_path, ...
+                            'ECGtaskHandle', ECGt_QRSd);
+        try
+            % process the task
+            ECG_w.Run;
+            % collect object if were recognized as ECG recordings.
+            if( jj == 1)
+                ECG_all_wrappers = ECG_w;
+            else
+                ECG_all_wrappers(jj) = ECG_w;
+            end
+            jj = jj + 1;
+        catch MException
+            if( strfind(MException.identifier, 'ECGwrapper:ArgCheck:InvalidFormat') )
+                disp_string_framed('*Red', sprintf( 'Could not guess the format of %s', ECG_w.recording_name) );
+            else
+                % report just in case
+                report = getReport(MException);
+                fprintf(2, '\n%s\n', report);
+            end
+        end
+    end
+    % recognized recordings
+    lrecnames = length(ECG_all_wrappers);
+    % at the end, report problems if happened.
+    for ii = 1:lrecnames
+        ECG_all_wrappers(ii).ReportErrors;
+    end
             
 
 .. _QRS_visual_inspection_and_correction:

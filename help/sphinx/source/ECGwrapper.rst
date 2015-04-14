@@ -2,6 +2,14 @@
 ECGwrapper
 ==========
 
+.. toctree::
+   :hidden:
+   :titlesonly:
+   
+   <Matlab_format>
+   <custom_formats>
+
+
 This class allows the access to ECG recordings of several :ref:`formats <ECG_formats>` and length.
 
 Syntax
@@ -59,105 +67,98 @@ several name and value pair arguments in any order as
 
 .. code::
 
-	% specifies to create an ECGwrapper to detect heartbeats in recording '/ecg_recordings/rec1.dat'
-	ECGwrapper('recording_name','/ecg_recordings/rec1.dat', 'ECGtaskHandle', 'QRS_detection') 
+ % specifies to create an ECGwrapper to detect 
+ % heartbeats in recording '/ecg_recordings/rec1.dat'
+ ECGwrapper('recording_name','/ecg_recordings/rec1.dat', 'ECGtaskHandle', 'QRS_detection') 
 
 
 The available properties are listed below
 	
 	
- ``'recording_name'`` — The ECG recording full name. Default value ``''``
+``'recording_name'`` — The ECG recording full name. ``'' (default)``
 
   The full path filename of the ECG recording.
 
- ``'recording_format'`` — ECG recording format. Default value: ``auto-detect format``
+``'recording_format'`` — ECG recording format. ``auto-detect format  (default)``
 
 .. _ECG_formats:
 
-    The format of the ECG recording. By default or if not specified, the wrapper will attempt to auto-detect the format among the following table:
+	The format of the ECG recording. By default or if not specified, the wrapper will attempt to auto-detect the format among the following table:
 
-=============  ======================================================================================================================================================================================================	
-Output Format  String Value
-=============  ======================================================================================================================================================================================================
-'MIT'	       `MIT format <http://www.physionet.org/physiotools/wag/signal-5.htm>`
-'ISHNE'	       `ISHNE format <http://thew-project.org/THEWFileFormat.htm>`
-'AHA'	       `American Heart Association ECG Database  <https://www.ecri.org/Products/Pages/AHA_ECG_DVD.aspx>` or `Physionet  <http://www.physionet.org/physiotools/old/dbpg/dbu_84.htm>` 
-'HES'	       Biosigna format
-'MAT'	       `Matlab file format <Matlab_format>` 
-'Mortara'      Mortara SuperECG format
-=========      ======================================================================================================================================================================================================	
+	+---------+--------------------------------------------------------------------+
+	| String  | Description                                                        |
+	+=========+====================================================================+
+	| MIT     | `MIT format`_                                                      |
+	+---------+--------------------------------------------------------------------+
+	| ISHNE   | `ISHNE format`_                                                    |
+	+---------+--------------------------------------------------------------------+
+	| AHA	  | `American Heart Association ECG Database`_  or `AHA in Physionet`_ |
+	+---------+--------------------------------------------------------------------+
+	| HES	  | Biosigna format                                                    |
+	+---------+--------------------------------------------------------------------+
+	| MAT	  | :doc:`Matlab file format <Matlab_format>`                          |
+	+---------+--------------------------------------------------------------------+
+	| Mortara | Mortara SuperECG format                                            |
+	+---------+--------------------------------------------------------------------+
 
-```'this_pid'`` — Process identification `__\ ``'1/1'`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``'this_pid'`` — Process identification for multiprocess batch jobs. ``'1/1'  (default)``
 
-In case working in a multiprocess environment, this value will identify
-the current process. Can be a numeric value, or a string of the form
-'N/M'. This pid is N and the total amount of pid's to divide the whole
-work is M.
+	In case working in a multiprocess environment, this value will identify
+	the current process. Can be a numeric value, or a string of the form
+	'N/M'. This pid is N and the total amount of pid's to divide the whole
+	work is M.
 
-```'tmp_path'`` — The path to store temporary data `__\ ``'tempdir()'`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Full path to a directory with write privileges.
+``'tmp_path'`` — The path to store temporary data. ``tempdir()  (default)``
 
-```'output_path'`` — The output path to store results `__\ ``'fileparts(recording_name)'`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Full path to a directory with write privileges.
 
-Full path to a directory with write privileges. By default will be the
-same path of the recordings.
+``'output_path'`` — The output path to store results. ``fileparts(recording_name)  (default)``
 
-```'ECGtaskHandle'`` — The task to perform. `__\ ``''`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Full path to a directory with write privileges. By default will be the
+	same path of the recordings.
 
-The task to perform, can be the name of the task, or an ECGtask object.
-Available ECGtasks can be listed with
-`list\_all\_ECGtask() <matlab:doc('list_all_ECGtask')>`__ command.
+``'ECGtaskHandle'`` — The task to perform. ``''  (default)`
 
-````
+	The task to perform, can be the name of the task, or an ECGtask object.
+	Available ECGtasks can be listed with ```list_all_ECGtask()`` command.
 
-```'partition_mode'`` — The way that this object will partition lengthy signals `__\ ``'ECG_overlapped'`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``'partition_mode'`` — The way that this object will partition lengthy signals. ``'ECG_overlapped' (default)``
 
-The way to do batch partition in lengthy signals:
+	The way to do batch partition in lengthy signals:
 
--  'ECG\_contiguous' no overlapp between segments.
+	-  'ECG\_contiguous' no overlapp between segments.
 
--  'ECG\_overlapped' overlapp of 'overlapping\_time' among segments.
-   This can be useful if your task have a transient period to avoid.
+	-  'ECG\_overlapped' overlapp of 'overlapping\_time' among segments.
+	   This can be useful if your task have a transient period to avoid.
 
--  'QRS' do the partition based on the annotations provided in
-   ECG\_annotations.time property. This option is useful if your task
-   works in the boundaries of a fiducial point (commonly a heartbeat),
-   and not in the whole signal. This partition mode ignores those parts
-   of the recording without annotations.
+	-  'QRS' do the partition based on the annotations provided in
+	   ECG\_annotations.time property. This option is useful if your task
+	   works in the boundaries of a fiducial point (commonly a heartbeat),
+	   and not in the whole signal. This partition mode ignores those parts
+	   of the recording without annotations.
 
-```'overlapping_time'`` — Time in seconds of overlapp among consequtive segments `__\ ``30`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``'overlapping_time'`` — Time in seconds of overlapp among consequtive segments. ``30  (default)``
+   
+	Time in seconds of overlapp among consequtive segments. This segment is
+	useful for ensuring the end of all transients within a task.
 
-Time in seconds of overlapp among consequtive segments. This segment is
-useful for ensuring the end of all transients within a task.
+``'cacheResults'`` — Save intermediate results to recover in case of failure. ``true (default)``
 
-```'cacheResults'`` — Save intermediate results to recover in case of failure `__\ ``true`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Save intermediate results to recover in case of errors. Useful for long
+	jobs or recordings.
 
-Save intermediate results to recover in case of errors. Useful for long
-jobs or recordings.
+```'syncSlavesWithMaster'`` — Time in seconds of overlapp among consequtive segments. ``false (default)``
 
-```'syncSlavesWithMaster'`` — Time in seconds of overlapp among consequtive segments `__\ ``false`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	In multiprocess environments sometimes it is useful to terminate all
+	pid's together in order to start subsequent tasks synchronously. This
+	value forces all parts of a multipart process to wait until all other
+	parts finish.
 
-In multiprocess environments sometimes it is useful to terminate all
-pid's together in order to start subsequent tasks synchronously. This
-value forces all parts of a multipart process to wait until all other
-parts finish.
+ ``'repetitions'`` — Times to repeat the ECGtask. ``1 (default)``
 
-```'repetitions'`` — Times to repeat the ECGtask `__\ ``1`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-In case the ECGtask is not deterministic, the repetition property allows
-to repeat the task several times.
-
- 
+	In case the ECGtask is not deterministic, the repetition property allows
+	to repeat the task several times.
 
 Methods
 -------
@@ -166,60 +167,57 @@ Some useful methods are described below.
 
  
 
-```Run`` — Execute the ECG task `__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``Run`` — Execute the ECG task
 
-This method executes the configured ECG task.
+	This method executes the configured ECG task.
 
-```read_signal`` — Read signal samples `__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``read_signal`` — Read signal samples
 
-This method allows to easily reads samples from a recording
+	This method allows to easily reads samples from a recording
 
-.. code::
-             
-    function ECG = read_signal(ECG_start_idx, ECG_end_idx)
-                            
+	.. code::
+		
+		% function prototype         
+		function ECG = read_signal(ECG_start_idx, ECG_end_idx)
+								
+	where the arguments are:
 
-where the arguments are:
+		**ECG\_start\_idx**, is the first sample to read. ``1 (default)``.
+		
+		**ECG\_end\_idx**, is the last sample to read. ``ECG\_header.nsamp (default)``
 
-ECG\_start\_idx, is the first sample to read. Default 1.
+	and as a result, it returns:
 
-ECG\_end\_idx, is the last sample to read. Default ECG\_header.nsamp
+		**ECG**, which is a matrix of size ``[(ECG\_end\_idx - ECG\_start\_idx + 1) ECG\_header.nsig] (default)``
 
-and as a result, it returns:
+	as it is exemplified below
+		
+	.. code::
+	
+		% reads ECG 100 samples
+		ECG = ECG_w.read_signal(1, 99);
 
-ECG, which is a matrix of size [(ECG\_end\_idx - ECG\_start\_idx + 1)
-ECG\_header.nsig]
+``ReportErrors`` — Display the error report generated during the task execution
 
-.. code::
-    % reads ECG 100 samples
-    ECG = ECG_w.read_signal(1, 99);
+	This method reports error generated during task execution.
 
-```ReportErrors`` — Display the error report generated during the task execution `__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``GetCahchedFileName`` — Find the result files of an specific recording/task
 
-This method reports error generated during task execution.
+	This method returns the cached filename for an specific recording, and
+	task, if available.
 
-```GetCahchedFileName`` — Find the result files of an specific recording/task `__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	.. code::
 
-This method returns the cached filename for an specific recording, and
-task, if available.
-
-.. code::
-    % Get result filename of previous QRS detection. The corrected/audited version has precedence if available.
-    cached_filenames = ECGw.GetCahchedFileName({'QRS_corrector' 'QRS_detection'});
-
+		% Get result filename of previous QRS detection. 
+		% The corrected/audited version has precedence if available.
+		cached_filenames = ECGw.GetCahchedFileName({'QRS_corrector' 'QRS_detection'});
  
 
 Examples
 --------
 
-`collapse all `__
-
-`Create the simplest ECG wrapper object `__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Create the simplest ECG wrapper object
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Create the ECGwrapper object.
 
@@ -263,8 +261,8 @@ Now, you just want to run the task by executing:
     >> ECG_w.Run();
                     
 
-`Create an ECGwrapper object for an specific recording and task `__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Create an ECGwrapper object for an specific recording and task
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In this case, we create the same object of the previous example but
 using the name-value .
@@ -288,15 +286,6 @@ using the name-value .
     +Processed: false
                         
     >> ECG_w.Run();
-                    
-
- 
-
-More About
-----------
-
-`expand all `__
-
  
 
 Other resources
@@ -309,8 +298,15 @@ Other resources
    Zaragoza <http://diec.unizar.es/~laguna/personal/publicaciones/publicaciones.htm>`__
 -  `Computing in Cardiology <http://cinc.org/>`__
 
+
 See Also
 --------
 
-```ECGtask`` <ECGtask.html>`__ \| ```examples`` <examples.html>`__
+ :doc:`ECGtask <ECGtask>` \| :doc:`Examples <examples>`
+ 
+
+.. _`MIT format`: http://www.physionet.org/physiotools/wag/signal-5.htm
+.. _`ISHNE format`: http://thew-project.org/THEWFileFormat.htm
+.. _`American Heart Association ECG Database`: https://www.ecri.org/Products/Pages/AHA_ECG_DVD.aspx
+.. _`AHA in Physionet`: http://www.physionet.org/physiotools/old/dbpg/dbu_84.htm
 

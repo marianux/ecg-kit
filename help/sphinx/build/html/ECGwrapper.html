@@ -136,6 +136,8 @@
             
   <div class="section" id="ecgwrapper">
 <h1>ECGwrapper<a class="headerlink" href="#ecgwrapper" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
 <p>This class allows the access to ECG recordings of several <a class="reference internal" href="#ecg-formats"><span>formats</span></a> and length.</p>
 <div class="section" id="syntax">
 <h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
@@ -179,45 +181,70 @@ be used of subsequent tasks as shown in the
 several name and value pair arguments in any order as
 <code class="docutils literal"><span class="pre">Name1,Value1,...,NameN,ValueN</span></code>.</p>
 <p><strong>Example:</strong></p>
-<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% specifies to create an ECGwrapper to detect heartbeats in recording &#39;/ecg_recordings/rec1.dat&#39;</span>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% specifies to create an ECGwrapper to detect</span>
+<span class="c">% heartbeats in recording &#39;/ecg_recordings/rec1.dat&#39;</span>
 <span class="n">ECGwrapper</span><span class="p">(</span><span class="s">&#39;recording_name&#39;</span><span class="p">,</span><span class="s">&#39;/ecg_recordings/rec1.dat&#39;</span><span class="p">,</span> <span class="s">&#39;ECGtaskHandle&#39;</span><span class="p">,</span> <span class="s">&#39;QRS_detection&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The available properties are listed below</p>
-<blockquote>
-<div><p><code class="docutils literal"><span class="pre">'recording_name'</span></code> — The ECG recording full name. Default value <code class="docutils literal"><span class="pre">''</span></code></p>
+<p><code class="docutils literal"><span class="pre">'recording_name'</span></code> — The ECG recording full name. <code class="docutils literal"><span class="pre">''</span> <span class="pre">(default)</span></code></p>
 <blockquote>
 <div>The full path filename of the ECG recording.</div></blockquote>
-<p><code class="docutils literal"><span class="pre">'recording_format'</span></code> — ECG recording format. Default value: <code class="docutils literal"><span class="pre">auto-detect</span> <span class="pre">format</span></code></p>
-</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'recording_format'</span></code> — ECG recording format. <code class="docutils literal"><span class="pre">auto-detect</span> <span class="pre">format</span>&nbsp; <span class="pre">(default)</span></code></p>
 <blockquote id="ecg-formats">
-<div>The format of the ECG recording. By default or if not specified, the wrapper will attempt to auto-detect the format among the following table:</div></blockquote>
-<div class="section" id="this-pid-process-identification-1-1-default">
-<h3><code class="docutils literal"><span class="pre">`'this_pid'</span></code> — Process identification <cite>__`</cite>&#8216;1/1&#8217;`` (default)<a class="headerlink" href="#this-pid-process-identification-1-1-default" title="Permalink to this headline">¶</a></h3>
-<p>In case working in a multiprocess environment, this value will identify
+<div><p>The format of the ECG recording. By default or if not specified, the wrapper will attempt to auto-detect the format among the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="88%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">String</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>MIT</td>
+<td><a class="reference external" href="http://www.physionet.org/physiotools/wag/signal-5.htm">MIT format</a></td>
+</tr>
+<tr class="row-odd"><td>ISHNE</td>
+<td><a class="reference external" href="http://thew-project.org/THEWFileFormat.htm">ISHNE format</a></td>
+</tr>
+<tr class="row-even"><td>AHA</td>
+<td><a class="reference external" href="https://www.ecri.org/Products/Pages/AHA_ECG_DVD.aspx">American Heart Association ECG Database</a>  or <a class="reference external" href="http://www.physionet.org/physiotools/old/dbpg/dbu_84.htm">AHA in Physionet</a></td>
+</tr>
+<tr class="row-odd"><td>HES</td>
+<td>Biosigna format</td>
+</tr>
+<tr class="row-even"><td>MAT</td>
+<td><a class="reference internal" href="Matlab_format.html"><em>Matlab file format</em></a></td>
+</tr>
+<tr class="row-odd"><td>Mortara</td>
+<td>Mortara SuperECG format</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'this_pid'</span></code> — Process identification for multiprocess batch jobs. <code class="docutils literal"><span class="pre">'1/1'</span>&nbsp; <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>In case working in a multiprocess environment, this value will identify
 the current process. Can be a numeric value, or a string of the form
 &#8216;N/M&#8217;. This pid is N and the total amount of pid&#8217;s to divide the whole
-work is M.</p>
-</div>
-<div class="section" id="tmp-path-the-path-to-store-temporary-data-tempdir-default">
-<h3><code class="docutils literal"><span class="pre">`'tmp_path'</span></code> — The path to store temporary data <cite>__`</cite>&#8216;tempdir()&#8217;`` (default)<a class="headerlink" href="#tmp-path-the-path-to-store-temporary-data-tempdir-default" title="Permalink to this headline">¶</a></h3>
-<p>Full path to a directory with write privileges.</p>
-</div>
-<div class="section" id="output-path-the-output-path-to-store-results-fileparts-recording-name-default">
-<h3><code class="docutils literal"><span class="pre">`'output_path'</span></code> — The output path to store results <cite>__`</cite>&#8216;fileparts(recording_name)&#8217;`` (default)<a class="headerlink" href="#output-path-the-output-path-to-store-results-fileparts-recording-name-default" title="Permalink to this headline">¶</a></h3>
-<p>Full path to a directory with write privileges. By default will be the
-same path of the recordings.</p>
-</div>
-<div class="section" id="ecgtaskhandle-the-task-to-perform-default">
-<h3><code class="docutils literal"><span class="pre">`'ECGtaskHandle'</span></code> — The task to perform. <cite>__`</cite>&#8216;&#8217;`` (default)<a class="headerlink" href="#ecgtaskhandle-the-task-to-perform-default" title="Permalink to this headline">¶</a></h3>
-<p>The task to perform, can be the name of the task, or an ECGtask object.
-Available ECGtasks can be listed with
-<a class="reference external" href="matlab:doc('list_all_ECGtask')">list_all_ECGtask()</a> command.</p>
-</div>
-<hr class="docutils" />
-<div class="section" id="partition-mode-the-way-that-this-object-will-partition-lengthy-signals-ecg-overlapped-default">
-<h3><code class="docutils literal"><span class="pre">`'partition_mode'</span></code> — The way that this object will partition lengthy signals <cite>__`</cite>&#8216;ECG_overlapped&#8217;`` (default)<a class="headerlink" href="#partition-mode-the-way-that-this-object-will-partition-lengthy-signals-ecg-overlapped-default" title="Permalink to this headline">¶</a></h3>
-<p>The way to do batch partition in lengthy signals:</p>
+work is M.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'tmp_path'</span></code> — The path to store temporary data. <code class="docutils literal"><span class="pre">tempdir()</span>&nbsp; <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>Full path to a directory with write privileges.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'output_path'</span></code> — The output path to store results. <code class="docutils literal"><span class="pre">fileparts(recording_name)</span>&nbsp; <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>Full path to a directory with write privileges. By default will be the
+same path of the recordings.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'ECGtaskHandle'</span></code> — The task to perform. <a href="#id1"><span class="problematic" id="id2">``</span></a>&#8216;&#8217;  (default)`</p>
+<blockquote>
+<div>The task to perform, can be the name of the task, or an ECGtask object.
+Available ECGtasks can be listed with <code class="docutils literal"><span class="pre">`list_all_ECGtask()</span></code> command.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'partition_mode'</span></code> — The way that this object will partition lengthy signals. <code class="docutils literal"><span class="pre">'ECG_overlapped'</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div><p>The way to do batch partition in lengthy signals:</p>
 <ul class="simple">
 <li>&#8216;ECG_contiguous&#8217; no overlapp between segments.</li>
 <li>&#8216;ECG_overlapped&#8217; overlapp of &#8216;overlapping_time&#8217; among segments.
@@ -228,65 +255,73 @@ works in the boundaries of a fiducial point (commonly a heartbeat),
 and not in the whole signal. This partition mode ignores those parts
 of the recording without annotations.</li>
 </ul>
-</div>
-<div class="section" id="overlapping-time-time-in-seconds-of-overlapp-among-consequtive-segments-30-default">
-<h3><code class="docutils literal"><span class="pre">`'overlapping_time'</span></code> — Time in seconds of overlapp among consequtive segments <cite>__``30`</cite> (default)<a class="headerlink" href="#overlapping-time-time-in-seconds-of-overlapp-among-consequtive-segments-30-default" title="Permalink to this headline">¶</a></h3>
-<p>Time in seconds of overlapp among consequtive segments. This segment is
-useful for ensuring the end of all transients within a task.</p>
-</div>
-<div class="section" id="cacheresults-save-intermediate-results-to-recover-in-case-of-failure-true-default">
-<h3><code class="docutils literal"><span class="pre">`'cacheResults'</span></code> — Save intermediate results to recover in case of failure <cite>__``true`</cite> (default)<a class="headerlink" href="#cacheresults-save-intermediate-results-to-recover-in-case-of-failure-true-default" title="Permalink to this headline">¶</a></h3>
-<p>Save intermediate results to recover in case of errors. Useful for long
-jobs or recordings.</p>
-</div>
-<div class="section" id="syncslaveswithmaster-time-in-seconds-of-overlapp-among-consequtive-segments-false-default">
-<h3><code class="docutils literal"><span class="pre">`'syncSlavesWithMaster'</span></code> — Time in seconds of overlapp among consequtive segments <cite>__``false`</cite> (default)<a class="headerlink" href="#syncslaveswithmaster-time-in-seconds-of-overlapp-among-consequtive-segments-false-default" title="Permalink to this headline">¶</a></h3>
-<p>In multiprocess environments sometimes it is useful to terminate all
+</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'overlapping_time'</span></code> — Time in seconds of overlapp among consequtive segments. <code class="docutils literal"><span class="pre">30</span>&nbsp; <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>Time in seconds of overlapp among consequtive segments. This segment is
+useful for ensuring the end of all transients within a task.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'cacheResults'</span></code> — Save intermediate results to recover in case of failure. <code class="docutils literal"><span class="pre">true</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>Save intermediate results to recover in case of errors. Useful for long
+jobs or recordings.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">`'syncSlavesWithMaster'</span></code> — Time in seconds of overlapp among consequtive segments. <code class="docutils literal"><span class="pre">false</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div><blockquote>
+<div>In multiprocess environments sometimes it is useful to terminate all
 pid&#8217;s together in order to start subsequent tasks synchronously. This
 value forces all parts of a multipart process to wait until all other
-parts finish.</p>
-</div>
-<div class="section" id="repetitions-times-to-repeat-the-ecgtask-1-default">
-<h3><code class="docutils literal"><span class="pre">`'repetitions'</span></code> — Times to repeat the ECGtask <cite>__``1`</cite> (default)<a class="headerlink" href="#repetitions-times-to-repeat-the-ecgtask-1-default" title="Permalink to this headline">¶</a></h3>
-<p>In case the ECGtask is not deterministic, the repetition property allows
-to repeat the task several times.</p>
-</div>
+parts finish.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'repetitions'</span></code> — Times to repeat the ECGtask. <code class="docutils literal"><span class="pre">1</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>In case the ECGtask is not deterministic, the repetition property allows
+to repeat the task several times.</div></blockquote>
+</div></blockquote>
 </div>
 <div class="section" id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
 <p>Some useful methods are described below.</p>
-<div class="section" id="run-execute-the-ecg-task">
-<h3><code class="docutils literal"><span class="pre">`Run</span></code> — Execute the ECG task <a href="#id1"><span class="problematic" id="id2">`</span></a>__<a class="headerlink" href="#run-execute-the-ecg-task" title="Permalink to this headline">¶</a></h3>
-<p>This method executes the configured ECG task.</p>
-</div>
-<div class="section" id="read-signal-read-signal-samples">
-<h3><code class="docutils literal"><span class="pre">`read_signal</span></code> — Read signal samples <a href="#id3"><span class="problematic" id="id4">`</span></a>__<a class="headerlink" href="#read-signal-read-signal-samples" title="Permalink to this headline">¶</a></h3>
-<p>This method allows to easily reads samples from a recording</p>
-<div class="code highlight-Matlab"><div class="highlight"><pre><span class="k">function</span><span class="w"> </span>ECG <span class="p">=</span><span class="w"> </span><span class="nf">read_signal</span><span class="p">(</span>ECG_start_idx, ECG_end_idx<span class="p">)</span><span class="w"></span>
+<p><code class="docutils literal"><span class="pre">Run</span></code> — Execute the ECG task</p>
+<blockquote>
+<div>This method executes the configured ECG task.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">read_signal</span></code> — Read signal samples</p>
+<blockquote>
+<div><p>This method allows to easily reads samples from a recording</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% function prototype</span>
+<span class="k">function</span><span class="w"> </span>ECG <span class="p">=</span><span class="w"> </span><span class="nf">read_signal</span><span class="p">(</span>ECG_start_idx, ECG_end_idx<span class="p">)</span><span class="w"></span>
 </pre></div>
 </div>
 <p>where the arguments are:</p>
-<p>ECG_start_idx, is the first sample to read. Default 1.</p>
-<p>ECG_end_idx, is the last sample to read. Default ECG_header.nsamp</p>
+<blockquote>
+<div><p><strong>ECG_start_idx</strong>, is the first sample to read. <code class="docutils literal"><span class="pre">1</span> <span class="pre">(default)</span></code>.</p>
+<p><strong>ECG_end_idx</strong>, is the last sample to read. <code class="docutils literal"><span class="pre">ECG\_header.nsamp</span> <span class="pre">(default)</span></code></p>
+</div></blockquote>
 <p>and as a result, it returns:</p>
-<p>ECG, which is a matrix of size [(ECG_end_idx - ECG_start_idx + 1)
-ECG_header.nsig]</p>
+<blockquote>
+<div><strong>ECG</strong>, which is a matrix of size <code class="docutils literal"><span class="pre">[(ECG\_end\_idx</span> <span class="pre">-</span> <span class="pre">ECG\_start\_idx</span> <span class="pre">+</span> <span class="pre">1)</span> <span class="pre">ECG\_header.nsig]</span> <span class="pre">(default)</span></code></div></blockquote>
+<p>as it is exemplified below</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% reads ECG 100 samples</span>
+<span class="n">ECG</span> <span class="p">=</span> <span class="n">ECG_w</span><span class="p">.</span><span class="n">read_signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">);</span>
+</pre></div>
 </div>
-<div class="section" id="reporterrors-display-the-error-report-generated-during-the-task-execution">
-<h3><code class="docutils literal"><span class="pre">`ReportErrors</span></code> — Display the error report generated during the task execution <a href="#id5"><span class="problematic" id="id6">`</span></a>__<a class="headerlink" href="#reporterrors-display-the-error-report-generated-during-the-task-execution" title="Permalink to this headline">¶</a></h3>
-<p>This method reports error generated during task execution.</p>
-</div>
-<div class="section" id="getcahchedfilename-find-the-result-files-of-an-specific-recording-task">
-<h3><code class="docutils literal"><span class="pre">`GetCahchedFileName</span></code> — Find the result files of an specific recording/task <a href="#id7"><span class="problematic" id="id8">`</span></a>__<a class="headerlink" href="#getcahchedfilename-find-the-result-files-of-an-specific-recording-task" title="Permalink to this headline">¶</a></h3>
-<p>This method returns the cached filename for an specific recording, and
+</div></blockquote>
+<p><code class="docutils literal"><span class="pre">ReportErrors</span></code> — Display the error report generated during the task execution</p>
+<blockquote>
+<div>This method reports error generated during task execution.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">GetCahchedFileName</span></code> — Find the result files of an specific recording/task</p>
+<blockquote>
+<div><p>This method returns the cached filename for an specific recording, and
 task, if available.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% Get result filename of previous QRS detection.</span>
+<span class="c">% The corrected/audited version has precedence if available.</span>
+<span class="n">cached_filenames</span> <span class="p">=</span> <span class="n">ECGw</span><span class="p">.</span><span class="n">GetCahchedFileName</span><span class="p">({</span><span class="s">&#39;QRS_corrector&#39;</span> <span class="s">&#39;QRS_detection&#39;</span><span class="p">});</span>
+</pre></div>
 </div>
+</div></blockquote>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p><a href="#id9"><span class="problematic" id="id10">`</span></a>collapse all <a href="#id11"><span class="problematic" id="id12">`</span></a>__</p>
 <div class="section" id="create-the-simplest-ecg-wrapper-object">
-<h3><a href="#id13"><span class="problematic" id="id14">`</span></a>Create the simplest ECG wrapper object <a href="#id15"><span class="problematic" id="id16">`</span></a>__<a class="headerlink" href="#create-the-simplest-ecg-wrapper-object" title="Permalink to this headline">¶</a></h3>
+<h3>Create the simplest ECG wrapper object<a class="headerlink" href="#create-the-simplest-ecg-wrapper-object" title="Permalink to this headline">¶</a></h3>
 <p>Create the ECGwrapper object.</p>
 <div class="code highlight-Matlab"><div class="highlight"><pre><span class="o">&gt;&gt;</span> <span class="n">ECG_w</span> <span class="p">=</span> <span class="n">ECGwrapper</span><span class="p">()</span>
 <span class="n">ECG_w</span> <span class="p">=</span>
@@ -322,7 +357,7 @@ task, if available.</p>
 </div>
 </div>
 <div class="section" id="create-an-ecgwrapper-object-for-an-specific-recording-and-task">
-<h3><a href="#id17"><span class="problematic" id="id18">`</span></a>Create an ECGwrapper object for an specific recording and task <a href="#id19"><span class="problematic" id="id20">`</span></a>__<a class="headerlink" href="#create-an-ecgwrapper-object-for-an-specific-recording-and-task" title="Permalink to this headline">¶</a></h3>
+<h3>Create an ECGwrapper object for an specific recording and task<a class="headerlink" href="#create-an-ecgwrapper-object-for-an-specific-recording-and-task" title="Permalink to this headline">¶</a></h3>
 <p>In this case, we create the same object of the previous example but
 using the name-value .</p>
 <div class="code highlight-Matlab"><div class="highlight"><pre><span class="o">&gt;&gt;</span> <span class="n">ECG_w</span> <span class="p">=</span> <span class="n">ECGwrapper</span><span class="p">(</span> <span class="c">...</span>
@@ -346,10 +381,6 @@ using the name-value .</p>
 </div>
 </div>
 </div>
-<div class="section" id="more-about">
-<h2>More About<a class="headerlink" href="#more-about" title="Permalink to this headline">¶</a></h2>
-<p><a href="#id21"><span class="problematic" id="id22">`</span></a>expand all <a href="#id23"><span class="problematic" id="id24">`</span></a>__</p>
-</div>
 <div class="section" id="other-resources">
 <h2>Other resources<a class="headerlink" href="#other-resources" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -363,7 +394,8 @@ Zaragoza</a></li>
 </div>
 <div class="section" id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">`ECGtask</span></code> &lt;ECGtask.html&gt;`__ | <code class="docutils literal"><span class="pre">`examples</span></code> &lt;examples.html&gt;`__</p>
+<blockquote>
+<div><a class="reference internal" href="ECGtask.html"><em>ECGtask</em></a> | <a class="reference internal" href="examples.html"><em>Examples</em></a></div></blockquote>
 </div>
 </div>
 

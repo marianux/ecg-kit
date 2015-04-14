@@ -196,14 +196,13 @@ signal</span></li>
 </div>
 <p><em>examples</em> accepts three <em>optional</em> arguments:</p>
 <ul class="simple">
-<li><strong>*pid_str*</strong> (optional) string identifier for this work instance in
+<li><strong>pid_str</strong> (optional) string identifier for this work instance in
 a cluster computing or multitask environment. The identifier follows
 the form &#8216;N/M&#8217;, being N a number which identifies this execution
-instance and M the total amount of instances. Default value &#8216;1/1&#8217;</li>
-<li><strong>*examples_path*</strong> (optional) string of the path with ECG
-recordings. Default value
-<code class="docutils literal"><span class="pre">['.'</span> <span class="pre">filesep</span> <span class="pre">'example_recordings'</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">filesep</span> <span class="pre">]</span></code>;</li>
-<li><strong>*user_str*</strong> (optional) string to identify this run or experiment.</li>
+instance and M the total amount of instances. <code class="docutils literal"><span class="pre">'1/1'</span> <span class="pre">(default)</span></code></li>
+<li><strong>examples_path</strong> (optional) string of the path with ECG
+recordings. <code class="docutils literal"><span class="pre">['.'</span> <span class="pre">filesep</span> <span class="pre">'example_recordings'</span> <span class="pre">filesep</span> <span class="pre">]</span> <span class="pre">(default)</span></code>;</li>
+<li><strong>user_str</strong> (optional) string to identify this run or experiment.</li>
 </ul>
 </div>
 <div class="section" id="argument-parsing">
@@ -290,66 +289,65 @@ class for more details) and other specific for a certain task, such as
 <em>gqrs_config_filename</em> (see others in <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:edit('ECGtask_QRS_detection.m')">QRS
 detection</a>
 task source).</p>
-<div class="code highlight-Matlab"><div class="highlight"><pre>    <span class="c">% go through all files</span>
-    <span class="n">ECG_all_wrappers</span> <span class="p">=</span> <span class="p">[];</span>
-    <span class="n">jj</span> <span class="p">=</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="k">for</span> <span class="n">ii</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">lrecnames</span>
-        <span class="n">rec_filename</span> <span class="p">=</span> <span class="p">[</span><span class="n">examples_path</span> <span class="n">recnames</span><span class="p">{</span><span class="n">ii</span><span class="p">}];</span>
-        <span class="c">% task name,</span>
-<span class="c">%         ECGt_QRSd = &#39;QRS_detection&#39;;</span>
-        <span class="c">% or create an specific handle to have more control</span>
-        <span class="n">ECGt_QRSd</span> <span class="p">=</span> <span class="n">ECGtask_QRS_detection</span><span class="p">();</span>
-<span class="c">%         % select an specific algorithm. Default: Run all detectors</span>
-<span class="c">%         ECGt_QRSd.detectors = &#39;wavedet&#39;; % Wavedet algorithm based on</span>
-<span class="c">%         ECGt_QRSd.detectors = &#39;pantom&#39;;  % Pan-Tompkins alg.</span>
-<span class="c">%         ECGt_QRSd.detectors = &#39;gqrs&#39;;    % WFDB gqrs algorithm.</span>
-<span class="c">%         ECGt_QRSd.detectors = &#39;user:example_worst_ever_QRS_detector&#39;;    % Example of how you can add your own QRS detector.</span>
-<span class="c">%         ECGt_QRSd.detectors = &#39;user:your_QRS_detector_func_name&#39;;    %</span>
-<span class="c">%         &quot;your_QRS_detector_func_name&quot; can be your own detector.</span>
-        <span class="n">ECGt_QRSd</span><span class="p">.</span><span class="n">detectors</span> <span class="p">=</span> <span class="p">{</span><span class="s">&#39;wavedet&#39;</span> <span class="s">&#39;gqrs&#39;</span> <span class="s">&#39;wqrs&#39;</span> <span class="s">&#39;user:example_worst_ever_QRS_detector&#39;</span><span class="p">};</span>
-        <span class="c">% you can individualize each run of the QRS detector with an</span>
-        <span class="c">% external string</span>
-        <span class="n">ECGt_QRSd</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
-        <span class="c">% or group by the config used</span>
-<span class="c">%         ECGt_QRSd.user_string = ECGt_QRSd.detectors;</span>
-<span class="c">%         ECGt_QRSd.only_ECG_leads = false;    % consider all signals ECG</span>
-        <span class="n">ECGt_QRSd</span><span class="p">.</span><span class="n">only_ECG_leads</span> <span class="p">=</span> <span class="n">true</span><span class="p">;</span>    <span class="c">% Identify ECG signals based on their header description.</span>
-        <span class="n">ECG_w</span> <span class="p">=</span> <span class="n">ECGwrapper</span><span class="p">(</span> <span class="s">&#39;recording_name&#39;</span><span class="p">,</span> <span class="n">rec_filename</span><span class="p">,</span> <span class="c">...</span>
-                            <span class="s">&#39;this_pid&#39;</span><span class="p">,</span> <span class="n">pid_str</span><span class="p">,</span> <span class="c">...</span>
-                            <span class="s">&#39;tmp_path&#39;</span><span class="p">,</span> <span class="n">tmp_path</span><span class="p">,</span> <span class="c">...</span>
-                            <span class="s">&#39;output_path&#39;</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="c">...</span>
-                            <span class="s">&#39;ECGtaskHandle&#39;</span><span class="p">,</span> <span class="n">ECGt_QRSd</span><span class="p">);</span>
-        <span class="k">try</span>
-            <span class="c">% process the task</span>
-            <span class="n">ECG_w</span><span class="p">.</span><span class="n">Run</span><span class="p">;</span>
-            <span class="c">% collect object if were recognized as ECG recordings.</span>
-            <span class="k">if</span><span class="p">(</span> <span class="n">jj</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="n">ECG_all_wrappers</span> <span class="p">=</span> <span class="n">ECG_w</span><span class="p">;</span>
-            <span class="k">else</span>
-                <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">jj</span><span class="p">)</span> <span class="p">=</span> <span class="n">ECG_w</span><span class="p">;</span>
-            <span class="k">end</span>
-            <span class="n">jj</span> <span class="p">=</span> <span class="n">jj</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-        <span class="k">catch</span> <span class="n">MException</span>
-            <span class="k">if</span><span class="p">(</span> <span class="n">strfind</span><span class="p">(</span><span class="n">MException</span><span class="p">.</span><span class="n">identifier</span><span class="p">,</span> <span class="s">&#39;ECGwrapper:ArgCheck:InvalidFormat&#39;</span><span class="p">)</span> <span class="p">)</span>
-                <span class="n">disp_string_framed</span><span class="p">(</span><span class="s">&#39;*Red&#39;</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span> <span class="s">&#39;Could not guess the format of %s&#39;</span><span class="p">,</span> <span class="n">ECG_w</span><span class="p">.</span><span class="n">recording_name</span><span class="p">)</span> <span class="p">);</span>
-            <span class="k">else</span>
-                <span class="c">% report just in case</span>
-                <span class="n">report</span> <span class="p">=</span> <span class="n">getReport</span><span class="p">(</span><span class="n">MException</span><span class="p">);</span>
-                <span class="n">fprintf</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#39;\n%s\n&#39;</span><span class="p">,</span> <span class="n">report</span><span class="p">);</span>
-            <span class="k">end</span>
-        <span class="k">end</span>
-    <span class="k">end</span>
-    <span class="c">% recognized recordings</span>
-    <span class="n">lrecnames</span> <span class="p">=</span> <span class="nb">length</span><span class="p">(</span><span class="n">ECG_all_wrappers</span><span class="p">);</span>
-    <span class="c">% at the end, report problems if happened.</span>
-    <span class="k">for</span> <span class="n">ii</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">lrecnames</span>
-        <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ReportErrors</span><span class="p">;</span>
-    <span class="k">end</span>
-</pre></div>
-</div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;% go through all files
+&nbsp;&nbsp;&nbsp;&nbsp;ECG_all_wrappers = [];
+&nbsp;&nbsp;&nbsp;&nbsp;jj = 1;
+&nbsp;&nbsp;&nbsp;&nbsp;for ii = 1:lrecnames
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rec_filename = [examples_path recnames{ii}];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;% task name,
+% &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECGt_QRSd = &#8216;QRS_detection&#8217;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;% or create an specific handle to have more control
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECGt_QRSd = ECGtask_QRS_detection();
+% &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;% select an specific algorithm. Default: Run all detectors
+% &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECGt_QRSd.detectors = &#8216;wavedet&#8217;; % Wavedet algorithm based on
+% &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECGt_QRSd.detectors = &#8216;pantom&#8217;; &nbsp;% Pan-Tompkins alg.
+% &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECGt_QRSd.detectors = &#8216;gqrs&#8217;; &nbsp;&nbsp;&nbsp;% WFDB gqrs algorithm.
+%         % Example of how you can add your own QRS detector.
+% &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECGt_QRSd.detectors = &#8216;user:example_worst_ever_QRS_detector&#8217;;
+% &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECGt_QRSd.detectors = &#8216;user:your_QRS_detector_func_name&#8217;; &nbsp;&nbsp;&nbsp;%
+% &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#8220;your_QRS_detector_func_name&#8221; can be your own detector.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECGt_QRSd.detectors = {&#8216;wavedet&#8217; &#8216;gqrs&#8217; &#8216;wqrs&#8217; &#8216;user:example_worst_ever_QRS_detector&#8217;};
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;% you can individualize each run of the QRS detector with an
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;% external string
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECGt_QRSd.user_string = user_str;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;% or group by the config used
+% &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECGt_QRSd.user_string = ECGt_QRSd.detectors;
+% &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECGt_QRSd.only_ECG_leads = false; &nbsp;&nbsp;&nbsp;% consider all signals ECG
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECGt_QRSd.only_ECG_leads = true; &nbsp;&nbsp;&nbsp;% Identify ECG signals based on their header description.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECG_w = ECGwrapper( &#8216;recording_name&#8217;, rec_filename, ...
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#8216;this_pid&#8217;, pid_str, ...
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#8216;tmp_path&#8217;, tmp_path, ...
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#8216;output_path&#8217;, output_path, ...
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#8216;ECGtaskHandle&#8217;, ECGt_QRSd);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;% process the task
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECG_w.Run;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;% collect object if were recognized as ECG recordings.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if( jj == 1)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECG_all_wrappers = ECG_w;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECG_all_wrappers(jj) = ECG_w;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;jj = jj + 1;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;catch MException
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if( strfind(MException.identifier, &#8216;ECGwrapper:ArgCheck:InvalidFormat&#8217;) )
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;disp_string_framed(&#8216;<a href="#id4"><span class="problematic" id="id5">*</span></a>Red&#8217;, sprintf( &#8216;Could not guess the format of %s&#8217;, ECG_w.recording_name) );
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;% report just in case
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;report = getReport(MException);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fprintf(2, &#8216;n%sn&#8217;, report);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end
+&nbsp;&nbsp;&nbsp;&nbsp;end
+&nbsp;&nbsp;&nbsp;&nbsp;% recognized recordings
+&nbsp;&nbsp;&nbsp;&nbsp;lrecnames = length(ECG_all_wrappers);
+&nbsp;&nbsp;&nbsp;&nbsp;% at the end, report problems if happened.
+&nbsp;&nbsp;&nbsp;&nbsp;for ii = 1:lrecnames
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECG_all_wrappers(ii).ReportErrors;
+&nbsp;&nbsp;&nbsp;&nbsp;end</p>
 </div>
 <div class="section" id="qrs-visual-inspection-and-correction">
-<span id="id4"></span><h2>QRS visual inspection and correction<a class="headerlink" href="#qrs-visual-inspection-and-correction" title="Permalink to this headline">¶</a></h2>
+<span id="id6"></span><h2>QRS visual inspection and correction<a class="headerlink" href="#qrs-visual-inspection-and-correction" title="Permalink to this headline">¶</a></h2>
 <p>This part of the example uses a graphical user interface (GUI) to allow
 the user correcting mistakes that the previous automatic algorithm
 eventually makes.</p>
@@ -418,7 +416,7 @@ user can interact with the plots according to the <a class="reference external" 
 documentation</a></p>
 </div>
 <div class="section" id="ppg-abp-pulse-detection">
-<span id="id5"></span><h2>PPG/ABP pulse detection<a class="headerlink" href="#ppg-abp-pulse-detection" title="Permalink to this headline">¶</a></h2>
+<span id="id7"></span><h2>PPG/ABP pulse detection<a class="headerlink" href="#ppg-abp-pulse-detection" title="Permalink to this headline">¶</a></h2>
 <p>In case the recording includes pulsatile signals, such as
 plethysmographic (PPG) or arterial blood pressure (ABP), this kit
 includes the <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_PPG_ABP_detector')">PPG/ABP automatic detector
@@ -443,7 +441,7 @@ and <a class="reference external" href="wabp-1.htm','-browser')">Physionet&#8217
 </div>
 </div>
 <div class="section" id="ppg-abp-waves-visual-inspection-and-correction">
-<span id="id6"></span><h2>PPG/ABP waves visual inspection and correction<a class="headerlink" href="#ppg-abp-waves-visual-inspection-and-correction" title="Permalink to this headline">¶</a></h2>
+<span id="id8"></span><h2>PPG/ABP waves visual inspection and correction<a class="headerlink" href="#ppg-abp-waves-visual-inspection-and-correction" title="Permalink to this headline">¶</a></h2>
 <p>The same manual verification made for automatic QRS detection algorithms
 can be performed with pulsatile signals. The <a class="reference external" href="../../../../../../jsD:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_PPG_ABP_corrector')">PPG/ABP corrector
 task</a>
@@ -501,7 +499,7 @@ interface is almost the same used for the QRS correction task.</p>
 </div>
 </div>
 <div class="section" id="ecg-automatic-delineation">
-<span id="id7"></span><h2>ECG automatic delineation<a class="headerlink" href="#ecg-automatic-delineation" title="Permalink to this headline">¶</a></h2>
+<span id="id9"></span><h2>ECG automatic delineation<a class="headerlink" href="#ecg-automatic-delineation" title="Permalink to this headline">¶</a></h2>
 <p>Once the QRS complexes were detected, each heartbeat can be segmented or
 delineated into P-QRS-T waves. To achieve this the kit includes an <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_ECG_delineation')">ECG
 delineation
@@ -547,7 +545,7 @@ in the following code.</p>
 </div>
 </div>
 <div class="section" id="visual-inspection-of-the-detection-delineation">
-<span id="id8"></span><h2>Visual inspection of the detection/delineation<a class="headerlink" href="#visual-inspection-of-the-detection-delineation" title="Permalink to this headline">¶</a></h2>
+<span id="id10"></span><h2>Visual inspection of the detection/delineation<a class="headerlink" href="#visual-inspection-of-the-detection-delineation" title="Permalink to this headline">¶</a></h2>
 <p>The same manual verification made for all the previous automatic tasks
 is repeated for ECG delineation. The <a class="reference external" href="../../../../../../jsD:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_ECG_delineation_corrector')">ECG delineation corrector
 task</a>
@@ -606,7 +604,7 @@ assosiation of a wave fiducial point to a heartbeat.</p>
 </div>
 </div>
 <div class="section" id="automatic-heartbeat-classification">
-<span id="id9"></span><h2>Automatic Heartbeat classification<a class="headerlink" href="#automatic-heartbeat-classification" title="Permalink to this headline">¶</a></h2>
+<span id="id11"></span><h2>Automatic Heartbeat classification<a class="headerlink" href="#automatic-heartbeat-classification" title="Permalink to this headline">¶</a></h2>
 <p>The last task described in this example is the classification of
 heartbeats according to the <a class="reference external" href="matlab:web('http://marketplace.aami.org/eseries/scriptcontent/docs/Preview%20Files/EC57_1212_preview.pdf','-browser')">EC-57 AAMI
 recommendation</a>.
@@ -653,7 +651,7 @@ documentation</a>.</p>
 </div>
 </div>
 <div class="section" id="visual-inspection-of-the-signal">
-<span id="id10"></span><h2>Visual inspection of the signal<a class="headerlink" href="#visual-inspection-of-the-signal" title="Permalink to this headline">¶</a></h2>
+<span id="id12"></span><h2>Visual inspection of the signal<a class="headerlink" href="#visual-inspection-of-the-signal" title="Permalink to this headline">¶</a></h2>
 <p>Finaly a report is generated with the results of the previous tasks,
 either in a pdf document or several images. The report generated can be
 customized with the interface described in the
@@ -689,7 +687,7 @@ The following are just three examples of a longer report:</p>
 </div>
 </div>
 <div class="section" id="other-user-defined-tasks">
-<span id="id11"></span><h2>Other user-defined tasks ...<a class="headerlink" href="#other-user-defined-tasks" title="Permalink to this headline">¶</a></h2>
+<span id="id13"></span><h2>Other user-defined tasks ...<a class="headerlink" href="#other-user-defined-tasks" title="Permalink to this headline">¶</a></h2>
 <p>Maybe the most important and useful aspect of the kit, is that you can
 add your own algorithms. This can be done by following the interface
 documented through the several examples included above. The <a class="reference external" href="../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/matlab:doc('ECGtask_QRS_detection')">QRS

@@ -5,6 +5,7 @@ ECGtask
 .. toctree::
    :maxdepth: 4
    :titlesonly:
+   :hidden:
    
    QRS detection <QRS_detection>
    QRS correction <QRScorrector>

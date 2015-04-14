@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>ABP/PPG peak detection task &mdash; ECGkit 1.0.1 documentation</title>
+  <title>Progress-bar class &mdash; ECGkit 1.0.1 documentation</title>
   
 
   
@@ -121,7 +121,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>ABP/PPG peak detection task</li>
+    <li>Progress-bar class</li>
       <li class="wy-breadcrumbs-aside">
         
           <a href="_sources/progress_bar.txt" rel="nofollow"> View page source</a>
@@ -132,10 +132,9 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="abp-ppg-peak-detection-task">
-<h1>ABP/PPG peak detection task<a class="headerlink" href="#abp-ppg-peak-detection-task" title="Permalink to this headline">¶</a></h1>
-<p>Allow the access to ECG recordings of arbitrary format and length.</p>
-<p><a href="#id1"><span class="problematic" id="id2">`</span></a>expand all in page <a href="#id3"><span class="problematic" id="id4">`</span></a>__</p>
+  <div class="section" id="progress-bar-class">
+<h1>Progress-bar class<a class="headerlink" href="#progress-bar-class" title="Permalink to this headline">¶</a></h1>
+<p>This class allows the display of a progress bar to show evolution of lengthy processing loops.</p>
 <div class="section" id="syntax">
 <h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -169,7 +168,7 @@ specified by one or more name-value pair arguments.</p>
 several name and value pair arguments in any order as
 <code class="docutils literal"><span class="pre">Name1,Value1,...,NameN,ValueN</span></code>.</p>
 <p><strong>Example:</strong>
-<a href="#id5"><span class="problematic" id="id6">``</span></a>&#8216;recording_name&#8217;,&#8217;/ecg_recordings/rec1.dat&#8217;,                                       &#8216;ECGtaskHandle&#8217;, &#8216;QRS_detection&#8217; <a href="#id7"><span class="problematic" id="id8">``</span></a>specifies
+<a href="#id1"><span class="problematic" id="id2">``</span></a>&#8216;recording_name&#8217;,&#8217;/ecg_recordings/rec1.dat&#8217;,                                       &#8216;ECGtaskHandle&#8217;, &#8216;QRS_detection&#8217; <a href="#id3"><span class="problematic" id="id4">``</span></a>specifies
 to create an ECGwrapper to detect heartbeats in recording
 &#8216;/ecg_recordings/rec1.dat&#8217; LaTeX output file format and excludes the
 code from the output.</p>
@@ -182,6 +181,17 @@ code from the output.</p>
 <h3><code class="docutils literal"><span class="pre">`'recording_format'</span></code> — ECG recording format <cite>__`</cite>&#8216;&#8217;`` (default auto-detect) | <code class="docutils literal"><span class="pre">'MIT'</span></code> | <code class="docutils literal"><span class="pre">'ISHNE'</span></code> | <code class="docutils literal"><span class="pre">'AHA'</span></code> | <code class="docutils literal"><span class="pre">'HES'</span></code> | <code class="docutils literal"><span class="pre">'MAT'</span></code>| <code class="docutils literal"><span class="pre">'Mortara'</span></code><a class="headerlink" href="#recording-format-ecg-recording-format-default-auto-detect-mit-ishne-aha-hes-mat-mortara" title="Permalink to this headline">¶</a></h3>
 <p>The format of the ECG recording. By default or if not specified, the
 wrapper will attemp to auto-detect the format.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal"><span class="pre">American</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">Heart</span> <span class="pre">Association</span> <span class="pre">ECG</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">Database</span> <span class="pre">or</span> <span class="pre">Physionet</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">``</span>&nbsp;&nbsp; <span class="pre">|</span> <span class="pre">``Biosigna</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">format</span></code>   | <code class="docutils literal"><span class="pre">Matlab</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">file</span> <span class="pre">format</span></code>   | <code class="docutils literal"><span class="pre">Mortara</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">SuperECG</span> <span class="pre">format</span></code>   |</div>
+</div>
+</div></blockquote>
+<table border="1" class="docutils">
+<colgroup>
+</colgroup>
+<tbody valign="top">
+</tbody>
+</table>
 </div>
 <div class="section" id="this-pid-process-identification-1-1-default">
 <h3><code class="docutils literal"><span class="pre">`'this_pid'</span></code> — Process identification <cite>__`</cite>&#8216;1/1&#8217;`` (default)<a class="headerlink" href="#this-pid-process-identification-1-1-default" title="Permalink to this headline">¶</a></h3>
@@ -238,9 +248,9 @@ to repeat the task several times.</p>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p><a href="#id9"><span class="problematic" id="id10">`</span></a>collapse all <a href="#id11"><span class="problematic" id="id12">`</span></a>__</p>
+<p><a href="#id5"><span class="problematic" id="id6">`</span></a>collapse all <a href="#id7"><span class="problematic" id="id8">`</span></a>__</p>
 <div class="section" id="create-the-simplest-ecg-wrapper-object">
-<h3><a href="#id13"><span class="problematic" id="id14">`</span></a>Create the simplest ECG wrapper object <a href="#id15"><span class="problematic" id="id16">`</span></a>__<a class="headerlink" href="#create-the-simplest-ecg-wrapper-object" title="Permalink to this headline">¶</a></h3>
+<h3><a href="#id9"><span class="problematic" id="id10">`</span></a>Create the simplest ECG wrapper object <a href="#id11"><span class="problematic" id="id12">`</span></a>__<a class="headerlink" href="#create-the-simplest-ecg-wrapper-object" title="Permalink to this headline">¶</a></h3>
 <p>Create the ECGwrapper object.</p>
 <div class="code highlight-Matlab"><div class="highlight"><pre><span class="o">&gt;&gt;</span> <span class="n">ECG_w</span> <span class="p">=</span> <span class="n">ECGwrapper</span><span class="p">()</span>
 <span class="n">ECG_w</span> <span class="p">=</span>
@@ -276,7 +286,7 @@ to repeat the task several times.</p>
 </div>
 </div>
 <div class="section" id="create-an-ecgwrapper-object-for-an-specific-recording-and-task">
-<h3><a href="#id17"><span class="problematic" id="id18">`</span></a>Create an ECGwrapper object for an specific recording and task <a href="#id19"><span class="problematic" id="id20">`</span></a>__<a class="headerlink" href="#create-an-ecgwrapper-object-for-an-specific-recording-and-task" title="Permalink to this headline">¶</a></h3>
+<h3><a href="#id13"><span class="problematic" id="id14">`</span></a>Create an ECGwrapper object for an specific recording and task <a href="#id15"><span class="problematic" id="id16">`</span></a>__<a class="headerlink" href="#create-an-ecgwrapper-object-for-an-specific-recording-and-task" title="Permalink to this headline">¶</a></h3>
 <p>In this case, we create the same object of the previous example but
 using the name-value .</p>
 <div class="code highlight-Matlab"><div class="highlight"><pre><span class="o">&gt;&gt;</span> <span class="n">ECG_w</span> <span class="p">=</span> <span class="n">ECGwrapper</span><span class="p">(</span> <span class="c">...</span>
@@ -302,7 +312,7 @@ using the name-value .</p>
 </div>
 <div class="section" id="more-about">
 <h2>More About<a class="headerlink" href="#more-about" title="Permalink to this headline">¶</a></h2>
-<p><a href="#id21"><span class="problematic" id="id22">`</span></a>expand all <a href="#id23"><span class="problematic" id="id24">`</span></a>__</p>
+<p><a href="#id17"><span class="problematic" id="id18">`</span></a>expand all <a href="#id19"><span class="problematic" id="id20">`</span></a>__</p>
 </div>
 <div class="section" id="other-resources">
 <h2>Other resources<a class="headerlink" href="#other-resources" title="Permalink to this headline">¶</a></h2>

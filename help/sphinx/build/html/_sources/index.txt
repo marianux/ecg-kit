@@ -11,6 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 4
    :titlesonly:
+   :includehidden:
 
    Getting started <getting_started>
    Release notes <release-notes>
