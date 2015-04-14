@@ -65,9 +65,6 @@
           
           
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul class="simple">
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release notes</a><ul class="simple">
 </ul>
 </li>
@@ -141,7 +138,6 @@
 <h1>ECG heartbeat classification<a class="headerlink" href="#ecg-heartbeat-classification" title="Permalink to this headline">¶</a></h1>
 <p>This document describes how to classify heartbeats according to its
 origin.</p>
-<p><a href="#id1"><span class="problematic" id="id2">`</span></a>expand all in page <a href="#id3"><span class="problematic" id="id4">`</span></a>__</p>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p>This task implements a heartbeat classifier that follows the <a class="reference external" href="http://marketplace.aami.org/eseries/scriptcontent/docs/Preview%20Files/EC57_1212_preview.pdf">EC-57 AAMI
@@ -153,56 +149,113 @@ classifying heartbeats into four classes:</p>
 <li><strong>V</strong> ventricular</li>
 <li><strong>F</strong> fusion of normal and ventricular</li>
 </ul>
-<p>Each class and certain background regarding this topic are explained in
-my <a class="reference external" href="http://i3a.unizar.es/postgrado/descarga_tesis_pdf.php?ver=48">PhD
-thesis</a>,
-which can be useful f</p>
+<p>Certain background and introduction to this topic is included in
+my <a class="reference external" href="http://i3a.unizar.es/postgrado/descarga_tesis_pdf.php?ver=48">PhD thesis</a>.</p>
 </div>
 <div class="section" id="input-arguments">
 <h2>Input Arguments<a class="headerlink" href="#input-arguments" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="progress-handle-used-to-track-the-progress-within-your-function-default">
-<h3><code class="docutils literal"><span class="pre">`progress_handle</span></code> — used to track the progress within your function. <cite>__``[]`</cite> (default)<a class="headerlink" href="#progress-handle-used-to-track-the-progress-within-your-function-default" title="Permalink to this headline">¶</a></h3>
-<p>progress_handle, is a handle to a <a class="reference external" href="progress_bar.htm">progress_bar</a>
-object, that can be used to track the progress within your function.</p>
+<p><code class="docutils literal"><span class="pre">progress_handle</span></code> — Used to track the progress within your function. <code class="docutils literal"><span class="pre">[]</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>progress_handle, is a handle to a <a class="reference internal" href="progress_bar.html"><em>progress_bar</em></a>
+object, that can be used to track the progress within your function.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">tmp_path</span></code> — The path to store temporary data. <code class="docutils literal"><span class="pre">tempdir()</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>Full path to a directory with write privileges.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">`payload</span></code> — A structure to provide audited heartbeat detections to the classifier algorithm. <code class="docutils literal"><span class="pre">[]</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>This variable is useful to pass automatic or corrected QRS detections to the classification task.
+This can be performed as shown in the following example:</div></blockquote>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">cached_filenames</span> <span class="p">=</span> <span class="n">ECGw</span><span class="p">.</span><span class="n">GetCahchedFileName</span><span class="p">({</span><span class="s">&#39;QRS_corrector&#39;</span> <span class="s">&#39;QRS_detection&#39;</span><span class="p">});</span>
+<span class="n">ECGw</span><span class="p">.</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">payload</span> <span class="p">=</span> <span class="n">load</span><span class="p">(</span><span class="n">cached_filenames</span><span class="p">{</span><span class="mi">1</span><span class="p">});</span>
+</pre></div>
 </div>
-<div class="section" id="tmp-path-the-path-to-store-temporary-data-tempdir-default">
-<h3><code class="docutils literal"><span class="pre">`tmp_path</span></code> — The path to store temporary data <cite>__`</cite>&#8216;tempdir()&#8217;`` (default)<a class="headerlink" href="#tmp-path-the-path-to-store-temporary-data-tempdir-default" title="Permalink to this headline">¶</a></h3>
-<p>Full path to a directory with write privileges.</p>
-</div>
-<div class="section" id="payload-an-arbitrary-format-variable-to-be-passed-to-your-user-defined-algorithm-default">
-<h3><code class="docutils literal"><span class="pre">`payload</span></code> — An arbitrary format variable to be passed to your user-defined algorithm. <cite>__``[]`</cite> (default)<a class="headerlink" href="#payload-an-arbitrary-format-variable-to-be-passed-to-your-user-defined-algorithm-default" title="Permalink to this headline">¶</a></h3>
-<p>This variable can be useful for passing data to your own function, not
-covered in the interface described
-<a class="reference external" href="#Adding_a_custom_detection_algorithm">below</a>.</p>
-</div>
-<div class="section" id="mode-set-the-algorithm-mode-of-operation-auto-default">
-<h3><code class="docutils literal"><span class="pre">`mode</span></code> — Set the algorithm mode of operation. <cite>__`</cite>&#8216;auto&#8217;`` (default)<a class="headerlink" href="#mode-set-the-algorithm-mode-of-operation-auto-default" title="Permalink to this headline">¶</a></h3>
-<p>A string with any of the following names</p>
-<p>&#8216;auto&#8217;, this mode performs in automatic mode.</p>
-<p>&#8216;slightly-assisted&#8217;, this mode requires that an expert labels several
-heartbeats</p>
-<p>&#8216;assisted&#8217;, this mode is completely assisted. An expert must label some
-heartbeats.</p>
-<p>A more detailed</p>
-</div>
+<p><code class="docutils literal"><span class="pre">mode</span></code> — Set the classification mode of operation. <code class="docutils literal"><span class="pre">'auto'</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div><p>A control string with any of the following names</p>
+<ul class="simple">
+<li>&#8216;auto&#8217;, this mode makes the algorithm operate in automatic mode.</li>
+<li>&#8216;slightly-assisted&#8217;, this mode requires that an expert labels several
+representative examples, when the algorithm does not reach a confidence
+level to do it automatically.</li>
+<li>&#8216;assisted&#8217;, this mode is completely assisted. An expert must label all
+the representative heartbeats from each cluster.</li>
+</ul>
+</div></blockquote>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>The first example shows the simplest setup of the
-ECGtask_heartbeat_classifier object, while at the end of this section
+<em>ECGtask_heartbeat_classifier</em> object, while at the end of this section
 a complete example with a real signal is shown.</p>
 <div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% with the task name</span>
-    <span class="n">ECG_w</span><span class="p">.</span><span class="n">ECGtaskHandle</span> <span class="p">=</span> <span class="s">&#39;ECG_heartbeat_classifier&#39;</span><span class="p">;</span>
+<span class="n">ECG_w</span><span class="p">.</span><span class="n">ECGtaskHandle</span> <span class="p">=</span> <span class="s">&#39;ECG_heartbeat_classifier&#39;</span><span class="p">;</span>
 <span class="c">% or create an specific handle to have more control</span>
-    <span class="n">ECGt</span> <span class="p">=</span> <span class="n">ECGtask_heartbeat_classifier</span><span class="p">();</span>
+<span class="n">ECGt</span> <span class="p">=</span> <span class="n">ECGtask_heartbeat_classifier</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>and then you are ready to setup the task</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% select a mode, automatic mode does not require assistance</span>
+<span class="n">ECGt</span><span class="p">.</span><span class="n">mode</span> <span class="p">=</span> <span class="s">&#39;auto&#39;</span><span class="p">;</span>
+<span class="c">% this is to use QRS detection previously calculated</span>
+<span class="n">cached_filenames</span> <span class="p">=</span> <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">GetCahchedFileName</span><span class="p">({</span><span class="s">&#39;QRS_corrector&#39;</span> <span class="s">&#39;QRS_detection&#39;</span><span class="p">});</span>
+<span class="n">ECGt</span><span class="p">.</span><span class="n">payload</span> <span class="p">=</span> <span class="n">load</span><span class="p">(</span><span class="n">cached_filenames</span><span class="p">{</span><span class="mi">1</span><span class="p">})</span>
+</pre></div>
+</div>
 <p>Finally set the task to the wrapper object, and execute the task.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">ECG_w</span><span class="p">.</span><span class="n">ECGtaskHandle</span><span class="p">=</span> <span class="n">ECGt</span><span class="p">;</span> <span class="c">% set the ECG task</span>
+<span class="n">ECG_w</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+</pre></div>
+</div>
 <p>This example shows in first place, the previous configuration used in
 recording 208 from MIT Arrhythmia database.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="o">&gt;&gt;</span> <span class="n">ECG_w</span> <span class="p">=</span> <span class="n">ECGwrapper</span><span class="p">(</span> <span class="c">...</span>
+        <span class="s">&#39;recording_name&#39;</span><span class="p">,</span> <span class="s">&#39;some_path\208&#39;</span><span class="p">,</span> <span class="c">...</span>
+        <span class="s">&#39;recording_format&#39;</span><span class="p">,</span> <span class="s">&#39;MIT&#39;</span><span class="p">,</span> <span class="c">...</span>
+        <span class="s">&#39;ECGtaskHandle&#39;</span><span class="p">,</span> <span class="s">&#39;ECG_heartbeat_classifier&#39;</span><span class="p">,</span> <span class="c">...</span>
+        <span class="p">)</span><span class="n">ECG_w</span> <span class="p">=</span>
+############################
+# <span class="n">ECGwrapper</span> <span class="n">object</span> <span class="n">config</span> #
+############################
+<span class="o">+</span><span class="n">ECG</span> <span class="n">recording</span><span class="p">:</span> <span class="n">some_path</span><span class="o">\</span><span class="mi">208</span> <span class="p">(</span><span class="n">auto</span><span class="p">)</span>
+<span class="o">+</span><span class="n">PID</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>
+<span class="o">+</span><span class="n">Repetitions</span><span class="p">:</span> <span class="mi">1</span>
+<span class="o">+</span><span class="n">Partition</span> <span class="n">mode</span><span class="p">:</span> <span class="n">ECG_overlapped</span>
+<span class="o">+</span><span class="n">Function</span> <span class="n">name</span><span class="p">:</span> <span class="n">ECG_heartbeat_classifier</span>
+<span class="o">+</span><span class="n">Processed</span><span class="p">:</span> <span class="n">false</span>
+
+<span class="o">&gt;&gt;</span> <span class="n">ECG_w</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+</pre></div>
+</div>
 <p>You can follow the evolution in the progress bar, and after a while, it
 ends and display the classification results</p>
+<div class="highlight-none"><div class="highlight"><pre>Configuration
+-------------
++ Recording: ... \example recordings\208.dat (MIT)
++ Mode: auto (12 clusters, 1 iterations, 75% cluster-presence)
+
+  True            | Estimated Labels
+  Labels          | Normal Suprav Ventri Unknow| Totals
+ -----------------|----------------------------|-------
+  Normal          | 1567      6     13      0  | 1586
+  Supraventricular|    2      0      0      0  |    2
+  Ventricular     |  255      8   1102      0  | 1365
+  Unknown         |    2      0      0      0  |    2
+ -----------------|----------------------------|-------
+  Totals          | 1826     14   1115      0  | 2955
+
+Balanced Results for
+---------------------
+| Normal    || Supravent || Ventricul ||           TOTALS            |
+|  Se   +P  ||  Se   +P  ||  Se   +P  ||   Acc   |   Se    |   +P    |
+|  99%  45% ||   0%   0% ||  81%  99% ||   60%   |   60%   |   48%   |
+
+Unbalanced Results for
+-----------------------
+| Normal    || Supravent || Ventricul ||           TOTALS            |
+|  Se   +P  ||  Se   +P  ||  Se   +P  ||   Acc   |   Se    |   +P    |
+|  99%  86% ||   0%   0% ||  81%  99% ||   90%   |   60%   |   62%   |
+</pre></div>
+</div>
 <p>This is possible because this recording include the expert annotations,
 or &#8216;&#8217;ground truth&#8217;&#8216;, for each heartbeat. The manual annotations in MIT
 format are typically included in &#8216;&#8217;.atr&#8217;&#8217; files (in this case
@@ -222,6 +275,13 @@ decide to label the cluster, you can use one of the 4 buttons on your
 right. The unknown class is reserved for the cases where you can not
 make a confident decision. At the same time, in the command window, a
 suggestion appears:</p>
+<div class="highlight-none"><div class="highlight"><pre>Configuration
+-------------
++ Recording: .\example recordings\208.dat (MIT)
++ Mode: assisted (3 clusters, 1 iterations, 75% cluster-presence)
+Suggestion: Normal
+</pre></div>
+</div>
 <p>This means that the centroid heartbeat in the &#8216;&#8217;.atr&#8217;&#8217; file is labeled
 as &#8216;&#8217;Normal&#8217;&#8216;. You will see this suggestion for each cluster analyzed,
 if there are annotations previously available. You are informed about
@@ -235,9 +295,9 @@ refresh button resamples heartbeats close and far from the centroid, and
 then redraw the middle and right panels. This feature is useful for
 large clusters.</p>
 <p>You can check the result of this task for every heartbeat in the
-recording using the <a class="reference external" href="plot_ecg_strip.htm">visualization functions</a>.</p>
+recording using the <a class="reference internal" href="plot_ecg_strip.html"><em>visualization functions</em></a>.</p>
 <p>Also check this
-<a class="reference external" href="examples.html#Automatic_Heartbeat_classification">example</a> for
+<a class="reference internal" href="examples.html#automatic-heartbeat-classification"><span>example</span></a> for
 further information.</p>
 </div>
 <div class="section" id="more-about">
@@ -251,9 +311,8 @@ recommendation</a></li>
 </div>
 <div class="section" id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">`ECGtask</span></code> &lt;ECGtask.html&gt;`__ |
-<code class="docutils literal"><span class="pre">`ECG</span> <span class="pre">delineation</span></code> &lt;ECGdelineation.htm&gt;`__ |
-<code class="docutils literal"><span class="pre">`examples</span></code> &lt;examples.html&gt;`__</p>
+<blockquote>
+<div><a class="reference internal" href="ECGtask.html"><em>ECGtask</em></a> | <a class="reference internal" href="QRS_detection.html"><em>QRS detection</em></a> | <a class="reference internal" href="examples.html"><em>examples</em></a></div></blockquote>
 </div>
 </div>
 

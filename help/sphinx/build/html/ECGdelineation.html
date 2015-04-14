@@ -141,89 +141,145 @@
 <h1>ECG delineation<a class="headerlink" href="#ecg-delineation" title="Permalink to this headline">¶</a></h1>
 <p>This document describes how to perform automatic delineation or wave
 segmentation on ECG signals.</p>
-<p><a href="#id1"><span class="problematic" id="id2">`</span></a>expand all in page <a href="#id3"><span class="problematic" id="id4">`</span></a>__</p>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p>Automatic wave segmentation or delineation is exclusively performed by
-wavedet algorithm.</p>
+<a class="reference external" href="http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf">wavedet</a> algorithm.</p>
 </div>
 <div class="section" id="input-arguments">
 <h2>Input Arguments<a class="headerlink" href="#input-arguments" title="Permalink to this headline">¶</a></h2>
 <p>The properties that this task uses are the following:</p>
-<div class="section" id="progress-handle-used-to-track-the-progress-within-your-function-default">
-<h3><code class="docutils literal"><span class="pre">`progress_handle</span></code> — used to track the progress within your function. <cite>__``[]`</cite> (default)<a class="headerlink" href="#progress-handle-used-to-track-the-progress-within-your-function-default" title="Permalink to this headline">¶</a></h3>
-<p>progress_handle, is a handle to a <a class="reference external" href="progress_bar.htm">progress_bar</a>
-object, that can be used to track the progress within your function.</p>
-</div>
-<div class="section" id="tmp-path-the-path-to-store-temporary-data-tempdir-default">
-<h3><code class="docutils literal"><span class="pre">`tmp_path</span></code> — The path to store temporary data <cite>__`</cite>&#8216;tempdir()&#8217;`` (default)<a class="headerlink" href="#tmp-path-the-path-to-store-temporary-data-tempdir-default" title="Permalink to this headline">¶</a></h3>
-<p>Full path to a directory with write privileges.</p>
-</div>
-<div class="section" id="delineators-the-ecg-delineation-algorithms-to-use-all-delineators-default">
-<h3><code class="docutils literal"><span class="pre">`delineators</span></code> — The ECG delineation algorithms to use <cite>__`</cite>&#8216;all-delineators&#8217;`` (default)<a class="headerlink" href="#delineators-the-ecg-delineation-algorithms-to-use-all-delineators-default" title="Permalink to this headline">¶</a></h3>
-<p>A cell string or char with any of the following names</p>
-<p>all-delineators</p>
-<p><a class="reference external" href="http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf">wavedet</a></p>
-</div>
-<div class="section" id="only-ecg-leads-process-only-ecg-signals-true-default">
-<h3><code class="docutils literal"><span class="pre">`only_ECG_leads</span></code> — Process only ECG signals <cite>__``true`</cite> (default)<a class="headerlink" href="#only-ecg-leads-process-only-ecg-signals-true-default" title="Permalink to this headline">¶</a></h3>
-<p>Boolean value. Find out which signals are ECG based on their header
-description.</p>
-</div>
-<div class="section" id="wavedet-config-a-structure-for-customizing-wavedet-algorithm-default">
-<h3><code class="docutils literal"><span class="pre">`wavedet_config</span></code> — A structure for customizing wavedet algorithm. <cite>__``[]`</cite> (default)<a class="headerlink" href="#wavedet-config-a-structure-for-customizing-wavedet-algorithm-default" title="Permalink to this headline">¶</a></h3>
-<p>Undocumented yet, use only if you know what you are doing.</p>
-</div>
-<div class="section" id="payload-an-arbitrary-format-variable-default">
-<h3><code class="docutils literal"><span class="pre">`payload</span></code> — An arbitrary format variable. <cite>__``[]`</cite> (default)<a class="headerlink" href="#payload-an-arbitrary-format-variable-default" title="Permalink to this headline">¶</a></h3>
-<p>This variable can be useful for passing data to your own function
-(described <a class="reference external" href="#Adding_a_custom_detection_algorithm">below</a>) or to
-provide delineation algorithms visually audited QRS detections.</p>
-</div>
+<p><code class="docutils literal"><span class="pre">progress_handle</span></code> — Used to track the progress within your function. <code class="docutils literal"><span class="pre">[]</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>progress_handle, is a handle to a <a class="reference internal" href="progress_bar.html"><em>progress_bar</em></a>
+object, that can be used to track the progress within your function.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">tmp_path</span></code> — The path to store temporary data. <code class="docutils literal"><span class="pre">tempdir()</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>Full path to a directory with write privileges.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">delineators</span></code> — The ECG delineation algorithms to use <code class="docutils literal"><span class="pre">'all-delineators'</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div><p>This property controls which algorithms are used. A cell string or char with any of the following names</p>
+<ul class="simple">
+<li><em>&#8216;all-delineators&#8217;</em></li>
+<li><a class="reference external" href="http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf">&#8216;wavedet&#8217;</a></li>
+</ul>
+</div></blockquote>
+<p><code class="docutils literal"><span class="pre">only_ECG_leads</span></code> — Process only ECG signals <code class="docutils literal"><span class="pre">true</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>Boolean value. Find out which signals are ECG based on their <code class="docutils literal"><span class="pre">ECG_header.desc</span></code>
+description.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">wavedet_config</span></code> — A structure for configuring wavedet algorithm. <code class="docutils literal"><span class="pre">[]</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>Undocumented yet, use it only if you know what you are doing.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">payload</span></code> — An arbitrary format variable. <code class="docutils literal"><span class="pre">[]</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>This variable can be useful for passing data to your own delineation function
+(described <span class="xref std std-ref">below</span>) or to
+provide visually audited QRS detections to the delineation algorithm.</div></blockquote>
 </div>
 <div class="section" id="adding-a-custom-delineation-algorithm">
 <h2>Adding a custom delineation algorithm<a class="headerlink" href="#adding-a-custom-delineation-algorithm" title="Permalink to this headline">¶</a></h2>
 <p>Adding your own delineator to the kit is very simple. Ensure that your
 function implements this interface:</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="k">function</span><span class="w"> </span>[positions_single_lead, position_multilead] <span class="p">=</span><span class="w"></span>
+
+<span class="w">                      </span><span class="nf">your_ECG_delineation</span><span class="p">(</span> ECG_matrix, ECG_header, progress_handle, payload_in<span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
 <p>where the arguments are:</p>
-<p>ECG_matrix, is a matrix size [ECG_header.nsamp ECG_header.nsig]</p>
-<p>ECG_header, is a struct with info about the ECG signal, such as:</p>
-<p>freq, the sampling frequency</p>
-<p>desc, description about the signals.</p>
-<p>and others described <a class="reference external" href="Copy_of_ECGtask.htm">here</a></p>
-<p>progress_handle, is a handle to a <a class="reference external" href="progress_bar.htm">progress_bar</a>
+<blockquote>
+<div><p><strong>ECG_matrix</strong>, is a matrix size [ECG_header.nsamp ECG_header.nsig]</p>
+<p><strong>ECG_header</strong>, is a struct with info about the ECG signal, such as:</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>freq</em>, is the sampling frequency of ECG_matrix signal.</li>
+<li><em>desc</em>, description strings about each of the leads/signals.</li>
+<li><em>nsamp</em> is the number of samples of ECG_matrix.</li>
+<li><em>nsig</em> is the amount of leads or signals of ECG_matrix.</li>
+<li><em>gain</em> is a vector of [nsig × 1] with the gain of each lead ( ADCsamples / μV ).</li>
+<li><em>adczero</em> is a vector of [nsig × 1] with the offset of each lead in ADC samples.</li>
+</ul>
+<p>and others described in the <a class="reference external" href="http://www.physionet.org/physiotools/wag/header-5.htm">Physionet header</a>.</p>
+</div></blockquote>
+<p><strong>progress_handle</strong>, is a handle to a <a class="reference external" href="progress_bar.htm">progress_bar</a>
 object, that can be used to track the progress within your function.</p>
-<p>payload_in, is a user variable, of arbitrary format, allowed to be sent
-to your function. It is sent, via the <a class="reference external" href="#payload_prop">payload
-property</a> of this class, for example:</p>
+<p><strong>payload_in</strong>, is a user variable, of arbitrary format, allowed to be sent
+to your function. It is sent via the <span class="xref std std-ref">payload property</span>
+of this class, for example:</p>
+</div></blockquote>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% One variable</span>
+<span class="n">this_ECG_wrapper</span><span class="p">.</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">payload</span> <span class="p">=</span> <span class="n">your_variable</span><span class="p">;</span>
+
+<span class="c">% Several variables with a cell container</span>
+<span class="n">this_ECG_wrapper</span><span class="p">.</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">payload</span> <span class="p">=</span> <span class="p">{</span><span class="n">your_var1</span> <span class="n">your_var2</span><span class="p">};</span>
+
+<span class="c">% Or the result of a previous task, in this case QRS manual correction (if available)</span>
+<span class="c">% or the automatic detection if not.</span>
+<span class="n">cached_filenames</span> <span class="p">=</span> <span class="n">this_ECG_wrapper</span><span class="p">.</span><span class="n">GetCahchedFileName</span><span class="p">({</span><span class="s">&#39;QRS_corrector&#39;</span> <span class="s">&#39;QRS_detection&#39;</span><span class="p">});</span>
+<span class="n">this_ECG_wrapper</span><span class="p">.</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">payload</span> <span class="p">=</span> <span class="n">load</span><span class="p">(</span><span class="n">cached_filenames</span><span class="p">);</span>
+</pre></div>
+</div>
 <p>and the output of your function must be:</p>
-<p>positions_single_lead, a cell array size ECG_header.nsig with the&nbsp;QRS
-sample locations found in each lead.</p>
-<p>position_multilead, a numeric vector with the QRS locations calculated
-using multilead rules.</p>
+<blockquote>
+<div><p><strong>positions_single_lead</strong>, is an <strong>structure array</strong> of <code class="docutils literal"><span class="pre">ECG_header.nsig</span></code> elements with <em>at least</em> the following wave fiducial points as fields:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">'Pon'</span></code> P wave onset</li>
+<li><code class="docutils literal"><span class="pre">'P'</span></code> P wave peak</li>
+<li><code class="docutils literal"><span class="pre">'Poff'</span></code> P wave offset</li>
+<li><code class="docutils literal"><span class="pre">'QRSon'</span></code> QRS complex onset</li>
+<li><code class="docutils literal"><span class="pre">'qrs'</span></code> QRS fiducial point, obtained from QRS detection.</li>
+<li><code class="docutils literal"><span class="pre">'Q'</span></code> Q wave peak</li>
+<li><code class="docutils literal"><span class="pre">'R'</span></code> R wave peak</li>
+<li><code class="docutils literal"><span class="pre">'S'</span></code> S wave peak</li>
+<li><code class="docutils literal"><span class="pre">'QRSoff'</span></code> QRS complex offset</li>
+<li><code class="docutils literal"><span class="pre">'Ton'</span></code> T wave onset</li>
+<li><code class="docutils literal"><span class="pre">'T'</span></code> T wave peak</li>
+<li><code class="docutils literal"><span class="pre">'Toff'</span></code> T wave offset</li>
+</ul>
+<p><strong>position_multilead</strong>, is a single structure with <em>at least</em> the wave fiducial points described above.
+This delineation is commonly calculated from the single lead delineations, in order to obtain a unique wave
+fiducial point per heartbeat.</p>
+</div></blockquote>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>Create the ECGtask_ECG_delineation object.</p>
+<p>Create the <em>ECGtask_ECG_delineation</em> object.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% with the task name</span>
+    <span class="n">ECG_w</span><span class="p">.</span><span class="n">ECGtaskHandle</span> <span class="p">=</span> <span class="s">&#39;ECG_delineation&#39;</span><span class="p">;</span>
+<span class="c">% or create an specific handle to have more control</span>
+    <span class="n">ECGt</span> <span class="p">=</span> <span class="n">ECGtask_ECG_delineation</span><span class="p">();</span>
+</pre></div>
+</div>
 <p>and then you are ready to set the algorithms to use. In the following
-example you have several possible setups.</p>
+example you have several possible set-ups.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% select an specific algorithm. Default: Run all detectors</span>
+        <span class="n">ECGt</span><span class="p">.</span><span class="n">delineators</span> <span class="p">=</span> <span class="s">&#39;wavedet&#39;</span><span class="p">;</span> <span class="c">% Wavedet algorithm based on</span>
+        <span class="c">% &quot;your_delineator_func_name&quot; can be your own delineator.</span>
+                    <span class="n">ECGt</span><span class="p">.</span><span class="n">delineators</span> <span class="p">=</span> <span class="s">&#39;user:your_delineator_func_name&#39;</span><span class="p">;</span>
+        <span class="n">ECGt</span><span class="p">.</span><span class="n">delineators</span> <span class="p">=</span> <span class="p">{</span><span class="s">&#39;wavedet&#39;</span> <span class="s">&#39;user:your_delineator_func_name&#39;</span><span class="p">};</span>
+</pre></div>
+</div>
 <p>Finally set the task to the wrapper object, and execute the task.</p>
-<p>You can check the result of this task, with either the <a class="reference external" href="ECG_delineation_corrector.htm">delineation
-corrector</a> or the <a class="reference external" href="plot_ecg_strip.htm">visualization
-functions</a>.</p>
-<p>Also check this <a class="reference external" href="examples.html#ECG_automatic_delineation">example</a>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">ECG_w</span><span class="p">.</span><span class="n">ECGtaskHandle</span><span class="p">=</span> <span class="n">ECGt</span><span class="p">;</span> <span class="c">% set the ECG task</span>
+<span class="n">ECG_w</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>You can check the result of this task, with either the <a class="reference internal" href="ECG_delineation_corrector.html"><em>delineator
+corrector</em></a> or the <a class="reference internal" href="plot_ecg_strip.html"><em>visualization
+functions</em></a>.</p>
+<p>Also check this <a class="reference internal" href="examples.html#ecg-automatic-delineation"><span>example</span></a>
 for further information.</p>
 </div>
 <div class="section" id="more-about">
 <h2>More About<a class="headerlink" href="#more-about" title="Permalink to this headline">¶</a></h2>
 <p>This publication describes the
 <a class="reference external" href="http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf">wavedet</a>
-algorithm:</p>
+algorithm.</p>
 </div>
 <div class="section" id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">`ECGtask</span></code> &lt;ECGtask.html&gt;`__ | <code class="docutils literal"><span class="pre">QRS</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">detection</span></code> |
-<code class="docutils literal"><span class="pre">`examples</span></code> &lt;examples.html&gt;`__</p>
+<blockquote>
+<div><a class="reference internal" href="ECGtask.html"><em>ECGtask</em></a> | <a class="reference internal" href="QRS_detection.html"><em>QRS detection</em></a> | <a class="reference internal" href="examples.html"><em>examples</em></a></div></blockquote>
 </div>
 </div>
 

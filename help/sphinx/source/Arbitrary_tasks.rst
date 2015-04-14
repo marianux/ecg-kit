@@ -20,43 +20,32 @@ Input Arguments
 
 The properties that this task uses are the following:
 
-```progress_handle`` — used to track the progress within your function. `__\ ``[]`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``progress_handle`` — Used to track the progress within your function. ``[] (default)``
 
-progress\_handle, is a handle to a `progress\_bar <progress_bar.htm>`__
-object, that can be used to track the progress within your function.
+	progress\_handle, is a handle to a :doc:`progress\_bar <progress_bar>`
+	object, that can be used to track the progress within your function.
 
-```tmp_path`` — The path to store temporary data `__\ ``'tempdir()'`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``tmp_path`` — The path to store temporary data. ``tempdir() (default)``
 
-Full path to a directory with write privileges.
+	Full path to a directory with write privileges.
 
-```only_ECG_leads`` — Process only ECG signals `__\ ``true`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``only_ECG_leads`` — Process only ECG signals ``true (default)`` 
 
-Boolean value. Find out which signals are ECG based on their header
-description.
+	Boolean value. Find out which signals are ECG based on their ``ECG_header.desc`` description.
 
-```payload`` — An arbitrary format variable to be passed to your user-defined algorithm. `__\ ``[]`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``payload`` — An arbitrary format variable to be passed to your function. ``[] (default)`` 
 
-This variable can be useful for passing data to your own function, not
-covered in the interface described
-`below <#Adding_a_custom_detection_algorithm>`__.
+	This variable can be useful for passing data to your own function.
 
-```signal_payload`` — Treat the result of your arbitrary function as a signal. `__\ ``false`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``signal_payload`` — Consider the result of your arbitrary function as a signal. ``false (default)`` 
 
-Boolean value that indicates the ECGwrapper to produce a signal or
-result payload.
+	Boolean value that indicates the ECGwrapper to produce a signal or result payload.
 
-```lead_idx`` — The signal indexes that your function will affect. `__\ ``[]`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``lead_idx`` — The signal indexes that your function will affect. ``[] (default)`` 
 
-A positive integer array with values from 1 to ECG\_header.nsig.
+	A positive integer array with values from 1 to ``ECG_header.nsig``.
 
-```function_pointer`` — The pointer to your arbitrary function. `__\ ``[]`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``function_pointer`` — The pointer to your arbitrary function. ``[] (default)`` 
 
 Your function must follow this prototype:
 

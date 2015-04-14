@@ -154,61 +154,80 @@ can choose to use any of them.</p>
 described below. The usage of these properties is restricted to
 low-level programming, you can use this task through the ECGwrapper as
 is shown in the example below.</p>
-<div class="section" id="progress-handle-used-to-track-the-progress-within-your-function-default">
-<h3><code class="docutils literal"><span class="pre">`progress_handle</span></code> — used to track the progress within your function. <cite>__``[]`</cite> (default)<a class="headerlink" href="#progress-handle-used-to-track-the-progress-within-your-function-default" title="Permalink to this headline">¶</a></h3>
-<p>progress_handle, is a handle to a <a class="reference external" href="progress_bar.htm">progress_bar</a>
-object, that can be used to track the progress within your function.</p>
-</div>
-<div class="section" id="tmp-path-the-path-to-store-temporary-data-tempdir-default">
-<h3><code class="docutils literal"><span class="pre">`tmp_path</span></code> — The path to store temporary data <cite>__`</cite>&#8216;tempdir()&#8217;`` (default)<a class="headerlink" href="#tmp-path-the-path-to-store-temporary-data-tempdir-default" title="Permalink to this headline">¶</a></h3>
-<p>Full path to a directory with write privileges.</p>
-</div>
-<div class="section" id="lead-config-select-which-signals-to-process-ppg-abp-only-default">
-<h3><code class="docutils literal"><span class="pre">`lead_config</span></code> — Select which signals to process <cite>__`</cite>&#8216;PPG-ABP-only&#8217;`` (default)<a class="headerlink" href="#lead-config-select-which-signals-to-process-ppg-abp-only-default" title="Permalink to this headline">¶</a></h3>
-<p>A cell string or char with any of the following names</p>
-<p>&#8216;all-leads&#8217;. Process all leads</p>
-<p>&#8216;PPG-ABP-only&#8217;. Detect pulsatile signals based on their ECG_header.desc
-description variable.</p>
-<p>&#8216;User-defined-leads&#8217;. Tell the algorithm (with PPG_ABP_idx property)
-which signal indexes to process, from 1 to ECG_header.nsig</p>
-</div>
-<div class="section" id="ppg-abp-idx-the-indexes-corresponding-to-pulsatile-signals-default">
-<h3><code class="docutils literal"><span class="pre">`PPG_ABP_idx</span></code> — The indexes corresponding to pulsatile signals <cite>__``[]`</cite> (default)<a class="headerlink" href="#ppg-abp-idx-the-indexes-corresponding-to-pulsatile-signals-default" title="Permalink to this headline">¶</a></h3>
-<p>A value from 1 to ECG_header.nsig indicating the column indexes (of the
-signal matrix of nsamp x nsig) where pulsatile signals are located.</p>
-</div>
-<div class="section" id="detectors-the-ppg-abp-detection-algorithms-to-use-all-detectors-default">
-<h3><code class="docutils literal"><span class="pre">`detectors</span></code> — The PPG/ABP detection algorithms to use <cite>__`</cite>&#8216;all-detectors&#8217;`` (default)<a class="headerlink" href="#detectors-the-ppg-abp-detection-algorithms-to-use-all-detectors-default" title="Permalink to this headline">¶</a></h3>
-<p>A cell string or char with any of the following names</p>
-<p>all-detectors</p>
-<p><a class="reference external" href="http://dx.doi.org/10.1109/JBHI.2013.2267096">wavePPG</a></p>
-<p><a class="reference external" href="http://www.physionet.org/physiotools/wag/wabp-1.htm">wabp</a></p>
-</div>
+<p><code class="docutils literal"><span class="pre">progress_handle</span></code> — Used to track the progress within your function. <code class="docutils literal"><span class="pre">[]</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>progress_handle, is a handle to a <a class="reference internal" href="progress_bar.html"><em>progress_bar</em></a>
+object, that can be used to track the progress within your function.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">tmp_path</span></code> — The path to store temporary data. <code class="docutils literal"><span class="pre">tempdir()</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>A folder to store temporary data. Full path to a directory with write privileges.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">lead_config</span></code> — Select which signals to process. <code class="docutils literal"><span class="pre">'PPG-ABP-only'</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div><p>This property control on which signals the pulse detection algorithms will be applied.
+A cell string or char with any of the following names:</p>
+<ul class="simple">
+<li>&#8216;<em>all-leads</em>&#8216;. Process all leads.</li>
+<li>&#8216;<em>PPG-ABP-only</em>&#8216;. Detect pulsatile signals based on their <code class="docutils literal"><span class="pre">ECG_header.desc</span></code></li>
+</ul>
+<p>description variable.</p>
+<ul class="simple">
+<li>&#8216;<em>User-defined-leads</em>&#8216;. Tell the algorithm (with <code class="docutils literal"><span class="pre">PPG_ABP_idx</span> <span class="pre">property</span></code>)</li>
+</ul>
+<p>which signal indexes to process, from 1 to <code class="docutils literal"><span class="pre">ECG_header.nsig</span></code></p>
+</div></blockquote>
+<p><code class="docutils literal"><span class="pre">PPG_ABP_idx</span></code> — The indexes corresponding to pulsatile signals <code class="docutils literal"><span class="pre">[]</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>A value from 1 to <code class="docutils literal"><span class="pre">ECG_header.nsig</span></code> indicating the column indexes (of the
+signal matrix <code class="docutils literal"><span class="pre">ECG</span></code>) where pulsatile signals are located. By default this task
+process all signals.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">detectors</span></code> — The PPG/ABP detection algorithms to use <code class="docutils literal"><span class="pre">'all-detectors'</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div><p>Select which algorithm to use. A cell string or char with any of the following names:</p>
+<ul class="simple">
+<li>&#8216;all-detectors&#8217;</li>
+<li><a class="reference external" href="http://dx.doi.org/10.1109/JBHI.2013.2267096">&#8216;wavePPG&#8217;</a></li>
+<li><a class="reference external" href="http://www.physionet.org/physiotools/wag/wabp-1.htm">&#8216;wabp&#8217;</a></li>
+</ul>
+</div></blockquote>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>Create the ECGtask_PPG_ABP_detector object.</p>
+<p>Create the <em>ECGtask_PPG_ABP_detector</em> object.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% with the task name</span>
+    <span class="n">ECG_w</span><span class="p">.</span><span class="n">ECGtaskHandle</span> <span class="p">=</span> <span class="s">&#39;PPG_ABP_detector&#39;</span><span class="p">;</span>
+<span class="c">% or create an specific handle to have more control</span>
+    <span class="n">ECGt_PPG</span> <span class="p">=</span> <span class="n">ECGtask_PPG_ABP_detector</span><span class="p">();</span>
+</pre></div>
+</div>
 <p>and then you are ready to set the algorithms to use. In the following
-example you have several possible setups.</p>
+example you have several possible set-ups.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% select an specific algorithm. Default: Run all detectors</span>
+    <span class="n">ECGt_PPG</span><span class="p">.</span><span class="n">detectors</span> <span class="p">=</span> <span class="s">&#39;wavePPG&#39;</span><span class="p">;</span> <span class="c">% A J. Lazaro algorithm for peak detection</span>
+    <span class="n">ECGt_PPG</span><span class="p">.</span><span class="n">detectors</span> <span class="p">=</span> <span class="s">&#39;wabp&#39;</span><span class="p">;</span>  <span class="c">% Another algorithm from Physionet</span>
+</pre></div>
+</div>
 <p>Finally set the task to the wrapper object, and execute the task.</p>
-<p>You can check the result of this task, with either the <a class="reference external" href="ABP_PPG_peak_correction.htm">detection
-corrector</a> or the <a class="reference external" href="plot_ecg_strip.htm">visualization
-functions</a>.</p>
-<p>Also check this <a class="reference external" href="examples.html#PPG_ABP_pulse_detection">example</a> for
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">ECG_w</span><span class="p">.</span><span class="n">ECGtaskHandle</span><span class="p">=</span> <span class="n">ECGt_PPG</span><span class="p">;</span> <span class="c">% set the ECG task</span>
+<span class="n">ECG_w</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>You can check the result of this task, with either the <a class="reference internal" href="ABP_PPG_peak_correction.html"><em>detection
+corrector</em></a> or the <a class="reference internal" href="plot_ecg_strip.html"><em>visualization
+functions</em></a>.</p>
+<p>Also check this <a class="reference internal" href="examples.html#ppg-abp-pulse-detection"><span>example</span></a> for
 further information.</p>
 </div>
 <div class="section" id="more-about">
 <h2>More About<a class="headerlink" href="#more-about" title="Permalink to this headline">¶</a></h2>
 <p>Here are some external references about pulse detection:</p>
 <ul class="simple">
-<li><a class="reference external" href="http://physionet.org/challenge/2014/">Physionet Challenge 2014</a></li>
+<li><strong>?? Add some</strong></li>
 </ul>
 </div>
 <div class="section" id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">`ECGtask</span></code> &lt;ECGtask.html&gt;`__ | <code class="docutils literal"><span class="pre">QRS</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">detection</span></code> |
-<code class="docutils literal"><span class="pre">`ECG</span> <span class="pre">delineation</span></code> &lt;ECGdelineation.htm&gt;`__ |
-<code class="docutils literal"><span class="pre">`examples</span></code> &lt;examples.html&gt;`__</p>
+<blockquote>
+<div><a class="reference internal" href="ECGtask.html"><em>ECGtask</em></a> | <a class="reference internal" href="QRS_detection.html"><em>QRS detection</em></a> | <a class="reference internal" href="examples.html"><em>examples</em></a></div></blockquote>
 </div>
 </div>
 

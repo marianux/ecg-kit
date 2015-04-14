@@ -5,12 +5,6 @@ ECG heartbeat classification
 This document describes how to classify heartbeats according to its
 origin.
 
-`expand all in page `__
-
- 
-
- 
-
 Description
 -----------
 
@@ -23,82 +17,82 @@ classifying heartbeats into four classes:
 -  **V** ventricular
 -  **F** fusion of normal and ventricular
 
-Each class and certain background regarding this topic are explained in
-my `PhD
-thesis <http://i3a.unizar.es/postgrado/descarga_tesis_pdf.php?ver=48>`__,
-which can be useful f
-
+Certain background and introduction to this topic is included in
+my `PhD thesis <http://i3a.unizar.es/postgrado/descarga_tesis_pdf.php?ver=48>`__.
  
 
 Input Arguments
 ---------------
 
-```progress_handle`` — used to track the progress within your function. `__\ ``[]`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``progress_handle`` — Used to track the progress within your function. ``[] (default)``
 
-progress\_handle, is a handle to a `progress\_bar <progress_bar.htm>`__
-object, that can be used to track the progress within your function.
+	progress\_handle, is a handle to a :doc:`progress\_bar <progress_bar>`
+	object, that can be used to track the progress within your function.
 
-```tmp_path`` — The path to store temporary data `__\ ``'tempdir()'`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``tmp_path`` — The path to store temporary data. ``tempdir() (default)``
 
-Full path to a directory with write privileges.
+	Full path to a directory with write privileges.
 
-```payload`` — An arbitrary format variable to be passed to your user-defined algorithm. `__\ ``[]`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```payload`` — A structure to provide audited heartbeat detections to the classifier algorithm. ``[] (default)`` 
 
-This variable can be useful for passing data to your own function, not
-covered in the interface described
-`below <#Adding_a_custom_detection_algorithm>`__.
+	This variable is useful to pass automatic or corrected QRS detections to the classification task.
+	This can be performed as shown in the following example:
+	
+.. code::
 
-```mode`` — Set the algorithm mode of operation. `__\ ``'auto'`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    cached_filenames = ECGw.GetCahchedFileName({'QRS_corrector' 'QRS_detection'});
+    ECGw.ECGtaskHandle.payload = load(cached_filenames{1});
+	
 
-A string with any of the following names
+``mode`` — Set the classification mode of operation. ``'auto' (default)`` 
 
-'auto', this mode performs in automatic mode.
+	A control string with any of the following names
 
-'slightly-assisted', this mode requires that an expert labels several
-heartbeats
+	- 'auto', this mode makes the algorithm operate in automatic mode.
 
-'assisted', this mode is completely assisted. An expert must label some
-heartbeats.
+	- 'slightly-assisted', this mode requires that an expert labels several 
+	  representative examples, when the algorithm does not reach a confidence 
+	  level to do it automatically.
 
-A more detailed
+	- 'assisted', this mode is completely assisted. An expert must label all
+	  the representative heartbeats from each cluster.
 
 Examples
 --------
 
 The first example shows the simplest setup of the
-ECGtask\_heartbeat\_classifier object, while at the end of this section
+*ECGtask\_heartbeat\_classifier* object, while at the end of this section
 a complete example with a real signal is shown.
 
 .. code::
 
     % with the task name
-        ECG_w.ECGtaskHandle = 'ECG_heartbeat_classifier';
+    ECG_w.ECGtaskHandle = 'ECG_heartbeat_classifier';
     % or create an specific handle to have more control
-        ECGt = ECGtask_heartbeat_classifier();
+    ECGt = ECGtask_heartbeat_classifier();
 
 and then you are ready to setup the task
 
 .. code::
+
     % select a mode, automatic mode does not require assistance
-        ECGt.mode = 'auto';
+    ECGt.mode = 'auto';
     % this is to use QRS detection previously calculated
-        cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName({'QRS_corrector' 'QRS_detection'});
-        ECGt.payload = load(cached_filenames{1})
+    cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName({'QRS_corrector' 'QRS_detection'});
+    ECGt.payload = load(cached_filenames{1})
 
 Finally set the task to the wrapper object, and execute the task.
 
 .. code::
-            ECG_w.ECGtaskHandle= ECGt; % set the ECG task
-            ECG_w.Run();
+
+    ECG_w.ECGtaskHandle= ECGt; % set the ECG task
+    ECG_w.Run();
 
 This example shows in first place, the previous configuration used in
 recording 208 from MIT Arrhythmia database.
 
 .. code::
+
     >> ECG_w = ECGwrapper( ...
             'recording_name', 'some_path\208', ...
             'recording_format', 'MIT', ...
@@ -113,13 +107,15 @@ recording 208 from MIT Arrhythmia database.
     +Partition mode: ECG_overlapped
     +Function name: ECG_heartbeat_classifier
     +Processed: false
-                        
+
     >> ECG_w.Run();
+
 
 You can follow the evolution in the progress bar, and after a while, it
 ends and display the classification results
 
-.. code::
+.. code-block:: none
+
     Configuration 
     ------------- 
     + Recording: ... \example recordings\208.dat (MIT) 
@@ -169,7 +165,8 @@ right. The unknown class is reserved for the cases where you can not
 make a confident decision. At the same time, in the command window, a
 suggestion appears:
 
-.. code::
+.. code-block:: none
+
     Configuration 
     ------------- 
     + Recording: .\example recordings\208.dat (MIT) 
@@ -192,10 +189,10 @@ then redraw the middle and right panels. This feature is useful for
 large clusters.
 
 You can check the result of this task for every heartbeat in the
-recording using the `visualization functions <plot_ecg_strip.htm>`__.
+recording using the :doc:`visualization functions <plot_ecg_strip>`.
 
 Also check this
-`example <examples.html#Automatic_Heartbeat_classification>`__ for
+:ref:`example <Automatic_Heartbeat_classification>` for
 further information.
 
  
@@ -213,8 +210,6 @@ Here are some external references about heartbeat classification:
 See Also
 --------
 
-```ECGtask`` <ECGtask.html>`__ \|
-```ECG delineation`` <ECGdelineation.htm>`__ \|
-```examples`` <examples.html>`__
+ :doc:`ECGtask <ECGtask>` \| :doc:`QRS detection <QRS_detection>` \| :doc:`examples <examples>`
 
 .. |image4| image:: 2D__Mariano_misc_a2hbc_doc_expert_user_interface.png

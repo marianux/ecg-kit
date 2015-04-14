@@ -1,6 +1,7 @@
 #! /bin/bash
 
 # file: pnwlogin	G. Moody	12 August 2012
+#			Last revised:   30 July 2014
 #
 # Log in to PhysioNetWorks
 #
@@ -20,10 +21,12 @@ read -p "Password: " PNWPASS
 stty echo
 echo
 
-export PNWUSER PNWPASS
+WFDBPASSWORD="https://physionet.org/ $PNWUSER:$PNWPASS"
+export WFDBPASSWORD
+unset PNWPASS # in case it was previously exported
 ( WFDB=https://physionet.org/users
   export WFDB
-  wfdbcat $PNWUSER/index.shtml >.pnwhome 2>/dev/null )
+  wfdbcat "$PNWUSER/?pnwlogin=10.5.24" >.pnwhome 2>/dev/null )
 
 if [ ! -s .pnwhome ]
 then
@@ -39,7 +42,7 @@ fi
 rm -f .pnwhome
 if [ -z "${WFDB+xxx}" ]
 then
-    WFDB=". /usr/database http://physionet.org/physiobank/database"
+    WFDB=". /Users/admin/Documents/workspace/wfdb-app-toolbox/mcode/nativelibs/macosx/build//database http://physionet.org/physiobank/database"
 fi
 WFDB="$WFDB https://physionet.org/works/\
  https://physionet.org/users/$PNWUSER/works/"

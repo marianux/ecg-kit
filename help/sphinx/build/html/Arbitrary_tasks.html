@@ -150,15 +150,13 @@ signal. For those cases you may found arbitrary tasks useful.</p>
 <div class="section" id="input-arguments">
 <h2>Input Arguments<a class="headerlink" href="#input-arguments" title="Permalink to this headline">¶</a></h2>
 <p>The properties that this task uses are the following:</p>
-<div class="section" id="progress-handle-used-to-track-the-progress-within-your-function-default">
-<h3><code class="docutils literal"><span class="pre">`progress_handle</span></code> — used to track the progress within your function. <cite>__``[]`</cite> (default)<a class="headerlink" href="#progress-handle-used-to-track-the-progress-within-your-function-default" title="Permalink to this headline">¶</a></h3>
-<p>progress_handle, is a handle to a <a class="reference external" href="progress_bar.htm">progress_bar</a>
-object, that can be used to track the progress within your function.</p>
-</div>
-<div class="section" id="tmp-path-the-path-to-store-temporary-data-tempdir-default">
-<h3><code class="docutils literal"><span class="pre">`tmp_path</span></code> — The path to store temporary data <cite>__`</cite>&#8216;tempdir()&#8217;`` (default)<a class="headerlink" href="#tmp-path-the-path-to-store-temporary-data-tempdir-default" title="Permalink to this headline">¶</a></h3>
-<p>Full path to a directory with write privileges.</p>
-</div>
+<p><code class="docutils literal"><span class="pre">progress_handle</span></code> — Used to track the progress within your function. <code class="docutils literal"><span class="pre">[]</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>progress_handle, is a handle to a <a class="reference internal" href="progress_bar.html"><em>progress_bar</em></a>
+object, that can be used to track the progress within your function.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">tmp_path</span></code> — The path to store temporary data. <code class="docutils literal"><span class="pre">tempdir()</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>Full path to a directory with write privileges.</div></blockquote>
 <div class="section" id="only-ecg-leads-process-only-ecg-signals-true-default">
 <h3><code class="docutils literal"><span class="pre">`only_ECG_leads</span></code> — Process only ECG signals <cite>__``true`</cite> (default)<a class="headerlink" href="#only-ecg-leads-process-only-ecg-signals-true-default" title="Permalink to this headline">¶</a></h3>
 <p>Boolean value. Find out which signals are ECG based on their header
