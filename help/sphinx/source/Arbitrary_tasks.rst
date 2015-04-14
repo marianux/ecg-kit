@@ -20,16 +20,14 @@ Input Arguments
 
 The properties that this task uses are the following:
 
-```progress_handle`` — used to track the progress within your function. `__\ ``[]`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``progress_handle`` — Used to track the progress within your function. ``[] (default)``
 
-progress\_handle, is a handle to a `progress\_bar <progress_bar.htm>`__
-object, that can be used to track the progress within your function.
+	progress\_handle, is a handle to a :doc:`progress\_bar <progress_bar>`
+	object, that can be used to track the progress within your function.
 
-```tmp_path`` — The path to store temporary data `__\ ``'tempdir()'`` (default)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``tmp_path`` — The path to store temporary data. ``tempdir() (default)``
 
-Full path to a directory with write privileges.
+	Full path to a directory with write privileges.
 
 ```only_ECG_leads`` — Process only ECG signals `__\ ``true`` (default)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

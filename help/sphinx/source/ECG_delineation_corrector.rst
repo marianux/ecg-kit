@@ -5,30 +5,21 @@ ECG delineation correction
 This document describes how to visualize and correct automatic
 delineation.
 
-`expand all in page `__
-
- 
-
 Description
 -----------
 
-This task is a clone of the `QRS corrector <QRS_correction>`__ task, for
-the visualization and  inspection of automatic delineator results. See
-the help `here <QRS_correction>`__ for further reference and also check
-this
-`example <examples.html#Visual_inspection_of_the_detection_delineation>`__.
+This task is a clone of the :doc:`QRS corrector <QRScorrector>` task, for
+the visualization and inspection of automatic delineator results. See
+the :doc:`help <QRScorrector>` for further reference and also check
+this :ref:`example <Visual_inspection_of_the_detection_delineation>`.
 
- 
 
 More About
 ----------
 
--  `Physionet <http://www.physionet.org/>`__
+-  **?? Add some**
 
 See Also
 --------
 
-```ECGtask`` <ECGtask.html>`__ \|
-```ECG delineation`` <ECGdelineation.htm>`__ \|
-```examples`` <examples.html>`__
-
+ :doc:`ECGtask <ECGtask>` \| :doc:`ECG delineation <ECGdelineation>` \| :doc:`examples <examples>`

@@ -41,13 +41,13 @@ The properties that this task uses are the following:
 	progress\_handle, is a handle to a :doc:`progress\_bar <progress_bar>`
 	object, that can be used to track the progress within your function.
 
-``tmp_path`` — The path to store temporary data. ``tempdir()``
+``tmp_path`` — The path to store temporary data. ``tempdir() (default)``
 
 	Full path to a directory with write privileges.
 
 ``detectors`` — The QRS detection algorithms to use. ``'all-detectors' (default)``
 
-	A cell string or char array with any of the following names
+	This property controls which algorithms are used. A cell string or char array with any of the following names
 
 	- all-detectors
 	- `wavedet <http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf>`__
