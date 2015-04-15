@@ -50,7 +50,8 @@ The properties that this task uses are the following:
 	(described :ref:`below <Adding_a_custom_delineation_algorithm>`) or to
 	provide visually audited QRS detections to the delineation algorithm.
 
-.. _Adding_a_custom_delineation_algorithm
+.. _Adding_a_custom_delineation_algorithm:
+
 Adding a custom delineation algorithm
 -------------------------------------
 
@@ -61,14 +62,15 @@ function implements this interface:
 
     function [positions_single_lead, position_multilead] = 
 	
-			  your_ECG_delineation( ECG_matrix, ECG_header, progress_handle, payload_in)  
+		your_ECG_delineation( ECG_matrix, ECG_header, progress_handle, payload_in)  
                             
 
 where the arguments are:
 
 	**ECG\_matrix**, is a matrix size [ECG\_header.nsamp ECG\_header.nsig]
 
-	.. _ECG_header_description
+	.. _ECG_header_description:
+	
 	**ECG\_header**, is a struct with info about the ECG signal, such as:
 
 		- *freq*, is the sampling frequency of ECG\_matrix signal.

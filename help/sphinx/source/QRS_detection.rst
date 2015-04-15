@@ -73,7 +73,7 @@ The properties that this task uses are the following:
 	
 	Undocumented yet, use only if you know what you are doing.
 
-.. _payload_prop
+.. _payload_prop:
 
 ``payload`` — An arbitrary format variable to be passed to your user-defined algorithm. ``[] (default)``
 
@@ -87,7 +87,8 @@ The properties that this task uses are the following:
 	where the signals are. This reference annotations are loaded, if
 	detected, in the ECG\_annotations property.
  
-.. _Adding_a_custom_detection_algorithm
+.. _Adding_a_custom_detection_algorithm:
+
 Adding a custom detection algorithm
 -----------------------------------
 
@@ -103,9 +104,10 @@ your function implements this interface:
 
 where the arguments are:
 
-	**ECG\_matrix**, is a matrix size [ECG\_header.nsamp ECG\_header.nsig]
+	**ECG\_matrix**, is a matrix size ``[ECG\_header.nsamp ECG\_header.nsig]``
 
-	.. _ECG_header_description
+	.. _ECG_header_description:
+	
 	**ECG\_header**, is a struct with info about the ECG signal, such as:
 
 		- *freq*, is the sampling frequency of ECG\_matrix signal.

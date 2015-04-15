@@ -13,7 +13,7 @@ Contents:
    :titlesonly:
    :includehidden:
 
-   Getting started <Getting_started>
+   Getting started <getting_started>
    Release notes <release-notes>
    Be in touch <contact>
    A simple example <examples>
@@ -21,7 +21,8 @@ Contents:
    Accessing signals  <ECGwrapper>
    Performing tasks  <ECGtask>
    Plotting and reporting <reportECG>
-   Extensions <custom_formats>
+   Other functions <other_functions>
+   Adding tasks and formats <extensions>
 
 Indices 
 -------
