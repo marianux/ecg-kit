@@ -2,8 +2,10 @@
 reportECG
 =========
 
+
 .. toctree::
    :titlesonly:
+   :hidden:
 
    A signal visualization tool <plot_ecg_strip>
    A mosaic visualization tool <plot_ecg_mosaic>

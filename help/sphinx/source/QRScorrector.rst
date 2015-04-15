@@ -84,7 +84,8 @@ More About
 
 Here are some external references about heartbeat detection:
 
--  `Physionet <http://www.physionet.org/>`__
+-  A video demo in `Youtube <https://www.youtube.com/watch?v=qgWjvsvafVg&list=PLlD2eDv5CIe9sA2atmnb-DX48FIRG46z7&index=3>`__
+
 
 See Also
 --------

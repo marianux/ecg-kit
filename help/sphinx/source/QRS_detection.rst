@@ -206,6 +206,7 @@ Here are some external references about heartbeat detection:
 -  `PhysioNet/Computing in Cardiology Challenge
    2014 <http://physionet.org/challenge/2014/>`__
 -  `Physionet <http://www.physionet.org/>`__
+-  A video demo in `Youtube <https://www.youtube.com/watch?v=QrM-aYANUns&index=2&list=PLlD2eDv5CIe9sA2atmnb-DX48FIRG46z7>`__
 
 See Also
 --------

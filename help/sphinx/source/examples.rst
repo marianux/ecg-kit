@@ -1,6 +1,6 @@
 
-Examples
-========
+Another example
+===============
 
 This script exemplifies the use of the ECGkit in a multimodal
 cardiovascular recording which includes arterial blood pressure (ABP),

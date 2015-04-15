@@ -1,10 +1,9 @@
 %% Very simple example of how to use the ECGkit
 % 
-% This script exemplifies the use of the
-% <matlab:web('https://code.google.com/p/ecg-kit/','-browser') *ECGkit*> in a
-% very short multimodal cardiovascular recording which includes arterial blood
-% pressure (ABP), plethysmographic (PPG) and electrocardiogram signals. The
-% following tasks will be performed in this example: 
+% This script exemplifies the use of the ECGkit in a very short multimodal
+% cardiovascular recording which includes arterial blood pressure (ABP),
+% plethysmographic (PPG) and electrocardiogram signals. The following tasks
+% will be performed in this example:  
 % 
 % * Heartbeat/QRS detection
 % * ABP/PPG pulse detection
@@ -16,8 +15,8 @@
 % verify the algorithm's results.
 % 
 % You can watch a typical run of this script online
-% <matlab:web('http://youtu.be/8lJtkGhrqFw?list=PLlD2eDv5CIe9sA2atmnb-DX48FIRG46z7','-browser')
-% in this link.>
+%  
+%   http://youtu.be/8lJtkGhrqFw?list=PLlD2eDv5CIe9sA2atmnb-DX48FIRG46z7
 % 
 % 
 % See also ECGwrapper, ECGtask, UnInstallECGkit, ECGkit_examples
@@ -26,8 +25,8 @@
 % <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
 % *Version*: 0.1 beta
 % *Birthdate*: 11/13/2014
-% *Last update*: 18/14/2014
-% *Copyright* 2008-2014
+% *Last update*: 15/4/2015
+% *Copyright* 2008-2015
 % 
 function first_simple_example()
 

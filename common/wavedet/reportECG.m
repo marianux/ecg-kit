@@ -24,8 +24,8 @@ function reportECG(ECG_w, detailLevel, report_mode, win_lengths, report_format, 
 % 
 %     +win_lengths: [numeric] OPTIONAL. The amount and size (in seconds) of
 %                   each scale length present in the report. Default 
-%                   [60*60 30*60 60 10] it means 1 hour - 30 min - 1 min
-%                   and 10 seconds.
+%                   [60*60 30*60 60 7] it means 1 hour - 30 min - 1 min
+%                   and 7 seconds.
 % 
 %     +report_format: [char] OPTIONAL. The report format of the document.
 %                  Default PDF.
@@ -90,7 +90,7 @@ if( nargin < 2 || ~any(strcmpi(cDetails, detailLevel)) )
 end
 
 if( nargin < 4 || isempty(win_lengths) || ~isnumeric(win_lengths) )
-    win_lengths = [60*60 30*60 60 10]; % seconds
+    win_lengths = [60*60 30*60 60 7]; % seconds
 end
 
 if( ~isobject(ECG_w) || ~isa(ECG_w, 'ECGwrapper') )

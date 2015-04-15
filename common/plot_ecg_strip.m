@@ -1668,7 +1668,7 @@ end
 
     end
 
-    bAux = eDetailLevel ~= kNoDetail && ( (eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) && plotXrange <= closeDetailSampSize );
+    bAux = eDetailLevel ~= kNoDetail && ( (eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) && plotXrange <= mediumDetailSampSize );
     
     % QRS class labels
     if( bAux && ~isempty(hb_labels_idx) )

@@ -13,16 +13,13 @@ Contents:
    :titlesonly:
    :includehidden:
 
-   Getting started <Getting_started>
-   Release notes <release-notes>
-   Be in touch <contact>
-   A simple example <examples>
-   Another example <examples>
+   Getting started <getting_started>
+   Examples <first_example>
    Accessing signals  <ECGwrapper>
    Performing tasks  <ECGtask>
    Plotting and reporting <reportECG>
    Other functions <other_functions>
-   Adding tasks and formats <extensions>
+   Extending the ECGkit <extensions>
 
 Indices 
 -------
