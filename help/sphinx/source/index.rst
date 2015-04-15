@@ -13,7 +13,7 @@ Contents:
    :titlesonly:
    :includehidden:
 
-   Getting started <getting_started>
+   Getting started <Getting_started>
    Release notes <release-notes>
    Be in touch <contact>
    A simple example <examples>
