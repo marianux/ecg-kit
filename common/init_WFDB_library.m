@@ -61,7 +61,7 @@ function WFDB_bin_path =  init_WFDB_library(tmp_path_local)
         
         % WFDB paths required to locate shared libraries
         if( isunix() )
-            WFDB_lib_path = [common_path filesep lib_path filesep ]   
+            WFDB_lib_path = [common_path filesep lib_path filesep ];
             this_path = getenv(libpath_OS_var);
             setenv(libpath_OS_var, [this_path path_sep WFDB_lib_path ]);
         end
