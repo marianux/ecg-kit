@@ -41,10 +41,10 @@ is shown in the example below.
 	- '*all-leads*'. Process all leads.
 
 	- '*PPG-ABP-only*'. Detect pulsatile signals based on their ``ECG_header.desc``
-	description variable.
+	  description variable.
 
 	- '*User-defined-leads*'. Tell the algorithm (with ``PPG_ABP_idx property``)
-	which signal indexes to process, from 1 to ``ECG_header.nsig``
+	  which signal indexes to process, from 1 to ``ECG_header.nsig``
 
 ``PPG_ABP_idx`` — The indexes corresponding to pulsatile signals ``[] (default)`` 
 

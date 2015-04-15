@@ -1,8 +1,13 @@
 
-Custom recording formats
-========================
+Other functions
+===============
 
-This document describes the procedure to make other file formats compatible with the toolbox, and in concrete with the ECGwrapper objects.
+.. toctree::
+   :titlesonly:
+
+   A progress bar <progress_bar>
+   List all available tasks <list_all_ECGtask>
+
 
 More About
 ----------

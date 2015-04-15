@@ -34,7 +34,7 @@ is shown in the example below.
 
 	Full path to a directory with write privileges.
 
-.. _payload_prop
+.. _payload_prop:
 
 ``payload`` — An arbitrary format variable to be passed to your user-defined algorithm. ``[] (default)``
 

@@ -5,9 +5,9 @@ ECGwrapper
 .. toctree::
    :hidden:
    :titlesonly:
-   
-   <Matlab_format>
-   <custom_formats>
+
+   Matlab file format <Matlab_format>
+   Adding your own formats <custom_formats>
 
 
 This class allows the access to ECG recordings of several :ref:`formats <ECG_formats>` and length.
@@ -118,7 +118,7 @@ The available properties are listed below
 	Full path to a directory with write privileges. By default will be the
 	same path of the recordings.
 
-``'ECGtaskHandle'`` — The task to perform. ``''  (default)`
+``'ECGtaskHandle'`` — The task to perform. ``'' (default)``
 
 	The task to perform, can be the name of the task, or an ECGtask object.
 	Available ECGtasks can be listed with ```list_all_ECGtask()`` command.
