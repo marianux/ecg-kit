@@ -109,6 +109,8 @@ where the arguments are:
 
 and the output of your function must be:
 
+.. _delineation_struct:
+
 	**positions\_single\_lead**, is an **structure array** of ``ECG_header.nsig`` elements with *at least* the following wave fiducial points as fields:
 	
 	- ``'Pon'`` P wave onset
@@ -166,7 +168,17 @@ functions <plot_ecg_strip>`.
 
 Also check this :ref:`example <ECG_automatic_delineation>`
 for further information.
+
+.. _Delineation_result_format:
+
+Results format
+--------------
  
+The result file will have a ``struct`` variable with the name of the algorithm (only *wavedet* at the time of 
+writing this). Inside this, it will contain one :ref:`delineation struct <delineation_struct>` per ECG lead 
+in the ``ECG_header.desc`` field, plus another called ``multilead`` which is a delineation accounting with the 
+information present in all leads.
+
 
 More About
 ----------

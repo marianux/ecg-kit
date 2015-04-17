@@ -195,6 +195,15 @@ Also check this
 :ref:`example <Automatic_Heartbeat_classification>` for
 further information.
 
+
+.. _Classifier_det_result_format:
+
+Results format
+--------------
+ 
+The result file will have two variables, the annotation type or classification label ``anntyp``,
+containing a ``char`` label per heartbeat. And a vector of samples called ``time`` (in correspondence with 
+``anntyp``), with the occurrence of all heartbeats used in this task.
  
 
 More About

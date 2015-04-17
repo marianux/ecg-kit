@@ -100,6 +100,13 @@ functions <plot_ecg_strip>`.
 Also check this :ref:`example <PPG_ABP_pulse_detection>` for
 further information.
 
+.. _pulse_det_result_format:
+
+Results format
+--------------
+ 
+The result file will have the same format than :ref:`QRS detection task <QRS_det_result_format>`.
+
 
 More About
 ----------

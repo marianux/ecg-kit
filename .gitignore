@@ -4,3 +4,7 @@ results
 doctrees
 includes
 build
+/recordings/208_full.pdf
+/recordings/208_my_experiment_name_ECG_delineation.mat
+/recordings/208_my_experiment_name_ECG_heartbeat_classifier.mat
+/recordings/208_my_experiment_name_QRS_detection.mat

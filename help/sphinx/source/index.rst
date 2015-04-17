@@ -17,6 +17,7 @@ Contents:
    Examples <first_example>
    Accessing signals  <ECGwrapper>
    Performing tasks  <ECGtask>
+   Result format <results_format>
    Plotting and reporting <reportECG>
    Other functions <other_functions>
    Extending the ECGkit <extensions>

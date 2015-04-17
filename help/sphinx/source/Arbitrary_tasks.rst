@@ -131,6 +131,20 @@ template-matching on an ECGwrapper (arbitrary big recording) object.
 	aux_w.Run
                             
 
+.. _arbitrary_result_format:
+
+Results format
+--------------
+ 
+The result file will have ``ECG_header.nsig x algorithms_used`` variables, which can later be recovered 
+as a ``struct`` variable, with fields named according to ``[ 'algorithm_name' '_' 'lead_name' ]``. Each
+of this fields is a ``struct`` itself with a single field called ``time``, where the actual QRS detections are.
+In addition, another ``struct`` variable called ``series_quality`` is stored in order to provide a quality metric of 
+the detections created. This metric is found in the ``ratios`` field, a higher ratio means better detections.
+Each ratio corresponds with a name in the ``AnnNames`` field.
+							
+							
+							
 See Also
 --------
 
