@@ -79,6 +79,12 @@ edition/verification of the automatic delineation, press CTRL+G to save
 results in the 'payload' variable of the caller workspace. Then press F5
 to save the results to disk.
 
+Results format
+--------------
+ 
+The result file have the same format than :ref:`QRS detection task <QRS_det_result_format>`.
+
+
 More About
 ----------
 

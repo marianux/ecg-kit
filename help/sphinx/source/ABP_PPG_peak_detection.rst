@@ -105,7 +105,7 @@ further information.
 Results format
 --------------
  
-The result file will have the same format than :ref:`QRS detection task <QRS_det_result_format>`.
+The result file have the same format than :ref:`QRS detection task <QRS_det_result_format>`.
 
 
 More About

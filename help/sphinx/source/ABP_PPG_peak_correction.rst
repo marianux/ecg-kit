@@ -13,6 +13,7 @@ visual inspection and correction of peaks automatically detected. See
 the :doc:`help <QRScorrector>` for further reference and also check
 this :ref:`example <PPG_ABP_waves_visual_inspection_and_correction>`.
 
+
 See Also
 --------
 

@@ -770,7 +770,7 @@ classdef ECGwrapper < handle
                                                 end
                                                 aux = load(aux_FM_filename);
 
-                                                if( isprop(obj.ECGtaskHandle, 'signal_payload')  )
+                                                if( isprop(obj.ECGtaskHandle, 'signal_payload') && obj.ECGtaskHandle.signal_payload  )
                                                 % Process the results as a
                                                 % signal, dump sequentialy
                                                 % to disk
@@ -927,12 +927,25 @@ classdef ECGwrapper < handle
 
                                 end
 
-                                if( ~isprop(obj.ECGtaskHandle, 'signal_payload') )
-                                    %Dump results as standard payload.
+                                if( isprop(obj.ECGtaskHandle, 'signal_payload') )
                                     
+                                    if( ~obj.ECGtaskHandle.signal_payload )
+                                        %Dump results as standard payload.
+                                        for result_fn = rowvec(result_files)
+                                            % Master PID can operate over the global
+                                            % payload.
+                                            payload = load(result_fn{1});
+                                            payload = obj.ECGtaskHandle.Finish( payload, obj.ECG_header );
+                                            save(result_fn{1}, '-struct', 'payload');
+                                        end
+                                    end
+                                    
+                                else
+                                    
+                                    %Dump results as standard payload.
                                     for result_fn = rowvec(result_files)
-                                    % Master PID can operate over the global
-                                    % payload.
+                                        % Master PID can operate over the global
+                                        % payload.
                                         payload = load(result_fn{1});
                                         payload = obj.ECGtaskHandle.Finish( payload, obj.ECG_header );
                                         save(result_fn{1}, '-struct', 'payload');

@@ -49,6 +49,8 @@ classdef ECGtask_arbitrary_function < ECGtask
         lead_idx = []
         signal_payload = false
         function_pointer
+        finish_func_pointer = @default_finish_function;
+        concate_func_pointer = @default_concatenate_function;
         
     end
     
@@ -105,6 +107,8 @@ classdef ECGtask_arbitrary_function < ECGtask
                 
                 obj.range_min_max_tracking = [ min(obj.range_min_max_tracking(1), min(payload.result_signal) ) max(obj.range_min_max_tracking(2), max(payload.result_signal)) ];
                 
+            else
+                payload = payload.result_signal;
             end
             
             
@@ -112,18 +116,13 @@ classdef ECGtask_arbitrary_function < ECGtask
         
         function payload = Finish(obj, payload, ECG_header)
             
+            payload = obj.finish_func_pointer( payload, ECG_header );
             
         end
         
         function payload = Concatenate(obj, plA, plB)
 
-            if( isempty(plA) )
-                
-                payload = plB;
-            else
-                payload = [plA; plB];
-            end
-    
+            payload = obj.concate_func_pointer(plA, plB);
             
         end
 
@@ -139,8 +138,39 @@ classdef ECGtask_arbitrary_function < ECGtask
             else
                 warning('ECGtask_arbitrary_function:BadArg', 'Invalid function pointer.');
             end
+            
         end
         
+        function set.finish_func_pointer(obj,x)
+            
+            if( strcmpi( class(x), 'function_handle' ) )
+                obj.finish_func_pointer = x;
+                return
+            end
+            
+            if( ischar(x) && exist(x) == 2 )
+                obj.finish_func_pointer = str2func(x);
+            else
+                warning('ECGtask_arbitrary_function:BadArg', 'Invalid function pointer.');
+            end
+            
+        end
+        
+        function set.concate_func_pointer(obj,x)
+            
+            if( strcmpi( class(x), 'function_handle' ) )
+                obj.concate_func_pointer = x;
+                return
+            end
+            
+            if( ischar(x) && exist(x) == 2 )
+                obj.concate_func_pointer = str2func(x);
+            else
+                warning('ECGtask_arbitrary_function:BadArg', 'Invalid function pointer.');
+            end
+            
+        end
+                
         function set.only_ECG_leads(obj,x)
             if( islogical(x) )
                 obj.only_ECG_leads = x;
