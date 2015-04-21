@@ -51,6 +51,15 @@ function [out] = GTHTMLtable(NAME, MAT, FORMAT, COLS, COLFORMAT, ROWS, ROWFORMAT
 % % Nested tables are supported inside cell arrays.
 % <a href="matlab: fname = GTHTMLtable('x',{1 [2:3]' 'three' 'four'; 10 20 30 40; 'a' 'e' 'r' 'o'},{'first' 'second' 'third' 'fourth'},{'1' '2' 'three'},'show','save')">[try]</a> fname = GTHTMLtable('x',{1 [2:3]' 'three' 'four'; 10 20 30 40; 'a' 'e' 'r' 'o'},{'first' 'second' 'third' 'fourth'},{'1' '2' 'three'},'show','save')
 %
+% 
+% Author: Gus Brown in http://www.mathworks.com/matlabcentral/fileexchange/18329-display-data-as-an-html-table/content/GTHTMLtable.m
+% adapted by Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Last update: 14/5/2014
+% Birthdate  : 21/4/2015
+% Copyright 2008-2015
+
+
 
 HTML = '';
 

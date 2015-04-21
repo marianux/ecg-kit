@@ -16,7 +16,7 @@
 % Version: 0.1 beta
 % Last update: 14/5/2014
 % Birthdate  : 20/3/2012
-% Copyright 2008-2014
+% Copyright 2008-2015
 % 
 classdef ECGtask < handle
        
@@ -42,6 +42,8 @@ classdef ECGtask < handle
 
     methods (Abstract)
                 
+% ECG_header is the header for this signal
+% ECG_annotations are the QRS locations available for this signal
         Start(obj, ECG_header, ECG_annotations)
         
 % ECG is the ECG signal
@@ -55,8 +57,12 @@ classdef ECGtask < handle
 %    iteration.
         payload = Process(ECG, ECG_start_offset, ECG_sample_start_end_idx, ECG_header, ECG_annotations, ECG_annotations_start_end_idx )
 
+% payload is the result of the task, after the final processing done by this method        
+% ECG_header is the header for this signal
         payload = Finish(obj, payload, ECG_header)
         
+        
+% plA, plB are two payloads produced by the Process method.
         payload = Concatenate(plA, plB)
 
     end

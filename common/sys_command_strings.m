@@ -12,7 +12,7 @@
 % Version: 0.1 beta
 % Birthdate: 5/11/2014
 % Last update: 5/11/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 % 
 function sys_cmds = sys_command_strings()
 

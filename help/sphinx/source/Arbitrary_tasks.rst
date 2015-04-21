@@ -148,116 +148,128 @@ plA in the next iteration of concatenation. The ``default_concatenate_function``
 Examples
 --------
 
-This example is used in the QRScorrector function to perform
-template-matching on an ECGwrapper (arbitrary big recording) object.
+1. Arbitrary task producing a **signal** as a result
+ 
+ This example is used in the QRScorrector function to perform
+ template-matching on an ECGwrapper (arbitrary big recording) object.
+ 
+ .. code::
+ 
+ 	aux_w = ECGwrapper('recording_name', 'your_path/recname');
+ 	aux_w.ECGtaskHandle = 'arbitrary_function';
+ 
+ 	% This is in case you want always to recalculate results, no caching
+ 	aux_w.cacheResults = false;
+ 
+ 	% Use first and third columns-signals
+ 	aux_w.ECGtaskHandle.lead_idx = [1 3];
+ 
+ 	% Produce a signal as a result
+ 	aux_w.ECGtaskHandle.signal_payload = true;
+ 
+ 	% Add a user-string to identify the run
+ 	aux_w.ECGtaskHandle.user_string = ['similarity_calc_for_lead_' num2str(sort(lead_idx)) ];
+ 
+ 	% add your function pointer
+ 	aux_w.ECGtaskHandle.function_pointer = @similarity_calculation;
+ 
+ 	% and any data your function may need.
+ 	aux_w.ECGtaskHandle.payload = pattern2detect;
+ 	% and you are ready to go !
+ 	aux_w.Run
+ 							
+ 	
+ 
+2. Arbitrary task producing an **arbitrary result**
+ 	
+ This is achieved by defining 3 properties (function handles) that perform:
+ 
+ - The arbitrary task, which produces an arbitrary result ``function_pointer``
+ 
+ - The concatenation of these results ``concate_func_pointer``
+ 
+ - The final result calculation, when all results are concatenated. ``finish_func_pointer``
+ 
+ The configuration of the ECGwrapper object is quite simple:
+ 
+  	.. code::
+		
+		cd your_path\ecg-kit\examples
+		ECGw = ECGwrapper( 'recording_name', 'your_path\ecg-kit\recordings\208')
+		% no overlapp needed between signal partitions
+		ECGw.partition_mode = 'ECG_contiguous';
+		ECGw.ECGtaskHandle = 'arbitrary_function';
+		ECGw.ECGtaskHandle.function_pointer = @my_mean;
+		ECGw.ECGtaskHandle.concate_func_pointer = @my_concatenate_mean;
+		ECGw.ECGtaskHandle.finish_func_pointer = @my_finish_mean;
+		ECGw.Run
+ 
+ 
+ 
+  The result is stored in a ``mat`` file.
+ 	
+ 	
+ .. code-block:: none
+ 	
+ 	Description of the process:
+ 	 + Recording: d:\mariano\misc\ecg-kit\recordings\208.dat
+ 	 + Task name: arbitrary_function                             
+ 
+ 
+ 	##############
+ 	# Work done! #
+ 	##############
+ 
+ 
+ 	Results saved in
+ 	 + your_path\ecg-kit\recordings\208_arbitrary_function.mat	
 
-.. code::
-
-	aux_w = ECGwrapper('recording_name', 'your_path/recname');
-	aux_w.ECGtaskHandle = 'arbitrary_function';
-
-	% This is in case you want always to recalculate results, no caching
-	aux_w.cacheResults = false;
-
-	% Use first and third columns-signals
-	aux_w.ECGtaskHandle.lead_idx = [1 3];
-
-	% Produce a signal as a result
-	aux_w.ECGtaskHandle.signal_payload = true;
-
-	% Add a user-string to identify the run
-	aux_w.ECGtaskHandle.user_string = ['similarity_calc_for_lead_' num2str(sort(lead_idx)) ];
-
-	% add your function pointer
-	aux_w.ECGtaskHandle.function_pointer = @similarity_calculation;
-
-	% and any data your function may need.
-	aux_w.ECGtaskHandle.payload = pattern2detect;
-	% and you are ready to go !
-	aux_w.Run
-                            
-
-And in this example an arbitrary task is set-up to calculate the mean of a signal
-
-.. code::
-
-	ECGw = ECGwrapper( 'recording_name', 'd:\mariano\misc\ecg-kit\recordings\208')
-	ECGw.partition_mode = 'ECG_contiguous';
-	ECGw.ECGtaskHandle = 'arbitrary_function';
-	ECGw.ECGtaskHandle.function_pointer = @my_mean;
-	ECGw.ECGtaskHandle.concate_func_pointer = @my_concatenate_mean;
-	ECGw.ECGtaskHandle.finish_func_pointer = @my_finish_mean;
-	ECGw.Run
-
-
-The result is stored in a ``mat`` file.
-	
-	
-.. code-block:: none
-	
-	Description of the process:
-	 + Recording: d:\mariano\misc\ecg-kit\recordings\208.dat
-	 + Task name: arbitrary_function                             
-
-
-	##############
-	# Work done! #
-	##############
-
-
-	Results saved in
-	 + your_path\ecg-kit\recordings\208_arbitrary_function.mat	
-	
-
-The arbitrary functions used to calculate the mean in an arbitrary large recording are:
-
-	- ``\ecg-kit\examples\my_mean.m`` In this function we only accumulate and count 
-	  the size of the accumulation.
-	  
-	.. code::
-
-		function result = my_mean(x)
-
-		result.the_sum = sum(x);
-		result.the_size = size(x,1);
-
-
-	- ``\ecg-kit\examples\my_concatenate_mean.m`` This function calculate the final 
-	  accumulation and counting.
-	  
-	.. code::
-
-		function payload = my_concatenate_mean(plA, plB)
-
-		if( isempty(plA) )
-			payload = plB;
-		else
-			payload.the_sum = plA.the_sum + plB.the_sum;
-			payload.the_size = plA.the_size + plB.the_size;
-		end
-
-
-	- ``\ecg-kit\examples\my_finish_mean.m`` In this function we the mean calculation 
-	   is performed.
-	  
-	.. code::
-
-		function result_payload = my_finish_mean(payload, ECG_header)
-
-		result_payload.mean = payload.the_sum ./ payload.the_size;
-
-	
+ 
+ The arbitrary functions used to calculate the mean in an arbitrary large recording are:
+ 
+ 	- ``\ecg-kit\examples\my_mean.m`` In this function we only accumulate and count 
+ 	  the size of the accumulation.
+ 	  
+ 	.. code::
+ 
+ 		function result = my_mean(x)
+ 
+ 		result.the_sum = sum(x);
+ 		result.the_size = size(x,1);
+ 
+ 
+ 	- ``\ecg-kit\examples\my_concatenate_mean.m`` This function calculate the final 
+ 	  accumulation and counting.
+ 	  
+ 	.. code::
+ 
+ 		function payload = my_concatenate_mean(plA, plB)
+ 
+ 		if( isempty(plA) )
+ 			payload = plB;
+ 		else
+ 			payload.the_sum = plA.the_sum + plB.the_sum;
+ 			payload.the_size = plA.the_size + plB.the_size;
+ 		end
+ 
+ 
+ 	- ``\ecg-kit\examples\my_finish_mean.m`` In this function the mean calculation 
+ 	  is performed.
+ 	  
+ 	.. code::
+ 
+ 		function result_payload = my_finish_mean(payload, ECG_header)
+ 
+ 		result_payload.mean = payload.the_sum ./ payload.the_size;
+ 
+ 	
 .. _arbitrary_result_format:
 
 Results format
 --------------
  
-The result file will have ``ECG_header.nsig x algorithms_used`` variables, which can later be recovered 
-as a ``struct`` variable, with fields named according to ``[ 'algorithm_name' '_' 'lead_name' ]``. Each
-of this fields is a ``struct`` itself with a single field called ``time``, where the actual QRS detections are.
-In addition, another ``struct`` variable called ``series_quality`` is stored in order to provide a quality metric of 
-the detections created. This metric is found in the ``ratios`` field, a higher ratio means better detections.
-Each ratio corresponds with a name in the ``AnnNames`` field.
+The format of the results depends on the ``signal_payload`` property, if it is a signal it will be in `MIT format`_.
+Otherwise, the results depends on the user-defined output of 
 							
 							
 							
@@ -265,3 +277,6 @@ See Also
 --------
 
  :doc:`ECGtask <ECGtask>` \| :doc:`QRS detection <QRS_detection>` \| :doc:`ECG delineation <ECGdelineation>` \| :doc:`examples <examples>`
+
+ 
+.. _`MIT format`: http://www.physionet.org/physiotools/wag/signal-5.htm

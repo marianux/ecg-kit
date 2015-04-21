@@ -1,3 +1,29 @@
+%% (Internal) Works with strings to center, trim and justify to a certain string width
+%   
+%   adjusted_str = adjust_string(str2trimm, target_width, where2trimm )
+% 
+% Arguments:
+% 
+%      + str2trimm: the string
+% 
+%      + target_width: size of the target string.
+% 
+%      + where2trimm: "left" "right" "center"
+% 
+% Output:
+% 
+%      + adjusted_str: resulting string.
+% 
+% Example:
+% 
+% See also addpath
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Last update: 14/5/2014
+% Birthdate  : 21/4/2015
+% Copyright 2008-2015
+% 
 function adjusted_str = adjust_string(str2trimm, target_width, where2trimm )
 
     if( nargin < 3 || isempty(where2trimm) )

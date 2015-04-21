@@ -19,7 +19,7 @@
 % Version: 0.1 beta
 % Birthdate: 01/01/2012
 % Last update: 18/10/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 function [QRS_locations, true_labels ] = Annotation_process(ann, recording_format, labeling_format)
 
 if( nargin < 3 || isempty(labeling_format) )

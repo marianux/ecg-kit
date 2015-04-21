@@ -12,7 +12,7 @@
 % Version: 0.1 beta
 % Birthdate: 1/1/2014
 % Last update: 31/10/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 % 
 function wfdb_prefix = WFDB_command_prefix(recording_path)
 

@@ -20,7 +20,7 @@
 % Version: 0.1 beta
 % Birthdate: 29/05/2014
 % Last update: 19/11/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 % 
 function heasig = read_Mortara_header( filename )
 

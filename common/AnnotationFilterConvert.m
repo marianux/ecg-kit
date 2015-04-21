@@ -21,10 +21,10 @@
 % Version: 0.1 beta
 % Birthdate: 01/01/2012
 % Last update: 18/10/2014
-% Copyright 2008-2014% Version: 0.1 beta
+% Copyright 2008-2015% Version: 0.1 beta
 % Birthdate: 01/01/2012
 % Last update: 18/10/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 function ann = AnnotationFilterConvert(ann, recording_format, labeling_format)
 
 cLabelingFormats = {'AAMI', 'AAMI2'};

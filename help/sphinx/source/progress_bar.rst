@@ -3,37 +3,7 @@ Progress-bar class
 ==================
 
 This class allows the display of a progress bar to show evolution of lengthy processing loops.
+Will be documented soon, see examples in the project or in the code itself:
 
-Syntax
-------
-
-
-Description
------------
-
-
-Input Arguments
----------------
-
-
-Examples
---------
-
-
-More About
-----------
-
-
-Other resources
----------------
-
--  `Physionet.org <http://physionet.org/>`__
--  `Telemetric and Holter ECG Warehouse
-   (THEW) <http://thew-project.org/>`__
--  `Pablo Laguna research group at University of
-   Zaragoza <http://diec.unizar.es/~laguna/personal/publicaciones/publicaciones.htm>`__
--  `Computing in Cardiology <http://cinc.org/>`__
-
-See Also
---------
+``your_path\ecg-kit\common\progress_bar.m``
 

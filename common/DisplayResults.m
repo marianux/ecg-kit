@@ -1,3 +1,61 @@
+%% (Internal) Pretty-Display results of a classification experiment
+%   
+%  [dsResult ConfusionMat lablist global_performances ] = DisplayResults( varargin )
+% 
+% Arguments:
+% 
+%   - dsResult 
+% 
+%   - bWithFeatMat
+% 
+%   - priors
+% 
+%   - TrueLabels
+% 
+%   - ClassifiedLabels
+% 
+%   - datasetName
+% 
+%   - ClassLabels
+% 
+%   - class_filter
+% 
+%   - SupportDataset
+% 
+%   - TrainedMapping
+% 
+% Output:
+% 
+%   - SupportDataset
+% 
+%   - TrainedMapping
+% 
+%   - SupportDataset
+% 
+%   - TrainedMapping
+%  
+% Example
+% 
+%     % \ecg-kit\common\prtools_addins\roc_detection.m (Line 137)
+%     [~, this_iter_cm] = DisplayResults( 'TrueLabels', typical_lablist(true_labels,:), ...
+%                                         'class_filter', class_filter, ...
+%                                         'ClassifiedLabels', typical_lablist(Labels,:), ...
+%                                         'ClassLabels', typical_lablist);
+% 
+%         % \ecg-kit\common\a2hbc\scripts\ResultsForAllDatabases.m  (Line 83)
+%         [~,~,~, global_performances] = DisplayResults( ...
+%                                         'dsResult', nansum(ConfusionMatrix,4), ...
+%                                         'datasetName', DB_name, ...
+%                                         'ClassLabels', Lablist);
+% 
+% See also DisplayResults, ResultsForAllDatabases, roc_detection
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Last update: 14/5/2014
+% Birthdate  : 21/4/2015
+% Copyright 2008-2015
+% 
 function [dsResult ConfusionMat lablist global_performances ] = DisplayResults( varargin )
 
     p = inputParser;   % Create instance of inputParser class.

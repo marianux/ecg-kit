@@ -4,7 +4,7 @@ Accessing results
 
 Results are stored in a ``mat`` file for compatibility reasons. The format depends on the 
 task that generated the results, but a typical procedure to grab data from experiments 
-can be:
+is:
 
 .. code::
 

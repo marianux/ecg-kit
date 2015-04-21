@@ -1,3 +1,38 @@
+%% (Internal) Creates arrows in grapics
+%   
+%   arrow_handles = arrow( arrow_start, arrow_end, num_of_arrows, arrow_size, arrow_color, axes_hdl, arrow_style )
+% 
+% Arguments:
+% 
+%      + arrow_start/end: arrow limits
+% 
+%      + num_of_arrows: number of arrows in 1 or 2 extremes.
+% 
+%      + arrow_size: positive scalar > 0.01. default: 1
+% 
+%      + arrow_color: [R G B]
+% 
+%      + axes_hdl: an axes handle to the place to plot.
+% 
+%      + arrow_style: Some string {'none' 'star4' 'plain' 'rectangle'
+%      'ellipse' 'diamond' 'vback1' 'rose' 'vback2' '(Default)'
+%      'hypocycloid' 'vback3' 'astroid' 'cback1' 'deltoid' 'cback2'
+%      'cback3'   
+% 
+% Output:
+% 
+%      + arrow_handles: handler to the created handles.
+% 
+% Example:
+% 
+% See also addpath
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Last update: 14/5/2014
+% Birthdate  : 21/4/2015
+% Copyright 2008-2015
+% 
 function arrow_handles = arrow( arrow_start, arrow_end, num_of_arrows, arrow_size, arrow_color, axes_hdl, arrow_style )
 
     %% interface

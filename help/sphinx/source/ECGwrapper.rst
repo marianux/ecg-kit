@@ -72,7 +72,7 @@ several name and value pair arguments in any order as
  ECGwrapper('recording_name','/ecg_recordings/rec1.dat', 'ECGtaskHandle', 'QRS_detection') 
 
 
-The available properties are listed below
+The available arguments for the class constructor are listed below:
 	
 	
 ``'recording_name'`` — The ECG recording full name. ``'' (default)``
@@ -155,11 +155,66 @@ The available properties are listed below
 	value forces all parts of a multipart process to wait until all other
 	parts finish.
 
- ``'repetitions'`` — Times to repeat the ECGtask. ``1 (default)``
+``'repetitions'`` — Times to repeat the ECGtask. ``1 (default)``
 
 	In case the ECGtask is not deterministic, the repetition property allows
 	to repeat the task several times.
 
+
+Other public properties to configure the object, or to access recording's data are:
+
+``Error`` — Did the ECGtask produce any Error ? ``false (default)``
+
+	You can check this value after executing a task.
+
+``Processed`` — Was the task already processed ? ``false (default)``
+
+	You can check if you have already issued a Run method for the current configuration.
+
+``NoWork2Do`` — Has this PID work to do ? 
+
+	In a multi-PID environment, certain tasks are too short to provide work to all configured PIDs.
+	You can check to this flag to deal with it in your code.
+
+.. _ECG_header_description:
+	
+``ECG_header`` — The gathered information about the ECG recording. 
+
+	**ECG\_header**, is a struct with the following information:
+
+	- *freq*, is the sampling frequency of ECG\_matrix signal.
+
+	- *desc*, description strings about each of the leads/signals.
+
+	- *nsamp* is the number of samples of ECG\_matrix.
+
+	- *nsig* is the amount of leads or signals of ECG\_matrix.
+
+	- *gain* is a vector of [nsig × 1] with the gain of each lead ( ADCsamples / μV ).
+
+	- *adczero* is a vector of [nsig × 1] with the offset of each lead in ADC samples.
+	
+	and others described in the `Physionet header <http://www.physionet.org/physiotools/wag/header-5.htm>`__.
+
+``ECG_annotations`` — Annotations provided with the recording.
+
+	Commonly QRS detections, signal quality annotations or other type of measurements
+	included with the recordings. Some documentation about annotations in `Physionet <http://www.physionet.org/physiobank/annotations.shtml>`__.
+	
+``class_labeling`` — Class conversion for heartbeat annotations.
+
+	In case the annotations includes heartbeat types, this property indicates the class-labeling convention used.
+	The `EC-57 AAMI recommendation <http://marketplace.aami.org/eseries/scriptcontent/docs/Preview%20Files/EC57_1212_preview.pdf>`__ is de default value.
+	The possible values are ``'AAMI'`` or ``AAMI2``. The ``AAMI2`` is equal to ``AAMI`` except that only consider
+	three heartbeat classes, *normal* (N), *ventricular* (V) and *supraventricular* (S).
+	
+``user_string`` — A string to individualize each experiment. ``'' (default)``
+	
+``Result_files`` — The result filenames produced by an ECGtask.
+
+	Once the task is completed, this property records the filenames of the results.
+	
+	
 Methods
 -------
 
@@ -288,6 +343,66 @@ using the name-value .
     >> ECG_w.Run();
  
 
+Create an ECGwrapper and access the recording data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In this case, we create an object and access to the ``ECG_header`` property.
+
+.. code-block:: none
+
+	>> ECGw = ECGwrapper( 'recording_name', 'd:\mariano\misc\ecg-kit\recordings\208')
+
+	ECGw = 
+
+
+	############################
+	# ECGwrapper object config #
+	############################
+
+	+ECG recording: d:\mariano\misc\ecg-kit\recordings\208 (auto)
+	+PID: 1/1
+	+Repetitions: 1
+	+Partition mode: ECG_overlapped
+	+Function name: Null task
+	+Processed: false
+	
+	>> ECGw.ECG_header
+
+	ans = 
+
+		 recname: '208'
+		    nsig: 2
+		    freq: 360
+		   nsamp: 650000
+		   btime: '00:00:00'
+		   bdate: '01/01/2000'
+		     spf: [2x1 double]
+		baseline: [2x1 double]
+		   units: [2x2 char]
+		   fname: [2x7 char]
+		   group: [2x1 double]
+		     fmt: [2x1 double]
+		    gain: [2x1 double]
+		  adcres: [2x1 double]
+		 adczero: [2x1 double]
+		 initval: [2x1 double]
+		   cksum: [2x1 double]
+		   bsize: [2x1 double]
+		    desc: [2x5 char]
+			
+
+Then we get the first 1000 signal samples using the ``read_signal`` method.
+			
+.. code-block:: none
+
+	>> plot(ECGw.read_signal(1,1000))
+
+
+as result we obtain the following plot
+
+.. image:: read_signal_example.png
+
+	
 Other resources
 ---------------
 

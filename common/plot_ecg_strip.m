@@ -1,4 +1,4 @@
-%% Plots multidimentional signal in mosaic style
+%% Plots and interact with ECG signal
 % This function plot ECG signals, eventually with annotation marks such as
 % QRS complex locations, or even P, Q, R, S and T wave locations and
 % boundaries. 
@@ -154,7 +154,7 @@
 % Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
 % Last update: 19/11/2014
 % Birthdate  : 15/8/2012
-% Copyright 2008-2014
+% Copyright 2008-2015
 function returned_handles = plot_ecg_strip( ECG, varargin )
 
 returned_handles = [];

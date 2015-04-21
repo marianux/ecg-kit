@@ -1,3 +1,26 @@
+%% (Internal) Calculate the heartbeats co-ocurrences
+%   
+%   co_ocurrence = calc_co_ocurrences(hb_idx_matrix)
+% 
+% Arguments:
+% 
+%      + hb_idx_matrix: a matrix of sample detections size n_heartbeats x n_leads
+% 
+% Output:
+% 
+%      + co_ocurrence: a vector size n_heartbeats x 1 with values from 1 to
+%      n_leads which are how many heartbeats co-ocurr.
+% 
+% Example:
+% 
+% See also CalcRRserieRatio 
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Last update: 14/5/2014
+% Birthdate  : 21/4/2015
+% Copyright 2008-2015
+% 
 function co_ocurrence = calc_co_ocurrences(hb_idx_matrix)
 
 range_out = [0 1000];

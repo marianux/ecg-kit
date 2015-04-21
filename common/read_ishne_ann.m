@@ -17,7 +17,7 @@
 % Version: 0.1 beta
 % Birthdate: 21/7/2010
 % Last update: 19/11/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 % 
 function ann = read_ishne_ann( ann_filename )
 

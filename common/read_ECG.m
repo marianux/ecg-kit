@@ -55,7 +55,7 @@
 % Version: 0.1 beta
 % Birthdate: 5/01/2014
 % Last update: 19/11/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 % 
 function [ECG heasig ann recording_format end_sample] = read_ECG(recording_name, ECG_start_idx, ECG_end_idx, recording_format)
 

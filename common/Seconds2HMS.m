@@ -1,3 +1,32 @@
+%% (Internal) Create a string of hours mins and seconds based on data in seconds
+%   
+% 
+%   [strRetVal, iHours, iMins, iSeconds, iMilliSeconds ] = Seconds2HMS(data, prec)
+% 
+% Arguments:
+% 
+%      + data: Time in seconds
+% 
+%      + prec: the number of decimals for the seconds decimals.
+% 
+% Output:
+% 
+%      + strRetVal: A string with the formatted time.
+% 
+%      + iHours, iMins, iSeconds, iMilliSeconds : Each part of the time.
+% 
+% Example:
+% 
+%         this_dur_str = Seconds2HMS( aux_dur, time_precision);
+% 
+% See also plot_ecg_strip
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Last update: 14/5/2014
+% Birthdate  : 21/4/2015
+% Copyright 2008-2015
+% 
 function [strRetVal, iHours, iMins, iSeconds, iMilliSeconds ] = Seconds2HMS(data, prec)
 
 if( nargin < 2 )

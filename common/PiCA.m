@@ -28,9 +28,7 @@ function [rotation_matrix, rotated_signal, autovals, reconstruction_matrix] = Pi
 % Copyright (C) 2008  Reza Sameni
 % Sharif University of Technology, Tehran, Iran -- LIS-INPG, Grenoble, France
 % reza.sameni@gmail.com
-
-% Modified by Mariano Llamedo Soria.
-
+% 
 % This program is free software; you can redistribute it and/or modify it
 % under the terms of the GNU General Public License as published by the
 % Free Software Foundation; either version 2 of the License, or (at your
@@ -39,8 +37,16 @@ function [rotation_matrix, rotated_signal, autovals, reconstruction_matrix] = Pi
 % WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
 % Public License for more details.
-
-
+% 
+% See also autovec_calculation
+% 
+% Adapted by Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar 
+% to ecg-kit toolbox for Matlab.
+% Version: 0.1 beta
+% Last update: 14/5/2014
+% Birthdate  : 21/4/2015
+% Copyright 2008-2015
+% 
 if( nargin < 6 || isempty(cant_delays) )
     cant_delays = 1;
 end

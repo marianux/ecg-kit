@@ -19,7 +19,7 @@
 % Version: 0.1 beta
 % Birthdate: 17/12/2010
 % Last update: 19/11/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 % 
 function heasig = read_AHA_header(filename)
 

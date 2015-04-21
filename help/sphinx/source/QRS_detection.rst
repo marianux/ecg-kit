@@ -106,24 +106,9 @@ where the arguments are:
 
 	**ECG\_matrix**, is a matrix size ``[ECG\_header.nsamp ECG\_header.nsig]``
 
-	.. _ECG_header_description:
+	**ECG\_header**, is a struct with info about the ECG signal, see :ref:`ECG header <ECG_header_description>` 
+	for details.
 	
-	**ECG\_header**, is a struct with info about the ECG signal, such as:
-
-		- *freq*, is the sampling frequency of ECG\_matrix signal.
-
-		- *desc*, description strings about each of the leads/signals.
-
-		- *nsamp* is the number of samples of ECG\_matrix.
-
-		- *nsig* is the amount of leads or signals of ECG\_matrix.
-
-		- *gain* is a vector of [nsig × 1] with the gain of each lead ( ADCsamples / μV ).
-
-		- *adczero* is a vector of [nsig × 1] with the offset of each lead in ADC samples.
-		
-		and others described in the `Physionet header <http://www.physionet.org/physiotools/wag/header-5.htm>`__.
-
 	**progress\_handle**, is a handle to a `progress\_bar <progress_bar.htm>`__
 	object, that can be used to track the progress within your function.
 

@@ -1,3 +1,36 @@
+%% (Internal) Arbitrary percentile filtering
+%   
+%   Output = PrctileFilt(Input, WinSize, Percentiles)
+% 
+% Arguments:
+% 
+%      + Input: the signal
+% 
+%      + WinSize: The size of the window in samples
+% 
+%      + Percentiles: the percentile to calculate, from 0 to 100, being
+%      them the output signal of the filter.
+% 
+% Output:
+% 
+%      + Output: filtered output
+% 
+% Example:
+% 
+%     WinSize = round(0.2*SamplingFreq);
+% 
+%     %Baseline estimation.
+%     BaselineEstimation = PrctileFilt(noisyECG, WinSize, );
+% 
+% 
+% See also BaselineWanderRemovalMedian
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Last update: 14/5/2014
+% Birthdate  : 21/4/2015
+% Copyright 2008-2015
+% 
 function Output = PrctileFilt(Input, WinSize, Percentiles)
 
 if(nargin < 2 || isempty(WinSize) )

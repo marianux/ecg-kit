@@ -1,3 +1,25 @@
+%% (Internal) Pretty display in Screen the confusion matrix.
+%   
+% Example
+% 
+%   DisplayConfusionMatrix( C, lablist )
+% 
+% Arguments:
+%      + C: Confusion matrix of n_classes x n_classes
+% 
+%      +lablist: label list char matrix of n_classes x label_string_length
+% 
+% Output:
+%     + pretty print the matrix in std out.
+% 
+% See also DisplayResults
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Last update: 14/5/2014
+% Birthdate  : 21/4/2015
+% Copyright 2008-2015
+
 function DisplayConfusionMatrix( C, lablist )
 
 cant_iter = size(C,3);

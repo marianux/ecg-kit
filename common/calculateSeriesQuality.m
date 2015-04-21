@@ -33,7 +33,7 @@
 % Version: 0.1 beta
 % Birthdate: 01/01/2012
 % Last update: 18/10/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 function payload_out = calculateSeriesQuality(payload_out, ECG_header, start_end_this_segment)
 
     % estimate quality of QRS detections performed

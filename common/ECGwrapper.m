@@ -72,7 +72,7 @@
 % Version: 0.1 beta
 % Last update: 14/5/2014
 % Birthdate  : 20/3/2012
-% Copyright 2008-2014
+% Copyright 2008-2015
 % 
 classdef ECGwrapper < handle
        

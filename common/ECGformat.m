@@ -13,7 +13,7 @@
 % Version: 0.1 beta
 % Birthdate: 5/01/2014
 % Last update: 19/11/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 % 
 function recording_format = ECGformat(recording_filename)
     

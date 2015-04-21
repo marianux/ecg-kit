@@ -24,7 +24,7 @@
 % Version: 0.1 beta
 % Birthdate: 29/05/2014
 % Last update: 19/11/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 % 
 function [ECG heasig end_sample] = read_Mortara_format( filename, start_sample, end_sample )
 

@@ -18,7 +18,7 @@
 % Version: 0.1 beta
 % Birthdate: 21/7/2010
 % Last update: 19/11/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 % 
 function heasig = read_ishne_header(filename)
 

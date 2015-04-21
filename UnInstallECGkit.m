@@ -16,7 +16,7 @@
 % Version: 0.1 beta
 % Birthdate: 01/09/2012
 % Last update: 18/10/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 
 function UnInstallECGkit( bIgnoreAdminPrivs )
 

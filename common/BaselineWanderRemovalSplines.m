@@ -25,7 +25,7 @@
 % Version: 0.1 beta
 % Birthdate: 01/01/2006
 % Last update: 18/10/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 function [ ECG BaselineWander ] = BaselineWanderRemovalSplines( ECG, QRS_locations, sampling_rate)
 
 [ECG_size ECG_leads] = size(ECG);

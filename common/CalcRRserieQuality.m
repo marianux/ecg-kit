@@ -13,7 +13,7 @@
 % Version: 0.1 beta
 % Birthdate: 01/01/2012
 % Last update: 18/10/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 function q_measure = CalcRRserieQuality(signal, heasig, references)
 % function [q_measure noise_power] = CalcRRserieQuality(signal, heasig, references, noise_power)
 

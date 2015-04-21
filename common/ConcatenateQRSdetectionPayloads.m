@@ -20,7 +20,7 @@
 % Version: 0.1 beta
 % Last update: 14/5/2014
 % Birthdate  : 23/4/2013
-% Copyright 2008-2014
+% Copyright 2008-2015
 function payload = ConcatenateQRSdetectionPayloads(obj, plA, plB)
 
     if( isempty(plA) )

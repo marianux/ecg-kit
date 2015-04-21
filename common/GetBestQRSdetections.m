@@ -23,7 +23,7 @@
 % Version: 0.1 beta
 % Last update: 28/11/2014
 % Birthdate  : 28/11/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 function [QRS_detections, str_delineation_chosen] = GetBestQRSdetections(payload)
 
 QRS_detections = [];

@@ -25,14 +25,17 @@ function examples(pid_str, examples_path, user_str)
 %  You can watch a typical run of this script for small, local ECG
 %  recording here:
 % 
+%    https://www.youtube.com/watch?v=8lJtkGhrqFw&list=PLlD2eDv5CIe9sA2atmnb-DX48FIRG46z7&index=1
 % 
-%  or for several big recordings here:
+% Example:
 % 
+%    examples()
 % 
 % Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
 % Version: 0.1 beta
 % Birthdate  : 11/2/2014
 % Last update: 18/7/2014
+% Copyright 2008-2015
 
 
 %% Argument parsing

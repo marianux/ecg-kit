@@ -15,7 +15,7 @@
 % Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
 % Birthdate: 22/10/2014
 % Last update: 22/10/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 % 
 function AUC = AUC_calc(aux_roc)
 

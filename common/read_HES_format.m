@@ -25,7 +25,7 @@
 % Version: 0.1 beta
 % Birthdate: 17/12/2010
 % Last update: 19/11/2014
-% Copyright 2008-2014
+% Copyright 2008-2015
 % 
 function [ECG heasig ann last_sample] = read_HES_format( filename, start_sample, end_sample )
 
