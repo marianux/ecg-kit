@@ -57,7 +57,7 @@ classdef ECGtask_QRS_detection < ECGtask
     
     properties( Access = private, Constant)
         
-        cQRSdetectors = {'all-detectors' 'wavedet' 'pantom' 'aristotle' 'gqrs' 'sqrs' 'wqrs' 'ecgpuwave' };
+        cQRSdetectors = {'all-detectors' 'wavedet' 'pantom' 'aristotle' 'gqrs' 'sqrs' 'wqrs' 'ecgpuwave' 'epltdqrs1' 'epltdqrs2' };
         
     end
     
@@ -137,7 +137,7 @@ classdef ECGtask_QRS_detection < ECGtask
             obj.lead_names = regexprep(obj.lead_names, '\W', '_');
             
             
-            obj.bWFDBdetectors = ~isempty(intersect({'aristotle' 'gqrs' 'sqrs' 'wqrs' 'ecgpuwave'}, obj.detectors2do));
+            obj.bWFDBdetectors = ~isempty(intersect({'aristotle' 'gqrs' 'sqrs' 'wqrs' 'ecgpuwave' 'epltdqrs1' 'epltdqrs2'}, obj.detectors2do));
             
             % local path required to avoid network bottlenecks in distributed filesystems 
             if( isunix() && exist('/scratch/', 'dir') )
@@ -281,7 +281,7 @@ classdef ECGtask_QRS_detection < ECGtask
 
                         end
                         
-                    case { 'aristotle' 'gqrs' 'sqrs' 'wqrs' 'ecgpuwave'}
+                    case { 'aristotle' 'gqrs' 'sqrs' 'wqrs' 'ecgpuwave' 'epltdqrs1' 'epltdqrs2'}
                     %% WFDB_comp_interface (sqrs, wqrs, aristotle, ecgpuwave)
 
                         [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -h' ]);
@@ -296,6 +296,8 @@ classdef ECGtask_QRS_detection < ECGtask
                                     file_name_orig =  [obj.tmp_path_local ECG_header.recname '.qrs' ];
                                 elseif( any(strcmpi( 'wqrs' , this_detector ) ) )
                                     file_name_orig =  [obj.tmp_path_local ECG_header.recname '.wqrs' ];
+                                elseif( any(strcmpi( {'epltdqrs1' 'epltdqrs2'} , this_detector ) ) )
+                                    file_name_orig =  [obj.tmp_path_local ECG_header.recname '.epl' ];
                                 else
                                     file_name_orig =  [obj.tmp_path_local ECG_header.recname '.' this_detector num2str(jj) ];
                                 end
@@ -307,13 +309,17 @@ classdef ECGtask_QRS_detection < ECGtask
                                         [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header.recname ' -s ' num2str(jj-1)]);
                                         if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header.recname, ECG_header.desc(jj,:) ) ); end
                                     
+                                    elseif( any(strcmpi( {'epltdqrs1' 'epltdqrs2'}, this_detector ) ) )
+                                        [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' ' ECG_header.recname ' ' num2str(jj)]);
+                                        if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header.recname, ECG_header.desc(jj,:) ) ); end
+                                        
                                     elseif( any(strcmpi( 'ecgpuwave', this_detector ) ) )
                                         [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header.recname ' -a ' this_detector num2str(jj) ' -s ' num2str(jj-1)]);
                                         if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header.recname, ECG_header.desc(jj,:) ) ); end
                                         
                                     else
                                         
-                                        if( strcmpi( 'qqrs', this_detector ) && exist(obj.gqrs_config_filename, 'file') )
+                                        if( strcmpi( 'gqrs', this_detector ) && exist(obj.gqrs_config_filename, 'file') )
                                             % using the configuration file to
                                             % post-process
                                             [status, ~] = system([ obj.WFDB_cmd_prefix_str 'gqrs -c ' obj.gqrs_config_filename ' -r ' ECG_header.recname ' -s ' num2str(jj-1)]);
