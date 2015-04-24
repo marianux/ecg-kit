@@ -1,3 +1,37 @@
+%% (Internal) Cluster data with expectation-maximization algorithm
+%   
+%   [clust_labels w_Trained_Classifier] = cluster_data_with_EM_clust(dsTrain, w_mapp, CantClusters, iter_times)
+% 
+% Arguments:
+% 
+%      + dsTrain: PRdataset with data
+% 
+%      + w_mapp: mapping to perform clustering.
+% 
+%      + CantClusters: clusters to discover.
+% 
+%      + iter_times: iterations to perform clustering.
+% 
+% Output:
+% 
+%      + clust_labels: Cluster pertenence labels
+% 
+%      + w_Trained_Classifier: Mapping that perform the clustering found.
+% 
+% Example:
+% 
+%             warning off all; prwarning(0);
+%             Clust_Labels = cluster_data_with_EM_clust(featMat_clust(pending_hb_idx,:), qdc_new([],1e-6,1e-6, []), CantClusters, iter_times);
+%             warning on all; prwarning(1);
+% 
+% See also a2hbc_main
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Last update: 14/5/2014
+% Birthdate  : 21/4/2015
+% Copyright 2008-2015
+% 
 function [clust_labels w_Trained_Classifier] = cluster_data_with_EM_clust(dsTrain, w_mapp, CantClusters, iter_times)
 
 if nargin < 4 || isempty(iter_times)

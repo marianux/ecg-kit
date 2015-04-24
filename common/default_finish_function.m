@@ -1,4 +1,3 @@
-function payload = default_finish_function(payload, ECG_header)
 % 
 % Description:
 % 
@@ -10,4 +9,7 @@ function payload = default_finish_function(payload, ECG_header)
 % Version: 0.1 beta
 % Birthdate  : 17/4/2015
 % Last update: 17/4/2015
+% Copyright 2008-2015
+% 
+function payload = default_finish_function(payload, ECG_header)
 

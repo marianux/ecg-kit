@@ -1,3 +1,33 @@
+%% (Internal) Create new QRS detections based on other lead/algorithms detections
+%   
+%   artificial_annotations = combine_anns(time_serie, estimated_labs, header)
+% 
+% Arguments:
+% 
+%      + time_serie: all the QRS detections 
+% 
+%      + estimated_labs: estimated labels (TP, FP, FN) of each detection
+% 
+%      + header: ECG header struct.
+% 
+% Output:
+% 
+%      + artificial_annotations: all the QRS detections plus the new ones
+%      created.
+% 
+% Example:
+% 
+%         aux_idx = best_detections_idx(1:min(10, length(best_detections_idx)));
+%         artificial_annotations = combine_anns(all_annotations(aux_idx), estimated_labs(aux_idx), ECG_struct.header);
+% 
+% See also QRScorrector
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Last update: 14/5/2014
+% Birthdate  : 21/4/2015
+% Copyright 2008-2015
+% 
 function artificial_annotations = combine_anns(time_serie, estimated_labs, header)
 
 %     lreferences = length(time_serie);

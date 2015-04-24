@@ -1,3 +1,36 @@
+%% (Internal) Replace NaN from PRdatasets
+%   
+%   dsOut = deNaN_dataset(dsIn, type)
+% 
+% Arguments:
+% 
+%      + dsIn: paths to add
+% 
+%      + type: Choose the type of replacement: 
+%             
+%             - 'remove', remove the whole vector which includes NaN
+%             
+%             - 'change', change NaNs for repeated values of the same
+%             feature, added an small variance, estimated ignoring this nan
+%             values.  
+% 
+%             - 'change_same_class' change NaNs for repeated values of the
+%             same feature, same class, added an small variance, estimated
+%             ignoring this nan values.  
+% 
+% 
+% Output:
+% 
+%      + dsOut: the clean PRdataset
+% 
+% Example:
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Last update: 14/5/2014
+% Birthdate  : 21/4/2015
+% Copyright 2008-2015
+% 
 function dsOut = deNaN_dataset(dsIn, type)
     
     if( nargin < 2 || isempty(type) )
