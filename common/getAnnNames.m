@@ -1,3 +1,27 @@
+%% (Internal) Get names of annotations from annotation structure
+%   
+%   [AnnNames, all_annotations] = getAnnNames(aux_struct)
+% 
+% Arguments:
+% 
+%      + aux_struct: 
+% 
+%      + retries: times to check the existence
+%             
+% Output:
+% 
+%      + AnnNames:
+% 
+%      + all_annotations:
+% 
+% Example:
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Last update: 14/5/2014
+% Birthdate  : 21/4/2015
+% Copyright 2008-2015
+% 
 function [AnnNames, all_annotations] = getAnnNames(aux_struct)
 
     AnnNames = [];
