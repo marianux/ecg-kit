@@ -1,5 +1,3 @@
-function [positions_single_lead, position_multilead] = example_worst_ever_ECG_delineator( ECG_matrix, ECG_header, progress_handle, payload_in)
-
 % Example of user-created QRS detector
 % ------------------------------------
 % Description:
@@ -9,10 +7,16 @@ function [positions_single_lead, position_multilead] = example_worst_ever_ECG_de
 % Interface to follow in order to use your own detector with Wrapper and
 % task objects.% 
 % 
+% See also ECGtask_QRS_detection
+% 
 % Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
 % Version: 0.1 beta
 % Birthdate  : 30/7/2014
 % Last update: 30/7/2014
+% Copyright 2008-2015
+% 
+function [positions_single_lead, position_multilead] = example_worst_ever_ECG_delineator( ECG_matrix, ECG_header, progress_handle, payload_in)
+
 
 cAnnotationFields = { 'Pon' 'P' 'Poff' 'QRSon' 'qrs' 'Q' 'R' 'S' 'QRSoff' 'Ton' 'T' 'Toff' };
 

@@ -1,4 +1,4 @@
-%%
+%% (Internal) GUI for correcting QRS detections
 % Description: 
 % This function implements a graphical user interface (GUI) to correct annotations
 % possibly previous performed by an automatic algorithm. The idea is to
@@ -58,7 +58,7 @@
 % 
 % Example:
 % 
-% % This example ...
+%    https://www.youtube.com/watch?v=qgWjvsvafVg&list=PLlD2eDv5CIe9sA2atmnb-DX48FIRG46z7&index=3
 % 
 % See also ECGtask_QRS_corrector
 % 
@@ -66,7 +66,7 @@
 % Version: 0.1 beta
 % Birthdate  : 16/2/2012
 % Last update: 7/2/2014
-%     
+% Copyright 2008-2015
 function ann_output = QRScorrector(varargin)
 
     %% Constants

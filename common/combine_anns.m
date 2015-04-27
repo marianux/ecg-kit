@@ -1,20 +1,24 @@
-%% (Internal) Combine QRS detections in time_serie according to the estimated_labs
+%% (Internal) Create new QRS detections based on other lead/algorithms detections
 %   
 %   artificial_annotations = combine_anns(time_serie, estimated_labs, header)
 % 
 % Arguments:
 % 
-%      + time_serie: time samples where each QRS detection were found.
+%      + time_serie: all the QRS detections 
 % 
-%      + estimated_labs: TP, FN or FP label
+%      + estimated_labs: estimated labels (TP, FP, FN) of each detection
 % 
-%      + header: the ECG header
+%      + header: ECG header struct.
 % 
 % Output:
 % 
-%      + artificial_annotations: combination of the "best" QRS detections based on estimated_labels
+%      + artificial_annotations: all the QRS detections plus the new ones
+%      created.
 % 
 % Example:
+% 
+%         aux_idx = best_detections_idx(1:min(10, length(best_detections_idx)));
+%         artificial_annotations = combine_anns(all_annotations(aux_idx), estimated_labs(aux_idx), ECG_struct.header);
 % 
 % See also QRScorrector
 % 

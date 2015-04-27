@@ -1,4 +1,3 @@
-function payload = default_concatenate_function(plA, plB)
 % Description:
 % 
 % The default behavior of the concatenate function is to concatenate
@@ -9,6 +8,9 @@ function payload = default_concatenate_function(plA, plB)
 % Version: 0.1 beta
 % Birthdate  : 17/4/2015
 % Last update: 17/4/2015
+% Copyright 2008-2015
+% 
+function payload = default_concatenate_function(plA, plB)
 
     if( isempty(plA) )
         payload = plB;
