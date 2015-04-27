@@ -1,3 +1,29 @@
+%% (Internal) Combine QRS detections in time_serie according to the estimated_labs
+%   
+%   artificial_annotations = combine_anns(time_serie, estimated_labs, header)
+% 
+% Arguments:
+% 
+%      + time_serie: time samples where each QRS detection were found.
+% 
+%      + estimated_labs: TP, FN or FP label
+% 
+%      + header: the ECG header
+% 
+% Output:
+% 
+%      + artificial_annotations: combination of the "best" QRS detections based on estimated_labels
+% 
+% Example:
+% 
+% See also QRScorrector
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Last update: 14/5/2014
+% Birthdate  : 21/4/2015
+% Copyright 2008-2015
+% 
 function artificial_annotations = combine_anns(time_serie, estimated_labs, header)
 
 %     lreferences = length(time_serie);

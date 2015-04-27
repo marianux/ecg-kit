@@ -1,71 +1,73 @@
+%%
+% Description: 
+% This function implements a graphical user interface (GUI) to correct annotations
+% possibly previous performed by an automatic algorithm. The idea is to
+% easily visualize, compare and correct annotations. For this purpose the
+% GUI presents several representations of the time evolution of the events
+% (possibly but not necessarily heartbeats).
+% 
+% Arguments:
+%     
+%     +ECG: [numeric or cell]
+%           
+%           [numeric]: signal matrix of dimension [sig_length sig_size
+%           repetitions_size] where:
+%             - sig_length: time length in samples
+%             - sig_size: number of ECG leads or number of signals.
+%             - repetitions_size: number of repetitions of the same
+%             signals. Typically used when time-synchronized events, like
+%             heartbeats.  
+%           
+%           [cell]: cell array of length repetitions_size, where each cell
+%           is (probably a time alligned event) a signal of dimension
+%           [sig_length sig_size]
+% 
+%     +QRS_locations: [numeric] OPTIONAL. Default values enclosed in ()
+%                 Synchronization sample. In ECG context, this values are
+%                 the QRS fiducial point. (empty)
+% 
+
+%     +ECG_header: [struct] OPTIONAL. 
+% 
+%             Description of the ECG typically available in the
+%             header. Structure with fields:
+% 
+%               -freq: Sampling rate in Hz. (1)
+% 
+%               -nsig: Number of ECG leads. (size(ECG,2))
+% 
+%               -nsamp: Number of ECG samples. (size(ECG,1))
+% 
+%               -adczero: ADC offset (e.g. 2^(adc_res-1) when
+%               using unsigned integers). ( repmat(0, ECG_header.nsig , 1) ) 
+% 
+%               -adcgain: ADC gain in units/adc_sample
+%               (typically uV/adc_unit). ( repmat(1, ECG_header.nsig , 1) )
+% 
+%               -units: Measurement units. ( repmat('uV', ECG_header.nsig , 1) )
+% 
+%               -desc: Signal description. ( num2str(colvec(1:ECG_header.nsig)) )
+%                 
+%     +QRS_annotations: [cell] OPTIONAL. Default values enclosed in ()
+%               Annotations to be included in the mosaic. The funcion
+%               accepts 2 type of annotations: points and lines. 
+% 
+% 
+% Limits and Known bugs:
+%   Probably a lot :( ... but dont panic! send me feedback if you need help.
+% 
+% Example:
+% 
+% % This example ...
+% 
+% See also ECGtask_QRS_corrector
+% 
+% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Version: 0.1 beta
+% Birthdate  : 16/2/2012
+% Last update: 7/2/2014
+%     
 function ann_output = QRScorrector(varargin)
-
-    %%
-    % Description: 
-    % This function implements a graphical user interface (GUI) to correct annotations
-    % possibly previous performed by an automatic algorithm. The idea is to
-    % easily visualize, compare and correct annotations. For this purpose the
-    % GUI presents several representations of the time evolution of the events
-    % (possibly but not necessarily heartbeats).
-    % 
-    % Arguments:
-    %     
-    %     +ECG: [numeric or cell]
-    %           
-    %           [numeric]: signal matrix of dimension [sig_length sig_size
-    %           repetitions_size] where:
-    %             - sig_length: time length in samples
-    %             - sig_size: number of ECG leads or number of signals.
-    %             - repetitions_size: number of repetitions of the same
-    %             signals. Typically used when time-synchronized events, like
-    %             heartbeats.  
-    %           
-    %           [cell]: cell array of length repetitions_size, where each cell
-    %           is (probably a time alligned event) a signal of dimension
-    %           [sig_length sig_size]
-    % 
-    %     +QRS_locations: [numeric] OPTIONAL. Default values enclosed in ()
-    %                 Synchronization sample. In ECG context, this values are
-    %                 the QRS fiducial point. (empty)
-    % 
-
-    %     +ECG_header: [struct] OPTIONAL. 
-    % 
-    %             Description of the ECG typically available in the
-    %             header. Structure with fields:
-    % 
-    %               -freq: Sampling rate in Hz. (1)
-    % 
-    %               -nsig: Number of ECG leads. (size(ECG,2))
-    % 
-    %               -nsamp: Number of ECG samples. (size(ECG,1))
-    % 
-    %               -adczero: ADC offset (e.g. 2^(adc_res-1) when
-    %               using unsigned integers). ( repmat(0, ECG_header.nsig , 1) ) 
-    % 
-    %               -adcgain: ADC gain in units/adc_sample
-    %               (typically uV/adc_unit). ( repmat(1, ECG_header.nsig , 1) )
-    % 
-    %               -units: Measurement units. ( repmat('uV', ECG_header.nsig , 1) )
-    % 
-    %               -desc: Signal description. ( num2str(colvec(1:ECG_header.nsig)) )
-    %                 
-    %     +QRS_annotations: [cell] OPTIONAL. Default values enclosed in ()
-    %               Annotations to be included in the mosaic. The funcion
-    %               accepts 2 type of annotations: points and lines. 
-    % 
-    % 
-    % Limits and Known bugs:
-    %   Probably a lot :( ... but dont panic! send me feedback if you need help.
-    % 
-    % Example:
-    % 
-    % % This example ...
-    % 
-    % Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
-    % Version: 0.1 beta
-    % Birthdate  : 16/2/2012
-    % Last update: 7/2/2014
 
     %% Constants
     cached_filename = 'tmp_QRScorrector_cache.mat';

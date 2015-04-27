@@ -1,5 +1,4 @@
 function Hd = bandpass_filter_design(Fs)
-%UNTITLED Returns a discrete-time filter System object.
 
 %
 % MATLAB Code
