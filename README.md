@@ -12,4 +12,10 @@ The main feature of the this toolbox is the possibility to use several popular a
 
 with the same application programmer interface (API) directly in Matlab, under Windows, Linux or Mac. The kit also implements a recording interface which allows processing several ECG formats, such as MIT, ISHNE, HES, Mortara, and AHA, of arbitrary recording size (the record so far is a 1 week recording of 3 leads, sampled at 500 Hz).
 
+![Image not found](http://ecg-kit.readthedocs.org/en/latest/_images/ex_ABP_PPG_Registro_01M_full_Pagina_05.png)
+
+![Image not found](http://ecg-kit.readthedocs.org/en/latest/_images/QRS_corrector.PNG)
+
+![Image not found](http://ecg-kit.readthedocs.org/en/latest/_images/208_full_14.png)
+
 This kit also includes many open-source projects such as [WFDB Toolbox for MATLAB and Octave](http://physionet.org/physiotools/matlab/wfdb-app-matlab/) from [Physionet](http://physionet.org/), [PRtools](http://prtools.org/), [Libra](https://wis.kuleuven.be/stat/robust/LIBRA), [export_fig](http://undocumentedmatlab.com/blog/export_fig) from [undocumented Matlab](http://undocumentedmatlab.com/), and other open-source scripts that have their proper references to the original projects or authors.
