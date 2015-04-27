@@ -68,6 +68,14 @@ This file must be linked with object files produced from:
 			into "input.h"
  *******************************************************************************/
 
+/*
+ * 	For unknown reasons
+ *
+ *
+ */
+
+
+
 #include <wfdb/wfdb.h>
 #include <wfdb/ecgcodes.h>
 #include <wfdb/ecgmap.h>
@@ -91,6 +99,7 @@ int gcd(int x, int y);
 
 int main(int argc , char **argv)
 {
+
 	int leads=0;
 	char *record, *output, *name;
 
@@ -102,13 +111,15 @@ int main(int argc , char **argv)
 	double gain;
 
 	WFDB_Siginfo sig_info[WFDB_MAXSIG] ;
-	WFDB_Anninfo ann_info;
-	WFDB_Annotation annot ;
+	WFDB_Anninfo ann_info[WFDB_MAXSIG];
+	WFDB_Annotation annot[WFDB_MAXSIG];
 
 	unsigned char byte;
 	long long SampleCount = 0, lTemp, DetectionTime ;
 	int beatType, beatMatch ;
 	int lead;
+
+	//FILE *log= fopen ("Log.txt", "w");
 
 	if (argc<2)
 	{
@@ -138,7 +149,7 @@ int main(int argc , char **argv)
 	name = (char*) malloc (sizeof(char)*(strlen(argv[2])+strlen(argv[1])+2));
 
 	printf("Record %s\n",record) ;
-	//setwfdb("./records/") ;
+	//setwfdb(".") ;
 
 	leads=isigopen(record,sig_info,WFDB_MAXSIG);
 
@@ -155,11 +166,11 @@ int main(int argc , char **argv)
 
 	sprintf(name,"%s%s",output,record);
 
-	ann_info.name = "epl";
-	ann_info.stat = WFDB_WRITE ;
+	ann_info[0].name = "epl";
+	ann_info[0].stat = WFDB_WRITE ;
 
 
-	if(annopen(name, &ann_info, 1) < 0) 	return -1;
+	if(annopen(name, ann_info, 1) < 0) 	return -1;
 
 	free(name);
 
@@ -181,14 +192,22 @@ int main(int argc , char **argv)
 			DetectionTime = SampleCount - delay ;
 			DetectionTime *= InputFileSampleFrequency ;
 			DetectionTime /= SAMPLE_RATE ;
-			annot.time = DetectionTime ;
-			annot.anntyp = beatType ;
+			//annot.time = 1 ;
+			//annot.anntyp = 2 ;
 
-			putann(0,&annot) ;
+			annot[0].time = DetectionTime ;
+			annot[0].anntyp = beatType ;
+
+			//fprintf(log,"%d %d\n",annot.time,annot.anntyp) ;
+			//printf("%d %d\n",annot.time,annot.anntyp) ;
+			putann(0,annot) ;
 		}
 
 
 	}
+
+	//fclose(log);
+
 	wfdbquit() ;
 
 
