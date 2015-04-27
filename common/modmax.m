@@ -1,4 +1,5 @@
-function [indexes max_mod] = modmax(x, first_samp, threshold, signo, t_restriction, n_greater)
+%% (Internal) Find modulus maxima in a signal
+%   
 % Function which returns the indexes of vector x in which there are
 % local modulus maxima or minima whose modulus is greater than 
 % threshold.
@@ -9,6 +10,39 @@ function [indexes max_mod] = modmax(x, first_samp, threshold, signo, t_restricti
 % n_greater max_mod found. If more than one modmax, the bigger wins. 
 % pb a progress bar object to track evolution of the algorithm in big
 % signals
+% 
+%   [indexes max_mod] = modmax(x, first_samp, threshold, signo, t_restriction, n_greater)
+% 
+% Arguments:
+% 
+%      + x: the signal
+% 
+%      + first_samp: analyze signal from first_samp sample
+%             
+%      + threshold: an amplitude threshold to consider maxima
+% 
+%      + signo: sign of the maxima
+%             
+%      + t_restriction: time restriction between adjacent maximums
+% 
+%      + n_greater: return only the n_greater maxima
+%             
+% Output:
+% 
+%      + indexes : the indexes of the modulus maxima
+% 
+%      + max_mod: the values of the modulus maxima
+% 
+% Example:
+% 
+% Author: Juan Pablo Martínez, Rute Almeida
+% adapted by Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Last update: 14/5/2014
+% Birthdate  : 21/4/2015
+% Copyright 2008-2015
+% 
+function [indexes max_mod] = modmax(x, first_samp, threshold, signo, t_restriction, n_greater)
 lx = size(x,1);
 indexes = [];
 max_mod = [];

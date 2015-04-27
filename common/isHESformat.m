@@ -1,11 +1,27 @@
-function bRetval = isHESformat(filename)
-
-% Check if a recording is in HES format.
+%% (Internal) Check if a recording is in HES format.
+%   
+%   bRetval = isHESformat(filename)
 % 
-% Author: Mariano Llamedo Soria (llamedom at {unizar.es;electron.frba.utn.edu.ar}
+% Arguments:
+% 
+%      + filename: the recording
+% 
+% Output:
+% 
+%      + bRetval: Boolean if it is of this format.
+% 
+% Example:
+% 
+% See also ECGformat, read_ECG, isISHNEformat
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
 % Birthdate: 18/2/2013
 % Last update: 18/2/2013
+% Copyright 2008-2015
 % 
+function bRetval = isHESformat(filename)
+
 bRetval = false;
 
 fid = fopen(filename);
