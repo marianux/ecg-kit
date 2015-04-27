@@ -1,6 +1,6 @@
 # Welcome to the ecg-kit !
 
-This toolbox is a collection of Matlab tools used, adapted or developed by me during my PhD and post-doc work in the [Besicos group at University of Zaragoza](http://diec.unizar.es/~laguna/personal/), Spain and the [National Technological University](http://www.electron.frba.utn.edu.ar/) of Buenos Aires, Argentina. The ECG-kit has tools for reading, processing and presenting results, as you can see in the [documentation](http://ecg-kit.readthedocs.org/en/latest/index.html) or in these demos on [Youtube](https://www.youtube.com/watch?v=8lJtkGhrqFw&list=PLlD2eDv5CIe9sA2atmnb-DX48FIRG46z7&index=1).
+This toolbox is a collection of Matlab tools that I used, adapted or developed during my PhD and post-doc work with the [Besicos group at University of Zaragoza](http://diec.unizar.es/~laguna/personal/), Spain and at the [National Technological University](http://www.electron.frba.utn.edu.ar/) of Buenos Aires, Argentina. The ECG-kit has tools for reading, processing and presenting results, as you can see in the [documentation](http://ecg-kit.readthedocs.org/en/latest/index.html) or in these demos on [Youtube](https://www.youtube.com/watch?v=8lJtkGhrqFw&list=PLlD2eDv5CIe9sA2atmnb-DX48FIRG46z7&index=1).
 
 The main feature of the this toolbox is the possibility to use several popular algorithms for ECG processing, such as:
 
