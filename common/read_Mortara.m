@@ -1,5 +1,6 @@
-function [ECG heasig end_sample] = read_Mortara( filename, start_sample, end_sample )
-% Reads ECG recordings in Mortara format. 
+%% (Internal) Reads ECG recordings in Mortara format
+%
+%     [ECG samples_read] = read_310_format( filename, start_sample, end_sample, heasig )
 % 
 % Arguments:
 %   + filename: recording to be read or folder containing HourXXRawData.bin
@@ -17,10 +18,19 @@ function [ECG heasig end_sample] = read_Mortara( filename, start_sample, end_sam
 % performance reasons. You can disable this limit by doing:
 % MaxIOread = Inf; %megabytes
 % 
-% Author: Mariano Llamedo Soria (llamedom at {unizar.es;electron.frba.utn.edu.ar}
+% 
+% Example:
+% 
+% 
+% See also read_ECG
+% 
+% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Version: 0.1 beta
 % Birthdate: 29/05/2014
 % Last update: 29/05/2014
+% Copyright 2008-2015
 % 
+function [ECG heasig end_sample] = read_Mortara( filename, start_sample, end_sample )
 
 heasig.freq = 1000; %Hz
 heasig.desc = char({'I','II','V1','V2','V3','V4','V5','V6'});

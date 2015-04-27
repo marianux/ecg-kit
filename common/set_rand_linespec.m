@@ -1,3 +1,35 @@
+%% (Internal) Set random properties a line handle
+%
+%     all_proerties = set_rand_linespec(line_hdl, mrk, linestyle, col_spec, markerSize)
+% 
+% 
+% Arguments:
+% 
+%   + line_hdl: The handle
+% 
+%   + mrk: marker cellstring to choose
+% 
+%   + linestyle: linestyle cellstring to choose
+% 
+%   + col_spec: colors to choose
+% 
+%   + markerSize: marker size to choose
+% 
+% Output:
+% 
+%   + all_proerties: Properties set.
+% 
+% Example:
+% 
+% 
+% See also plot_ecg_strip
+% 
+% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Version: 0.1 beta
+% Birthdate: 17/12/2010
+% Last update: 17/12/2010
+% Copyright 2008-2015
+% 
 function all_proerties = set_rand_linespec(line_hdl, mrk, linestyle, col_spec, markerSize)
 
 all_proerties = [];

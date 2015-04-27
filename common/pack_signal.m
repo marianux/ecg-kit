@@ -1,13 +1,48 @@
-function [realizations, aux_idx, seq_idx] = pack_signal(signal, anns_refined, realization_limit, substract_mean)
+%% (Internal) Example of user-created QRS detector
+%
+%  [realizations, aux_idx, seq_idx] = pack_signal(signal, anns_refined, realization_limit, substract_mean)
+% 
 % Description:
 % Packs several realizations synchronized at each sample in anns_refined
 % (QRS detections), in a window from anns_refined(i) - realization_limit(1)
 % to anns_refined(i) + realization_limit(2)
 % 
-% Returns: realizations is a signal pack where dimensions obtained with
-% size indicates:
-% [ ensemble_size nsig cant_anns ] = size(realizations);
 % 
+% Arguments:
+% 
+%      + signal: the signal
+% 
+%      + anns_refined: the synch sample to stack realizations
+%             
+%      + realization_limit: the limits of each realization, from
+%      anns_refined(i) - realization_limit(1) 
+%      to 
+%      anns_refined(i) + realization_limit(2)  
+% 
+%      + substract_mean: Boolean to substract mean from each realization.
+%             
+% Output:
+% 
+%      + realizations : realizations is a signal pack where dimensions obtained
+%      with size indicates:
+%           [ ensemble_size nsig cant_anns ] = size(realizations);
+% 
+%      + aux_idx: the signal samples corresponding to realizations
+% 
+%      + seq_idx: the anns indexes corresponding to realizations
+% 
+% Example:
+% 
+% 
+% See also ECGtask_ECG_delineation
+% 
+% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Version: 0.1 beta
+% Birthdate  : 30/7/2014
+% Last update: 30/7/2014
+% Copyright 2008-2015
+% 
+function [realizations, aux_idx, seq_idx] = pack_signal(signal, anns_refined, realization_limit, substract_mean)
 
 if( nargin < 4)
     substract_mean = false;

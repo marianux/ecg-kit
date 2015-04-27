@@ -1,7 +1,9 @@
-% 
+%% (Internal) Calculates the wavelet transform
+%
 % Prototype:
 % ----------
-% wt = qs_wt(x, scales, fs, q_filters)
+% 
+%       wt = qs_wt(x, scales, fs, q_filters)
 % 
 % Description: 
 % ------------

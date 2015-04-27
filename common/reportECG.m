@@ -1,5 +1,5 @@
-function reportECG(ECG_w, detailLevel, report_mode, win_lengths, report_format, filename)
-
+%% (Internal) function reads the header of signal files
+%
 % This function creates a report of the signals handled by the ECG wrapper
 % object ECG_w. The report includes several views of the signals, from a
 % wide to a narrow scale. Some aspects of the report can be configured as
@@ -38,7 +38,9 @@ function reportECG(ECG_w, detailLevel, report_mode, win_lengths, report_format, 
 % Version: 0.1 beta
 % Last update: 17/6/2014
 % Birthdate  : 15/8/2012
-
+% Copyright 2008-2015
+% 
+function reportECG(ECG_w, detailLevel, report_mode, win_lengths, report_format, filename)
 
 
 %% constants

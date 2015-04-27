@@ -1,3 +1,26 @@
+%% (Internal) Set a series of properties to a line handle
+%
+%     set_a_linespec(line_hdl, all_proerties)
+% 
+% 
+% Arguments:
+% 
+%   + line_hdl: The handle
+% 
+%   + all_proerties: Properties cell. See the code below.
+% 
+% 
+% Example:
+% 
+% 
+% See also plot_ecg_strip
+% 
+% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Version: 0.1 beta
+% Birthdate: 17/12/2010
+% Last update: 17/12/2010
+% Copyright 2008-2015
+% 
 function set_a_linespec(line_hdl, all_proerties)
 
 if(nargin < 1 || any(isempty(line_hdl)) || any(~ishandle(line_hdl)) )

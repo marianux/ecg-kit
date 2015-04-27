@@ -1,3 +1,28 @@
+%% (Internal) Identify how many PIDs are in total and which is this PID, based on a string formatted this_pid/cant_pids
+%
+%  [this_pid, cant_pids] = parse_pids( aux_str )
+% 
+% Arguments:
+% 
+%      + aux_str: string to parse
+%             
+% Output:
+% 
+%      + this_pid: current PID
+% 
+%      + cant_pids: total amount of PIDs
+% 
+% Example:
+% 
+% 
+% See also ECGwrapper
+% 
+% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Version: 0.1 beta
+% Birthdate  : 30/7/2014
+% Last update: 30/7/2014
+% Copyright 2008-2015
+% 
 function [this_pid, cant_pids] = parse_pids( aux_str )
 
 if( ischar(aux_str) )

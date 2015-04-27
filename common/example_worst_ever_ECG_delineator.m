@@ -1,5 +1,5 @@
-% Example of user-created QRS detector
-% ------------------------------------
+%% (Internal) Example of user-created QRS detector
+%
 % Description:
 % An ECG delineator that predict wave locations just by chance, i.e.
 % without using the ECG. 

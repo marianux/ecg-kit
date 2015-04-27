@@ -1,7 +1,5 @@
-function [positions_single_lead, position_multilead] = example_worst_ever_QRS_detector( ECG_matrix, ECG_header, progress_handle, payload_in)
-
-% Example of user-created QRS detector
-% ------------------------------------
+%% (Internal) Example of user-created QRS detector
+% 
 % Description:
 % A QRS fortune-teller that predicts QRS locations just by chance, i.e.
 % without using the ECG. 
@@ -16,6 +14,9 @@ function [positions_single_lead, position_multilead] = example_worst_ever_QRS_de
 % Version: 0.1 beta
 % Birthdate  : 30/7/2014
 % Last update: 30/7/2014
+% Copyright 2008-2015
+% 
+function [positions_single_lead, position_multilead] = example_worst_ever_QRS_detector( ECG_matrix, ECG_header, progress_handle, payload_in)
 
 positions_single_lead = cell(1, ECG_header.nsig);
 

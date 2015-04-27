@@ -1,3 +1,35 @@
+%% (Internal) Plot the ROC curve
+%
+%       fig_hdl = plot_roc( roc_array, strTitle, strLegend, bPrint, fig_hdl )
+% 
+% 
+% Arguments:
+% 
+%      + roc_array: string to parse
+%             
+%      + strTitle: string to parse
+%             
+%      + strLegend: string to parse
+%             
+%      + bPrint: string to parse
+%             
+%      + fig_hdl: string to parse
+% 
+% Output:
+% 
+%      + fig_hdl : 
+% 
+% Example:
+% 
+% 
+% See also ECGwrapper
+% 
+% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Version: 0.1 beta
+% Birthdate  : 30/7/2014
+% Last update: 30/7/2014
+% Copyright 2008-2015
+% 
 function fig_hdl = plot_roc( roc_array, strTitle, strLegend, bPrint, fig_hdl )
 
 if( nargin < 3  ) 

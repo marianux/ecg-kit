@@ -1,4 +1,5 @@
-% 
+%% (Internal) Design the wavelet decomposition filters for wavedet algorithm
+%
 % Prototype:
 % ----------
 % q_filters = qs_filter_design(scales, fs, N);
@@ -39,10 +40,12 @@
 %     fvtool(q_filters, 'fs', fs )
 % end
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar || unizar.es})
+% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Version: 0.1 beta
 % Birthdate: 17/2/11
 % Last update: 22/02/13
-
+% Copyright 2008-2015
+% 
 function q_filters = qs_filter_design(scales, fs, N)
 
 design_iter_attemps = 10;

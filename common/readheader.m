@@ -1,18 +1,32 @@
-function heasig = readheader(hea_full_filename)
-% READHEADER function reads the header of DB signal files
+%% (Internal) function reads the header of signal files
+%
+%     heasig = readheader(hea_full_filename)
+% 
+% Arguments:
+% 
 %	Input parameters: character string with hea_full_filename of header file
+% 
+% 
+% Output:
+% 
 %	Output parameter: struct heasig with header information
-%	Syntaxis:
-% function heasig=readheader(hea_filename);
-
+% 
+% 
+% Example:
+% 
+% 
+% See also read_ECG
+% 
 % Authors:
 % Salvador Olmos
-% e-mail: olmos@posta.unizar.es
-% Opening header file
 % Last update Juan Bolea 07/10/2008
-% e-main: jbolea@unizar.es
-% Last update Mariano Llamedo Soria 12/6/2014
-% e-main: llamedom@unizar.es
+% adapted to the kit by Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Version: 0.1 beta
+% Birthdate: 29/05/2014
+% Last update: 29/05/2014
+% Copyright 2008-2015
+%
+function heasig = readheader(hea_full_filename)
 
 
 heasig = [];

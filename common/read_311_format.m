@@ -1,4 +1,7 @@
-function [ECG samples_read] = read_311_format( filename, start_sample, end_sample, heasig )
+%% (Internal) Read the MIT 311 format
+%
+%     [ECG samples_read] = read_311_format( filename, start_sample, end_sample, heasig )
+% 
 % Reads ECG recordings in 311 format. Implements the documentation
 % available in WFDB.
 % 
@@ -17,10 +20,20 @@ function [ECG samples_read] = read_311_format( filename, start_sample, end_sampl
 % performance reasons. You can disable this limit by doing:
 % MaxIOread = Inf; %megabytes
 % 
-% Author: Mariano Llamedo Soria (llamedom at {unizar.es;electron.frba.utn.edu.ar}
+% 
+% Example:
+% 
+% 
+% See also read_ECG
+% 
+% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Version: 0.1 beta
 % Birthdate: 17/12/2010
 % Last update: 17/12/2010
+% Copyright 2008-2015
 % 
+function [ECG samples_read] = read_311_format( filename, start_sample, end_sample, heasig )
+
 samples_read = [];
 ECG = [];
 

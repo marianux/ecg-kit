@@ -1,3 +1,33 @@
+%% (Internal) Plot the area under the ROC curve
+%
+%       plot_auc( areas, pvalues, strTitle, strLegend, bPrint, fig_hdl)
+% 
+% 
+% Arguments:
+% 
+%      + areas: string to parse
+%             
+%      + pvalues: string to parse
+%             
+%      + strTitle: string to parse
+%             
+%      + strLegend: string to parse
+%             
+%      + bPrint: string to parse
+%             
+%      + fig_hdl: string to parse
+% 
+% Example:
+% 
+% 
+% See also ECGwrapper
+% 
+% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Version: 0.1 beta
+% Birthdate  : 30/7/2014
+% Last update: 30/7/2014
+% Copyright 2008-2015
+% 
 function plot_auc( areas, pvalues, strTitle, strLegend, bPrint, fig_hdl)
 
 if( nargin < 4  ) 
