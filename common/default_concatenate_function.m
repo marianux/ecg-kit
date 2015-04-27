@@ -4,6 +4,9 @@
 % payloads vertically or row-wise.
 % 
 % 
+% See also default_finish_function, ECGtask_arbitrary_function
+% 
+% 
 % Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
 % Version: 0.1 beta
 % Birthdate  : 17/4/2015

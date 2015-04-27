@@ -5,6 +5,8 @@
 % payload.
 % 
 % 
+% See also default_concatenate_function, ECGtask_arbitrary_function
+% 
 % Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
 % Version: 0.1 beta
 % Birthdate  : 17/4/2015

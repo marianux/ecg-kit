@@ -9,6 +9,9 @@ function [positions_single_lead, position_multilead] = example_worst_ever_QRS_de
 % Interface to follow in order to use your own detector with Wrapper and
 % task objects.% 
 % 
+% 
+% See also ECGtask_QRS_detection
+% 
 % Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
 % Version: 0.1 beta
 % Birthdate  : 30/7/2014

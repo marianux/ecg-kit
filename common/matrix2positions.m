@@ -16,6 +16,8 @@
 % 
 % Example:
 % 
+% See also positions2matrix
+% 
 % Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
 % Version: 0.1 beta
 % Last update: 14/5/2014

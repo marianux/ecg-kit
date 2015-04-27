@@ -1,0 +1,559 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ECGwrapper &mdash; ECGkit 1.0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/>
+        <link rel="next" title="Matlab file format" href="Matlab_format.html"/>
+        <link rel="prev" title="Another example" href="examples.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> ECGkit</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="release-notes.html">Release notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html">Be in touch</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="first_example.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Another example</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Accessing signals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Matlab_format.html">Matlab file format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_formats.html">Adding your own formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ECGtask.html">Performing tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="QRS_detection.html">QRS detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QRScorrector.html">QRS correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_detection.html">ABP/PPG peak detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_correction.html">ABP/PPG peak correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECGdelineation.html">ECG delineation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_delineation_corrector.html">ECG delineation correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_heartbeat_classifier.html">Heartbeat classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Arbitrary_tasks.html">Arbitrary tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="results_format.html">Result format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportECG.html">Plotting and reporting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plot_ecg_strip.html">A signal visualization tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_ecg_mosaic.html">A mosaic visualization tool</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="other_functions.html">Other functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="progress_bar.html">A progress bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="list_all_ECGtask.html">List all available tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extensions.html">Extending the ECGkit</a><ul class="simple">
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">ECGkit</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>ECGwrapper</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/ECGwrapper.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="ecgwrapper">
+<h1>ECGwrapper<a class="headerlink" href="#ecgwrapper" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>This class allows the access to ECG recordings of several <a class="reference internal" href="#ecg-formats"><span>formats</span></a> and length.</p>
+<div class="section" id="syntax">
+<h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
+<p>You can create an object without arguments, configuring its properties later. Or you can create it via pairs of PropertyName-PropertyValue pairs.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">ECGw</span> <span class="p">=</span> <span class="n">ECGwrapper</span><span class="p">()</span>
+
+<span class="n">ECGw</span> <span class="p">=</span> <span class="n">ECGwrapper</span><span class="p">(</span> <span class="s">&#39;PropertyName&#39;</span><span class="p">,</span> <span class="n">PropertyValue</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>This is the main class of the toolbox since it allows access to
+cardiovascular signal recordings of several formats
+(<a class="reference external" href="http://www.physionet.org/physiotools/wag/signal-5.htm">MIT</a>,
+<a class="reference external" href="http://thew-project.org/THEWFileFormat.htm">ISHNE</a>,
+<a class="reference external" href="https://www.ecri.org/Products/Pages/AHA_ECG_DVD.aspx">AHA</a>, HES,
+<a class="reference external" href="Matlab_format.htm">MAT</a>) and lengths, from seconds to days. The
+objective of this class is to provide <a class="reference external" href="ECGtask.htm">ECGtask</a> &nbsp;class,
+a common interface to access data and perform specific tasks. Briefly,
+this class sequentially reads data and passes to the Process method of
+the <a class="reference external" href="ECGtask.htm">ECGtask</a> plugged in the
+<a class="reference external" href="#inputarg_ECGtask">ECGtaskHandle</a> property. Some common tasks, such
+as <a class="reference external" href="examples.html#QRS_automatic_detection">QRS detection</a> and <a class="reference external" href="examples.html#ECG_automatic_delineation">ECG
+delineation</a>, can be easily
+invoked. Also other predefined tasks or your own code can be adapted as
+is shown in the <a class="reference external" href="examples.html">examples</a>.</p>
+<p>A more detailed description of this class, together with an explanation
+of how you can easily hook your algorithms to this class is
+<a class="reference external" href="extensions.htm">here</a>.</p>
+<p>Finally the results produced by the <a class="reference external" href="ECGtask.htm">ECGtask</a> are stored
+in order to ease reproducibility and backup of your experiments, or to
+be used of subsequent tasks as shown in the
+<a class="reference external" href="examples.html">examples</a>.</p>
+</div>
+<div class="section" id="input-arguments">
+<h2>Input Arguments<a class="headerlink" href="#input-arguments" title="Permalink to this headline">¶</a></h2>
+<p>Specify optional comma-separated pairs of <code class="docutils literal"><span class="pre">'Name',</span> <span class="pre">Value</span></code> arguments.
+<code class="docutils literal"><span class="pre">'Name'</span></code> is the argument/property name and <code class="docutils literal"><span class="pre">Value</span></code> is the corresponding value.
+<code class="docutils literal"><span class="pre">'Name'</span></code> must appear inside single quotes <code class="docutils literal"><span class="pre">'</span> <span class="pre">'</span></code>. You can specify
+several name and value pair arguments in any order as
+<code class="docutils literal"><span class="pre">Name1,Value1,...,NameN,ValueN</span></code>.</p>
+<p><strong>Example:</strong></p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% specifies to create an ECGwrapper to detect</span>
+<span class="c">% heartbeats in recording &#39;/ecg_recordings/rec1.dat&#39;</span>
+<span class="n">ECGwrapper</span><span class="p">(</span><span class="s">&#39;recording_name&#39;</span><span class="p">,</span><span class="s">&#39;/ecg_recordings/rec1.dat&#39;</span><span class="p">,</span> <span class="s">&#39;ECGtaskHandle&#39;</span><span class="p">,</span> <span class="s">&#39;QRS_detection&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The available arguments for the class constructor are listed below:</p>
+<p><code class="docutils literal"><span class="pre">'recording_name'</span></code> — The ECG recording full name. <code class="docutils literal"><span class="pre">''</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>The full path filename of the ECG recording.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'recording_format'</span></code> — ECG recording format. <code class="docutils literal"><span class="pre">auto-detect</span> <span class="pre">format</span>&nbsp; <span class="pre">(default)</span></code></p>
+<blockquote id="ecg-formats">
+<div><p>The format of the ECG recording. By default or if not specified, the wrapper will attempt to auto-detect the format among the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="88%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">String</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>MIT</td>
+<td><a class="reference external" href="http://www.physionet.org/physiotools/wag/signal-5.htm">MIT format</a></td>
+</tr>
+<tr class="row-odd"><td>ISHNE</td>
+<td><a class="reference external" href="http://thew-project.org/THEWFileFormat.htm">ISHNE format</a></td>
+</tr>
+<tr class="row-even"><td>AHA</td>
+<td><a class="reference external" href="https://www.ecri.org/Products/Pages/AHA_ECG_DVD.aspx">American Heart Association ECG Database</a>  or <a class="reference external" href="http://www.physionet.org/physiotools/old/dbpg/dbu_84.htm">AHA in Physionet</a></td>
+</tr>
+<tr class="row-odd"><td>HES</td>
+<td>Biosigna format</td>
+</tr>
+<tr class="row-even"><td>MAT</td>
+<td><a class="reference internal" href="Matlab_format.html"><em>Matlab file format</em></a></td>
+</tr>
+<tr class="row-odd"><td>Mortara</td>
+<td>Mortara SuperECG format</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'this_pid'</span></code> — Process identification for multiprocess batch jobs. <code class="docutils literal"><span class="pre">'1/1'</span>&nbsp; <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>In case working in a multiprocess environment, this value will identify
+the current process. Can be a numeric value, or a string of the form
+&#8216;N/M&#8217;. This pid is N and the total amount of pid&#8217;s to divide the whole
+work is M.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'tmp_path'</span></code> — The path to store temporary data. <code class="docutils literal"><span class="pre">tempdir()</span>&nbsp; <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>Full path to a directory with write privileges.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'output_path'</span></code> — The output path to store results. <code class="docutils literal"><span class="pre">fileparts(recording_name)</span>&nbsp; <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>Full path to a directory with write privileges. By default will be the
+same path of the recordings.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'ECGtaskHandle'</span></code> — The task to perform. <code class="docutils literal"><span class="pre">''</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>The task to perform, can be the name of the task, or an ECGtask object.
+Available ECGtasks can be listed with <code class="docutils literal"><span class="pre">`list_all_ECGtask()</span></code> command.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'partition_mode'</span></code> — The way that this object will partition lengthy signals. <code class="docutils literal"><span class="pre">'ECG_overlapped'</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div><p>The way to do batch partition in lengthy signals:</p>
+<ul class="simple">
+<li>&#8216;ECG_contiguous&#8217; no overlapp between segments.</li>
+<li>&#8216;ECG_overlapped&#8217; overlapp of &#8216;overlapping_time&#8217; among segments.
+This can be useful if your task have a transient period to avoid.</li>
+<li>&#8216;QRS&#8217; do the partition based on the annotations provided in
+ECG_annotations.time property. This option is useful if your task
+works in the boundaries of a fiducial point (commonly a heartbeat),
+and not in the whole signal. This partition mode ignores those parts
+of the recording without annotations.</li>
+</ul>
+</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'overlapping_time'</span></code> — Time in seconds of overlapp among consequtive segments. <code class="docutils literal"><span class="pre">30</span>&nbsp; <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>Time in seconds of overlapp among consequtive segments. This segment is
+useful for ensuring the end of all transients within a task.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'cacheResults'</span></code> — Save intermediate results to recover in case of failure. <code class="docutils literal"><span class="pre">true</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>Save intermediate results to recover in case of errors. Useful for long
+jobs or recordings.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">`'syncSlavesWithMaster'</span></code> — Time in seconds of overlapp among consequtive segments. <code class="docutils literal"><span class="pre">false</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>In multiprocess environments sometimes it is useful to terminate all
+pid&#8217;s together in order to start subsequent tasks synchronously. This
+value forces all parts of a multipart process to wait until all other
+parts finish.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">'repetitions'</span></code> — Times to repeat the ECGtask. <code class="docutils literal"><span class="pre">1</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>In case the ECGtask is not deterministic, the repetition property allows
+to repeat the task several times.</div></blockquote>
+<p>Other public properties to configure the object, or to access recording&#8217;s data are:</p>
+<p><code class="docutils literal"><span class="pre">Error</span></code> — Did the ECGtask produce any Error ? <code class="docutils literal"><span class="pre">false</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>You can check this value after executing a task.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">Processed</span></code> — Was the task already processed ? <code class="docutils literal"><span class="pre">false</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>You can check if you have already issued a Run method for the current configuration.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">NoWork2Do</span></code> — Has this PID work to do ?</p>
+<blockquote>
+<div>In a multi-PID environment, certain tasks are too short to provide work to all configured PIDs.
+You can check to this flag to deal with it in your code.</div></blockquote>
+<p id="ecg-header-description"><code class="docutils literal"><span class="pre">ECG_header</span></code> — The gathered information about the ECG recording.</p>
+<blockquote>
+<div><p><strong>ECG_header</strong>, is a struct with the following information:</p>
+<ul class="simple">
+<li><em>freq</em>, is the sampling frequency of ECG_matrix signal.</li>
+<li><em>desc</em>, description strings about each of the leads/signals.</li>
+<li><em>nsamp</em> is the number of samples of ECG_matrix.</li>
+<li><em>nsig</em> is the amount of leads or signals of ECG_matrix.</li>
+<li><em>gain</em> is a vector of [nsig × 1] with the gain of each lead ( ADCsamples / μV ).</li>
+<li><em>adczero</em> is a vector of [nsig × 1] with the offset of each lead in ADC samples.</li>
+</ul>
+<p>and others described in the <a class="reference external" href="http://www.physionet.org/physiotools/wag/header-5.htm">Physionet header</a>.</p>
+</div></blockquote>
+<p><code class="docutils literal"><span class="pre">ECG_annotations</span></code> — Annotations provided with the recording.</p>
+<blockquote>
+<div>Commonly QRS detections, signal quality annotations or other type of measurements
+included with the recordings. Some documentation about annotations in <a class="reference external" href="http://www.physionet.org/physiobank/annotations.shtml">Physionet</a>.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">class_labeling</span></code> — Class conversion for heartbeat annotations.</p>
+<blockquote>
+<div>In case the annotations includes heartbeat types, this property indicates the class-labeling convention used.
+The <a class="reference external" href="http://marketplace.aami.org/eseries/scriptcontent/docs/Preview%20Files/EC57_1212_preview.pdf">EC-57 AAMI recommendation</a> is de default value.
+The possible values are <code class="docutils literal"><span class="pre">'AAMI'</span></code> or <code class="docutils literal"><span class="pre">AAMI2</span></code>. The <code class="docutils literal"><span class="pre">AAMI2</span></code> is equal to <code class="docutils literal"><span class="pre">AAMI</span></code> except that only consider
+three heartbeat classes, <em>normal</em> (N), <em>ventricular</em> (V) and <em>supraventricular</em> (S).</div></blockquote>
+<p><code class="docutils literal"><span class="pre">user_string</span></code> — A string to individualize each experiment. <code class="docutils literal"><span class="pre">''</span> <span class="pre">(default)</span></code></p>
+<p><code class="docutils literal"><span class="pre">Result_files</span></code> — The result filenames produced by an ECGtask.</p>
+<blockquote>
+<div>Once the task is completed, this property records the filenames of the results.</div></blockquote>
+</div>
+<div class="section" id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
+<p>Some useful methods are described below.</p>
+<p><code class="docutils literal"><span class="pre">Run</span></code> — Execute the ECG task</p>
+<blockquote>
+<div>This method executes the configured ECG task.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">read_signal</span></code> — Read signal samples</p>
+<blockquote>
+<div><p>This method allows to easily reads samples from a recording</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% function prototype</span>
+<span class="k">function</span><span class="w"> </span>ECG <span class="p">=</span><span class="w"> </span><span class="nf">read_signal</span><span class="p">(</span>ECG_start_idx, ECG_end_idx<span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>where the arguments are:</p>
+<blockquote>
+<div><p><strong>ECG_start_idx</strong>, is the first sample to read. <code class="docutils literal"><span class="pre">1</span> <span class="pre">(default)</span></code>.</p>
+<p><strong>ECG_end_idx</strong>, is the last sample to read. <code class="docutils literal"><span class="pre">ECG\_header.nsamp</span> <span class="pre">(default)</span></code></p>
+</div></blockquote>
+<p>and as a result, it returns:</p>
+<blockquote>
+<div><strong>ECG</strong>, which is a matrix of size <code class="docutils literal"><span class="pre">[(ECG\_end\_idx</span> <span class="pre">-</span> <span class="pre">ECG\_start\_idx</span> <span class="pre">+</span> <span class="pre">1)</span> <span class="pre">ECG\_header.nsig]</span> <span class="pre">(default)</span></code></div></blockquote>
+<p>as it is exemplified below</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% reads ECG 100 samples</span>
+<span class="n">ECG</span> <span class="p">=</span> <span class="n">ECG_w</span><span class="p">.</span><span class="n">read_signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">);</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><code class="docutils literal"><span class="pre">ReportErrors</span></code> — Display the error report generated during the task execution</p>
+<blockquote>
+<div>This method reports error generated during task execution.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">GetCahchedFileName</span></code> — Find the result files of an specific recording/task</p>
+<blockquote>
+<div><p>This method returns the cached filename for an specific recording, and
+task, if available.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% Get result filename of previous QRS detection.</span>
+<span class="c">% The corrected/audited version has precedence if available.</span>
+<span class="n">cached_filenames</span> <span class="p">=</span> <span class="n">ECGw</span><span class="p">.</span><span class="n">GetCahchedFileName</span><span class="p">({</span><span class="s">&#39;QRS_corrector&#39;</span> <span class="s">&#39;QRS_detection&#39;</span><span class="p">});</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="create-the-simplest-ecg-wrapper-object">
+<h3>Create the simplest ECG wrapper object<a class="headerlink" href="#create-the-simplest-ecg-wrapper-object" title="Permalink to this headline">¶</a></h3>
+<p>Create the ECGwrapper object.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="o">&gt;&gt;</span> <span class="n">ECG_w</span> <span class="p">=</span> <span class="n">ECGwrapper</span><span class="p">()</span>
+<span class="n">ECG_w</span> <span class="p">=</span>
+############################
+# <span class="n">ECGwrapper</span> <span class="n">object</span> <span class="n">config</span> #
+############################
+<span class="o">+</span><span class="n">ECG</span> <span class="n">recording</span><span class="p">:</span> <span class="n">None</span> <span class="n">selected</span>
+<span class="o">+</span><span class="n">PID</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>
+<span class="o">+</span><span class="n">Repetitions</span><span class="p">:</span> <span class="mi">1</span>
+<span class="o">+</span><span class="n">Partition</span> <span class="n">mode</span><span class="p">:</span> <span class="n">ECG_overlapped</span>
+<span class="o">+</span><span class="n">Function</span> <span class="n">name</span><span class="p">:</span> <span class="n">Null</span> <span class="n">task</span>
+<span class="o">+</span><span class="n">Processed</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>Then, in your script or in the command window you can type:</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="o">&gt;&gt;</span> <span class="n">ECG_w</span><span class="p">.</span><span class="n">recording_name</span> <span class="p">=</span> <span class="s">&#39;some_path\100&#39;</span><span class="p">;</span>
+<span class="o">&gt;&gt;</span> <span class="n">ECG_w</span><span class="p">.</span><span class="n">ECGtaskHandle</span> <span class="p">=</span> <span class="s">&#39;QRS_detection&#39;</span>
+<span class="n">ECG_w</span> <span class="p">=</span>
+############################
+# <span class="n">ECGwrapper</span> <span class="n">object</span> <span class="n">config</span> #
+############################
+<span class="o">+</span><span class="n">ECG</span> <span class="n">recording</span><span class="p">:</span> <span class="n">some_path</span><span class="o">\</span><span class="mi">100</span> <span class="p">(</span><span class="n">auto</span><span class="p">)</span>
+<span class="o">+</span><span class="n">PID</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>
+<span class="o">+</span><span class="n">Repetitions</span><span class="p">:</span> <span class="mi">1</span>
+<span class="o">+</span><span class="n">Partition</span> <span class="n">mode</span><span class="p">:</span> <span class="n">ECG_overlapped</span>
+<span class="o">+</span><span class="n">Function</span> <span class="n">name</span><span class="p">:</span> <span class="n">QRS_detection</span>
+<span class="o">+</span><span class="n">Processed</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>Now, you just want to run the task by executing:</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="o">&gt;&gt;</span> <span class="n">ECG_w</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-an-ecgwrapper-object-for-an-specific-recording-and-task">
+<h3>Create an ECGwrapper object for an specific recording and task<a class="headerlink" href="#create-an-ecgwrapper-object-for-an-specific-recording-and-task" title="Permalink to this headline">¶</a></h3>
+<p>In this case, we create the same object of the previous example but
+using the name-value .</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="o">&gt;&gt;</span> <span class="n">ECG_w</span> <span class="p">=</span> <span class="n">ECGwrapper</span><span class="p">(</span> <span class="c">...</span>
+        <span class="s">&#39;recording_name&#39;</span><span class="p">,</span> <span class="s">&#39;some_path\100&#39;</span><span class="p">,</span> <span class="c">...</span>
+        <span class="s">&#39;recording_format&#39;</span><span class="p">,</span> <span class="s">&#39;MIT&#39;</span><span class="p">,</span> <span class="c">...</span>
+        <span class="s">&#39;ECGtaskHandle&#39;</span><span class="p">,</span> <span class="s">&#39;QRS_detection&#39;</span><span class="p">,</span> <span class="c">...</span>
+        <span class="p">)</span>
+<span class="n">ECG_w</span> <span class="p">=</span>
+############################
+# <span class="n">ECGwrapper</span> <span class="n">object</span> <span class="n">config</span> #
+############################
+<span class="o">+</span><span class="n">ECG</span> <span class="n">recording</span><span class="p">:</span> <span class="n">some_path</span><span class="o">\</span><span class="mi">100</span> <span class="p">(</span><span class="n">auto</span><span class="p">)</span>
+<span class="o">+</span><span class="n">PID</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>
+<span class="o">+</span><span class="n">Repetitions</span><span class="p">:</span> <span class="mi">1</span>
+<span class="o">+</span><span class="n">Partition</span> <span class="n">mode</span><span class="p">:</span> <span class="n">ECG_overlapped</span>
+<span class="o">+</span><span class="n">Function</span> <span class="n">name</span><span class="p">:</span> <span class="n">QRS_detection</span>
+<span class="o">+</span><span class="n">Processed</span><span class="p">:</span> <span class="n">false</span>
+
+<span class="o">&gt;&gt;</span> <span class="n">ECG_w</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-an-ecgwrapper-and-access-the-recording-data">
+<h3>Create an ECGwrapper and access the recording data<a class="headerlink" href="#create-an-ecgwrapper-and-access-the-recording-data" title="Permalink to this headline">¶</a></h3>
+<p>In this case, we create an object and access to the <code class="docutils literal"><span class="pre">ECG_header</span></code> property.</p>
+<div class="highlight-none"><div class="highlight"><pre>&gt;&gt; ECGw = ECGwrapper( &#39;recording_name&#39;, &#39;d:\mariano\misc\ecg-kit\recordings\208&#39;)
+
+ECGw =
+
+
+############################
+# ECGwrapper object config #
+############################
+
++ECG recording: d:\mariano\misc\ecg-kit\recordings\208 (auto)
++PID: 1/1
++Repetitions: 1
++Partition mode: ECG_overlapped
++Function name: Null task
++Processed: false
+
+&gt;&gt; ECGw.ECG_header
+
+ans =
+
+         recname: &#39;208&#39;
+            nsig: 2
+            freq: 360
+           nsamp: 650000
+           btime: &#39;00:00:00&#39;
+           bdate: &#39;01/01/2000&#39;
+             spf: [2x1 double]
+        baseline: [2x1 double]
+           units: [2x2 char]
+           fname: [2x7 char]
+           group: [2x1 double]
+             fmt: [2x1 double]
+            gain: [2x1 double]
+          adcres: [2x1 double]
+         adczero: [2x1 double]
+         initval: [2x1 double]
+           cksum: [2x1 double]
+           bsize: [2x1 double]
+            desc: [2x5 char]
+</pre></div>
+</div>
+<p>Then we get the first 1000 signal samples using the <code class="docutils literal"><span class="pre">read_signal</span></code> method.</p>
+<div class="highlight-none"><div class="highlight"><pre>&gt;&gt; plot(ECGw.read_signal(1,1000))
+</pre></div>
+</div>
+<p>as result we obtain the following plot</p>
+<img alt="_images/read_signal_example.png" src="_images/read_signal_example.png" />
+</div>
+</div>
+<div class="section" id="other-resources">
+<h2>Other resources<a class="headerlink" href="#other-resources" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="http://physionet.org/">Physionet.org</a></li>
+<li><a class="reference external" href="http://thew-project.org/">Telemetric and Holter ECG Warehouse
+(THEW)</a></li>
+<li><a class="reference external" href="http://diec.unizar.es/~laguna/personal/publicaciones/publicaciones.htm">Pablo Laguna research group at University of
+Zaragoza</a></li>
+<li><a class="reference external" href="http://cinc.org/">Computing in Cardiology</a></li>
+</ul>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><a class="reference internal" href="ECGtask.html"><em>ECGtask</em></a> | <a class="reference internal" href="examples.html"><em>Examples</em></a></div></blockquote>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Matlab_format.html" class="btn btn-neutral float-right" title="Matlab file format">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="examples.html" class="btn btn-neutral" title="Another example"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Mariano Llamedo Soria.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

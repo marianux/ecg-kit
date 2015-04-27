@@ -1,0 +1,397 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Plotting signals and task results &mdash; ECGkit 1.0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/>
+        <link rel="up" title="reportECG" href="reportECG.html"/>
+        <link rel="next" title="Plotting signal mosaics" href="plot_ecg_mosaic.html"/>
+        <link rel="prev" title="reportECG" href="reportECG.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> ECGkit</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="release-notes.html">Release notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html">Be in touch</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="first_example.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Another example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ECGwrapper.html">Accessing signals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Matlab_format.html">Matlab file format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_formats.html">Adding your own formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ECGtask.html">Performing tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="QRS_detection.html">QRS detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QRScorrector.html">QRS correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_detection.html">ABP/PPG peak detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_correction.html">ABP/PPG peak correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECGdelineation.html">ECG delineation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_delineation_corrector.html">ECG delineation correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_heartbeat_classifier.html">Heartbeat classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Arbitrary_tasks.html">Arbitrary tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="results_format.html">Result format</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="reportECG.html">Plotting and reporting</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">A signal visualization tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_ecg_mosaic.html">A mosaic visualization tool</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="other_functions.html">Other functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="progress_bar.html">A progress bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="list_all_ECGtask.html">List all available tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extensions.html">Extending the ECGkit</a><ul class="simple">
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">ECGkit</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="reportECG.html">reportECG</a> &raquo;</li>
+      
+    <li>Plotting signals and task results</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/plot_ecg_strip.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="plotting-signals-and-task-results">
+<h1>Plotting signals and task results<a class="headerlink" href="#plotting-signals-and-task-results" title="Permalink to this headline">¶</a></h1>
+<p>Low level function to produce charts and interactively browse signals
+and annotations produced by other ECGtasks</p>
+<p>Some of the relevant features:</p>
+<blockquote>
+<div><ul class="simple">
+<li>User can interact using mouse shortcuts with several aspects of the
+visualization, such as zoom, pan and measurements.</li>
+<li>Information of the multilead wave boundaries can be added to the ECG,
+for example the delineation obtained with wavedet.</li>
+<li>It can &#8220;pretty&#8221; present the ECG charts for printing to pdf
+documents</li>
+<li>It can be easily added to your project for debug or result
+presentation through its versatile interface.</li>
+</ul>
+</div></blockquote>
+<p>The mouse interaction was adapted from the <a class="reference external" href="http://www.mathworks.com/matlabcentral/fileexchange/29276-dragzoom-drag-and-zoom-tool">Dragzoom</a>
+function, by Evgeny Pr.</p>
+<div class="section" id="prototype">
+<h2>Prototype<a class="headerlink" href="#prototype" title="Permalink to this headline">¶</a></h2>
+<p>The function prototype is the following.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="k">function</span><span class="w"> </span>ECG_hdl <span class="p">=</span><span class="w"> </span><span class="nf">plot_ecg_strip</span><span class="p">(</span> ECG, varargin <span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This function accepts as arguments the arg_name/arg_val method described below.</p>
+</div>
+<div class="section" id="arguments">
+<h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">ECG: [numeric | char | ECGwrapper] REQUIRED.
+Signal matrix of dimension <code class="docutils literal"><span class="pre">[nsamp</span> <span class="pre">nsig]</span></code> where:</p>
+<ul class="simple">
+<li>nsamp: time length in samples</li>
+<li>nsig: number of ECG leads or number of signals.</li>
+</ul>
+<p>A recording full-path filename or an ECGwrapper object are also accepted.</p>
+</li>
+<li><p class="first">ECG_header: [struct] OPTIONAL. Description of the ECG typically available in the
+header. See <a class="reference internal" href="ECGwrapper.html#ecg-header-description"><span>ECG header</span></a> description.</p>
+</li>
+<li><p class="first">Start_time: [numeric] OPTIONAL. Start time in seconds. <code class="docutils literal"><span class="pre">0</span> <span class="pre">(default)</span></code></p>
+</li>
+<li><p class="first">End_time: [numeric] OPTIONAL. Start time in seconds. <code class="docutils literal"><span class="pre">end</span> <span class="pre">(default)</span></code></p>
+</li>
+<li><p class="first">QRS_locations: [numeric] OPTIONAL. QRS complex detection samples. <code class="docutils literal"><span class="pre">[]</span> <span class="pre">(default)</span></code></p>
+</li>
+<li><p class="first">QRS_start_index: [numeric] OPTIONAL. Start at the i-th QRS_start_index heartbeat
+in QRS_locations, or <code class="docutils literal"><span class="pre">QRS_locations(QRS_start_index)</span></code>. <code class="docutils literal"><span class="pre">1</span> <span class="pre">(default)</span></code></p>
+</li>
+<li><p class="first">QRS_complexes: [numeric] OPTIONAL. Display the amount of QRS_start_complexes
+heartbeats from the QRS_start_index. <code class="docutils literal"><span class="pre">QRS_start_index</span> <span class="pre">+</span> <span class="pre">10</span> <span class="pre">(default)</span></code></p>
+</li>
+<li><p class="first">Lead_offset: [numeric] OPTIONAL. A DC value <code class="docutils literal"><span class="pre">[nsig</span> <span class="pre">1]</span></code> to be added to each lead. <code class="docutils literal"><span class="pre">zeros(nsig,1)</span> <span class="pre">(default)</span></code></p>
+</li>
+<li><p class="first">Lead_gain: [numeric] OPTIONAL. A value <code class="docutils literal"><span class="pre">[nsig</span> <span class="pre">1]</span></code> to be multiplied by each lead. <code class="docutils literal"><span class="pre">ones(nsig,1)</span> <span class="pre">(default)</span></code></p>
+</li>
+<li><p class="first">ECG_delineation_single_lead: [struct/ECGwrapper] OPTIONAL. Annotation struct of size <code class="docutils literal"><span class="pre">[nsig</span> <span class="pre">1]</span></code> described
+<a class="reference internal" href="ECGdelineation.html#delineation-struct"><span>here</span></a>. Each field of size <code class="docutils literal"><span class="pre">[1</span> <span class="pre">nhb]</span></code>, being <code class="docutils literal"><span class="pre">nhb</span></code> the amount of heartbeats.
+If an ECGwrapper was provided, it tries to get results from an <code class="docutils literal"><span class="pre">ECG_delineation</span></code> task. <code class="docutils literal"><span class="pre">[]</span> <span class="pre">(default)</span></code></p>
+</li>
+<li><p class="first">ECG_delineation_multilead: [struct/ECGwrapper] OPTIONAL. Annotation struct with the same fields of and characteristics of
+<code class="docutils literal"><span class="pre">ECG_delineation_single_lead</span></code>. If an ECGwrapper was provided, it tries to get results from an <code class="docutils literal"><span class="pre">ECG_delineation</span></code> task.
+<code class="docutils literal"><span class="pre">[]</span> <span class="pre">(default)</span></code></p>
+</li>
+<li><p class="first">Heartbeat_classification: [struct/ECGwrapper] OPTIONAL. Heartbeat labels provided as a struct with the following fields</p>
+<ul class="simple">
+<li>time, an array of <code class="docutils literal"><span class="pre">[nhb</span> <span class="pre">1]</span></code> with the sample locations of each heartbeat.</li>
+<li>anntyp, a char array of <code class="docutils literal"><span class="pre">[nhb</span> <span class="pre">1]</span></code> with the label of each heartbeat, according to <a class="reference external" href="http://www.physionet.org/physiobank/annotations.shtml">Physionet</a>
+or the <a class="reference external" href="http://marketplace.aami.org/eseries/scriptcontent/docs/Preview%20Files/EC57_1212_preview.pdf">EC-57 AAMI recommendation</a>. Commonly N, S, V, F, Q.</li>
+</ul>
+<p>If an ECGwrapper was provided, it tries to get results from an <code class="docutils literal"><span class="pre">ECG_heartbeat_classifier</span></code> task. <code class="docutils literal"><span class="pre">[]</span> <span class="pre">(default)</span></code></p>
+</li>
+<li><p class="first">Title: [string] OPTIONAL. Description title. <code class="docutils literal"><span class="pre">[recname</span> <span class="pre">-</span> <span class="pre">time</span> <span class="pre">interval]</span> <span class="pre">(default)</span></code></p>
+</li>
+<li><p class="first">DetailLevel: [string] OPTIONAL. The details included in the ECG plot depends on the zoom level and the data provided.
+Possible values:</p>
+<ul class="simple">
+<li>&#8216;all&#8217;, overprint all info available.</li>
+<li>&#8216;single-lead&#8217;, overprint ECG delineation results.</li>
+<li>&#8216;multilead&#8217;, overprint ECG multilead delineation results.</li>
+<li><code class="docutils literal"><span class="pre">'none'</span> <span class="pre">(default)</span></code>, display only signals.</li>
+</ul>
+</li>
+<li><p class="first">OnlyECG: Display only ECG signals. Filter non-ECG signals based on their descriptions in <code class="docutils literal"><span class="pre">ECG_header.desc</span></code> field.</p>
+</li>
+<li><p class="first">FilterECG: Perform standard noise removal on ECG signals. Low pass &#64; 35Hz and baseline wander removal by cubic splines or median filtering.</p>
+</li>
+<li><p class="first">PrettyPrint: [bool] OPTIONAL. Prepare the plot for printing as a PDF. <code class="docutils literal"><span class="pre">false</span> <span class="pre">(default)</span></code></p>
+</li>
+<li><p class="first">ReportFilename: a string with the full filename to export screen captures. <code class="docutils literal"><span class="pre">[signal_path\signal_name.pdf]</span> <span class="pre">(default)</span></code></p>
+</li>
+<li><p class="first">Figure_handle: [axes handle] OPTIONAL. Choose the figure to display the plot. <code class="docutils literal"><span class="pre">gca</span> <span class="pre">(default)</span></code></p>
+</li>
+</ul>
+</div>
+<div class="section" id="mouse-interaction">
+<h2>Mouse interaction<a class="headerlink" href="#mouse-interaction" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">Keyboard hotkeys</p>
+<p><strong>h</strong>                         : Show this help</p>
+<p><strong>+</strong>                         : Zoom plus</p>
+<p><strong>-</strong>                         : Zoom minus</p>
+<p><strong>d</strong>                         : Toggle the detail level of the annotations</p>
+<p><strong>a</strong>                         : Toggle the annotations graph mode.</p>
+<p><strong>0</strong>                         : Set default axes (reset to original view)</p>
+<p><strong>c</strong>                         : On/Off pointer in crosshair mode</p>
+<p><strong>g</strong>                         : If pressed and holding, change lead gain with scroll</p>
+<p><strong>o</strong>                         : If pressed and holding, change lead offset with scroll</p>
+<p><strong>x</strong>                         : If pressed and holding, zoom and drag works only for X axis</p>
+<p><strong>y</strong>                         : If pressed and holding, zoom and drag works only for Y axis</p>
+<p><strong>m</strong>                         : If pressed and holding, Magnifier mode on</p>
+<p><strong>p</strong>                         : On/Off paper mode</p>
+<p><strong>r</strong>                         : Export format (PDF/PNG)</p>
+<p><strong>s</strong>                         : Export current view</p>
+</li>
+<li><p class="first">Normal mode</p>
+<p><strong>single-click and holding LB</strong> : Activation Drag mode</p>
+<p><strong>single-click and holding RB</strong> : Activation rubber band for region zooming</p>
+<p><strong>single-click MB</strong>             : Activation measuring rubber band mode</p>
+<p><strong>scroll wheel MB</strong>             : Activation Zoom mode</p>
+<p><strong>double-click LB, RB, MB</strong>     : Reset to Original View</p>
+</li>
+<li><p class="first">Magnifier mode (<strong>m</strong> key)</p>
+<p><strong>single-click LB</strong>             : Not Used</p>
+<p><strong>single-click RB</strong>             : Not Used</p>
+<p><strong>single-click MB</strong>             : Reset Magnifier to Original View</p>
+<p><strong>scroll MB</strong>                   : Change Magnifier Zoom</p>
+<p><strong>double-click LB</strong>             : Increase Magnifier Size</p>
+<p><strong>double-click RB</strong>             : Decrease Magnifier Size</p>
+</li>
+</ul>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The easiest way of invoking this function is via an ECGwrapper object:</p>
+<div class="highlight-none"><div class="highlight"><pre>&gt;&gt; plot_ecg_strip(ECGw)
+
+#######################
+# plot_ecg_strip help #
+#######################
+
+Mouse actions:
+
+  Normal mode:
+          single-click and holding LB : Activation Drag mode
+          single-click and holding RB : Activation Rubber Band for region zooming
+          single-click MB             : Activation &#39;Extend&#39; Zoom mode
+          scroll wheel MB             : Activation Zoom mode
+          double-click LB, RB, MB     : Reset to Original View
+  Magnifier mode:
+          single-click LB             : Not Used
+          single-click RB             : Not Used
+          single-click MB             : Reset Magnifier to Original View
+          scroll MB                   : Change Magnifier Zoom
+          double-click LB             : Increase Magnifier Size
+          double-click RB             : Decrease Magnifier Size
+
+Hotkeys in 2D mode:
+
+          &#39;h&#39;                         : Show help
+          &#39;+&#39;                         : Zoom plus
+          &#39;-&#39;                         : Zoom minus
+          &#39;d&#39;                         : Toggle the detail level of the annotations
+          &#39;a&#39;                         : Toggle the annotations graph mode
+          &#39;0&#39;                         : Set default axes (reset to original view)
+          &#39;c&#39;                         : On/Off pointer in crosshair mode
+          &#39;g&#39;                         : Change lead gain with scroll
+          &#39;o&#39;                         : Change lead offset with scroll
+          &#39;x&#39;                         : Zoom and drag works only for X axis
+          &#39;y&#39;                         : Zoom and drag works only for Y axis
+          &#39;m&#39;                         : If pressed and holding, Magnifier mode on
+          &#39;p&#39;                         : On/Off paper mode
+          &#39;r&#39;                         : Format of the exported file (PDF/PNG)
+          &#39;s&#39;                         : Export current view
+</pre></div>
+</div>
+<p>As you can see, the basic help is displayed, and this figure is shown as a result:</p>
+<img alt="_images/plot_ecg_strip.png" src="_images/plot_ecg_strip.png" />
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><a class="reference internal" href="plot_ecg_mosaic.html"><em>Plot ECG mosaic</em></a> | <a class="reference internal" href="ECGwrapper.html"><em>ECGwrapper</em></a></div></blockquote>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="plot_ecg_mosaic.html" class="btn btn-neutral float-right" title="Plotting signal mosaics">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="reportECG.html" class="btn btn-neutral" title="reportECG"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Mariano Llamedo Soria.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -7,7 +7,7 @@
 % Interface to follow in order to use your own detector with Wrapper and
 % task objects.% 
 % 
-% See also ECGtask_QRS_detection
+% See also ECGtask_ECG_delineation
 % 
 % Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
 % Version: 0.1 beta

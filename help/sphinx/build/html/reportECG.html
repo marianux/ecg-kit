@@ -1,0 +1,276 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>reportECG &mdash; ECGkit 1.0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/>
+        <link rel="next" title="Plotting signals and task results" href="plot_ecg_strip.html"/>
+        <link rel="prev" title="Accessing results" href="results_format.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> ECGkit</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="release-notes.html">Release notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html">Be in touch</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="first_example.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Another example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ECGwrapper.html">Accessing signals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Matlab_format.html">Matlab file format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_formats.html">Adding your own formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ECGtask.html">Performing tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="QRS_detection.html">QRS detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QRScorrector.html">QRS correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_detection.html">ABP/PPG peak detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_correction.html">ABP/PPG peak correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECGdelineation.html">ECG delineation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_delineation_corrector.html">ECG delineation correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_heartbeat_classifier.html">Heartbeat classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Arbitrary_tasks.html">Arbitrary tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="results_format.html">Result format</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Plotting and reporting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plot_ecg_strip.html">A signal visualization tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_ecg_mosaic.html">A mosaic visualization tool</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="other_functions.html">Other functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="progress_bar.html">A progress bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="list_all_ECGtask.html">List all available tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extensions.html">Extending the ECGkit</a><ul class="simple">
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">ECGkit</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>reportECG</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/reportECG.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="reportecg">
+<h1>reportECG<a class="headerlink" href="#reportecg" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>This function creates a report of a signal handled by an ECGwrapper object.
+The report includes several views of the signals at different time scales.
+In addition, you have the possibility to overprint information from other
+ECGtask results, such as QRS detections, wave delineation, and heartbeat types.
+Some aspects of the report can be configured as the detail degree, the length
+of each time scale and the report format.</p>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="syntax">
+<h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
+<p>The function prototype is</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="k">function</span><span class="w"> </span><span class="nf">reportECG</span><span class="p">(</span>ECG_w, detailLevel, report_mode, win_lengths, report_format, filename<span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>where the arguments are:</p>
+<blockquote>
+<div><ul>
+<li><p class="first"><code class="docutils literal"><span class="pre">ECG_w</span></code> An ECGwrapper object as the signal handler.</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">detailLevel</span></code> The report detail level:</p>
+<ul class="simple">
+<li>&#8216;HighDetail&#8217;</li>
+<li>&#8216;MediumDetail&#8217;</li>
+<li>&#8216;LowDetail&#8217;</li>
+</ul>
+<p>A higher detail level means report the whole recording at every time resolution defined
+in &#8220;win_lengths&#8221;. High resolution also means larger reports. <code class="docutils literal"><span class="pre">LowDetail</span> <span class="pre">(default)</span></code>.</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">report_mode</span></code> Information from other tasks like QRS detection/delineation/classification
+added to the signals in case available mode. Possible values are:</p>
+<p>&#8216;full&#8217;</p>
+<p><code class="docutils literal"><span class="pre">ECG</span> <span class="pre">only</span> <span class="pre">(default)</span></code></p>
+<p>&#8216;QRS detection&#8217;</p>
+<p>&#8216;Wave delineation&#8217;</p>
+<p>&#8216;Heartbeat classification&#8217;</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">win_lengths</span></code> The amount and size (in seconds) of each scale length present in the report.
+<code class="docutils literal"><span class="pre">[60*60</span> <span class="pre">30*60</span> <span class="pre">60</span> <span class="pre">7]</span> <span class="pre">(default)</span></code>. It means 1 hour - 30 min - 1 min and 7 seconds.</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">report_format</span></code> The report format of the document. <code class="docutils literal"><span class="pre">PDF</span> <span class="pre">(default)</span></code>.</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">filename</span></code> The report filename. <code class="docutils literal"><span class="pre">rec_folder\rec_name.report_format</span> <span class="pre">(default)</span></code>.</p>
+</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The example folder has some examples of the use of the reporting functions.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">reportECG</span><span class="p">(</span><span class="n">ECGw</span><span class="p">,</span> <span class="s">&#39;LowDetail&#39;</span><span class="p">,</span> <span class="s">&#39;full&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This is an example of an ECG overview</p>
+<img alt="_images/208_full_03.png" src="_images/208_full_03.png" />
+<p>And this with more information overprint</p>
+<img alt="_images/208_full_14.png" src="_images/208_full_14.png" />
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><a class="reference internal" href="plot_ecg_strip.html"><em>Plot ECG strip</em></a> | <a class="reference internal" href="plot_ecg_mosaic.html"><em>Plot ECG mosaic</em></a></div></blockquote>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="plot_ecg_strip.html" class="btn btn-neutral float-right" title="Plotting signals and task results">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="results_format.html" class="btn btn-neutral" title="Accessing results"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Mariano Llamedo Soria.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

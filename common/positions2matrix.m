@@ -1,3 +1,29 @@
+%% (Internal) Convert matrix of ECG wave annotations to a struct position format, used in wavedet algorithm
+%   
+%   [pos_matrix, fields ] = positions2matrix(this_position, fields)
+% 
+% Arguments:
+% 
+%      + this_position: struct with fields vectors of annotations 
+% 
+%      + fields: field names in pos_matrix
+%             
+% Output:
+% 
+%      + pos_matrix: with the fields defined in fields variable
+% 
+%      + fields: field names in pos_matrix
+% 
+% Example:
+% 
+% See also matrix2positions
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Last update: 14/5/2014
+% Birthdate  : 21/4/2015
+% Copyright 2008-2015
+% 
 function [pos_matrix, fields ] = positions2matrix(this_position, fields)
 
     if( nargin < 2 || isempty(fields) )

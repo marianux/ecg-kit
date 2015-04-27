@@ -1,0 +1,347 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ECGtask &mdash; ECGkit 1.0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/>
+        <link rel="next" title="QRS detection" href="QRS_detection.html"/>
+        <link rel="prev" title="Custom formats" href="custom_formats.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> ECGkit</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="release-notes.html">Release notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html">Be in touch</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="first_example.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Another example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ECGwrapper.html">Accessing signals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Matlab_format.html">Matlab file format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_formats.html">Adding your own formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Performing tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="QRS_detection.html">QRS detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QRScorrector.html">QRS correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_detection.html">ABP/PPG peak detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_correction.html">ABP/PPG peak correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECGdelineation.html">ECG delineation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_delineation_corrector.html">ECG delineation correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_heartbeat_classifier.html">Heartbeat classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Arbitrary_tasks.html">Arbitrary tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="results_format.html">Result format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportECG.html">Plotting and reporting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plot_ecg_strip.html">A signal visualization tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_ecg_mosaic.html">A mosaic visualization tool</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="other_functions.html">Other functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="progress_bar.html">A progress bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="list_all_ECGtask.html">List all available tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extensions.html">Extending the ECGkit</a><ul class="simple">
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">ECGkit</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>ECGtask</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/ECGtask.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="ecgtask">
+<h1>ECGtask<a class="headerlink" href="#ecgtask" title="Permalink to this headline">¶</a></h1>
+<p>Perform an specific task to an ECG signal. This document defines the standard interface that tasks must implement.</p>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>The ECGtask is an abstract class definition where the minimum interface
+requirements are specified, in order that your own tasks can be safely
+plugged into <a class="reference external" href="ECGwrapper.html">ECGwrapper</a> objects. As an example of
+how to use this interface, see the derived classes for <a class="reference external" href="QRS_detection.htm">QRS
+detection</a> and <a class="reference external" href="ECGdelineation.htm">ECG
+delineation</a>, among others that can be listed
+with the <a class="reference external" href="list_all_ECGtask.htm">list_all_ECGtask</a> function:</p>
+<ul class="simple">
+<li><a class="reference external" href="ECGdelineation.htm">ECG_delineation</a></li>
+<li><a class="reference external" href="ECG_delineation_corrector.htm">ECG_delineation_corrector</a></li>
+<li><a class="reference external" href="ABP_PPG_peak_correction.htm">PPG_ABP_corrector</a></li>
+<li><a class="reference external" href="ABP_PPG_peak_detection.htm">PPG_ABP_detector</a></li>
+<li><a class="reference external" href="QRScorrector.htm">QRS_corrector</a></li>
+<li><a class="reference external" href="QRS_detection.htm">QRS_detection</a></li>
+<li><a class="reference external" href="ECG_heartbeat_classifier.htm">ECG_heartbeat_classifier</a></li>
+<li><a class="reference external" href="Arbitrary_tasks.htm">arbitrary_function</a></li>
+</ul>
+<p>These tasks are the core of this kit and you will probably refer to them
+before you extend the functionality with your own tasks.</p>
+</div>
+<div class="section" id="properties">
+<h2>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h2>
+<p>All tasks must implement the following properties with its attributes:</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="k">properties</span><span class="p">(</span><span class="n">GetAccess</span> <span class="p">=</span> <span class="n">public</span><span class="p">,</span> <span class="n">Constant</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">name</span></code> — The name of the task.</p>
+<p><code class="docutils literal"><span class="pre">target_units</span></code> — The signal units required by the task. Possible values are:</p>
+<blockquote>
+<div><p>ADCu, raw ADC samples.</p>
+<p>nV, uV, mV, V, voltage.</p>
+</div></blockquote>
+<p><code class="docutils literal"><span class="pre">doPayload</span></code> — Boolean. Does this task generates a payload to be stored ?</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="k">properties</span><span class="p">(</span><span class="n">GetAccess</span> <span class="p">=</span> <span class="n">public</span><span class="p">,</span> <span class="n">SetAccess</span> <span class="p">=</span> <span class="n">private</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">memory_constant</span></code> — A coefficient to indicate the ECGwrapper how big should
+be a batch processing part. The size of each part is calculated as</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">user</span> <span class="p">=</span> <span class="n">memory</span><span class="p">;</span>
+<span class="n">batch_size</span> <span class="p">=</span> <span class="n">memory_constant</span> <span class="o">*</span> <span class="n">user</span><span class="p">.</span><span class="n">MaxPossibleArrayBytes</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">started</span></code> — Boolean. Did the task executed the Start method ?</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="k">properties</span><span class="p">(</span><span class="n">GetAccess</span> <span class="p">=</span> <span class="n">public</span><span class="p">,</span> <span class="n">SetAccess</span> <span class="p">=</span> <span class="n">public</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">progress_handle</span></code> — is a handle to a <a class="reference external" href="progress_bar.htm">progress_bar</a>
+object, that can be used to track the progress within your function.</p>
+<p><code class="docutils literal"><span class="pre">tmp_path</span></code> — The path to store temporary data.</p>
+</div>
+<div class="section" id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
+<p>All tasks must implement the following methods:</p>
+<p><code class="docutils literal"><span class="pre">Start</span></code> — The task initialization method.</p>
+<p>This task initialize specific aspects of the task.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">Start</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ECG_header</span><span class="p">,</span> <span class="n">ECG_annotations</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where the arguments are:</p>
+<blockquote>
+<div><p><strong>ECG_header</strong>, is a struct with info about the ECG signal, See <a class="reference internal" href="ECGwrapper.html#ecg-header-description"><span>here</span></a>
+for a description.</p>
+<p><strong>ECG_annotations</strong>, Commonly QRS detections, signal quality annotations or other type of measurements
+included with the recordings. Some documentation about annotations in <a class="reference external" href="http://www.physionet.org/physiobank/annotations.shtml">Physionet</a>.</p>
+</div></blockquote>
+<p><code class="docutils literal"><span class="pre">Process</span></code> — The task core processing function.</p>
+<p>This task is the responsible of do the actual work of the ECGtask. This mehtod is called by an ECGwrapper
+all the times needed to process the whole recording.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">payload</span> <span class="p">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">ECG</span><span class="p">,</span>
+                  <span class="n">ECG_start_offset</span><span class="p">,</span>
+                  <span class="n">ECG_sample_start_end_idx</span><span class="p">,</span>
+                  <span class="n">ECG_header</span><span class="p">,</span>
+                  <span class="n">ECG_annotations</span><span class="p">,</span>
+                  <span class="n">ECG_annotations_start_end_idx</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>where the arguments are:</p>
+<blockquote>
+<div><blockquote>
+<div><p><strong>ECG</strong>, is a matrix size <code class="docutils literal"><span class="pre">[ECG\_header.nsamp</span> <span class="pre">ECG\_header.nsig]</span></code></p>
+<p><strong>ECG_start_offset</strong>, is the location of ECG(1,:) within the whole signal.</p>
+<p><strong>ECG_header</strong>, is a struct with info about the ECG signal, See <a class="reference internal" href="ECGwrapper.html#ecg-header-description"><span>here</span></a>
+for a description.</p>
+<p><strong>ECG_annotations</strong>, Commonly QRS detections, signal quality annotations or other type of measurements
+included with the recordings. Some documentation about annotations in <a class="reference external" href="http://www.physionet.org/physiobank/annotations.shtml">Physionet</a>.</p>
+<p><strong>ECG_annotations_start_end_idx</strong>, are the start and end indexes corresponding</p>
+</div></blockquote>
+<p>to the first and last element of ECG_annotations in the current iteration.</p>
+</div></blockquote>
+<p>as a result, this method must produce a <strong>payload</strong> variable, that will be handled by the ECGwrapper object.</p>
+<p><code class="docutils literal"><span class="pre">Concatenate</span></code> — This method is responsible of the payload union after all the processing.</p>
+<p>After the execution of all <em>Process</em> steps, each payload must be put together with this method. The ECGwrapper
+object will call this method once for each payload created, building a final payload.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">payload</span> <span class="p">=</span> <span class="n">Concatenate</span><span class="p">(</span><span class="n">plA</span><span class="p">,</span> <span class="n">plB</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where the arguments are:</p>
+<blockquote>
+<div><strong>plA</strong> and <strong>plB</strong>, are two payloads created with the <em>Process</em> method.</div></blockquote>
+<p>and as a result, this method creates <strong>payload</strong>, the union of <strong>plA</strong> and <a href="#id1"><span class="problematic" id="id2">**</span></a>plB*.</p>
+<p><code class="docutils literal"><span class="pre">Finish</span></code> — This task perform the last calculation over the whole payload.</p>
+<p>After the concatenation of payloads, the whole payload is sent to this method to
+perform any final calculation.</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">payload</span> <span class="p">=</span> <span class="n">Finish</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">ECG_header</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where the arguments are:</p>
+<blockquote>
+<div><p><strong>payload</strong>, is the payload created with all the <em>Concatenate</em> method invocation.</p>
+<p><strong>ECG_header</strong>, is a struct with info about the ECG signal, See <a class="reference internal" href="ECGwrapper.html#ecg-header-description"><span>here</span></a>
+for a description.</p>
+</div></blockquote>
+<p>As a result, the final payload is generated, which later will be stored by the ECGwrapper object.</p>
+</div>
+<div class="section" id="more-about">
+<h2>More About<a class="headerlink" href="#more-about" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="http://physionet.org/">Physionet.org</a></li>
+<li><a class="reference external" href="http://thew-project.org/">Telemetric and Holter ECG Warehouse
+(THEW)</a></li>
+<li><a class="reference external" href="http://diec.unizar.es/~laguna/personal/publicaciones/publicaciones.htm">Pablo Laguna research group at University of
+Zaragoza</a></li>
+<li><a class="reference external" href="http://cinc.org/">Computing in Cardiology</a></li>
+</ul>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="ECGwrapper.html">ECGwrapper</a> |
+<a class="reference external" href="ECGdelineation.htm">ECG_delineation</a> |
+<a class="reference external" href="list_all_ECGtask.htm">list_all_ECGtask</a></p>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="QRS_detection.html" class="btn btn-neutral float-right" title="QRS detection">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="custom_formats.html" class="btn btn-neutral" title="Custom formats"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Mariano Llamedo Soria.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

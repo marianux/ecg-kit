@@ -1,0 +1,342 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>A first example &mdash; ECGkit 1.0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/>
+        <link rel="next" title="Another example" href="examples.html"/>
+        <link rel="prev" title="Be in touch" href="contact.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> ECGkit</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="release-notes.html">Release notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html">Be in touch</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Another example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ECGwrapper.html">Accessing signals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Matlab_format.html">Matlab file format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_formats.html">Adding your own formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ECGtask.html">Performing tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="QRS_detection.html">QRS detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QRScorrector.html">QRS correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_detection.html">ABP/PPG peak detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_correction.html">ABP/PPG peak correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECGdelineation.html">ECG delineation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_delineation_corrector.html">ECG delineation correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ECG_heartbeat_classifier.html">Heartbeat classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Arbitrary_tasks.html">Arbitrary tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="results_format.html">Result format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportECG.html">Plotting and reporting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plot_ecg_strip.html">A signal visualization tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_ecg_mosaic.html">A mosaic visualization tool</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="other_functions.html">Other functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="progress_bar.html">A progress bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="list_all_ECGtask.html">List all available tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extensions.html">Extending the ECGkit</a><ul class="simple">
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">ECGkit</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>A first example</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/first_example.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="a-first-example">
+<h1>A first example<a class="headerlink" href="#a-first-example" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>The script <code class="docutils literal"><span class="pre">/examples/first_simple_example.m</span></code> shows the use of the ECGkit
+in multimodal-cardiovascular recordings included with this kit in the <code class="docutils literal"><span class="pre">recordings</span></code> folder.
+These recordings include arterial blood pressure (ABP), plethysmographic (PPG)
+and electrocardiogram (ECG) signals. The following
+tasks will be performed in the first example:</p>
+<ul class="simple">
+<li><a class="reference internal" href="examples.html#qrs-automatic-detection"><span>Heartbeat/QRS detection</span></a></li>
+<li><a class="reference internal" href="examples.html#ppg-abp-pulse-detection"><span>ABP/PPG pulse detection</span></a></li>
+<li><a class="reference internal" href="examples.html#ecg-automatic-delineation"><span>ECG wave delineation</span></a></li>
+<li><a class="reference internal" href="examples.html#automatic-heartbeat-classification"><span>Heartbeat classification</span></a></li>
+<li><a class="reference internal" href="examples.html#visual-inspection-of-the-signal"><span>Report generation</span></a></li>
+</ul>
+<p>The script is prepared to perform visual inspection of the automatic algorithms, with
+the <code class="docutils literal"><span class="pre">bGUICorrection</span></code> flag, but it is disabled by default. In the following listing,
+you can see a typical output of the example script.</p>
+<div class="highlight-none"><div class="highlight"><pre>&gt;&gt; first_simple_example()
+
+Description of the process:
+ + Recording: \your_path\ecg-kit\recordings\208.hea
+ + Task name: QRS_detection
+
+Processing QRS detector gqrs
+Processing QRS detector wavedet
+No multilead strategy used, instead using the delineation of lead MLII.
+Processing QRS detector wqrs
+
+##############
+# Work done! #
+##############
+
+
+Results saved in
+ + \your_path\ecg-kit\recordings\208_my_experiment_name_QRS_detection.mat
+</pre></div>
+</div>
+<p>The script starts with the QRS complex detection, producing a result file, which can be
+used later by other tasks, or to access results. Then the script follows with the pulse
+detection task:</p>
+<div class="highlight-none"><div class="highlight"><pre>##############
+# Work done! #
+##############
+
+
+Results saved in
+ + \your_path\ecg-kit\recordings\208_my_experiment_name_QRS_detection.mat
+
+
+Description of the process:
+ + Recording: \your_path\ecg-kit\recordings\208.hea
+ + Task name: PPG_ABP_detector
+
+Could not find any PPG/ABP signal, check the lead description of the recording:
+ +  MLII
+ +  V1
+
+Requirements not satisfied in \your_path\ecg-kit\recordings\208.hea for task PPG_ABP_detector.
+
+######################
+# Nothing to do here #
+######################
+</pre></div>
+</div>
+<p>As the default recording pointed by the script is the 208 from the MIT arrhythmia database, the task
+exits without finding any pulsatile signal, such as ABP or PPG. After exiting, it starts with the
+delineation task</p>
+<div class="highlight-none"><div class="highlight"><pre> Description of the process:
+ + Recording: \your_path\ecg-kit\recordings\208.hea
+ + Task name: ECG_delineation
+
+Processing ECG delineator wavedet
+No multilead strategy used, instead using the delineation of lead MLII.
+
+##############
+# Work done! #
+##############
+
+
+Results saved in
+ + \your_path\ecg-kit\recordings\208_my_experiment_name_ECG_delineation.mat
+</pre></div>
+</div>
+<p>The result produced is exactly the same as the QRS detection task. This can be convenient for backing up
+intermediate results and reproducing experiment results. Other interesting aspect to differentiate experiments
+is the <code class="docutils literal"><span class="pre">user_string</span></code> property of the ECGwrapper object. Note that the results produced retain the
+user string suffix. After that, the example performs heartbeat classification and finally produces a report.</p>
+<div class="highlight-none"><div class="highlight"><pre>Description of the process:
+ + Recording: \your_path\ecg-kit\recordings\208.hea
+ + Task name: ECG_heartbeat_classifier
+
+ + Using gqrs_MLII detections.
+
+15-Apr-2015
+Configuration
+-------------
++ Recording:  (AHA)
++ Mode: auto (12 clusters, 1 iterations, 75% cluster-presence)
+
+##############
+# Work done! #
+##############
+
+
+Results saved in
+ + \your_path\ecg-kit\recordings\208_my_experiment_name_ECG_heartbeat_classifier.mat
+</pre></div>
+</div>
+<p>As a result, the report found in <code class="docutils literal"><span class="pre">\your_path\ecg-kit\recordings\208_full.pdf</span></code> looks like this:</p>
+<img alt="_images/208_full_03.png" src="_images/208_full_03.png" />
+<p>First in the report you will find an overview of the signal.</p>
+<img alt="_images/208_full_14.png" src="_images/208_full_14.png" />
+<p>A more detailed view can be found in the last part of the report, you will find the results of the QRS detection, delineation and heartbeat
+classification. In the top right of the chart you will find the references for interpreting the results
+displayed. For example, QRS detection legend indicates a colour-code for the dotted lines with triangles in the extremes,
+placed around the QRS complexes. As recording 208 does not presents much controversy respect QRS detection,
+all detections are clustered around each heartbeat, but the legend indicates:</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>global</em>, the wavedet multilead detection.</li>
+<li><em>hb_classifier</em>, the detection used by the heartbeat classifier.</li>
+<li><em>included</em>, the gold-standard, visually-audited Physionet detections.</li>
+<li><em>gqrs_MLII</em>, the detections of <em>gqrs</em> algorithm in lead MLII.</li>
+</ul>
+</div></blockquote>
+<p>Above the legend of QRS detections, it is the delineation legend, with a colour-code for identifying each wave.
+For example in pink you can see several QRS complexes correctly segmented, but three of them are wrong.
+If you pay attention to the extreme widened ventricular beats, they are very underestimated. T-waves in orange,
+seems quite correctly measured, and P-waves as you can see are not correctly measured at all.</p>
+<p>You can experiment with the <code class="docutils literal"><span class="pre">/examples/second_simple_example.m</span></code> to see how to extend this experiment to a
+multiprocessor environment.</p>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="examples.html" class="btn btn-neutral float-right" title="Another example">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="contact.html" class="btn btn-neutral" title="Be in touch"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Mariano Llamedo Soria.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

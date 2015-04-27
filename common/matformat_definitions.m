@@ -1,5 +1,8 @@
 %% (Internal) A definition or header file, for names allowed for signals, header and annotations included in MAT format files
 % 
+% 
+% See also read_ECG
+% 
 % Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
 % Version: 0.1 beta
 % Last update: 14/5/2014
