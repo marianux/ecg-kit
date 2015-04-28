@@ -21,7 +21,7 @@ with the same application programmer interface (API) directly in Matlab, under W
 This kit also includes many open-source projects such as [WFDB Toolbox for MATLAB and Octave](http://physionet.org/physiotools/matlab/wfdb-app-matlab/) from [Physionet](http://physionet.org/), [PRtools](http://prtools.org/), [Libra](https://wis.kuleuven.be/stat/robust/LIBRA), [export_fig](http://undocumentedmatlab.com/blog/export_fig) from [undocumented Matlab](http://undocumentedmatlab.com/), and other open-source scripts that have their proper references to the original projects or authors.
 
 ## Voluntary contributions
-Many thanks to Andrés Demski from UTN who helped to this project before he learned how to use it. To the friends of Zaragoza:
+Many thanks to Andrés Demski from UTN who helped to this project before he learned how to use it. To **all** the friends in Zaragoza, Porto and Lund, but in special to the ones closest to the project:
 
 * Pablo Laguna, Juan Pablo Martínez, Rute Almeida and Juan Bolea, for the wavedet ECG delineator and many parts of the Biosig browser project that were adapted to this project. 
 * Jesús Lázaro and Eduardo Gil for the PPG / ABP pulse detection code.
