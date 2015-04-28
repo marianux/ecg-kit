@@ -5,8 +5,9 @@ This toolbox is a collection of Matlab tools that I used, adapted or developed d
 The main feature of the this toolbox is the possibility to use several popular algorithms for ECG processing, such as:
 
 * Algorithms from Physionet's [WFDB software package](http://physionet.org/physiotools/wfdb.shtml)
-* QRS detectors, such as gqrs, wqrs, ecgpuwave, Pan & Tompkins, [EP limited](http://www.eplimited.com/confirmation.htm)
+* QRS detectors, such as [gqrs](http://www.physionet.org/physiotools/wag/gqrs-1.htm), [wqrs](http://www.physionet.org/physiotools/wag/gqrs-1.htm), [wavedet](http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf), [ecgpuwave](http://www.physionet.org/physiotools/ecgpuwave/), [Pan & Tompkins](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?reload=true&arnumber=4122029), [EP limited](http://www.eplimited.com/confirmation.htm)
 * [Wavedet ECG delinator](http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf)
+* Pulse wave detectors as [wabp](http://www.physionet.org/physiotools/wag/wabp-1.htm) and [wavePPG](http://dx.doi.org/10.1109/JBHI.2013.2267096)
 * [a2hbc](https://code.google.com/p/a2hbc/) and [EP limited](http://www.eplimited.com/confirmation.htm) heartbeat classifiers.
 * And other scritps for inspecting, correcting and reporting all these results. 
 
