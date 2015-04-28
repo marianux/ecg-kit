@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>QRS detection &mdash; ECGkit 1.0.1 documentation</title>
+  <title>QRS detection &mdash; ECGkit 0.1.1 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="ECGkit 1.0.1 documentation" href="index.html"/>
+    <link rel="top" title="ECGkit 0.1.1 documentation" href="index.html"/>
         <link rel="up" title="ECGtask" href="ECGtask.html"/>
         <link rel="next" title="QRS correction" href="QRScorrector.html"/>
         <link rel="prev" title="ECGtask" href="ECGtask.html"/> 
@@ -156,6 +156,7 @@ algorithms implemented:</p>
 <li><a class="reference external" href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?reload=true&amp;arnumber=4122029">Pan and
 Tompkins</a></li>
 <li><a class="reference external" href="http://www.physionet.org/physiotools/ecgpuwave/">ECGpuwave</a></li>
+<li><a class="reference external" href="http://www.eplimited.com/confirmation.htm">EP limited</a></li>
 <li>Aristotle (not distributed with the kit)</li>
 </ul>
 <p>You can use any or all the algorithms as you will see below or you can
@@ -188,8 +189,9 @@ object, that can be used to track the progress within your function.</div></bloc
 <li>aristotle</li>
 <li><a class="reference external" href="http://www.physionet.org/physiotools/wag/gqrs-1.htm">gqrs</a></li>
 <li><a class="reference external" href="http://www.physionet.org/physiotools/wag/sqrs-1.htm">sqrs</a></li>
-<li><a class="reference external" href="http://www.physionet.org/physiotools/wag/wqrs-1.htm">wqrs</a></li>
+<li><a class="reference external" href="http://www.physionet.org/physiotools/wag/gqrs-1.htm">wqrs</a></li>
 <li><a class="reference external" href="http://www.physionet.org/physiotools/ecgpuwave/">ecgpuwave</a></li>
+<li><a class="reference external" href="http://www.physionet.org/physiotools/ecgpuwave/">epltdqrs1 or epltdqrs2</a></li>
 </ul>
 </div></blockquote>
 <p><code class="docutils literal"><span class="pre">only_ECG_leads</span></code> — Process only ECG signals. <code class="docutils literal"><span class="pre">true</span> <span class="pre">(default)</span></code></p>
@@ -232,7 +234,7 @@ for details.</p>
 <p><strong>progress_handle</strong>, is a handle to a <a class="reference external" href="progress_bar.htm">progress_bar</a>
 object, that can be used to track the progress within your function.</p>
 <p><strong>payload_in</strong>, is a user variable, of arbitrary format, allowed to be sent
-to your function. It is sent via the <a class="reference internal" href="#payload-prop"><span>payload property</span></a>
+to your function. It is sent via the <a class="reference internal" href="QRScorrector.html#payload-prop"><span>payload property</span></a>
 of this class, for example:</p>
 </div></blockquote>
 <div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% One variable</span>
@@ -354,7 +356,7 @@ Each ratio corresponds with a name in the <code class="docutils literal"><span c
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.0.1',
+            VERSION:'0.1.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

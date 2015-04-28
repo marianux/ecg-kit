@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to ECGkit’s documentation! &mdash; ECGkit 1.0.1 documentation</title>
+  <title>Welcome to ECGkit’s documentation! &mdash; ECGkit 0.1.1 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="ECGkit 1.0.1 documentation" href="#"/>
+    <link rel="top" title="ECGkit 0.1.1 documentation" href="#"/>
         <link rel="next" title="Getting Started" href="getting_started.html"/> 
 
   
@@ -139,77 +139,42 @@
             
   <div class="section" id="welcome-to-ecgkit-s-documentation">
 <h1>Welcome to ECGkit&#8217;s documentation!<a class="headerlink" href="#welcome-to-ecgkit-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>This toolbox is a collection of Matlab tools that I used, adapted or developed during my PhD and post-doc work with the <a class="reference external" href="http://diec.unizar.es/~laguna/personal/">Besicos group at University of Zaragoza</a>, Spain and at the <a class="reference external" href="http://www.electron.frba.utn.edu.ar/">National Technological University</a> of Buenos Aires, Argentina. The ECG-kit has tools for reading, processing and presenting results, as you can see in the <a class="reference external" href="http://ecg-kit.readthedocs.org/en/latest/index.html">documentation</a> or in these demos on <a class="reference external" href="https://www.youtube.com/watch?v=8lJtkGhrqFw&amp;list=PLlD2eDv5CIe9sA2atmnb-DX48FIRG46z7&amp;index=1">Youtube</a>.</p>
+<p>The main feature of the this toolbox is the possibility to use several popular algorithms for ECG processing, such as:</p>
+<ul class="simple">
+<li>Algorithms from Physionet&#8217;s [WFDB software package](<a class="reference external" href="http://physionet.org/physiotools/wfdb.shtml">http://physionet.org/physiotools/wfdb.shtml</a>)</li>
+<li>QRS detectors, such as <a class="reference external" href="http://www.physionet.org/physiotools/wag/gqrs-1.htm">gqrs</a>, <a class="reference external" href="http://www.physionet.org/physiotools/wag/gqrs-1.htm">wqrs</a>, <a class="reference external" href="http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf">wavedet</a>, <a class="reference external" href="http://www.physionet.org/physiotools/ecgpuwave/">ecgpuwave</a>, <a class="reference external" href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?reload=true&amp;arnumber=4122029">Pan &amp; Tompkins</a>, <a class="reference external" href="http://www.eplimited.com/confirmation.htm">EP limited</a></li>
+<li><a class="reference external" href="http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf">Wavedet ECG delinator</a></li>
+<li>Pulse wave detectors as <a class="reference external" href="http://www.physionet.org/physiotools/wag/wabp-1.htm">wabp</a> and <a class="reference external" href="http://dx.doi.org/10.1109/JBHI.2013.2267096">wavePPG</a></li>
+<li><a class="reference external" href="https://code.google.com/p/a2hbc/">a2hbc</a> and <a class="reference external" href="http://www.eplimited.com/confirmation.htm">EP limited</a> heartbeat classifiers.</li>
+<li>And other scritps for inspecting, correcting and reporting all these results.</li>
+</ul>
+<p>with the same application programmer interface (API) directly in Matlab, under Windows, Linux or Mac. The kit also implements a recording interface which allows processing several ECG formats, such as MIT, ISHNE, HES, Mortara, and AHA, of arbitrary recording size (the record so far is a 1 week recording of 3 leads, sampled at 500 Hz).</p>
+<img alt="_images/ex_ABP_PPG_Registro_01M_full_Pagina_05.png" src="_images/ex_ABP_PPG_Registro_01M_full_Pagina_05.png" />
+<img alt="_images/QRS_corrector.PNG" src="_images/QRS_corrector.PNG" />
+<img alt="_images/208_full_14.png" src="_images/208_full_14.png" />
+<p>This kit also includes many open-source projects such as <a class="reference external" href="http://physionet.org/physiotools/matlab/wfdb-app-matlab/">WFDB Toolbox for MATLAB and Octave</a> from <a class="reference external" href="http://physionet.org/">Physionet</a>, <a class="reference external" href="http://prtools.org/">PRtools</a>, <a class="reference external" href="https://wis.kuleuven.be/stat/robust/LIBRA">Libra</a>, <a class="reference external" href="http://undocumentedmatlab.com/blog/export_fig">export_fig</a> from <a class="reference external" href="http://undocumentedmatlab.com/">undocumented Matlab</a>, and other open-source scripts that have their proper references to the original projects or authors.</p>
+<div class="section" id="voluntary-contributions">
+<h2>Voluntary contributions<a class="headerlink" href="#voluntary-contributions" title="Permalink to this headline">¶</a></h2>
+<p>Many thanks to Andrés Demski from UTN who helped to this project before he learned how to use it. To <strong>all</strong> the friends in Zaragoza, Porto and Lund, but in special to the ones closest to the project:</p>
+<ul class="simple">
+<li>Pablo Laguna, Juan Pablo Martínez, Rute Almeida and Juan Bolea, for the wavedet ECG delineator and many parts of the Biosig browser project that were adapted to this project.</li>
+<li>Jesús Lázaro and Eduardo Gil for the PPG / ABP pulse detection code.</li>
+</ul>
+</div>
+<div class="section" id="involuntary-contributions">
+<h2>Involuntary contributions<a class="headerlink" href="#involuntary-contributions" title="Permalink to this headline">¶</a></h2>
+<p>The acknowledgements also goes to all these people, important in many ways to the fulfilment of this project</p>
+<ul class="simple">
+<li>George Moody, Wei Zong, Ikaro Silva, for all the software of <a class="reference external" href="http://physionet.org/">Physionet</a>.</li>
+<li>Reza Sameni, for his <a class="reference external" href="http://www.oset.ir">Open-Source ECG Toolbox (OSET)</a></li>
+<li>Bob Duin and all the team behind <a class="reference external" href="http://prtools.org/">PRtools</a></li>
+<li>Yair Altman from <a class="reference external" href="http://undocumentedmatlab.com/">undocumented Matlab</a></li>
+<li>Diego Armando Maradona for <a class="reference external" href="https://github.com/marianux/ecg-kit/blob/master/common/genio_inspirador.jpeg?raw=true">this</a>.</li>
+</ul>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="release-notes.html">Release notes</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="contact.html">Be in touch</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="first_example.html">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples.html">Another example</a><ul class="simple">
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="ECGwrapper.html">Accessing signals</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Matlab_format.html">Matlab file format</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="custom_formats.html">Adding your own formats</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="ECGtask.html">Performing tasks</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="QRS_detection.html">QRS detection</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="QRScorrector.html">QRS correction</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_detection.html">ABP/PPG peak detection</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="ABP_PPG_peak_correction.html">ABP/PPG peak correction</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="ECGdelineation.html">ECG delineation</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="ECG_delineation_corrector.html">ECG delineation correction</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="ECG_heartbeat_classifier.html">Heartbeat classification</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Arbitrary_tasks.html">Arbitrary tasks</a><ul class="simple">
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="results_format.html">Result format</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reportECG.html">Plotting and reporting</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="plot_ecg_strip.html">A signal visualization tool</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="plot_ecg_mosaic.html">A mosaic visualization tool</a><ul class="simple">
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="other_functions.html">Other functions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="progress_bar.html">A progress bar</a></li>
-<li class="toctree-l2"><a class="reference internal" href="list_all_ECGtask.html">List all available tasks</a><ul class="simple">
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="extensions.html">Extending the ECGkit</a><ul class="simple">
-</ul>
-</li>
-</ul>
+</div>
 </div>
 <div class="section" id="indices">
 <h2>Indices<a class="headerlink" href="#indices" title="Permalink to this headline">¶</a></h2>
@@ -257,7 +222,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.0.1',
+            VERSION:'0.1.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

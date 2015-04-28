@@ -134,7 +134,7 @@ all the times needed to process the whole recording.
 		
 where the arguments are:
 
-	**ECG**, is a matrix size ``[ECG\_header.nsamp ECG\_header.nsig]``
+	**ECG**, is a matrix size ``[ECG_header.nsamp ECG_header.nsig]``
 		
 	**ECG\_start\_offset**, is the location of ECG(1,:) within the whole signal.
 		
