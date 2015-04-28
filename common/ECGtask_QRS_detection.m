@@ -501,7 +501,13 @@ classdef ECGtask_QRS_detection < ECGtask
                 x = cellstr(x);
                 aux_val = colvec(intersect(obj.cQRSdetectors, x));
                 aux_idx = find(cellfun(@(a)(~isempty(strfind(a, 'user:'))), x));
-                obj.detectors = [aux_val; colvec(x(aux_idx)) ];
+                
+                if( isempty(aux_idx))
+                    warning('ECGtask_QRS_detection:BadArg', 'Invalid detectors.');
+                else
+                    obj.detectors = [aux_val; colvec(x(aux_idx)) ];
+                end                    
+                
             else
                 warning('ECGtask_QRS_detection:BadArg', 'Invalid detectors.');
             end

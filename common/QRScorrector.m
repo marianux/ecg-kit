@@ -331,8 +331,6 @@ function ann_output = QRScorrector(varargin)
     
     hb_idx = 1;
     lead_idx = 1;
-    bLockRRserie = false;
-    bLockScatter = false;
     selected_hb_idx = [];
     RRscatter_hb_idx_hdl = [];   
     RRserie_hb_idx_hdl = [];   
@@ -459,8 +457,6 @@ function ann_output = QRScorrector(varargin)
 
         hb_idx = 1;
         lead_idx = 1;
-        bLockRRserie = false;
-        bLockScatter = false;
         selected_hb_idx = [];
         RRscatter_hb_idx_hdl = [];   
         RRserie_hb_idx_hdl = [];   
@@ -701,15 +697,15 @@ function ann_output = QRScorrector(varargin)
         limits(1) = limits(1) - aux_val;
         limits(2) = limits(2) + aux_val;
 
-        if( bLockScatter )
-            x_lims_scatter = get(Scatter_axes_hdl, 'Xlim');
-            y_lims_scatter = get(Scatter_axes_hdl, 'Ylim');
-        end
+%         if( bLockScatter )
+%             x_lims_scatter = get(Scatter_axes_hdl, 'Xlim');
+%             y_lims_scatter = get(Scatter_axes_hdl, 'Ylim');
+%         end
 
-        if( bLockRRserie )
-            x_lims_RRserie = get(RRserie_axes_hdl, 'Xlim');
-            y_lims_RRserie = get(RRserie_axes_hdl, 'Ylim');
-        end
+%         if( bLockRRserie )
+%             x_lims_RRserie = get(RRserie_axes_hdl, 'Xlim');
+%             y_lims_RRserie = get(RRserie_axes_hdl, 'Ylim');
+%         end
 
 %         figure(fig_hdl);
 
@@ -754,14 +750,14 @@ function ann_output = QRScorrector(varargin)
             end
         end    
 
-        if( bLockScatter )
-            set(Scatter_axes_hdl, 'Xlim', x_lims_scatter);
-            set(Scatter_axes_hdl, 'Ylim', y_lims_scatter);
-        else
+%         if( bLockScatter )
+%             set(Scatter_axes_hdl, 'Xlim', x_lims_scatter);
+%             set(Scatter_axes_hdl, 'Ylim', y_lims_scatter);
+%         else
             set(Scatter_axes_hdl, 'Xlim', limits);
             set(Scatter_axes_hdl, 'Ylim', limits);
-    %         zoom reset
-        end
+%     %         zoom reset
+%         end
 
         title(Scatter_axes_hdl, ['Poincaré plot interval of ' Seconds2HMS((end_idx-start_idx+1)/ECG_struct.header.freq) ]);
         xlabel(Scatter_axes_hdl, 'Current value')
@@ -797,12 +793,12 @@ function ann_output = QRScorrector(varargin)
             set(RRserie_axes_hdl, 'Units', prev_units);
         end
         
-        if( bLockRRserie )
-            xlim(RRserie_axes_hdl, x_lims_RRserie);
-            ylim(RRserie_axes_hdl, y_lims_RRserie);
-            this_xlims = x_lims_RRserie;
-            this_ylims = y_lims_RRserie;
-        else
+%         if( bLockRRserie )
+%             xlim(RRserie_axes_hdl, x_lims_RRserie);
+%             ylim(RRserie_axes_hdl, y_lims_RRserie);
+%             this_xlims = x_lims_RRserie;
+%             this_ylims = y_lims_RRserie;
+%         else
             if( isempty(aux_RR) )
                 x_max = 1;
                 x_min = 0;
@@ -816,7 +812,7 @@ function ann_output = QRScorrector(varargin)
                 xlim(RRserie_axes_hdl, [ x_min - 0.05 * x_range x_max + 0.05 * x_range ]);
             end
             this_xlims = [ x_min x_max ];
-        end
+%         end
         
         % red box around
         this_xlims = this_xlims + 0.01*[ -diff(this_xlims) diff(this_xlims) ];
@@ -1305,7 +1301,7 @@ function ann_output = QRScorrector(varargin)
                     end
 
                     ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);
-                    set(ECG_hdl,'ButtonDownFcn',@inspect_ECG);            
+                    cellfun(@(a)( set(a,'ButtonDownFcn',@inspect_ECG)), ECG_hdl);            
                 end
                 
                 if( length(lead_idx) > 1 )
@@ -1685,7 +1681,7 @@ function ann_output = QRScorrector(varargin)
             end
 
     %         zoom reset
-            set(ECG_hdl,'ButtonDownFcn',@inspect_ECG);            
+            cellfun(@(a)( set(a,'ButtonDownFcn',@inspect_ECG)), ECG_hdl);            
             set(ECG_axes_hdl,'ButtonDownFcn',@inspect_ECG);            
 
         elseif (strcmp(event_obj.Key,'rightarrow'))
@@ -1738,9 +1734,9 @@ function ann_output = QRScorrector(varargin)
             Redraw();
 
         else
-            bLockRRserie = false;
-            bLockScatter = false;
-            lead_idx = 1:ECG_struct.header.nsig;
+%             bLockRRserie = false;
+%             bLockScatter = false;
+%             lead_idx = 1:ECG_struct.header.nsig;
         end
 
     end
@@ -1870,7 +1866,8 @@ function ann_output = QRScorrector(varargin)
                     end
 
                     ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);
-                    set(ECG_hdl,'ButtonDownFcn',@inspect_ECG);            
+                    cellfun(@(a)( set(a,'ButtonDownFcn',@inspect_ECG)), ECG_hdl);            
+                    
                 end
 
                 if( length(lead_idx) > 1 )
@@ -2494,7 +2491,7 @@ function ann_output = QRScorrector(varargin)
 
                 title(ECG_axes_hdl, ['Heartbeat ' num2str(hb_idx) ' : Lead ' ECG_struct.header.desc(lead_idx,:)] )
 
-                set(ECG_hdl,'ButtonDownFcn',@inspect_ECG);            
+                cellfun(@(a)( set(a,'ButtonDownFcn',@inspect_ECG)), ECG_hdl);            
                 set(ECG_axes_hdl,'ButtonDownFcn',@inspect_ECG);   
 
 
@@ -2523,7 +2520,7 @@ function ann_output = QRScorrector(varargin)
                 aux_str = rowvec(colvec([repmat(',', length(lead_idx), 1) ECG_struct.header.desc(lead_idx,:) ]'));
                 title(ECG_axes_hdl, ['Heartbeat ' num2str(hb_idx) ' : Leads ' aux_str(2:end) ] )
 
-                set(ECG_hdl,'ButtonDownFcn',@inspect_ECG);            
+                cellfun(@(a)( set(a,'ButtonDownFcn',@inspect_ECG)), ECG_hdl);            
                 set(ECG_axes_hdl,'ButtonDownFcn',@inspect_ECG);   
 
 

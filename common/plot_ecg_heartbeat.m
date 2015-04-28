@@ -190,7 +190,8 @@ hold(axes_hdl, 'on')
 
 ECG_hdl = colvec(arrayfun(@(sig_idx, col_idx)(plot(axes_hdl, aux_idx, aux_sig(:,sig_idx), 'Color', ColorOrder(col_idx,:) )), 1:length(lead_idx), lead_idx, 'UniformOutput', false ));
 
-ECG_hdl = [ECG_hdl; colvec( arrayfun( @(a,b)( plot(axes_hdl, a, b , 'r--' )), repmat(rowvec(QRS_locations(qrs_ploted) - ECG_start_idx + 1 ),2,1), [ repmat(ecg_max, 1,length(qrs_ploted)) ; zeros(1,length(qrs_ploted)) ], 'UniformOutput', false ) ) ];
+% ECG_hdl = [ECG_hdl; colvec( arrayfun( @(a,b)( plot(axes_hdl, a, b , 'r--' )), repmat(rowvec(QRS_locations(qrs_ploted) - ECG_start_idx + 1 ),2,1), [ repmat(ecg_max, 1,length(qrs_ploted)) ; zeros(1,length(qrs_ploted)) ], 'UniformOutput', false ) ) ];
+ECG_hdl = [ECG_hdl; colvec( cellfun( @(a,b)( plot(axes_hdl, a, b, 'r--' )), mat2cell( repmat(rowvec(QRS_locations(qrs_ploted) - ECG_start_idx + 1 ),2,1), 2, ones(length(qrs_ploted),1) ), mat2cell ( [ repmat(ecg_max, 1,length(qrs_ploted)) ; zeros(1,length(qrs_ploted))], 2, ones(length(qrs_ploted),1) ), 'UniformOutput', false) ) ];
 
 aux_yrange = get(axes_hdl, 'Ylim');
 
@@ -225,7 +226,7 @@ else
     for this_QRS_location = rowvec(other_QRS_locations)
         this_QRS_locations = this_QRS_location{1};
         qrs_ploted = find(this_QRS_locations >= aux_idx(1) & this_QRS_locations <= aux_idx(end) );
-        ECG_hdl = [ECG_hdl; colvec( arrayfun( @(a,b)( plot(axes_hdl, a, b, 'LineStyle', ':', 'Color', ColorOrder(jj,:) )), repmat(rowvec(this_QRS_locations(qrs_ploted)),2,1), [ repmat(ecg_max, 1,length(qrs_ploted)) ; zeros(1,length(qrs_ploted))], 'UniformOutput', false) ) ];
+        ECG_hdl = [ECG_hdl; colvec( cellfun( @(a,b)( plot(axes_hdl, a, b, 'LineStyle', ':', 'Color', ColorOrder(jj,:) )), mat2cell( repmat(rowvec(this_QRS_locations(qrs_ploted)),2,1), 2, ones(length(qrs_ploted),1) ), mat2cell ( [ repmat(ecg_max, 1,length(qrs_ploted)) ; zeros(1,length(qrs_ploted))], 2, ones(length(qrs_ploted),1) ), 'UniformOutput', false) ) ];
         for ii = rowvec(qrs_ploted)
             text( this_QRS_locations(ii) + x_offset, ytext_loc, num2str(ii), 'FontSize', 7, 'BackgroundColor', [1 1 1], 'EdgeColor', ColorOrder(jj,:) );
         end
