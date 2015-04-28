@@ -7,7 +7,7 @@ The main feature of the this toolbox is the possibility to use several popular a
 * Algorithms from Physionet's [WFDB software package](http://physionet.org/physiotools/wfdb.shtml)
 * QRS detectors, such as gqrs, wqrs, ecgpuwave, Pan & Tompkins, [EP limited](http://www.eplimited.com/confirmation.htm)
 * [Wavedet ECG delinator](http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf)
-* [a2hbc heartbeat classifier](https://code.google.com/p/a2hbc/)
+* [a2hbc](https://code.google.com/p/a2hbc/) and [EP limited](http://www.eplimited.com/confirmation.htm) heartbeat classifiers.
 * And other scritps for inspecting, correcting and reporting all these results. 
 
 with the same application programmer interface (API) directly in Matlab, under Windows, Linux or Mac. The kit also implements a recording interface which allows processing several ECG formats, such as MIT, ISHNE, HES, Mortara, and AHA, of arbitrary recording size (the record so far is a 1 week recording of 3 leads, sampled at 500 Hz).
