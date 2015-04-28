@@ -27,7 +27,7 @@ Many thanks to Andrés Demski from UTN who helped to this project before he lear
 * Jesús Lázaro and Eduardo Gil for the PPG / ABP pulse detection code.
 
 ## Involuntary contributions
-The acknowledges also goes to all these people, important in many ways to the fulfilment of this project
+The acknowledgements also goes to all these people, important in many ways to the fulfilment of this project
 
 * George Moody, Wei Zong, Ikaro Silva, for all the software of [Physionet](http://physionet.org/).
 * Reza Sameni, for his [Open-Source ECG Toolbox (OSET)](http://www.oset.ir)
