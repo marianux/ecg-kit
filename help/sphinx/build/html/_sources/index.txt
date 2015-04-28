@@ -9,7 +9,7 @@ This toolbox is a collection of Matlab tools that I used, adapted or developed d
 
 The main feature of the this toolbox is the possibility to use several popular algorithms for ECG processing, such as:
 
-* Algorithms from Physionet's [WFDB software package](http://physionet.org/physiotools/wfdb.shtml)
+* Algorithms from Physionet's `WFDB software package <http://physionet.org/physiotools/wfdb.shtml>`__
 * QRS detectors, such as `gqrs <http://www.physionet.org/physiotools/wag/gqrs-1.htm>`__, `wqrs <http://www.physionet.org/physiotools/wag/gqrs-1.htm>`__, `wavedet <http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf>`__, `ecgpuwave <http://www.physionet.org/physiotools/ecgpuwave/>`__, `Pan & Tompkins <http://ieeexplore.ieee.org/xpl/articleDetails.jsp?reload=true&arnumber=4122029>`__, `EP limited <http://www.eplimited.com/confirmation.htm>`__
 * `Wavedet ECG delinator <http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf>`__
 * Pulse wave detectors as `wabp <http://www.physionet.org/physiotools/wag/wabp-1.htm>`__ and `wavePPG <http://dx.doi.org/10.1109/JBHI.2013.2267096>`__
@@ -44,8 +44,6 @@ The acknowledgements also goes to all these people, important in many ways to th
 * Diego Armando Maradona for `this <https://github.com/marianux/ecg-kit/blob/master/common/genio_inspirador.jpeg?raw=true>`__.
 
 
-Contents:
-
 .. toctree::
    :maxdepth: 4
    :titlesonly:
@@ -60,10 +58,4 @@ Contents:
    Plotting and reporting <reportECG>
    Other functions <other_functions>
    Extending the ECGkit <extensions>
-
-Indices 
--------
-
-* :ref:`genindex`
-* :ref:`search`
 
