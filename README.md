@@ -19,3 +19,20 @@ with the same application programmer interface (API) directly in Matlab, under W
 ![Image not found](http://ecg-kit.readthedocs.org/en/latest/_images/208_full_14.png)
 
 This kit also includes many open-source projects such as [WFDB Toolbox for MATLAB and Octave](http://physionet.org/physiotools/matlab/wfdb-app-matlab/) from [Physionet](http://physionet.org/), [PRtools](http://prtools.org/), [Libra](https://wis.kuleuven.be/stat/robust/LIBRA), [export_fig](http://undocumentedmatlab.com/blog/export_fig) from [undocumented Matlab](http://undocumentedmatlab.com/), and other open-source scripts that have their proper references to the original projects or authors.
+
+## Voluntary contributions
+Many thanks to Andrés Demski from UTN who helped to this project before he learned how to use the toolbox. To the friends of Zaragoza:
+
+* Pablo Laguna, Juan Pablo Martínez, Rute Almeida and Juan Bolea, for the wavedet ECG delineator and many parts of the Biosig browser project that were adapted to this project. 
+* Jesús Lázaro and Eduardo Gil for the PPG / ABP pulse detection code.
+
+## Involuntary contributions
+The acknowledges also goes to all these people, important in many ways to the fulfilment of this project
+
+* George Moody, Wei Zong, Ikaro Silva, for all the software of [Physionet](http://physionet.org/).
+* Reza Sameni, for his [Open-Source ECG Toolbox (OSET)](http://www.oset.ir)
+* Bob Duin and all the team behind [PRtools](http://prtools.org/)
+* Yair Altman from [undocumented Matlab](http://undocumentedmatlab.com/)
+* Diego Armando Maradona for this goal and also for this.
+
+
