@@ -1,6 +1,5 @@
-classdef progress_bar < handle
-
-    
+%% (Internal) A progress bar class for showing evolution of a process to users
+%
 % Description:
 % A progress-bar object to show the progress of a process. If the process
 % is a loop, and the iteration number is known a priori, the object can inform
@@ -82,11 +81,13 @@ classdef progress_bar < handle
 % %this clear and close all.
 % clear pb
 % 
-% Limits and Known bugs:
-% 
 % Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Version: 0.1 beta
 % Birthdate  : 23/8/2011
 % Last update: 24/3/2014
+% Copyright 2008-2015
+% 
+classdef progress_bar < handle
 
     properties(GetAccess = private, Constant)
 

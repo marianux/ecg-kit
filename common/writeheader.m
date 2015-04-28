@@ -1,6 +1,15 @@
-%% Write an ECG header in MIT format
+%% (Internal) Write an ECG header in MIT format
+% 
 % This function receives a "header" struct with ECG signal propeties and
 % writes [header.name '.hea'] file into "header_path".
+% 
+%       writeheader(header_path, header)
+% 
+% Arguments:
+% 
+%	   header_path: directory of work
+% 
+%	   header: struct of header to write
 % 
 % Example
 % 
@@ -19,7 +28,7 @@
 % 
 %         writeheader(MIT_path, ECG_header);
 % 
-% See also read_ECG, ECGwrapper
+% See also writeannot, read_ECG, ECGwrapper
 % 
 % Author: Salvador Olmos, Juan Pablo Martínez and/or Juan Bolea
 % adapted to ECGkit by: Mariano Llamedo Soria
@@ -27,13 +36,10 @@
 % Version: 0.1 beta
 % Birthdate: 5/01/2014
 % Last update: 19/11/2014
+% Copyright 2008-2015
 % 
 function writeheader(header_path, header)
 %
-% WRITHEAD function writes header file for signal data struct in directory header_path
-%	Input parameters.
-%	   header_path: directory of work
-%	   header: struct of header to write
 
 if(header_path(end) ~= filesep )
     header_path = [header_path filesep];

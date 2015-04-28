@@ -1,3 +1,44 @@
+%% (Internal) Woody algorithm for heartbeat allignment
+%
+%     [ best_esemble_avg, 
+%       min_anns_refined, 
+%       all_anns_matched_with_BEA] = woody_method(signal, 
+%                           annotations, realization_limit, 
+%                           outliers_proportion, bRobust )
+% 
+% Arguments:
+% 
+%   + signal:
+% 
+%   + annotations: heartbeat sample location.
+% 
+%   + realization_limit: limits of the heartbeat with respect to
+%   annotations(i) - realization_limit(1) to annotations(i) +
+%   realization_limit(2).  
+% 
+%   + outliers_proportion: Proportions of outliers to assume, and discard
+%   from the template calculation. 
+% 
+%   + bRobust: Calculate the template with median instead of mean.
+% 
+% Output:
+% 
+%   + best_esemble_avg: The best template found.
+% 
+%   + min_anns_refined: The refined location of the selected heartbeats,
+%   without outliers. 
+% 
+%   + all_anns_matched_with_BEA: The refined location of the selected heartbeats,
+%   with outliers. 
+% 
+% See also 
+% 
+% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Version: 0.1 beta
+% Birthdate: 21/7/2010
+% Last update: 20/02/2013
+% Copyright 2008-2015
+% 
 function [best_esemble_avg, min_anns_refined, all_anns_matched_with_BEA] = woody_method(signal, annotations, realization_limit, outliers_proportion, bRobust )
 
 if( nargin < 5 || isempty(bRobust ) )

@@ -34,6 +34,8 @@
 %                of the original recording handled by ECG_w.
 % 
 % 
+% See also plot_ecg_strip
+% 
 % Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
 % Version: 0.1 beta
 % Last update: 17/6/2014

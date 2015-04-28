@@ -1,9 +1,10 @@
-
-function [ ECG heasig ann last_sample ] = read_ishne(filename, start_sample, end_sample)
-
+%% (Internal) Reads ECG recordings in Mortara format
+%
+%     [ ECG heasig ann last_sample ] = read_ishne(filename, start_sample, end_sample)
+% 
 % Reads ECG recordings in ISHNE format from THEW databases. Implements the documentation available in:
 % 
-% http://thew-project.org/THEWFileFormat.html
+%                   http://thew-project.org/THEWFileFormat.html
 % 
 % Arguments:
 %   + filename: recording to be read.
@@ -20,10 +21,15 @@ function [ ECG heasig ann last_sample ] = read_ishne(filename, start_sample, end
 % performance reasons. You can disable this limit by doing:
 % MaxIOread = Inf; %megabytes
 % 
-% Author: Mariano Llamedo Soria (llamedom at {unizar.es;electron.frba.utn.edu.ar}
+% See also read_ECG
+% 
+% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Version: 0.1 beta
 % Birthdate: 21/7/2010
 % Last update: 20/02/2013
+% Copyright 2008-2015
 % 
+function [ ECG heasig ann last_sample ] = read_ishne(filename, start_sample, end_sample)
 
 %No leer bloques mas grandes de 200 megabytes
 MaxIOread = 200; %megabytes

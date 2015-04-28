@@ -1,3 +1,30 @@
+%% (Internal) Plot a line with text in a graphic
+%
+%     text_line_handles = text_line( x, y, text_str, text_line_prop_vals, axes_hdl )
+% 
+% Arguments:
+% 
+%   + x, y: coordinates for the arrow.
+% 
+%   + text_str: string to display.
+% 
+%   + text_line_prop_vals: properties names/values to set. A cell with
+%   prop. names in col 1 and prop vals in col 2.
+% 
+%   + axes_hdl: the axe handle to plot the arrow.
+% 
+% Output:
+% 
+%   + text_line_handles: handles of the plotted arrow.
+% 
+% See also plot_ecg_mosaic
+% 
+% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Version: 0.1 beta
+% Birthdate: 21/7/2010
+% Last update: 20/02/2013
+% Copyright 2008-2015
+% 
 function text_line_handles = text_line( x, y, text_str, text_line_prop_vals, axes_hdl )
 
     %% interface

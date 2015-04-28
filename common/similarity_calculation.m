@@ -1,3 +1,34 @@
+%% (Internal) Pattern matching function to be used in an arbitrary task
+%
+%     similarity = similarity_calculation(signal, ECG_header_aux, progress_handle, pattern2detect )
+% 
+% 
+% Arguments:
+% 
+%   + signal: 
+% 
+%   + ECG_header_aux: header info
+% 
+%   + progress_handle: progress_bar handle
+% 
+%   + pattern2detect: the pattern to detect in signal
+% 
+% Output:
+% 
+%   + similarity: a signal proportional to the similarity between
+%   pattern2detect and signal. 
+% 
+% Example:
+% 
+% 
+% See also QRScorrector, ECGtask_arbitrary_function
+% 
+% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Version: 0.1 beta
+% Birthdate: 17/12/2010
+% Last update: 17/12/2010
+% Copyright 2008-2015
+% 
 function similarity = similarity_calculation(signal, ECG_header_aux, progress_handle, pattern2detect )
 
     [nsamples_signal, nsig_signal] = size(signal);

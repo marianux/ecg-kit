@@ -1,4 +1,5 @@
 %% (Internal) GUI for correcting QRS detections
+% 
 % Description: 
 % This function implements a graphical user interface (GUI) to correct annotations
 % possibly previous performed by an automatic algorithm. The idea is to
@@ -26,7 +27,7 @@
 %                 Synchronization sample. In ECG context, this values are
 %                 the QRS fiducial point. (empty)
 % 
-
+% 
 %     +ECG_header: [struct] OPTIONAL. 
 % 
 %             Description of the ECG typically available in the
@@ -52,21 +53,21 @@
 %               Annotations to be included in the mosaic. The funcion
 %               accepts 2 type of annotations: points and lines. 
 % 
-% 
-% Limits and Known bugs:
-%   Probably a lot :( ... but dont panic! send me feedback if you need help.
-% 
 % Example:
 % 
 %    https://www.youtube.com/watch?v=qgWjvsvafVg&list=PLlD2eDv5CIe9sA2atmnb-DX48FIRG46z7&index=3
 % 
 % See also ECGtask_QRS_corrector
 % 
+% Limits and Known bugs:
+%   Probably a lot :( ... but dont panic! send me feedback if you need help.
+% 
 % Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
 % Version: 0.1 beta
 % Birthdate  : 16/2/2012
 % Last update: 7/2/2014
 % Copyright 2008-2015
+% 
 function ann_output = QRScorrector(varargin)
 
     %% Constants

@@ -1,3 +1,14 @@
+%% (Internal) Constants for the HES format
+% 
+% 
+% See also read_HES_format, read_ECG
+% 
+% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Version: 0.1 beta
+% Birthdate: 29/05/2014
+% Last update: 29/05/2014
+% Copyright 2008-2015
+% 
 
 cLead_description_table = { ...
                         'Unspecified lead','MDC_ECG_LEAD_CONFIG'; ...
