@@ -23,12 +23,12 @@ Universe        = vanilla
 #
 
 
-#InputDir = /home/$(Grupo)/$(User)/ECGKit/examples/condor
+#InputDir = /home/$(Grupo)/$(User)/ecg-kit/examples/condor
 
 # 
 # Do not edit
 # 
-InitialDir = /home/$(Grupo)/$(User)/ECGKit/examples/condor
+InitialDir = /home/$(Grupo)/$(User)/ecg-kit/examples/condor
 #
 # Cambiar para indicar el directorio en el que se  
 # desea la salida. Se recomienda que sea un directorio
@@ -39,7 +39,7 @@ InitialDir = /home/$(Grupo)/$(User)/ECGKit/examples/condor
 
 # The absolute path (not relative to InitialDir!) to
 # your Executable
-Executable = /home/$(Grupo)/$(User)/ECGKit/examples/condor/condor_exec.sh
+Executable = /home/$(Grupo)/$(User)/ecg-kit/examples/condor/condor_exec.sh
 
 
 # This is to be turned on for Matlab simulations.
@@ -105,8 +105,9 @@ nice_user = true
 ######################
 
 # comando a ejecutar.
-iCantidadProcesos = 4
+iCantidadProcesos = 50
 
-Arguments  = second_simple_example( sprintf('%d/%d', $(Process)+1, $(iCantidadProcesos) ) )
+# Arguments  = second_simple_example( sprintf('%d/%d', $(Process)+1, $(iCantidadProcesos) ) )
+Arguments  = examples( sprintf('%d/%d', $(Process)+1, $(iCantidadProcesos) ), '/home/bio/mllamedo/ECGKit/example recordings' )
 Queue $(iCantidadProcesos)
 
