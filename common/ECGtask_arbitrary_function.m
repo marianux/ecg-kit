@@ -95,22 +95,21 @@ classdef ECGtask_arbitrary_function < ECGtask
             end
 
             if( nargin(obj.function_pointer) == 1 )
-                payload.result_signal = obj.function_pointer( double(ECG(:,obj.lead_idx)) );
+                aux_payload = obj.function_pointer( double(ECG(:,obj.lead_idx)) );
             else
                 ECG_header_aux = trim_ECG_header(ECG_header, obj.lead_idx);
-                payload.result_signal = obj.function_pointer( ECG(:,obj.lead_idx), ECG_header_aux, obj.progress_handle, obj.payload);
+                aux_payload = obj.function_pointer( ECG(:,obj.lead_idx), ECG_header_aux, obj.progress_handle, obj.payload);
             end
             
             if( obj.signal_payload )
                 % trim the signal
-                payload.result_signal = payload.result_signal(ECG_sample_start_end_idx(1):ECG_sample_start_end_idx(2),:);
+                payload.result_signal = aux_payload(ECG_sample_start_end_idx(1):ECG_sample_start_end_idx(2),:);
                 
                 obj.range_min_max_tracking = [ min(obj.range_min_max_tracking(1), min(payload.result_signal) ) max(obj.range_min_max_tracking(2), max(payload.result_signal)) ];
                 
             else
-                payload = payload.result_signal;
+                payload.result = aux_payload;
             end
-            
             
         end
         

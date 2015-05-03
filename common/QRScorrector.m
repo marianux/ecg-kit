@@ -2059,16 +2059,18 @@ function ann_output = QRScorrector(varargin)
             aux_val = sig_breaks;
             for aux_start = (aux_windows+1)
                 aux_val1 = [ECG_w.read_signal( aux_start, aux_start + win_sample ) aux_w.read_signal( aux_start, aux_start + win_sample ) ];
+                aux_val1 = [aux_val1(:, lead_idx) aux_w.read_signal( aux_start, aux_start + win_sample ) ];
                 aux_val = [aux_val; [bsxfun(@minus, aux_val1(:,1:end-1), mean(aux_val1(:,1:end-1)) ) aux_val1(:,end)]; sig_breaks ];
             end
         end
         
         aux_thr_scale = max(abs(aux_val));
         aux_val = bsxfun(@times, aux_val, 1./aux_thr_scale);
+        aux_val(:,1:llead_idx) = (aux_val(:,1:llead_idx)*0.5) - 0.5;
         aux_hdls = plot(aux_val);
         axes_hdl = gca();
         set(axes_hdl, 'Position', [ 0.015 0.025 0.97 0.92] );
-        title('Select the detection threshold to use')
+        title('Select the detection threshold to use in the similarity function')
         
         detection_threshold = 0.3; % seconds
         dt_samples = round(detection_threshold*ECG_struct.header.freq);
@@ -2121,7 +2123,7 @@ function ann_output = QRScorrector(varargin)
                 
                 % asume that the whole series keep in mem.
                 aux_val = load(aux_w.Result_files{1});  
-                ECG_struct.pattern_match.time = aux_val.result_signal;
+                ECG_struct.pattern_match.time = aux_val.result;
             end
 
     %         aux_idx = 1;
