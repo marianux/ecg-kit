@@ -124,8 +124,6 @@ classdef ECGwrapper < handle
         % private
         MaxNodesWriting
         % private
-        bQRSlocations
-        % private
         QRS_locations
         % private
         bArgChanged = true;
@@ -1377,7 +1375,6 @@ classdef ECGwrapper < handle
             
             if( isempty(value) )
                 obj.ECG_annotations = [];
-                obj.bQRSlocations = false;
                 obj.QRS_locations = [];                
             else
                 if( isstruct(value) )
@@ -1385,7 +1382,6 @@ classdef ECGwrapper < handle
                     if( all(isfield(value, obj.cAnnotationsFieldNamesRequired )) )
 
                         obj.ECG_annotations = value;
-                        obj.bQRSlocations = true;
                         obj.QRS_locations = value.time;
 
                     else
@@ -1603,12 +1599,10 @@ classdef ECGwrapper < handle
             end
 
             if(isempty(ann_aux))
-                obj.bQRSlocations = false;
                 obj.ECG_annotations = [];
                 obj.QRS_locations = [];
             else
                 % discard non-beats and finish annotations parsing.
-                obj.bQRSlocations = true;
                 if( isfield(ann_aux, 'anntyp') )
                     ann_aux = AnnotationFilterConvert(ann_aux, obj.recording_format, obj.class_labeling);
                 end
@@ -1675,14 +1669,9 @@ function obj = CheckArguments(obj)
 
     if( strcmpi(obj.partition_mode, 'QRS') )
         %partition using QRS detections
-        if( obj.bQRSlocations )
-            if( obj.overlapping_time < 5 ) %seconds
-                warning('ECGwrapper:ArgCheck:Overlapp_too_low', 'The overlapping time between iterations is too low, consider increasing.\n' );
-            end
-        else
-            error('ECGwrapper:ArgCheck:QRS_det_not_available', 'Please provide valid QRS detections to use this mode.\n' );
+        if( obj.overlapping_time < 5 ) %seconds
+            warning('ECGwrapper:ArgCheck:Overlapp_too_low', 'The overlapping time between iterations is too low, consider increasing.\n' );
         end
-
     else
         if( strcmpi(obj.partition_mode, 'ECG_contiguous') )
             %One segment after the other.
