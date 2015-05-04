@@ -58,6 +58,7 @@ for jj = 1:iter_times
         try
 %             dbclear if caught error            
 %             [clust_labels w_Trained_Classifier ] = emclust_new(dsTrain, w_mapp, CantClusters-ii );
+            clust_labels = [];
             [clust_labels w_Trained_Classifier ] = emclust(dsTrain, w_mapp, CantClusters-ii );
 %             dbstop if caught error            
             bContinuar = false;
@@ -69,7 +70,13 @@ for jj = 1:iter_times
             end
         end
     end
-    clustered_labels(:,jj) = char(97+clust_labels);
+
+    if( isempty(clust_labels) )
+        error('Clustering failed, check data.')
+    else
+        clustered_labels(:,jj) = char(97+clust_labels);
+    end
+    
 %             jj = jj + 1;
 end
 
