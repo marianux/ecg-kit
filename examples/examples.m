@@ -117,7 +117,7 @@ function examples(pid_str, examples_path, user_str)
 %         % select an specific algorithm. Default: Run all detectors
 %         ECGt_QRSd.detectors = 'wavedet'; % Wavedet algorithm based on
 %         ECGt_QRSd.detectors = 'pantom';  % Pan-Tompkins alg.
-        ECGt_QRSd.detectors = 'gqrs';    % WFDB gqrs algorithm.
+         ECGt_QRSd.detectors = 'gqrs';    % WFDB gqrs algorithm.
 %         ECGt_QRSd.detectors = 'user:example_worst_ever_QRS_detector';    % Example of how you can add your own QRS detector.
 %         ECGt_QRSd.detectors = 'user:your_QRS_detector_func_name';    %
 %         "your_QRS_detector_func_name" can be your own detector.

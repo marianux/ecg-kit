@@ -71,6 +71,12 @@ BaselineWander = interp1(   [ 1       ; PQ_sample      ; ECG_size_decim  ], ...
                             [ ECG(1,:); PQ_estimations ; ECG(end,:)], ...
                             1:ECG_size_decim, 'pchip' );
 
+[BW_size BW_leads] = size(BaselineWander);
+                        
+if( BW_leads > BW_size)
+    BaselineWander = BaselineWander';
+end
+
 % substract the upsampled signal
 ECG_size_new = ceil(ECG_size_decim/sampling_ratio);
 last_samples = ECG(ECG_size_new,:);

@@ -117,6 +117,14 @@ elseif( strcmp(recording_format, 'MAT') )
         ECG = aux_load.(signal_name{1});
     end
     
+    if( isempty(ECG_start_idx) )
+        ECG_start_idx = 1;
+    end
+    
+    if( isempty(ECG_end_idx) )
+        ECG_end_idx = heasig.nsamp;
+    end
+    
     ECG = ECG(ECG_start_idx:ECG_end_idx,:);
     
     clear aux_load
