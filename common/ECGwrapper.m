@@ -360,13 +360,35 @@ classdef ECGwrapper < handle
 
                         if( strcmpi(obj.partition_mode, 'QRS') )
                             %% QRS mode
+                            
+                            % this annotations are qrs locations provided
+                            % to the task, result of previous QRS
+                            % detections / correction, that were parsed in
+                            % the Start method.
+                            if( isprop(obj.ECGtaskHandle, 'annotations') && ~isempty(obj.ECGtaskHandle.annotations) )
+                                % take precedence to QRS locations provided
+                                % with the signal.
+                                obj.QRS_locations = obj.ECGtaskHandle.annotations;
+                            end
 
+                            if( isprop(obj.ECGtaskHandle, 'min_heartbeats_required') )
+                                aux_min_QRS_iter = obj.ECGtaskHandle.min_heartbeats_required;
+                            else
+                                aux_min_QRS_iter = obj.minQRSxIter;
+                            end
+                            
+                            if( isprop(obj.ECGtaskHandle, 'max_heartbeats_per_iter')  )                            
+                                aux_max_QRS_iter = obj.ECGtaskHandle.max_heartbeats_per_iter;
+                            else
+                                aux_max_QRS_iter = obj.maxQRSxIter;
+                            end
+                            
                             cant_QRS_locations = length(obj.QRS_locations);
 
                             %PID parsing
                             if( obj.cant_pids > 1 )
 
-                                max_recommended_cant_pids = max(1, round( cant_QRS_locations / obj.minQRSxIter ));
+                                max_recommended_cant_pids = max(1, round( cant_QRS_locations / aux_min_QRS_iter ));
 
                                 if( obj.cant_pids > max_recommended_cant_pids )
                                     warning('ECGwrapper:TooMuchPIDs', 'CantPIDs too large for the work to do, consider decreasing it.');
@@ -388,9 +410,16 @@ classdef ECGwrapper < handle
                                 %Only one PID
                                 QRS_start_idx = 1;
                                 QRS_end_idx = cant_QRS_locations;
+                                
+                                
                             end
 
                             cant_QRS2do = QRS_end_idx - QRS_start_idx + 1;
+                            
+                            if( cant_QRS2do > aux_max_QRS_iter )
+                                warning('ECGwrapper:TooFewPIDs', 'CantPIDs is too small for the work to do, consider increasing it.');
+                            end
+                            
                             cant_samples= obj.QRS_locations(QRS_end_idx) - obj.QRS_locations(QRS_start_idx);
                             cant_iter = ceil(cant_samples * obj.ECG_header.nsig / obj.maxECGxIter);
                             %calculate iters.
@@ -1613,6 +1642,12 @@ function obj = CheckArguments(obj)
         end
     else
        error( 'ECGwrapper:ArgCheck:UserObjHdl', 'ECGtaskHandle is not a valid ECGtask handle.' );
+    end
+
+    if( isprop(obj.ECGtaskHandle, 'min_heartbeats_required') || isprop(obj.ECGtaskHandle, 'max_heartbeats_per_iter')  )
+        obj.partition_mode = 'QRS';
+    elseif( isprop(obj.ECGtaskHandle, 'min_length_required') || isprop(obj.ECGtaskHandle, 'max_length_per_iter') )
+        obj.partition_mode = 'ECG_overlapped';
     end
 
     %ECG parsing

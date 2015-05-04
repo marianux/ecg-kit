@@ -46,7 +46,15 @@ classdef ECGtask_heartbeat_classifier < ECGtask
         progress_handle
         payload
         mode 
-        tmp_path        
+        tmp_path
+        
+        % minimum amount of heartbeats required
+        min_heartbeats_required = 300;
+        % maximum amount of heartbeats to process each iteration
+        max_heartbeats_per_iter = 4000;
+        % qrs locations provided to the task, result of previous QRS
+        % detections / correction
+        annotations = [];
                 
     end
     
@@ -72,7 +80,11 @@ classdef ECGtask_heartbeat_classifier < ECGtask
                 return
             end
             
-            obj.started = true;
+            obj.annotations = ParsePayloadAnnotations(obj);
+            
+            if( ~isempty(obj.annotations) || ( isfield(ECG_annotations, 'time') && ~isempty(ECG_annotations.time))  )
+                obj.started = true;
+            end
             
         end
         
@@ -88,87 +100,21 @@ classdef ECGtask_heartbeat_classifier < ECGtask
                 end
             end
             
-            aux_val = ECG_sample_start_end_idx + ECG_start_offset - 1;
+%             aux_val = ECG_sample_start_end_idx + ECG_start_offset - 1;
 %             disp_string_title(1, sprintf( 'Classifying from %d to %d', aux_val(1), aux_val(2) ) );
-            
-            if( isempty(obj.payload) )
-                Ann_struct = ECG_annotations;
-            elseif( isstruct(obj.payload) )
-                
-                aux_fn = fieldnames(obj.payload);
-                
-                Ann_struct.time = [];
-                jj = 1;
-                
-                while( isempty( Ann_struct.time ) )
-                    
-                    % prefer manually reviewed annotations corrected 
-                    aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'corrected_'))), aux_fn, 'UniformOutput', false)));
-
-                    if( isempty(aux_idx) )
-
-                        if( isfield(obj.payload, 'series_quality') )
-                            % choose the best ranked automatic detection
-                            [~, aux_idx] = sort(obj.payload.series_quality.ratios, 'descend' );
-                            if( jj <= length(aux_idx))
-                                aux_val = obj.payload.(obj.payload.series_quality.AnnNames{aux_idx(jj),1} ).(obj.payload.series_quality.AnnNames{aux_idx(jj),2});
-                                delineation_chosen = obj.payload.series_quality.AnnNames{aux_idx(jj),1};
-                            else
-                                break
-                            end
-                        else
-                            % choose the first of wavedet
-                            aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'wavedet_'))), aux_fn, 'UniformOutput', false)));
-                            if( isempty(aux_idx) )
-                                disp_string_framed(2, 'Could not identify QRS detections in the input payload.');
-                                return
-                            else
-                                if( jj <= length(aux_idx))
-                                    aux_val = obj.payload.(aux_fn{aux_idx(jj)}).time;
-                                    delineation_chosen = aux_fn{aux_idx(jj)};
-                                else
-                                    break
-                                end
-                            end
-                        end
-                    else
-                        % choose the first manually audited
-                        if( jj <= length(aux_idx))
-                            aux_val = obj.payload.(aux_fn{aux_idx(jj)}).time;
-                            delineation_chosen = aux_fn{aux_idx(jj)};
-                        else
-                            break
-                        end
-                    end
-
-                    cprintf('blue', [' + Using ' delineation_chosen ' detections.\n' ] );
-                    aux_val = aux_val - ECG_start_offset + 1 ;
-                    bAux = aux_val >= ECG_sample_start_end_idx(1) & aux_val <= ECG_sample_start_end_idx(2);
-                    Ann_struct.time = sort(unique(aux_val(bAux)));
-                    jj = jj + 1;
-                end
-                
-            else
-                obj.payload = obj.payload - ECG_start_offset + 1 ;
-                bAux = obj.payload >= ECG_sample_start_end_idx(1) & obj.payload <= ECG_sample_start_end_idx(2);
-                Ann_struct.time = sort(unique(obj.payload(bAux)));
-            end
-            
-            if( isempty(Ann_struct.time) )
-                return
-            end
             
             [lead_idx, ECG_header ] = get_ECG_idx_from_header(ECG_header);
             
             [aux_val, ~, lablist ] = a2hbc('ECG', ECG(:,lead_idx), ...
                             'ECG_header', ECG_header, ...
-                            'ECG_annotations', Ann_struct, ...
+                            'ECG_annotations', ECG_annotations, ...
                             'op_mode', obj.mode );
 
-            Ann_struct.anntyp = lablist(colvec(aux_val),1);
-            Ann_struct.time = Ann_struct.time + ECG_start_offset - 1;
+            bAux = ECG_annotations.time > ECG_sample_start_end_idx(1) & ECG_annotations.time < ECG_sample_start_end_idx(2);
+            ECG_annotations.anntyp = lablist(colvec(aux_val(bAux)),1);
+            ECG_annotations.time = ECG_annotations.time(bAux) + ECG_start_offset - 1;
             
-            payload_out = Ann_struct;
+            payload_out = ECG_annotations;
             
         end
         
@@ -211,6 +157,67 @@ classdef ECGtask_heartbeat_classifier < ECGtask
     
     methods ( Access = private )
         
+        function aux_val = ParsePayloadAnnotations(obj)
+
+            aux_val = [];
+            
+            if( isstruct(obj.payload) )
+                
+                aux_fn = fieldnames(obj.payload);
+                
+                jj = 1;
+                
+                while( isempty( aux_val ) )
+                    
+                    % prefer manually reviewed annotations corrected 
+                    aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'corrected_'))), aux_fn, 'UniformOutput', false)));
+
+                    if( isempty(aux_idx) )
+
+                        if( isfield(obj.payload, 'series_quality') )
+                            % choose the best ranked automatic detection
+                            [~, aux_idx] = sort(obj.payload.series_quality.ratios, 'descend' );
+                            if( jj <= length(aux_idx))
+                                aux_val = obj.payload.(obj.payload.series_quality.AnnNames{aux_idx(jj),1} ).(obj.payload.series_quality.AnnNames{aux_idx(jj),2});
+                                delineation_chosen = obj.payload.series_quality.AnnNames{aux_idx(jj),1};
+                            else
+                                break
+                            end
+                        else
+                            % choose the first of wavedet
+                            aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'wavedet_'))), aux_fn, 'UniformOutput', false)));
+                            if( isempty(aux_idx) )
+                                disp_string_framed(2, 'Could not identify QRS detections in the input payload.');
+                                return
+                            else
+                                if( jj <= length(aux_idx))
+                                    aux_val = obj.payload.(aux_fn{aux_idx(jj)}).time;
+                                    delineation_chosen = aux_fn{aux_idx(jj)};
+                                else
+                                    break
+                                end
+                            end
+                        end
+                    else
+                        % choose the first manually audited
+                        if( jj <= length(aux_idx))
+                            aux_val = obj.payload.(aux_fn{aux_idx(jj)}).time;
+                            delineation_chosen = aux_fn{aux_idx(jj)};
+                        else
+                            break
+                        end
+                    end
+
+                    cprintf('blue', [' + Using ' delineation_chosen ' detections.\n' ] );
+                    aux_val = sort(unique(aux_val));
+                    jj = jj + 1;
+                end
+                
+            elseif( isnumeric(obj.payload) )
+                aux_val = sort(unique(obj.payload));
+            end
+            
+        end        
         
     end
     
