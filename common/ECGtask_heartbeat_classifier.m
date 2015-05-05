@@ -49,7 +49,7 @@ classdef ECGtask_heartbeat_classifier < ECGtask
         tmp_path
         
         % minimum amount of heartbeats required
-        min_heartbeats_required = 300;
+        min_heartbeats_required = 500;
         % maximum amount of heartbeats to process each iteration
         max_heartbeats_per_iter = 4000;
         % qrs locations provided to the task, result of previous QRS
