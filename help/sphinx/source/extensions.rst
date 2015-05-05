@@ -5,31 +5,20 @@ ECGkit extensions
 This document describes how to create tasks and expand the kit
 capabilities.
 
- 
+Adding new recording formats
+----------------------------
+Will be written soon.
 
-Description
------------
+Adding new tasks
+----------------
+:doc:`Arbitrary tasks <Arbitrary_tasks>` may help you ?
 
- 
-
-Input Arguments
----------------
-
- 
-
-Examples
---------
+Tasks that work over the signal
+-------------------------------
+Will be written soon.
 
 
- 
-
-More About
-----------
-
-Here are some external references about heartbeat detection:
-
--  `Physionet <http://www.physionet.org/>`__
-
-See Also
---------
+Tasks that work beat-by-beat
+----------------------------
+Will be written soon.
 

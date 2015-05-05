@@ -74,8 +74,11 @@ and the command window shows the following message:
 
 see the videos in
 `YouTube <https://www.youtube.com/watch?v=qgWjvsvafVg&list=PLlD2eDv5CIe9sA2atmnb-DX48FIRG46z7&index=3>`__
-for a more detailed demo about things you can do with the GUI. After
-edition/verification of the automatic delineation, press CTRL+G to save
+for a more detailed demo about things you can do with the GUI. The demo shows how to
+add/remove heartbeats annotation, browse the detections through the whole recording and
+cut/copy/paste heartbeat detections between different annotations. Other features not 
+described in this video were added in `this other <https://www.youtube.com/watch?v=qgWjvsvafVg&list=PLlD2eDv5CIe9sA2atmnb-DX48FIRG46z7&index=3>`__. 
+After edition/verification of the automatic delineation, press CTRL+G to save
 results in the 'payload' variable of the caller workspace. Then press F5
 to save the results to disk.
 

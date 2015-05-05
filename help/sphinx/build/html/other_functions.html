@@ -97,7 +97,7 @@
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Other functions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="progress_bar.html">A progress bar</a></li>
-<li class="toctree-l2"><a class="reference internal" href="list_all_ECGtask.html">List all available tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="progress_bar.html">Docs to come ...</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="extensions.html">Extending the ECGkit</a><ul class="simple">
@@ -142,13 +142,181 @@
 <h1>Other functions<a class="headerlink" href="#other-functions" title="Permalink to this headline">¶</a></h1>
 <p>Several low-level functions that are located in <code class="docutils literal"><span class="pre">your_path\ecg-kit\common\</span></code>
 but are not yet well documented, tested or integrated with other parts of the kit.</p>
+<div class="section" id="general-functions">
+<h2>General functions<a class="headerlink" href="#general-functions" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>addpath_if_not_added                 - (Internal) Add the path only if not was already added.</li>
+<li>colvec                               - (Internal) Reshape the input into a column vector</li>
+<li>rowvec                               - (Internal) Reshape a matrix into a row vector</li>
+<li>init_ghostscript                     - (Internal) Init environment variables for using ghostscript</li>
+<li>init_WFDB_library                    - (Internal) Init environment variables for using WFDB toolbox</li>
+<li>isMatlab                             - (Internal) Check if the kit is running on Matlab</li>
+<li>isOctave                             - (Internal) Check if the kit is running on Octave</li>
+<li>exist_distributed_file               - (Internal) Check the existence of a file in a distributed (slow) filesystem</li>
+<li>GetFunctionInvocation                - (Internal) Create a string with the invocation of a function</li>
+<li>max_index                            - (Internal) Index of the maximum element in a vector</li>
+<li>modmax                               - (Internal) Find modulus maxima in a signal</li>
+<li>myzerocros                           - (Internal) Detect zero-crosses in a signal</li>
+<li>soft_intersect                       - (Internal) Intersection of two sets with tolerance</li>
+<li>soft_range_conversion                - (Internal) Convert an input range to an output range with a soft function</li>
+<li>soft_set_difference                  - (Internal) Set difference with tolerance</li>
+<li>parse_pids                           - (Internal) Identify how many PIDs are in total and which is this PID, based on a string formatted this_pid/cant_pids</li>
+<li>getAnnNames                          - (Internal) Get names of annotations from annotation structure</li>
+<li>matrix2positions                     - (Internal) Convert matrix of ECG wave annotations to a struct position format, used in wavedet algorithm</li>
+<li>positions2matrix                     - (Internal) Convert matrix of ECG wave annotations to a struct position format, used in wavedet algorithm</li>
+<li>pack_signal                          - (Internal) Example of user-created QRS detector</li>
+<li><a class="reference internal" href="progress_bar.html"><em>progress_bar</em></a>   - (Internal) A progress bar class for showing evolution of a process to users</li>
+<li>progress_bar_ex                      - A progress bar class example</li>
+<li>TaskPartition                        - (Internal) Generate a PIDs work list</li>
+<li>trim_ECG_header                      - (Internal) Trim a header info struct to a subset of signals</li>
+<li>WFDB_command_prefix                  - System commands to initialize the WFDB toolbox</li>
+<li>HasAdminPrivs                        - Checks administrator privileges</li>
+<li>sys_cmd_separation_string            - String to issue multiline system commands</li>
+<li>sys_command_strings                  - Strings to execute typical I/O commands via system calls</li>
+</ul>
+</div>
+<div class="section" id="strings-related">
+<h2>Strings related<a class="headerlink" href="#strings-related" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>adjust_string                        - (Internal) Works with strings to center, trim and justify to a certain string width</li>
+<li>calc_btime                           - (Internal) Creates a string with the base time</li>
+<li>disp_string_framed                   - (Internal) Display a message framed to a string</li>
+<li>disp_string_title                    - (Internal) Display a message framed to a string</li>
+<li>disp_option_enumeration              - (Internal) Display an enumeration of options to a string</li>
+<li>DisplayConfusionMatrix               - (Internal) Pretty display in Screen the confusion matrix.</li>
+<li>DisplayResults                       - (Internal) Pretty-Display results of a classification experiment</li>
+<li>Seconds2HMS                          - (Internal) Create a string of hours mins and seconds based on data in seconds</li>
+</ul>
+</div>
+<div class="section" id="graphics-related">
+<h2>Graphics related<a class="headerlink" href="#graphics-related" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>arrow                                - (Internal) Creates arrows in grapics</li>
+<li>ds2nfu                               - Convert data space units into normalized figure units.</li>
+<li>plot_auc                             - (Internal) Plot the area under the ROC curve</li>
+<li>plot_ecg_heartbeat                   - (Internal) obsolete, use plot_ecg_strip</li>
+<li>plot_ecg_mosaic                      - Plots multidimentional signal in mosaic style</li>
+<li>plot_ecg_strip                       - Plots and interact with ECG signal</li>
+<li>plot_roc                             - (Internal) Plot the ROC curve</li>
+<li>PlotGlobalWaveMarks                  - (Internal) Internal function of plot_ecg_strip</li>
+<li>PlotWaveMarks                        - (Internal) Internal function of plot_ecg_strip</li>
+<li>my_colormap                          - (Internal) Create a colormap for signal visualization</li>
+<li>maximize                             - Size a window to fill the entire screen.</li>
+<li>rand_linespec                        - (Internal) Example of user-created QRS detector</li>
+<li>rotateticklabel                      - rotates tick labels</li>
+<li>set_a_linespec                       - (Internal) Set a series of properties to a line handle</li>
+<li>set_rand_linespec                    - (Internal) Set random properties a line handle</li>
+<li>text_arrow                           - (Internal) Plot an arrow with text in a graphic</li>
+<li>text_line                            - (Internal) Plot a line with text in a graphic</li>
+</ul>
+</div>
+<div class="section" id="signal-processing-statistical-methods">
+<h2>Signal processing / statistical methods<a class="headerlink" href="#signal-processing-statistical-methods" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>autovec_calculation                  - (Internal) Calculate eigenvalues and vectors</li>
+<li>autovec_calculation_robust           - (Internal) Calculate eigenvalues and vectors using robust covariance estimation</li>
+<li>BaselineWanderRemovalMedian          - Remove baseline wandering with the median estimation method</li>
+<li>BaselineWanderRemovalSplines         - Remove baseline wandering with the median estimation method</li>
+<li>bxb                                  - (Internal) Compares two heartbeat series and produce the confusion matrix as result</li>
+<li>calc_co_ocurrences                   - (Internal) Calculate the heartbeats co-ocurrences</li>
+<li>calc_correlation_gain                - (Internal) Add the path only if not was already added.</li>
+<li>CalcRRserieQuality                   - (Obsolete) Estimate the quality of QRS complex detections</li>
+<li>CalcRRserieRatio                     - Estimate the quality of QRS complex detections</li>
+<li>calculateSeriesQuality               - Estimate the quality of QRS complex detections</li>
+<li>MedianFilt                           - (Internal) Mean/Median filtering</li>
+<li>cluster_data_with_EM_clust           - (Internal) Cluster data with expectation-maximization algorithm</li>
+<li>DelayedCovMat                        - (Internal) Delayed covariance matrix calculation</li>
+<li>deNaN_dataset                        - (Internal) Replace NaN from PRdatasets</li>
+<li>design_downsample_filter             - (Internal) Design a filter to downsample signals prior printing to a report</li>
+<li>bandpass_filter_design               - MATLAB Code</li>
+<li>PeakDetection2                       - peaks = PeakDetection2(x,fs,wlen,fp1,fp2,th,flag),</li>
+<li>PiCA                                 - [y,W,A] = PiCA(x,peaks1,peaks2)</li>
+<li>PrctileFilt                          - (Internal) Arbitrary percentile filtering</li>
+<li>logit_function                       - (Internal) Logit function</li>
+<li>my_ppval                             - PPVAL  Evaluate piecewise polynomial.</li>
+<li>qs_filter_design                     - (Internal) Design the wavelet decomposition filters for wavedet algorithm</li>
+<li>qs_wt                                - (Internal) Calculates the wavelet transform</li>
+<li>nanmeda                              - (Internal) Calculate the median of absolute deviations from the median (MEDA)</li>
+<li>woody_method                         - (Internal) Woody algorithm for heartbeat allignment</li>
+<li>AUC_calc                             - Compute area under the ROC curve (AUC).</li>
+<li>ppval                                - Evaluate piecewise polynomial.</li>
+<li>similarity_calculation               - (Internal) Pattern matching function to be used in an arbitrary task</li>
+<li>combine_anns                         - (Internal) Create new QRS detections based on other lead/algorithms detections</li>
+</ul>
+</div>
+<div class="section" id="tasks">
+<h2>Tasks<a class="headerlink" href="#tasks" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>ECGtask                              - Defines the class interface for the ECGtask derived classes</li>
+<li>ECGtask_do_nothing                   - Null ECGtask (for Matlab)</li>
+<li>ECGtask_ECG_delineation              - ECGtask for ECGwrapper (for Matlab)</li>
+<li>ECGtask_ECG_delineation_corrector    - ECGtask for ECGwrapper (for Matlab)</li>
+<li>ECGtask_heartbeat_classifier         - ECGtask for ECGwrapper (for Matlab)</li>
+<li>ECGtask_PCA_proj_basis               - ECGtask for ECGwrapper (for Matlab)</li>
+<li>ECGtask_PPG_ABP_corrector            - ECGtask for ECGwrapper (for Matlab)</li>
+<li>ECGtask_PPG_ABP_detector             - ECGtask for ECGwrapper (for Matlab)</li>
+<li>ECGtask_QRS_corrector                - ECGtask for ECGwrapper (for Matlab)</li>
+<li>ECGtask_QRS_detection                - ECGtask for ECGwrapper (for Matlab)</li>
+<li>ECGtask_QRS_detections_post_process  - ECGtask for ECGwrapper (for Matlab)</li>
+<li>ECGtask_Delineation_corrector        - ECGtask for ECGwrapper (for Matlab)</li>
+<li>ECGtask_arbitrary_function           - ECGtask for ECGwrapper (for Matlab)</li>
+<li>ECGtask_classification_features_calc - ECGtask for ECGwrapper (for Matlab)</li>
+<li>example_worst_ever_ECG_delineator    - (Internal) Example of user-created QRS detector</li>
+<li>example_worst_ever_QRS_detector      - (Internal) Example of user-created QRS detector</li>
+<li>reportECG                            - (Internal) function reads the header of signal files</li>
+<li>QRScorrector                         - (Internal) GUI for correcting QRS detections</li>
+<li>GetBestQRSdetections                 - Fetch the best QRS detections from an ECGtask_QRSdetections object</li>
+<li>list_all_ECGtask                     - List al ECGtask availables</li>
+</ul>
+</div>
+<div class="section" id="functions-from-other-projects">
+<h2>Functions from other projects<a class="headerlink" href="#functions-from-other-projects" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>GTHTMLtable                          - GTHTMLtable - Generate an HTML page with a table of a matrix.</li>
+<li>cprintf                              - displays styled formatted text in the Command Window</li>
+</ul>
+</div>
+<div class="section" id="i-o-signals">
+<h2>I/O signals<a class="headerlink" href="#i-o-signals" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Annotation_process                   - Convert heartbeat type of annotation from valid ECG formats to EC57 AAMI</li>
+<li>AnnotationFilterConvert              - Convert heartbeat type of annotation from valid ECG formats to EC57 AAMI</li>
+<li>ADC2realunits                        - Convert adimentional sample values to real units</li>
+<li>ADC2units                            - Convert adimentional sample values to target voltage units</li>
+<li>ECGwrapper                           - Allow acces to ECG recordings of arbitrary format and length.</li>
+<li>ECGformat                            - Gets the format of an ECG recording filename</li>
+<li>get_ECG_idx_from_header              - (Internal) Guess ECG signals indexes in a multimodal recording</li>
+<li>get_PPG_ABP_idx_from_header          - (Internal) Guess PPG/ABP signals indexes in a multimodal recording</li>
+<li>isAHAformat                          - (Internal) Check if a recording is in ISHNE format.</li>
+<li>isHESformat                          - (Internal) Check if a recording is in HES format.</li>
+<li>isISHNEformat                        - (Internal) Check if a recording is in ISHNE format.</li>
+<li>matformat_definitions                - (Internal) A definition or header file, for names allowed for signals, header and annotations included in MAT format files</li>
+<li>read_310_format                      - (Internal) Read the MIT 310 format</li>
+<li>read_311_format                      - (Internal) Read the MIT 311 format</li>
+<li>read_AHA_ann                         - Reads ECG annotations in AHA format</li>
+<li>read_AHA_format                      - Reads ECG recording in AHA format</li>
+<li>read_AHA_header                      - Reads ECG header in AHA format</li>
+<li>read_ECG                             - Reads an ECG recording</li>
+<li>read_HES_ann                         - Reads ECG annotations in HES format</li>
+<li>read_HES_format                      - Reads ECG recording in HES format</li>
+<li>read_HES_header                      - Reads ECG header in HES format</li>
+<li>read_ishne                           - (Internal) Reads ECG recordings in Mortara format</li>
+<li>read_ishne_ann                       - Reads ECG annotations from ISHNE format</li>
+<li>read_ishne_header                    - Reads ECG header from ISHNE format</li>
+<li>read_Mortara                         - (Internal) Reads ECG recordings in Mortara format</li>
+<li>read_Mortara_header                  - Reads ECG header in Mortara format.</li>
+<li>read_Mortara_format                  - Reads ECG recordings in Mortara format.</li>
+<li>read_ishne_format                    - Reads ECG recording in ISHNE format</li>
+<li>readheader                           - (Internal) function reads the header of signal files</li>
+<li>tablas_y_constantes                  - (Internal) Constants for the HES format</li>
+<li>writeannot                           - (Internal) Write annotation files for biomedical signals in MIT Format. (MEX file)</li>
+<li>writeheader                          - (Internal) Write an ECG header in MIT format</li>
+<li>ConcatenateQRSdetectionPayloads      - (Internal) Concatenate two payloads.</li>
+<li>default_concatenate_function         - Description:</li>
+<li>default_finish_function              - Description:</li>
+</ul>
 <div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="progress_bar.html">A progress bar</a></li>
-<li class="toctree-l1"><a class="reference internal" href="list_all_ECGtask.html">List all available tasks</a><ul class="simple">
-</ul>
-</li>
-</ul>
+</div>
 </div>
 </div>
 

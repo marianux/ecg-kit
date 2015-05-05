@@ -1,3 +1,7 @@
+%% A progress bar class example
+%
+% Example:
+
 %% start of algorithm
 clear
 
