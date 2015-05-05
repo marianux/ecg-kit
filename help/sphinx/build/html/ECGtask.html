@@ -97,7 +97,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="other_functions.html">Other functions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="progress_bar.html">A progress bar</a></li>
-<li class="toctree-l2"><a class="reference internal" href="list_all_ECGtask.html">List all available tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="progress_bar.html">Docs to come ...</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="extensions.html">Extending the ECGkit</a><ul class="simple">
@@ -153,14 +153,14 @@ detection</a> and <a class="reference external" href="ECGdelineation.htm">ECG
 delineation</a>, among others that can be listed
 with the <a class="reference external" href="list_all_ECGtask.htm">list_all_ECGtask</a> function:</p>
 <ul class="simple">
-<li><a class="reference external" href="ECGdelineation.htm">ECG_delineation</a></li>
-<li><a class="reference external" href="ECG_delineation_corrector.htm">ECG_delineation_corrector</a></li>
-<li><a class="reference external" href="ABP_PPG_peak_correction.htm">PPG_ABP_corrector</a></li>
-<li><a class="reference external" href="ABP_PPG_peak_detection.htm">PPG_ABP_detector</a></li>
-<li><a class="reference external" href="QRScorrector.htm">QRS_corrector</a></li>
-<li><a class="reference external" href="QRS_detection.htm">QRS_detection</a></li>
-<li><a class="reference external" href="ECG_heartbeat_classifier.htm">ECG_heartbeat_classifier</a></li>
-<li><a class="reference external" href="Arbitrary_tasks.htm">arbitrary_function</a></li>
+<li><a class="reference internal" href="QRS_detection.html"><em>QRS detection</em></a></li>
+<li><a class="reference internal" href="QRScorrector.html"><em>QRS correction</em></a></li>
+<li><a class="reference internal" href="ECGdelineation.html"><em>ECG delineation</em></a></li>
+<li><a class="reference internal" href="ECG_delineation_corrector.html"><em>ECG delineation correction</em></a></li>
+<li><a class="reference internal" href="ABP_PPG_peak_detection.html"><em>ABP/PPG peak detection</em></a></li>
+<li><a class="reference internal" href="ABP_PPG_peak_correction.html"><em>ABP/PPG peak correction</em></a></li>
+<li><a class="reference internal" href="ECG_heartbeat_classifier.html"><em>Heartbeat classification</em></a></li>
+<li><a class="reference internal" href="Arbitrary_tasks.html"><em>Arbitrary tasks</em></a></li>
 </ul>
 <p>These tasks are the core of this kit and you will probably refer to them
 before you extend the functionality with your own tasks.</p>
@@ -223,16 +223,14 @@ all the times needed to process the whole recording.</p>
 </div>
 <p>where the arguments are:</p>
 <blockquote>
-<div><blockquote>
 <div><p><strong>ECG</strong>, is a matrix size <code class="docutils literal"><span class="pre">[ECG_header.nsamp</span> <span class="pre">ECG_header.nsig]</span></code></p>
 <p><strong>ECG_start_offset</strong>, is the location of ECG(1,:) within the whole signal.</p>
 <p><strong>ECG_header</strong>, is a struct with info about the ECG signal, See <a class="reference internal" href="ECGwrapper.html#ecg-header-description"><span>here</span></a>
 for a description.</p>
 <p><strong>ECG_annotations</strong>, Commonly QRS detections, signal quality annotations or other type of measurements
 included with the recordings. Some documentation about annotations in <a class="reference external" href="http://www.physionet.org/physiobank/annotations.shtml">Physionet</a>.</p>
-<p><strong>ECG_annotations_start_end_idx</strong>, are the start and end indexes corresponding</p>
-</div></blockquote>
-<p>to the first and last element of ECG_annotations in the current iteration.</p>
+<p><strong>ECG_annotations_start_end_idx</strong>, are the start and end indexes corresponding
+to the first and last element of ECG_annotations in the current iteration.</p>
 </div></blockquote>
 <p>as a result, this method must produce a <strong>payload</strong> variable, that will be handled by the ECGwrapper object.</p>
 <p><code class="docutils literal"><span class="pre">Concatenate</span></code> — This method is responsible of the payload union after all the processing.</p>
@@ -244,7 +242,7 @@ object will call this method once for each payload created, building a final pay
 <p>where the arguments are:</p>
 <blockquote>
 <div><strong>plA</strong> and <strong>plB</strong>, are two payloads created with the <em>Process</em> method.</div></blockquote>
-<p>and as a result, this method creates <strong>payload</strong>, the union of <strong>plA</strong> and <a href="#id1"><span class="problematic" id="id2">**</span></a>plB*.</p>
+<p>and as a result, this method creates <strong>payload</strong>, the union of <strong>plA</strong> and <strong>plB</strong>.</p>
 <p><code class="docutils literal"><span class="pre">Finish</span></code> — This task perform the last calculation over the whole payload.</p>
 <p>After the concatenation of payloads, the whole payload is sent to this method to
 perform any final calculation.</p>

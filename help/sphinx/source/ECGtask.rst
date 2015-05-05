@@ -31,14 +31,14 @@ detection <QRS_detection.htm>`__ and `ECG
 delineation <ECGdelineation.htm>`__, among others that can be listed
 with the `list\_all\_ECGtask <list_all_ECGtask.htm>`__ function:
 
--  `ECG\_delineation <ECGdelineation.htm>`__            
--  `ECG\_delineation\_corrector <ECG_delineation_corrector.htm>`__  
--  `PPG\_ABP\_corrector <ABP_PPG_peak_correction.htm>`__          
--  `PPG\_ABP\_detector <ABP_PPG_peak_detection.htm>`__           
--  `QRS\_corrector <QRScorrector.htm>`__              
--  `QRS\_detection <QRS_detection.htm>`__              
--  `ECG\_heartbeat\_classifier <ECG_heartbeat_classifier.htm>`__   
--  `arbitrary\_function <Arbitrary_tasks.htm>`__
+-  :doc:`QRS detection <QRS_detection>`         
+-  :doc:`QRS correction <QRScorrector>`         
+-  :doc:`ECG delineation <ECGdelineation>`         
+-  :doc:`ECG delineation correction <ECG_delineation_corrector>`         
+-  :doc:`ABP/PPG peak detection <ABP_PPG_peak_detection>`         
+-  :doc:`ABP/PPG peak correction <ABP_PPG_peak_correction>`         
+-  :doc:`Heartbeat classification <ECG_heartbeat_classifier>`         
+-  :doc:`Arbitrary tasks <Arbitrary_tasks>`         
 
 These tasks are the core of this kit and you will probably refer to them
 before you extend the functionality with your own tasks.
@@ -134,6 +134,7 @@ all the times needed to process the whole recording.
 		
 where the arguments are:
 
+
 	**ECG**, is a matrix size ``[ECG_header.nsamp ECG_header.nsig]``
 		
 	**ECG\_start\_offset**, is the location of ECG(1,:) within the whole signal.
@@ -145,9 +146,8 @@ where the arguments are:
 	included with the recordings. Some documentation about annotations in `Physionet <http://www.physionet.org/physiobank/annotations.shtml>`__.
 		
 	**ECG\_annotations\_start\_end\_idx**, are the start and end indexes corresponding
-    to the first and last element of ECG_annotations in the current iteration.
-		
-		
+	to the first and last element of ECG_annotations in the current iteration.
+
 as a result, this method must produce a **payload** variable, that will be handled by the ECGwrapper object.
 		
 ``Concatenate`` — This method is responsible of the payload union after all the processing.
@@ -164,7 +164,7 @@ where the arguments are:
 
 	**plA** and **plB**, are two payloads created with the *Process* method.
 
-and as a result, this method creates **payload**, the union of **plA** and **plB*.	
+and as a result, this method creates **payload**, the union of **plA** and **plB**.	
 
 	
 ``Finish`` — This task perform the last calculation over the whole payload.
