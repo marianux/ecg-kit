@@ -18,6 +18,7 @@
 %             same feature, same class, added an small variance, estimated
 %             ignoring this nan values.  
 % 
+%      + func_ptr: A pointer to an isX function. Default @isnan
 % 
 % Output:
 % 
@@ -31,15 +32,19 @@
 % Birthdate  : 21/4/2015
 % Copyright 2008-2015
 % 
-function dsOut = deNaN_dataset(dsIn, type)
+function dsOut = deNaN_dataset(dsIn, type, func_ptr)
     
     if( nargin < 2 || isempty(type) )
         type = 'remove';
     end
     
+    if( nargin < 3 || isempty(func_ptr) )
+        func_ptr = @isnan;
+    end
     
-    features_with_nans = find(any(isnan(+dsIn)));
-    rows_without_nans = ~any(isnan(+dsIn),2);
+    
+    features_with_nans = find(any(func_ptr(+dsIn)));
+    rows_without_nans = ~any(func_ptr(+dsIn),2);
     
     if( any(~rows_without_nans) )
 
@@ -64,8 +69,8 @@ function dsOut = deNaN_dataset(dsIn, type)
 
                 for kk = rowvec(features_with_nans)
                     
-                    nan_idx = find(isnan(+(dsIn(:,kk))));
-                    not_nan_idx = find(~isnan(+(dsIn(:,kk))));
+                    nan_idx = find(func_ptr(+(dsIn(:,kk))));
+                    not_nan_idx = find(~func_ptr(+(dsIn(:,kk))));
                     laux_idx = length(nan_idx);
                     
                     dsIn(nan_idx,kk) = randsample( +dsIn(not_nan_idx,kk), laux_idx, true ) + 1/100*robust_std(kk)*rand(laux_idx,1);
@@ -91,7 +96,7 @@ function dsOut = deNaN_dataset(dsIn, type)
                 Class_indexes = getnlab(dsIn);        
 
                 for kk = rowvec(features_with_nans)
-                    nan_idx = find(isnan(+(dsIn(:,kk))));
+                    nan_idx = find(func_ptr(+(dsIn(:,kk))));
 
                     classes_involved = unique(Class_indexes(nan_idx));
 

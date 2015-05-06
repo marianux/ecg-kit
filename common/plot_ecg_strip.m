@@ -595,7 +595,7 @@ if( isempty(ECG) )
     
     % only for big recordings, can it be readed all together ?
     aux_MaxIOread = (MaxIOread * 1024^2) / heasig.nsig / 2;
-    if( cant_samp > aux_MaxIOread )
+    if( cant_samp > aux_MaxIOread && isempty(start_time) && isempty(end_time) )
         cant_samp = aux_MaxIOread;
         cprintf('[1,0.5,0]','Recording too big, reading only %d samples. Use "Start_time" and "End_time" arguments to select other parts.\n', cant_samp);
     end
@@ -840,7 +840,7 @@ else
 
         %transform to real units
         ECG = bsxfun( @rdivide, bsxfun( @minus, double(ECG), rowvec(double(heasig.adczero)) ), rowvec(double(heasig.gain)) ) ;
-        ECGd = bsxfun( @rdivide, bsxfun( @minus, ECGd, rowvec(double(heasig.adczero)) ), rowvec(double(heasig.gain)) ) ;
+        ECGd = bsxfun( @rdivide, bsxfun( @minus, double(ECGd), rowvec(double(heasig.adczero)) ), rowvec(double(heasig.gain)) ) ;
     else
         %transform to real units
         ECG = bsxfun( @rdivide, bsxfun( @minus, double(ECG(aux_idx,:)), rowvec(double(heasig.adczero)) ), rowvec(double(heasig.gain)) ) ;

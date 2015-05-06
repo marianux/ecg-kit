@@ -362,35 +362,43 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
 
             %% Feature Matrices building
 
-            % Update point
-            pb.checkpoint('Clean featureMatrix from NAN values');
 
             %clean featureMatrix from NAN values.
-            AnyNaN_idx = find(any(isnan(featMat_clust),2));
-            iAllMedian = nanmedian(featMat_clust);
-            if(any(isnan(iAllMedian)))
-               error( 'a2hbc:AllNanFeatures', 'Features not calculated in this recording. Check recording or ask help.\n' );
-            end
-            for ii = rowvec(AnyNaN_idx)
-               bIdx2 = find(isnan(featMat_clust(ii,:)));
-               featMat_clust(ii, bIdx2) = iAllMedian(bIdx2);
-            end
-
-            AnyNaN_idx = find(any(isnan(featMat_ldc),2));
-            iAllMedian = nanmedian(featMat_ldc);
-            if(any(isnan(iAllMedian)))
-               error( 'a2hbc:AllNanFeatures', 'Features not calculated in this recording. Check recording or ask help.\n' );
-            end
-            for ii = rowvec(AnyNaN_idx)
-               bIdx2 = find(isnan(featMat_ldc(ii,:)));
-               featMat_ldc(ii, bIdx2) = iAllMedian(bIdx2);
-            end
+%             AnyNaN_idx = find(any(isnan(featMat_clust),2));
+%             iAllMedian = nanmedian(featMat_clust);
+%             if(any(isnan(iAllMedian)))
+%                error( 'a2hbc:AllNanFeatures', 'Features not calculated in this recording. Check recording or ask help.\n' );
+%             end
+%             for ii = rowvec(AnyNaN_idx)
+%                bIdx2 = find(isnan(featMat_clust(ii,:)));
+%                featMat_clust(ii, bIdx2) = iAllMedian(bIdx2);
+%             end
+% 
+%             AnyNaN_idx = find(any(isnan(featMat_ldc),2));
+%             iAllMedian = nanmedian(featMat_ldc);
+%             if(any(isnan(iAllMedian)))
+%                error( 'a2hbc:AllNanFeatures', 'Features not calculated in this recording. Check recording or ask help.\n' );
+%             end
+%             for ii = rowvec(AnyNaN_idx)
+%                bIdx2 = find(isnan(featMat_ldc(ii,:)));
+%                featMat_ldc(ii, bIdx2) = iAllMedian(bIdx2);
+%             end
 
             % por el momento sigo usando el PRtools.
             % armo datasets.
             featMat_clust = prdataset(featMat_clust);
             featMat_ldc = prdataset(featMat_ldc);
 
+            % Update point
+            %clean featureMatrix from NAN values.
+            pb.checkpoint('Clean featureMatrix from NAN values');
+            
+            featMat_ldc = deNaN_dataset(featMat_ldc, 'change');
+            featMat_clust = deNaN_dataset(featMat_clust, 'change');
+            
+            featMat_ldc = deNaN_dataset(featMat_ldc, 'change', @isinf);
+            featMat_clust = deNaN_dataset(featMat_clust, 'change', @isinf);
+            
 
             if( bHaveUserInterface && (~exist('UCP_struct', 'var') || ~ishandle(UCP_struct.fig_hdl)) )
                 UserControlPanel;
@@ -431,8 +439,7 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
         bCancel = false;
 
         
-        bVerbose = true;
-        if( bVerbose )
+        if( bHaveUserInterface )
             DisplayConfiguration;
         end
         
