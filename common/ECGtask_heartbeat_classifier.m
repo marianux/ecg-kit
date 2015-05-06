@@ -82,7 +82,7 @@ classdef ECGtask_heartbeat_classifier < ECGtask
             
             obj.annotations = ParsePayloadAnnotations(obj);
             
-            if( ~isempty(obj.annotations) || ( isfield(ECG_annotations, 'time') && ~isempty(ECG_annotations.time))  )
+            if( (~isempty(obj.annotations) && length(obj.annotations) > obj.min_heartbeats_required ) || ( isfield(ECG_annotations, 'time') && ~isempty(ECG_annotations.time))  )
                 obj.started = true;
             end
             

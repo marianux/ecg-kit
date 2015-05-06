@@ -459,26 +459,23 @@ function examples(pid_str, examples_path, user_str)
     % explore the recordings, and the algorithm results.
 %     winlengths = []; % default setting
     winlengths = [ 7 ]; %seconds
-
+    
     % go through all files
     for ii = 1:lrecnames
 
+        % last worker is the responsible of the reporting.
         if( ECG_all_wrappers(ii).this_pid == ECG_all_wrappers(ii).cant_pids)
 
-            % last worker is the responsible of the reporting.
-            if( ECG_all_wrappers(ii).this_pid == ECG_all_wrappers(ii).cant_pids)
+            try
 
-                try
-                    
-                    reportECG(ECG_all_wrappers(ii), 'LowDetail', 'full', winlengths, 'pdf', [] );
-            %         reportECG(ECG_all_wrappers(ii), 'LowDetail', 'full', winlengths, 'png', filename);
-                catch MException
+                reportECG(ECG_all_wrappers(ii), 'LowDetail', 'full', winlengths, 'pdf', [] );
+        %         reportECG(ECG_all_wrappers(ii), 'LowDetail', 'full', winlengths, 'png', filename);
+            catch MException
 
-                    report = getReport(MException);
+                report = getReport(MException);
 
-                    fprintf(2, '\n%s\n', report);
-
-                end
+                disp_string_framed(2, ECG_all_wrappers(ii).recording_name)
+                fprintf(2, '\n%s\n', report);
 
             end
 

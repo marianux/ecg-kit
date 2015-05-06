@@ -386,7 +386,7 @@ classdef ECGwrapper < handle
                             %PID parsing
                             if( obj.cant_pids > 1 )
 
-                                max_recommended_cant_pids = max(1, round( cant_QRS_locations / aux_min_QRS_iter ));
+                                max_recommended_cant_pids = max(1, floor( cant_QRS_locations / aux_min_QRS_iter ));
 
                                 if( obj.cant_pids > max_recommended_cant_pids )
                                     warning('ECGwrapper:TooMuchPIDs', 'CantPIDs too large for the work to do, consider decreasing it.');
