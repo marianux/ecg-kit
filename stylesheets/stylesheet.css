@@ -545,6 +545,10 @@ aside a.button {
   background: transparent url(../images/download-button.png) 0 0 no-repeat;
 }
 
+aside a.wiki_button {
+  background: transparent url(../images/wiki-button.png) 0 0 no-repeat;
+}
+
 code, pre {
   margin-bottom: 30px;
   font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
