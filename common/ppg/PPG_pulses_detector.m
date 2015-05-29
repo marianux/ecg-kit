@@ -1,8 +1,9 @@
-function [ peaks, sig_filt, peaks_filt, thres ] = PPG_pulses_detector( ppg, fsppg, lpd_fp, lpd_fc, lpd_order, alpha, refract, taoRR, w_nA, plotflag )
+function [ peaks, sig_filt, peaks_filt, thres ] = PPG_pulses_detector( ppg, fsppg, pb, lpd_fp, lpd_fc, lpd_order, alpha, refract, taoRR, w_nA, plotflag )
 %PPG_PULSES_DETECTOR     PPG signal pulses detector, based on low-pass
 %                        differentiator filter.
 %
 % Created by Jesús Lázaro <jlazarop@unizar.es> in 2012
+% adapted by Mariano Llamedo Soria to the ecg-kit project.
 %--------
 %   Sintax: [ peaks, sig_filt, peaks_filt, thres ] = PPG_pulses_detector( ppg, fsppg, lpd_fp, lpd_fc, lpd_order, alpha, refract, taoRR, w_nA, plotflag )
 %   In:   ppg = PPG signal
@@ -33,34 +34,38 @@ function [ peaks, sig_filt, peaks_filt, thres ] = PPG_pulses_detector( ppg, fspp
     end
     
     if nargin<3
-        lpd_fp = 7.8;
+        pb = [];
     end
     
     if nargin<4
-        lpd_fc = 8;
+        lpd_fp = 7.8;
     end
     
     if nargin<5
-        lpd_order = 3*fsppg;
+        lpd_fc = 8;
     end
     
     if nargin<6
-        alpha = 0.2;
+        lpd_order = 3*fsppg;
     end
     
     if nargin<7
-        refract = 150e-3;
+        alpha = 0.2;
     end
     
     if nargin<8
-        taoRR = 1;
+        refract = 150e-3;
     end
     
     if nargin<9
-         w_nA = 300e-3;
+        taoRR = 1;
     end
     
     if nargin<10
+         w_nA = 300e-3;
+    end
+    
+    if nargin<11
         plotflag = 0;
     end
     
@@ -97,6 +102,9 @@ function [ peaks, sig_filt, peaks_filt, thres ] = PPG_pulses_detector( ppg, fspp
     
     
     %% Compute threshold for filtered signal:
+    pb.reset();
+    pb.checkpoint('Compute threshold for filtered signal');
+    
     peaks_filt = [];
     thres_ini_w_ini = find(~isnan(sig_filt), 1, 'first');
     thres_ini_w_end = thres_ini_w_ini + round(10*fsppg);
@@ -112,8 +120,12 @@ function [ peaks, sig_filt, peaks_filt, thres ] = PPG_pulses_detector( ppg, fspp
         thres(1:end) = thres_ini - (thres_ini*(1-alpha)/RR)*(t(1:end)-1);
     end
     
+    pb.Loops2Do = round(length(sig_filt) / RR);
+    
     kk=1;
     while true
+        pb.start_loop();
+        
         cross_u = kk-1 + find(sig_filt(kk:end)>thres(kk:end), 1, 'first'); %Next point to cross the actual threshold (down->up)
         if isempty(cross_u)
             % No more pulses -> end
@@ -132,6 +144,8 @@ function [ peaks, sig_filt, peaks_filt, thres ] = PPG_pulses_detector( ppg, fspp
         p = cross_u-1+imax;
         peaks_filt = [peaks_filt, p];
         
+        pb.checkpoint([]);
+        
         % Update threshold
         N_RR_estimation = 3;
         N_ampli_est = 3;
@@ -146,6 +160,8 @@ function [ peaks, sig_filt, peaks_filt, thres ] = PPG_pulses_detector( ppg, fspp
 %         tao = 5/(taoRR*RR-refract);
 %         thres(kk:end) = vmax*(1-alpha)*exp(-tao*(t(kk:end)-kk)) + vmax*alpha;
         
+        pb.checkpoint([]);
+
         vfall = vmax*alpha;
         if Npeaks>=(N_ampli_est+1)
             ampli_est = median(sig_filt(peaks_filt(end-N_ampli_est:end-1)));
@@ -167,17 +183,27 @@ function [ peaks, sig_filt, peaks_filt, thres ] = PPG_pulses_detector( ppg, fspp
             thres(kk:end) = vmax - (vmax-vfall)/fall_end*(t(kk:end)-kk);
         end
         
+        pb.end_loop();
         
     end
     
     
     %% Peak maximum search in PPG:
+    pb.reset();
+    pb.checkpoint('Peak maximum search in PPG');
+    pb.Loops2Do = length(peaks_filt);
+    
     peaks = nan(size(peaks_filt));
     w_nA_samples = round(fsppg*w_nA);
     for kk=1:length(peaks_filt)
+        
+        pb.start_loop();
+        
 %         w_int.begin = peaks_filt(kk) - w_nA_samples;
         w_int.begin = peaks_filt(kk);
         w_int.end = peaks_filt(kk) + w_nA_samples;
+
+        pb.checkpoint([]);
         
         [aux, aux_t] = extract_interval(ppg, 1:length(ppg), w_int.begin, w_int.end);
         [~, pos] = max(aux);
@@ -196,6 +222,8 @@ function [ peaks, sig_filt, peaks_filt, thres ] = PPG_pulses_detector( ppg, fspp
             peaks(kk) = nan;
         end
 
+        pb.end_loop();
+        
     end
     peaks = peaks(~isnan(peaks));
     

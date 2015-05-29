@@ -1,1 +1,1 @@
-gs
+gswin32c.exe

@@ -279,8 +279,7 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
                     ECGtask_class_fc_hdl.progress_handle = pb;
                     ECGtask_class_fc_hdl.autovec = ECGtask_PCA_proj_basis_hdl.autovec;
                     ECGtask_class_fc_hdl.Start(ECG_header, aux_struct);
-                    payload = ECGtask_class_fc_hdl.Process(ECG_total, 1, [1 ECG_header.nsamp], ECG_header, aux_struct, [1 length(QRS_locations) ] );
-                    ECGtask_class_fc_hdl.Finish(ECG_header);
+                    payload = ECGtask_class_fc_hdl.Process(ECG_total, 1, [1 ECG_header.nsamp], ECG_header, aux_struct, [1 length(QRS_locations) ] ); %#ok<NASGU>
 
                     CachedFeatMatFiles = [tmp_path 'tmpfile_a2hbc_' ECGtask_class_fc_hdl.name '_' rec_filename '.mat'];
                     save(CachedFeatMatFiles, '-struct', 'payload');

@@ -98,7 +98,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="other_functions.html">Other functions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="progress_bar.html">A progress bar</a></li>
-<li class="toctree-l2"><a class="reference internal" href="progress_bar.html">Docs to come ...</a></li>
+<li class="toctree-l2"><a class="reference internal" href="progress_bar.html">More docs soon ...</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="extensions.html">Extending the ECGkit</a><ul class="simple">
@@ -143,24 +143,24 @@
             
   <div class="section" id="matlab-file-format">
 <h1>Matlab file format<a class="headerlink" href="#matlab-file-format" title="Permalink to this headline">¶</a></h1>
-<p>This document describes the format used by the kit to store signals and results in the Matlab proprietary format.</p>
-<div class="section" id="more-about">
-<h2>More About<a class="headerlink" href="#more-about" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="other-resources">
-<h2>Other resources<a class="headerlink" href="#other-resources" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><a class="reference external" href="http://physionet.org/">Physionet.org</a></li>
-<li><a class="reference external" href="http://thew-project.org/">Telemetric and Holter ECG Warehouse
-(THEW)</a></li>
-<li><a class="reference external" href="http://diec.unizar.es/~laguna/personal/publicaciones/publicaciones.htm">Pablo Laguna research group at University of
-Zaragoza</a></li>
-<li><a class="reference external" href="http://cinc.org/">Computing in Cardiology</a></li>
+<p>The ecg-kit allows users to use Matlab native format to store and access recordings. For using it,
+ensure that your mat file follows these naming convention:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Your signal variable must be named <code class="docutils literal"><span class="pre">'sig',</span> <span class="pre">'signal'</span> <span class="pre">or</span> <span class="pre">'ECG'</span></code>. Remember that the signals or leads
+must be placed column-wise, that is <code class="docutils literal"><span class="pre">signal</span> <span class="pre">=</span> <span class="pre">[</span> <span class="pre">lead1</span> <span class="pre">lead2</span> <span class="pre">lead3</span> <span class="pre">...</span> <span class="pre">lead_nsig]</span></code>.</li>
+<li>The header or signal information must be stored in a struct named <code class="docutils literal"><span class="pre">'header',</span> <span class="pre">'heasig'</span> <span class="pre">or</span> <span class="pre">'hea'</span></code>.</li>
+<li>(Optional) In case of including annotations or QRS detections, be sure to be a struct named <code class="docutils literal"><span class="pre">'ann',</span>
+<span class="pre">'annotations'</span> <span class="pre">or</span> <span class="pre">'qrs'</span></code> and which includes the fields described for the MIT format in <a class="reference external" href="http://www.physionet.org/physiobank/annotations.shtml">Physionet</a>.<ul>
+<li>time: the time within the recording (recorded in the annotation file as the sample number of the sample to which the annotation &#8220;points&#8221;)</li>
+<li>anntyp [sic]: a numeric annotation code (see ecgcodes.h for definitions)</li>
+<li>subtyp [sic], chan, num: three small integers (between -128 to 127) that specify context-dependent attributes (see the documentation for each database for details)</li>
+<li>aux: a free text string</li>
 </ul>
-</div>
-<div class="section" id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
-</div>
+</li>
+</ol>
+</div></blockquote>
+<p>See the <code class="docutils literal"><span class="pre">ecg-kit\common\matformat_definitions.m</span></code> for more details.</p>
 </div>
 
 

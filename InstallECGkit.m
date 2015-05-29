@@ -62,7 +62,7 @@ function InstallECGkit(bIgnoreUpdate)
     
     ECGkitURL_str = 'http://code.google.com/p/ecg-kit/wiki/LatestVersion';
     % Version info.
-    release_str = 'v0.1 beta - 22/07/2014';
+    release_str = 'v0.1.1 beta - 22/07/2014';
 
     % URL check for updates
 
@@ -294,14 +294,15 @@ function InstallECGkit(bIgnoreUpdate)
 
             fprintf(1, 'done !\n' );
             
-            disp_string_framed('*Blue', sprintf('ECGkit for Matlab %s', release_str) );
+            disp_string_framed('*Blue', sprintf('ecg-kit for Matlab %s', release_str) );
             
             str_aux = [ 'examples' filesep 'examples.m'];
             
-            fprintf(1, 'Kit was correctly installed.\n\nYou can start reading the %s, or if you prefer, trying these %s.\nGo to the %s if you need help.\n', ...
+            fprintf(1, '%s was correctly installed.\n\nYou can start reading the %s, or if you prefer, trying these %s.\nGo to the %s if you need help.\n', ...
+                '<a href = "matlab: web(''http://marianux.github.io/ecg-kit/'', ''-browser'' )">ecg-kit</a>', ...
                 '<a href = "matlab: web(''http://ecg-kit.readthedocs.org/en/master/'', ''-browser'' )">documentation</a>', ...
                 [ '<a href = "matlab: opentoline(' str_aux ',1)">examples</a>' ], ...
-                '<a href = "matlab: web(''https://groups.google.com/d/forum/ecgkit-users'', ''-browser'' )">forum</a>');
+                '<a href = "matlab: web(''https://groups.google.com/forum/#!forum/ecg-kit-users'', ''-browser'' )">forum</a>');
         else
 
             if( ispc() )

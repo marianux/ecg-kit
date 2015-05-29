@@ -98,14 +98,14 @@ elseif( strcmp(recording_format, 'MAT') )
     signal_name = intersect( fnames, cMatSignalNames);
     header_name = intersect( fnames, cMatSignalHeaderNames);
     ann_name = intersect( fnames, cMatSignalAnnNames);
+
+    if( isempty(header_name) )
+        error( 'read_ECG:HeaderNotFound', ['Can''t find annotations for file : ' rowvec(recording_name') ] );
+    else            
+        heasig = aux_load.(header_name{1});
+    end
     
     if( nargout > 1 )
-        
-        if( isempty(header_name) )
-            error( 'read_ECG:HeaderNotFound', ['Can''t find annotations for file : ' rowvec(recording_name') ] );
-        else            
-            heasig = aux_load.(header_name{1});
-        end
         
         if( ~isempty(ann_name) )
             ann = aux_load.(ann_name{1});            
@@ -115,6 +115,16 @@ elseif( strcmp(recording_format, 'MAT') )
 
     if( ~isempty(signal_name) )
         ECG = aux_load.(signal_name{1});
+    end
+
+    [nsamp_found, nsig_found] = size(ECG);
+    
+    if( nsamp_found ~= heasig.nsamp && nsamp_found < nsig_found )
+        ECG = ECG';
+    end
+
+    if( all( [nsamp_found, nsig_found] ~= heasig.nsamp) || all( [nsamp_found, nsig_found] ~= heasig.nsig) )
+        cprintf('[1,0.5,0]','Header information is not consistent with the signal found. signal is [ %d x %d ] and header is [ %d x %d ]\n', nsamp_found, nsig_found, heasig.nsamp, heasig.nsig );
     end
     
     if( isempty(ECG_start_idx) )

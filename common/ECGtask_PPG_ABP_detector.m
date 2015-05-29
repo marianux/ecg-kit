@@ -168,7 +168,7 @@ classdef ECGtask_PPG_ABP_detector < ECGtask
                             
                             try
 
-                                PPG_ABP_peak_idx = PPG_pulses_detector( double(PPG_ABP(:,jj)), ECG_header.freq );
+                                PPG_ABP_peak_idx = PPG_pulses_detector( double(PPG_ABP(:,jj)), ECG_header.freq, obj.progress_handle );
 
                                 PPG_ABP_peak_idx = PPG_ABP_peak_idx( PPG_ABP_peak_idx >= ECG_sample_start_end_idx(1) & PPG_ABP_peak_idx <= ECG_sample_start_end_idx(2)) + ECG_start_offset - 1 ;
 
