@@ -32,7 +32,7 @@ cardiovascular signal recordings of several formats
 (`MIT <http://www.physionet.org/physiotools/wag/signal-5.htm>`__,
 `ISHNE <http://thew-project.org/THEWFileFormat.htm>`__,
 `AHA <https://www.ecri.org/Products/Pages/AHA_ECG_DVD.aspx>`__, HES,
-`MAT <Matlab_format.htm>`__) and lengths, from seconds to days. The
+:doc:`MAT <Matlab_format>`) and lengths, from seconds to days. The
 objective of this class is to provide `ECGtask <ECGtask.htm>`__  class,
 a common interface to access data and perform specific tasks. Briefly,
 this class sequentially reads data and passes to the Process method of
