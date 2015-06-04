@@ -11,7 +11,7 @@ The main feature of the this toolbox is the possibility to use several popular a
 
 * Algorithms from Physionet's `WFDB software package <http://physionet.org/physiotools/wfdb.shtml>`__
 * QRS detectors, such as `gqrs <http://www.physionet.org/physiotools/wag/gqrs-1.htm>`__, `wqrs <http://www.physionet.org/physiotools/wag/gqrs-1.htm>`__, `wavedet <http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf>`__, `ecgpuwave <http://www.physionet.org/physiotools/ecgpuwave/>`__, `Pan & Tompkins <http://ieeexplore.ieee.org/xpl/articleDetails.jsp?reload=true&arnumber=4122029>`__, `EP limited <http://www.eplimited.com/confirmation.htm>`__
-* `Wavedet ECG delinator <http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf>`__
+* `Wavedet ECG delineator <http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf>`__
 * Pulse wave detectors as `wabp <http://www.physionet.org/physiotools/wag/wabp-1.htm>`__ and `wavePPG <http://dx.doi.org/10.1109/JBHI.2013.2267096>`__
 * `a2hbc <https://code.google.com/p/a2hbc/>`__ and `EP limited <http://www.eplimited.com/confirmation.htm>`__ heartbeat classifiers.
 * And other scritps for inspecting, correcting and reporting all these results. 
