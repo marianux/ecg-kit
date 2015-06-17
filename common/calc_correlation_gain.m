@@ -1,16 +1,27 @@
-%% (Internal) Add the path only if not was already added.
+%% (Internal) Calculate an estimate of the SNR of ECG signal, considering signal the ensemble average, and noise each realization minus the ensemble average.
 %   
-%   paths_added = addpath_if_not_added(str_path, position)
+%   corr_gain = calc_correlation_gain(signal, heasig, references, limits, bRobust)
 % 
 % Arguments:
 % 
-%      + str_path: paths to add
+%      + signal: signal to use
 % 
-%      + position: where to add. See addpath doc.
+%      + heasig: header information about the signal.
+% 
+%      + references: temporal samples where the synch occurs (QRS complex locations)
+% 
+%      + limits: the amount of samples w.r.t. references(i) to consider a a
+%                time window around references(i), from references(i) -
+%                limits(1) to references(i) + limits(2)
+% 
+%      + bRobust: Calculate the esemble average using mean or median.
+%                 Default: use median.
 % 
 % Output:
 % 
-%      + paths_added: Only the paths added
+%      + corr_gain: Estimate of the SNR considering signal the ensemble
+%                   average, and noise each realization minus the ensemble
+%                   average.
 % 
 % Example:
 % 
@@ -22,7 +33,7 @@
 % Birthdate  : 21/4/2015
 % Copyright 2008-2015
 % 
-function [corr_gain noise_power] = calc_correlation_gain(signal, heasig, references, limits, noise_power, bRobust)
+function corr_gain = calc_correlation_gain(signal, heasig, references, limits, bRobust)
 
 corr_gain = nan;
 [nsamp, nsig] = size(signal);

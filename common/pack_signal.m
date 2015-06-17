@@ -1,4 +1,4 @@
-%% (Internal) Example of user-created QRS detector
+%% (Internal) Pack a signal in a realization array, based on a sync. signal and a time window around.
 %
 %  [realizations, aux_idx, seq_idx] = pack_signal(signal, anns_refined, realization_limit, substract_mean)
 % 
