@@ -87,7 +87,7 @@ where the arguments are:
 		
 		and others described in the `Physionet header <http://www.physionet.org/physiotools/wag/header-5.htm>`__.
 
-	**progress\_handle**, is a handle to a `progress\_bar <progress_bar.htm>`__
+	**progress\_handle**, is a handle to a :doc:`progress\_bar <progress_bar>`
 	object, that can be used to track the progress within your function.
 
 	**payload\_in**, is a user variable, of arbitrary format, allowed to be sent

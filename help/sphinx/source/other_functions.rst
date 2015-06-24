@@ -185,5 +185,6 @@ I/O signals
    :hidden:
 
    A progress bar <progress_bar>
+   List installed ECGtask <list_all_ECGtask>
    More docs soon ... <progress_bar>
 

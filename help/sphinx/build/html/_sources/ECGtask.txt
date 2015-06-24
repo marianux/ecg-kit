@@ -25,11 +25,11 @@ Description
 
 The ECGtask is an abstract class definition where the minimum interface
 requirements are specified, in order that your own tasks can be safely
-plugged into `ECGwrapper <ECGwrapper.html>`__ objects. As an example of
-how to use this interface, see the derived classes for `QRS
-detection <QRS_detection.htm>`__ and `ECG
-delineation <ECGdelineation.htm>`__, among others that can be listed
-with the `list\_all\_ECGtask <list_all_ECGtask.htm>`__ function:
+plugged into `ECGwrapper <ECGwrapper>` objects. As an example of
+how to use this interface, see the derived classes for :doc:`QRS 
+detection <QRS_detection>` and :doc:`ECG delineation <ECGdelineation>`, 
+among others that can be listed
+with the :doc:`list\_all\_ECGtask <list_all_ECGtask>` function:
 
 -  :doc:`QRS detection <QRS_detection>`         
 -  :doc:`QRS correction <QRScorrector>`         
@@ -87,7 +87,7 @@ be a batch processing part. The size of each part is calculated as
 
 	
 	
-``progress_handle`` — is a handle to a `progress\_bar <progress_bar.htm>`__
+``progress_handle`` — is a handle to a :doc:`progress\_bar <progress_bar>`
 object, that can be used to track the progress within your function.
 
 ``tmp_path`` — The path to store temporary data.
@@ -202,7 +202,7 @@ More About
 See Also
 --------
 
-`ECGwrapper <ECGwrapper.html>`__ \|
-`ECG\_delineation <ECGdelineation.htm>`__ \|
-`list\_all\_ECGtask <list_all_ECGtask.htm>`__
+:doc:`ECGwrapper <ECGwrapper>` \|
+:doc:`ECG\_delineation <ECGdelineation>` \|
+:doc:`list\_all\_ECGtask <list_all_ECGtask>`
 

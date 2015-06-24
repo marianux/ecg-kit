@@ -33,21 +33,21 @@ cardiovascular signal recordings of several formats
 `ISHNE <http://thew-project.org/THEWFileFormat.htm>`__,
 `AHA <https://www.ecri.org/Products/Pages/AHA_ECG_DVD.aspx>`__, HES,
 :doc:`MAT <Matlab_format>`) and lengths, from seconds to days. The
-objective of this class is to provide `ECGtask <ECGtask.htm>`__  class,
+objective of this class is to provide :doc:`ECGtask <ECGtask>`  class,
 a common interface to access data and perform specific tasks. Briefly,
 this class sequentially reads data and passes to the Process method of
-the `ECGtask <ECGtask.htm>`__ plugged in the
+the :doc:`ECGtask <ECGtask>` plugged in the
 `ECGtaskHandle <#inputarg_ECGtask>`__ property. Some common tasks, such
 as `QRS detection <examples.html#QRS_automatic_detection>`__ and `ECG
 delineation <examples.html#ECG_automatic_delineation>`__, can be easily
 invoked. Also other predefined tasks or your own code can be adapted as
-is shown in the `examples <examples.html>`__.
+is shown in the :doc:`examples <examples>`.
 
 A more detailed description of this class, together with an explanation
 of how you can easily hook your algorithms to this class is
-`here <extensions.htm>`__.
+:doc:`here <extensions>`.
 
-Finally the results produced by the `ECGtask <ECGtask.htm>`__ are stored
+Finally the results produced by the :doc:`ECGtask <ECGtask>` are stored
 in order to ease reproducibility and backup of your experiments, or to
 be used of subsequent tasks as shown in the
 `examples <examples.html>`__.
