@@ -86,13 +86,11 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
     
     methods
            
-        function obj = QRS_detections_post_process (obj)
+        function obj = ECGtask_QRS_detections_post_process (obj)
             
         end
         
         function Start(obj, ECG_header, ECG_annotations)
-            
-            obj.ud_func_pointer = eval(['@' obj.post_proc_func]);
             
             obj.started = true;
             
@@ -128,6 +126,9 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
 
                 obj.progress_handle.checkpoint([ 'User defined function: ' obj.post_proc_func])
 
+%                 obj.ud_func_pointer = eval(['@' obj.post_proc_func]);
+                obj.ud_func_pointer = str2func(obj.post_proc_func);
+                
                 payload_out = obj.ud_func_pointer( obj.payload, ECG_header, ECG_sample_start_end_idx );
 
                 obj.progress_handle.checkpoint('Adding quality metrics')

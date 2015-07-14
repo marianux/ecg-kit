@@ -1,0 +1,85 @@
+%% Create an artificial set of QRS detections, based on multilead QRS detections.
+% This is an auxiliar function for the ECGtask_QRS_detections_post_process.
+% This function creates an artificial set of QRS detections, based on single
+% lead detections, as described in [add reference].
+% 
+%   all_detections = wavedet_QRS_detection_mix(struct_in, ECG_header, start_end_this_segment )
+% 
+% Arguments:
+% 
+%      + struct_in: the structure which results from loading the result of
+%                   the QRS detection task used for invoking wavedet:
+% 
+%                   cached_filenames = ECG_w.GetCahchedFileName('QRS_detection');
+%                   struct_in = load(cached_filenames{1});
+% 
+%      +ECG_header: [struct] OPTIONAL. 
+% 
+%             Description of the ECG typically available in the
+%             ECG_header. Structure with fields:
+% 
+%               -freq: Sampling rate in Hz. (1)
+% 
+%               -nsig: Number of ECG leads. (size(ECG,2))
+% 
+%               -nsamp: Number of ECG samples. (size(ECG,1))
+% 
+%      + start_end_this_segment: an array with the first and last sample
+%                                indexes.
+% 
+% Output:
+% 
+%      + all_detections: struct with the artificial detections named with
+%                        prefix "wavedetMix_ECGmix". 
+% 
+% Example
+% 
+%     ECG_w.ECGtaskHandle = 'QRS_detections_post_process';
+%     % Mix QRS detections strategy function
+%     ECG_w.ECGtaskHandle.post_proc_func = 'calculate_artificial_QRS_detections';
+%     ECG_w.ECGtaskHandle.payload = load(cached_filenames{1});
+%     ECG_w.ECGtaskHandle.CalculatePerformance = true;
+%     ECG_w.Run;
+% 
+% See also ECGtask_QRS_detections_post_process, wavedet_QRS_detection_mix
+% 
+% Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
+% Version: 0.1 beta
+% Birthdate: 01/01/2014
+% Last update: 14/07/2015
+% Copyright 2008-2015
+% 
+function all_detections = calculate_artificial_QRS_detections(all_detections, ECG_header, start_end_this_segment)
+
+    if( nargin < 3 || isempty(start_end_this_segment) ) 
+        start_end_this_segment = [1 ECG_header.nsamp];
+    end
+    % attemp to build a better detection from single-lead detections.
+
+    [~, all_annotations] = getAnnNames(all_detections);
+
+    [ ratios, estimated_labs ] = CalcRRserieRatio(all_annotations, ECG_header, start_end_this_segment);
+
+    [~, best_detections_idx] = sort(ratios, 'descend');
+
+    % generate artificial annotations combining K best annotations
+    aux_idx = best_detections_idx(1:min(10, length(best_detections_idx)) );
+    artificial_annotations = combine_anns(all_annotations(aux_idx), estimated_labs(aux_idx), ECG_header );
+
+    for ii = 1:length(artificial_annotations)
+        aux_str = ['mixartif_ECGmix' num2str(ii)];
+        all_detections.(aux_str) = artificial_annotations(ii);
+    end
+
+    [AnnNames, all_annotations] = getAnnNames(all_detections);
+
+    [ ratios, estimated_labs] = CalcRRserieRatio(all_annotations, ECG_header, start_end_this_segment);
+
+    [ratios, best_detections_idx] = sort(ratios, 'descend');
+
+    all_detections.series_quality.ratios = ratios;
+    all_detections.series_quality.estimated_labs = estimated_labs;
+    all_detections.series_quality.AnnNames = AnnNames(best_detections_idx,:); %#ok<STRNU>
+
+
+
