@@ -71,8 +71,7 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
     properties( Access = private )
         
         tmp_path_local
-        ud_func_pointer
-        
+                
     end
     
     properties
@@ -122,58 +121,65 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
 
             end
 
-            try
-
-                obj.progress_handle.checkpoint([ 'User defined function: ' obj.post_proc_func])
-
-%                 obj.ud_func_pointer = eval(['@' obj.post_proc_func]);
-                obj.ud_func_pointer = str2func(obj.post_proc_func);
+            for this_func = rowvec(obj.post_proc_func)
                 
-                payload_out = obj.ud_func_pointer( obj.payload, ECG_header, ECG_sample_start_end_idx );
+                try
 
-                obj.progress_handle.checkpoint('Adding quality metrics')
-                
-                % Add QRS detections quality metrics, Names, etc.
-                payload_out = calculateSeriesQuality(payload_out, ECG_header, ECG_sample_start_end_idx );
+                    obj.progress_handle.checkpoint([ 'User defined function: ' this_func{1}])
 
-                % offset in time
-                AnnNames = payload_out.series_quality.AnnNames(:,1);
-                for fn = rowvec(AnnNames)
-                    aux_val = payload_out.(fn{1}).time + ECG_start_offset - 1;
-                    payload_out.(fn{1}).time = aux_val;
-                end
+    %                 this_func_ptr = eval(['@' this_func]);
+                    this_func_ptr = str2func(this_func{1});
 
-                % calculate artificial leads
-                if( obj.CalculatePerformance )
-                    AnnNames = payload_out.series_quality.AnnNames(:,1);
-                    cant_lead_name = size(AnnNames,1);
-                    payload_out.series_performance.conf_mat = zeros(2,2,cant_lead_name);
+                    this_payload = this_func_ptr( obj.payload, ECG_header, ECG_sample_start_end_idx );
 
-                    if(isempty(ECG_annotations)) 
-                        disp_string_framed(2, sprintf('Trusted references not found for %s', ECG_header.recname) );
-                    else
-                        % offset refs, produced anns were already shifted
-                        ECG_annotations.time = ECG_annotations.time + ECG_start_offset - 1;
-                        for kk = 1:cant_lead_name
-                            payload_out.series_performance.conf_mat(:,:,kk) = bxb(ECG_annotations, payload_out.(AnnNames{kk}).time, ECG_header );
-                        end            
+                    for fn = rowvec(fieldnames(this_payload))
+                        payload_out.(fn{1}) = this_payload.(fn{1});
                     end
+                    
+                catch aux_ME
+
+                    disp_string_framed(2, sprintf('User-function "%s" failed in recording %s', this_func{1}, ECG_header.recname ) );                                
+
+                    report = getReport(aux_ME);
+                    fprintf(2, 'Error report:\n%s', report);
 
                 end
-
                 
-                obj.progress_handle.checkpoint('Done')
-                
-            catch aux_ME
+            end
 
-                disp_string_framed(2, sprintf('User-function "%s" failed in recording %s', obj.post_proc_func, ECG_header.recname ) );                                
+            obj.progress_handle.checkpoint('Adding quality metrics')
 
-                report = getReport(aux_ME);
-                fprintf(2, 'Error report:\n%s', report);
+            % Add QRS detections quality metrics, Names, etc.
+            payload_out = calculateSeriesQuality(payload_out, ECG_header, ECG_sample_start_end_idx );
+
+            % offset in time
+            AnnNames = payload_out.series_quality.AnnNames(:,1);
+            for fn = rowvec(AnnNames)
+                aux_val = payload_out.(fn{1}).time + ECG_start_offset - 1;
+                payload_out.(fn{1}).time = aux_val;
+            end
+
+            % calculate performance
+            if( obj.CalculatePerformance )
+                AnnNames = payload_out.series_quality.AnnNames(:,1);
+                cant_lead_name = size(AnnNames,1);
+                payload_out.series_performance.conf_mat = zeros(2,2,cant_lead_name);
+
+                if(isempty(ECG_annotations)) 
+                    disp_string_framed(2, sprintf('Trusted references not found for %s', ECG_header.recname) );
+                else
+                    % offset refs, produced anns were already shifted
+                    ECG_annotations.time = ECG_annotations.time + ECG_start_offset - 1;
+                    for kk = 1:cant_lead_name
+                        payload_out.series_performance.conf_mat(:,:,kk) = bxb(ECG_annotations, payload_out.(AnnNames{kk}).time, ECG_header );
+                    end            
+                end
 
             end
-                
-                
+
+
+            obj.progress_handle.checkpoint('Done')
+            
         end
         
         function payload = Finish(obj, payload, ECG_header)
@@ -197,9 +203,16 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
             if( ischar(x) )
                 
                 if( exist(x) == 2 )
-
-                    obj.post_proc_func = x;
+                    obj.post_proc_func = cellstr(x);
+                else
+                    disp_string_framed(2, sprintf('Function "%s" is not reachable in path.', x));  
+                    fprintf(1, 'Make sure that exist(%s) == 2\n',x);
+                end
                 
+            elseif( iscellstr(x) )
+
+                if( any( cellfun( @(a)(exist(a)), x) == 2) )
+                    obj.post_proc_func = x;
                 else
                     disp_string_framed(2, sprintf('Function "%s" is not reachable in path.', x));  
                     fprintf(1, 'Make sure that exist(%s) == 2\n',x);

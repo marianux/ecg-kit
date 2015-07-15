@@ -78,4 +78,3 @@ function all_detections = wavedet_QRS_detection_mix(struct_in, ECG_header, start
     end
 
 
-
