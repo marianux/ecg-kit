@@ -51,6 +51,8 @@
 % 
 function all_detections = calculate_artificial_QRS_detections(struct_in, ECG_header, start_end_this_segment)
 
+    all_detections = [];
+
     if( nargin < 3 || isempty(start_end_this_segment) ) 
         start_end_this_segment = [1 ECG_header.nsamp];
     end

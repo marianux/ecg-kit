@@ -52,6 +52,8 @@
 % 
 function all_detections = wavedet_QRS_detection_mix(struct_in, ECG_header, start_end_this_segment )
 
+    all_detections = [];
+    
     % attemp to build a better detection from single-lead detections.
 
     AnnNames = struct_in.series_quality.AnnNames(:,1);
