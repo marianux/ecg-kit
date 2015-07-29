@@ -950,7 +950,7 @@ classdef ECGwrapper < handle
                                         % Error handling
 
                                         if( strfind(ME.identifier, 'ECGwrapper') )
-                                            if( obj.cant_pids == 1 || toc(Start2Wait) > obj.Time2WaitPIDs )
+                                            if( obj.cant_pids == 1 || obj.bHaveUserInterface || toc(Start2Wait) > obj.Time2WaitPIDs )
 %                                                 fprintf(2, 'Timeout. Master give up waitng Slaves.\n');
                                                 error('ECGwrapper:PIDnotFinished', 'Master give up waiting for PID %d iteration %d\n', ii, jj);
                                             end
@@ -1015,7 +1015,7 @@ classdef ECGwrapper < handle
                                         catch ME
 
                                             if( strfind(ME.identifier, 'ECGwrapper') )
-                                                if( toc(Start2Wait) > 1.5*obj.Time2WaitPIDs )
+                                                if( obj.bHaveUserInterface || toc(Start2Wait) > 1.5*obj.Time2WaitPIDs )
                                                     error('ECGwrapper:MasterNotFinished', 'Timeout. Slave give up waitng Master.');
                                                 end
                                                 pause(30);

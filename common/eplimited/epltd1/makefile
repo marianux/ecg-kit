@@ -4,7 +4,7 @@
 
 -include ../makefile.init
 
-RM := rm -rf
+RM := del
 
 # All of the sources participating in the build are defined here
 -include sources.mk
@@ -29,7 +29,7 @@ all: epltdqrs1
 epltdqrs1: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L/usr/local/lib64 -o "epltdqrs1" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -LD:\Mariano\misc\ecg-kit\common\wfdb\windows-amd64\lib -o "epltdqrs1" $(OBJS) $(USER_OBJS) $(LIBS) -ID:\Mariano\misc\ecg-kit\common\wfdb\windows-amd64\lib\wfdb
 	@echo 'Finished building target: $@'
 	@echo ' '
 

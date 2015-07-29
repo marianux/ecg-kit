@@ -375,6 +375,7 @@ int mean(int *array, int datnum)
  thresh() calculates the detection threshold from the qrs mean and noise
  mean estimates.
 ****************************************************************************/
+extern double user_thresh;		/* normalized detection threshold */
 
 int thresh(int qmean, int nmean)
 	{
@@ -383,7 +384,7 @@ int thresh(int qmean, int nmean)
 	dmed = qmean - nmean ;
 /*	thrsh = nmean + (dmed>>2) + (dmed>>3) + (dmed>>4); */
 	temp = dmed ;
-	temp *= TH ;
+	temp *= (TH * user_thresh);
 	dmed = temp ;
 	thrsh = nmean + dmed ; /* dmed * THRESHOLD */
 	return(thrsh) ;

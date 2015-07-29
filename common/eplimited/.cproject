@@ -134,7 +134,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.base.1200184631" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.base">
 								<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.option.optimization.level.2146290505" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" value="gnu.c.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.level.805290274" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
-								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1896779259" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols"/>
+								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1896779259" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols"/>
 								<option id="gnu.c.compiler.option.preprocessor.undef.symbol.1936475334" name="Undefined symbols (-U)" superClass="gnu.c.compiler.option.preprocessor.undef.symbol" valueType="undefDefinedSymbols">
 									<listOptionValue builtIn="false" value="__DET2__"/>
 								</option>
@@ -193,7 +193,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.200312304" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__DET2__"/>
 								</option>
-								<option id="gnu.c.compiler.option.preprocessor.undef.symbol.84448136" name="Undefined symbols (-U)" superClass="gnu.c.compiler.option.preprocessor.undef.symbol" valueType="undefDefinedSymbols"/>
+								<option id="gnu.c.compiler.option.preprocessor.undef.symbol.84448136" name="Undefined symbols (-U)" superClass="gnu.c.compiler.option.preprocessor.undef.symbol"/>
 								<option id="gnu.c.compiler.option.include.paths.962881875" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;D:\Mariano\misc\ecg-kit\common\wfdb\windows-amd64\lib&quot;"/>
 								</option>
@@ -239,18 +239,25 @@
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.1542971562;cdt.managedbuild.config.gnu.exe.debug.1542971562.;cdt.managedbuild.tool.gnu.c.compiler.base.1898935968;cdt.managedbuild.tool.gnu.c.compiler.input.1649260452">
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.1121087675.1164414613;cdt.managedbuild.config.gnu.exe.release.1121087675.1164414613.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.1630648342;cdt.managedbuild.tool.gnu.c.compiler.input.1442724382">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.1121087675;cdt.managedbuild.config.gnu.exe.release.1121087675.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.1357223481;cdt.managedbuild.tool.gnu.c.compiler.input.737509920">
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.1121087675.1164414613.302209471;cdt.managedbuild.config.gnu.exe.release.1121087675.1164414613.302209471.;cdt.managedbuild.tool.gnu.c.compiler.mingw.base.1200184631;cdt.managedbuild.tool.gnu.c.compiler.input.2144215795">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.1542971562;cdt.managedbuild.config.gnu.exe.debug.1542971562.;cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1317323553;cdt.managedbuild.tool.gnu.c.compiler.input.997019540">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.1121087675.1164414613.302209471;cdt.managedbuild.config.gnu.exe.release.1121087675.1164414613.302209471.;cdt.managedbuild.tool.gnu.c.compiler.mingw.base.1200184631;cdt.managedbuild.tool.gnu.c.compiler.input.2144215795">
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.1121087675;cdt.managedbuild.config.gnu.exe.release.1121087675.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.1357223481;cdt.managedbuild.tool.gnu.c.compiler.input.737509920">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.1121087675.1164414613.302209471.2049731739;cdt.managedbuild.config.gnu.exe.release.1121087675.1164414613.302209471.2049731739.;cdt.managedbuild.tool.gnu.c.compiler.mingw.base.525943047;cdt.managedbuild.tool.gnu.c.compiler.input.892933636">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.1542971562;cdt.managedbuild.config.gnu.exe.debug.1542971562.;cdt.managedbuild.tool.gnu.c.compiler.base.1898935968;cdt.managedbuild.tool.gnu.c.compiler.input.1649260452">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>
