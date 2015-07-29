@@ -29,7 +29,7 @@ all: epltdqrs2
 epltdqrs2: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L/usr/local/lib64 -o "epltdqrs2" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L../../wfdb/linux-amd64/lib64/ -L/usr/local/lib64 -o "epltdqrs2" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

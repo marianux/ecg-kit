@@ -359,53 +359,66 @@ classdef ECGtask_QRS_detection < ECGtask
 
                                 end
 
-                                if( exist(file_name_orig, 'file') )
-                                    % reference comparison
+    
+                                if( status == 0  )
+                                    
+                                    if( exist(file_name_orig, 'file') )
+                                        % reference comparison
 
-                                    anns_test = [];                    
+                                        anns_test = [];                    
 
-                                    try
+                                        try
 
-                                        anns_test = readannot(file_name_orig);
+                                            anns_test = readannot(file_name_orig);
 
-                                        if( isempty(anns_test) )
+                                            if( isempty(anns_test) )
 
-                                            payload_out.([this_detector '_' obj.lead_names{jj} ]).time = [];
+                                                payload_out.([this_detector '_' obj.lead_names{jj} ]).time = [];
 
-                                        else
+                                            else
 
-                                            anns_test = AnnotationFilterConvert(anns_test, 'MIT', 'AAMI');
+                                                anns_test = AnnotationFilterConvert(anns_test, 'MIT', 'AAMI');
 
-                                            % filter and offset
-                                            anns_test.time = anns_test.time(anns_test.time >= ECG_sample_start_end_idx(1) & anns_test.time <= ECG_sample_start_end_idx(2)) + ECG_start_offset - 1;
+                                                % filter and offset
+                                                anns_test.time = anns_test.time(anns_test.time >= ECG_sample_start_end_idx(1) & anns_test.time <= ECG_sample_start_end_idx(2)) + ECG_start_offset - 1;
 
-                                            payload_out.([this_detector '_' obj.lead_names{jj} ]).time = colvec(anns_test.time);
+                                                payload_out.([this_detector '_' obj.lead_names{jj} ]).time = colvec(anns_test.time);
+
+                                            end
+
+                                        catch aux_ME
+
+                                            if( strcmpi(aux_ME.identifier, 'MATLAB:nomem') )
+                                                payload_out.([this_detector '_' obj.lead_names{jj} ]).time = [];
+                                            else
+                                                strAux = sprintf( '%s failed in recording %s lead %s\n', this_detector, ECG_header.recname, ECG_header.desc(jj,:) );
+
+                                                report = getReport(aux_ME);
+                                                error('ECGtask_QRS_detection:WFDB', '%s\nError report:\n%s', strAux, report);
+
+                                            end
 
                                         end
 
-                                    catch aux_ME
+                                        delete(file_name_orig);
 
-                                        if( strcmpi(aux_ME.identifier, 'MATLAB:nomem') )
-                                            payload_out.([this_detector '_' obj.lead_names{jj} ]).time = [];
-                                        else
-                                            strAux = sprintf( '%s failed in recording %s lead %s\n', this_detector, ECG_header.recname, ECG_header.desc(jj,:) );
+                                    else
 
-                                            report = getReport(aux_ME);
-                                            error('ECGtask_QRS_detection:WFDB', '%s\nError report:\n%s', strAux, report);
-
-                                        end
+                                        payload_out.([this_detector '_' obj.lead_names{jj} ]).time = [];
 
                                     end
 
-                                    delete(file_name_orig);
-                                    
                                 else
                                     
                                     payload_out.([this_detector '_' obj.lead_names{jj} ]).time = [];
-
+                                    
+                                    if( exist(file_name_orig, 'file') )
+                                        delete(file_name_orig);
+                                    end
                                 end
-
+                                
                             end
+                            
                         end
                         
                     case 'user'
