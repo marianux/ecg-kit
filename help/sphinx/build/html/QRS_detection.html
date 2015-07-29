@@ -98,7 +98,8 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="other_functions.html">Other functions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="progress_bar.html">A progress bar</a></li>
-<li class="toctree-l2"><a class="reference internal" href="progress_bar.html">Docs to come ...</a></li>
+<li class="toctree-l2"><a class="reference internal" href="list_all_ECGtask.html">List installed ECGtask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="progress_bar.html">More docs soon ...</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="extensions.html">Extending the ECGkit</a><ul class="simple">
@@ -203,9 +204,9 @@ description.</div></blockquote>
 <div>A full filename with the configuration for the gqrs algorithm. See the
 algorithm <a class="reference external" href="http://www.physionet.org/physiotools/wag/gqrs-1.htm">web</a>
 page for details.</div></blockquote>
-<p><code class="docutils literal"><span class="pre">wavedet_config</span></code> — A structure for customizing wavedet algorithm. <code class="docutils literal"><span class="pre">[]</span> <span class="pre">(default)</span></code></p>
+<p><code class="docutils literal"><span class="pre">detection_threshold</span></code> — A threshold to control the sensitivity of the detector. <code class="docutils literal"><span class="pre">1</span> <span class="pre">(default)</span></code></p>
 <blockquote>
-<div>Undocumented yet, use only if you know what you are doing.</div></blockquote>
+<div>Use higher values to reduce false detections, or lower values to reduce the number of missed beats.</div></blockquote>
 <p id="payload-prop"><code class="docutils literal"><span class="pre">payload</span></code> — An arbitrary format variable to be passed to your user-defined algorithm. <code class="docutils literal"><span class="pre">[]</span> <span class="pre">(default)</span></code></p>
 <blockquote>
 <div>This variable can be useful for passing data to your own function, in addition to the interface described
@@ -234,7 +235,7 @@ for details.</p>
 <p><strong>progress_handle</strong>, is a handle to a <a class="reference external" href="progress_bar.htm">progress_bar</a>
 object, that can be used to track the progress within your function.</p>
 <p><strong>payload_in</strong>, is a user variable, of arbitrary format, allowed to be sent
-to your function. It is sent via the <a class="reference internal" href="QRScorrector.html#payload-prop"><span>payload property</span></a>
+to your function. It is sent via the <a class="reference internal" href="#payload-prop"><span>payload property</span></a>
 of this class, for example:</p>
 </div></blockquote>
 <div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% One variable</span>

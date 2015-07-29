@@ -71,9 +71,9 @@ The properties that this task uses are the following:
 	algorithm `web <http://www.physionet.org/physiotools/wag/gqrs-1.htm>`__
 	page for details.
 
-``wavedet_config`` — A structure for customizing wavedet algorithm. ``[] (default)``
+``detection_threshold`` — A threshold to control the sensitivity of the detector. ``1 (default)``
 	
-	Undocumented yet, use only if you know what you are doing.
+	Use higher values to reduce false detections, or lower values to reduce the number of missed beats.
 
 .. _payload_prop:
 

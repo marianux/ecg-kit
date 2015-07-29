@@ -60,9 +60,9 @@ function InstallECGkit(bIgnoreUpdate)
     % get the correct command names in this architecture.
     sys_cmds = sys_command_strings();
     
-    ECGkitURL_str = 'http://code.google.com/p/ecg-kit/wiki/LatestVersion';
+    ECGkitURL_str = 'http://github.com/marianux/ecg-kit/blob/master/LatestVersion';
     % Version info.
-    release_str = 'v0.1.1 beta - 22/07/2014';
+    release_str = 'v0.1.0 beta - 05/05/2015';
 
     % URL check for updates
 
@@ -148,7 +148,7 @@ function InstallECGkit(bIgnoreUpdate)
         cd(prev_folder);
     end
     
-    if( bUseDesktop || bOctave )
+    if( bUseDesktop || bMatlab )
 
         % Tab completion of selected functions
         % Modify the TC.xml and TC.xsd
