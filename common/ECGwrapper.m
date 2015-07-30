@@ -187,7 +187,7 @@ classdef ECGwrapper < handle
         % are all pid's finishing the ECGtask together ?
         syncSlavesWithMaster
         % ECGannotations label format for heartbeat types.
-        class_labeling = 'AAMI'
+        class_labeling = 'AAMI';
         % user string to individualize each run
         user_string
         
@@ -201,7 +201,7 @@ classdef ECGwrapper < handle
         % object constructor: parse arguments, check if user interface is
         % available
             %% Constants and definitions
-
+           
             %Java user interface is started. Not started in clusters for example.
             obj.bHaveUserInterface = usejava('desktop');
 
@@ -225,16 +225,18 @@ classdef ECGwrapper < handle
 
             %argument definition
             p = inputParser;   % Create instance of inputParser class.
-            p.addParamValue('recording_name', [], @(x)( ischar(x)));
-            p.addParamValue('recording_format', [], @(x)( ischar(x) && any(strcmpi(x,obj.cKnownFormats))) || isempty(x) );
+            p.addParamValue('recording_name', [], @(x)( ischar(x) || isempty(x) ));
+            aux_val = obj.cKnownFormats;
+            p.addParamValue('recording_format', [], @(x)( ischar(x) && any(strcmpi(x,aux_val))) || isempty(x) );
             p.addParamValue('this_pid', 1, @(x)(ischar(x) || (isnumeric(x) && all(x > 0) ) ) );
-            p.addParamValue('tmp_path', [], @(x)(ischar(x)) );
-            p.addParamValue('user_string', [], @(x)(ischar(x)) );
-            p.addParamValue('output_path', [], @(x)(ischar(x)) );
+            p.addParamValue('tmp_path', [], @(x)(ischar(x) || isempty(x) ) );
+            p.addParamValue('user_string', [], @(x)(ischar(x) || isempty(x)) );
+            p.addParamValue('output_path', [], @(x)(ischar(x) || isempty(x)) );
             p.addParamValue('repetitions', 1, @(x)(isnumeric(x) && x > 0 ) );
             p.addParamValue('ECGtaskHandle', ECGtask_do_nothing, @(x)( isobject(x) || ischar(x) ) );
             p.addParamValue('overlapping_time', 30, @(x)(isnumeric(x) && x > 0 ) );
-            p.addParamValue('partition_mode', 'ECG_overlapped', @(x)( ischar(x) && any(strcmpi(x,obj.cPartitionModes))) );
+            aux_val = obj.cPartitionModes;
+            p.addParamValue('partition_mode', 'ECG_overlapped', @(x)( ischar(x) && any(strcmpi(x,aux_val))) );
             p.addParamValue('cacheResults', true, @(x)(islogical(x)) );
             p.addParamValue('syncSlavesWithMaster', false, @(x)(islogical(x)) );
 
@@ -279,7 +281,7 @@ classdef ECGwrapper < handle
             
 
             if( obj.bArgChanged )
-                obj = CheckArguments(obj);
+                obj = obj.CheckArguments();
                 obj.bArgChanged = false;
             end
 
@@ -557,7 +559,7 @@ classdef ECGwrapper < handle
                             pb.start_loop();
 
                             if( strcmpi(obj.partition_mode, 'QRS') )
-                                %% la partición se hizo en la cantidad de latidos
+                                %% la particiï¿½n se hizo en la cantidad de latidos
 
                                 this_iter_QRS_start_idx = QRS_start_idx - 1 + iter_starts(this_iter);
                                 this_iter_QRS_end_idx = QRS_start_idx - 1 + iter_ends(this_iter);
@@ -589,7 +591,7 @@ classdef ECGwrapper < handle
                                 this_iter_ECG_relative_start_end_idx = [1 (this_iter_ECG_end_idx - this_iter_ECG_start_idx + 1)];
 
                             else
-                                %% la partición se hizo en el registro de ECG 
+                                %% la particiï¿½n se hizo en el registro de ECG 
 
                                 this_iter_QRS_start_idx = nan;
                                 this_iter_QRS_end_idx = nan;
@@ -1147,7 +1149,7 @@ classdef ECGwrapper < handle
         % method can read the samples of a recording.
         
             if( obj.bArgChanged )
-                obj = CheckArguments(obj);
+                obj = obj.CheckArguments();
                 obj.bArgChanged = false;
             end
             
@@ -1186,7 +1188,7 @@ classdef ECGwrapper < handle
                 obj.ECGtaskHandle = this_name{1};
                 
                 if( obj.bArgChanged )
-                    obj = CheckArguments(obj);
+                    obj = obj.CheckArguments();
                     obj.bArgChanged = false;
                 end
 
@@ -1208,7 +1210,7 @@ classdef ECGwrapper < handle
             obj.ECGtaskHandle = prev_ECGtaskHandle;
             
             if( obj.bArgChanged )
-                obj = CheckArguments(obj);
+                obj = obj.CheckArguments();
                 obj.bArgChanged = false;
             end
             
@@ -1240,7 +1242,9 @@ classdef ECGwrapper < handle
         % this method produces a pretty-printed description about the
         % information stored in the object
             
-            for this_obj = rowvec(obj)
+            for ii = 1:length(obj)
+                
+                this_obj = obj(ii);
                 
                 if( this_obj.bCreated )
 
@@ -1496,6 +1500,69 @@ classdef ECGwrapper < handle
     
     methods (Access = private)  
         
+        function obj = CheckArguments(obj)
+
+            %Object parsing
+            if( isobject(obj.ECGtaskHandle) )
+                for ii = 1:length(obj.cObjMethodsRequired)
+                    if( ~ismethod(obj.ECGtaskHandle, obj.cObjMethodsRequired{ii}) )
+                       error( 'ECGwrapper:ArgCheck:UserObjHdl', ['Method ' obj.cObjMethodsRequired{ii} ' not implemented in UserObjHdl.\n\n'] );
+                    end        
+                end
+
+                for ii = 1:length(obj.cObjPropsRequired)
+                    if( ~isprop(obj.ECGtaskHandle, obj.cObjPropsRequired{ii}) )
+                       error( 'ECGwrapper:ArgCheck:UserObjHdl', ['Property ' obj.cObjPropsRequired{ii} ' not present in UserObjHdl.\n\n'] );
+                    end        
+                end
+            else
+               error( 'ECGwrapper:ArgCheck:UserObjHdl', 'ECGtaskHandle is not a valid ECGtask handle.' );
+            end
+
+            if( isprop(obj.ECGtaskHandle, 'min_heartbeats_required') || isprop(obj.ECGtaskHandle, 'max_heartbeats_per_iter')  )
+                obj.partition_mode = 'QRS';
+            elseif( isprop(obj.ECGtaskHandle, 'min_length_required') || isprop(obj.ECGtaskHandle, 'max_length_per_iter') )
+                obj.partition_mode = 'ECG_overlapped';
+            end
+
+            %ECG parsing
+            obj = CheckECGrecording(obj);
+
+            if( isempty(obj.tmp_path) )
+                
+                obj.tmp_path = tempdir ;
+                
+            %         obj.tmp_path = [fileparts(mfilename('fullpath')) filesep 'tmp' filesep ];
+            %     obj.tmp_path = [fileparts(obj.recording_name) filesep ];
+            end
+            
+            if( isempty(obj.output_path) )
+                obj.output_path = obj.rec_path;
+            end
+
+            %check path integrity.
+            if(~exist(obj.tmp_path, 'dir'))
+                %try to create it
+                if( ~mkdir(obj.tmp_path) )
+                    error('ECGwrapper:ArgCheck:InvalidPath', 'Invalid obj.tmp_path. Please provide a valid path.\n' );
+                end
+            end
+
+            if( strcmpi(obj.partition_mode, 'QRS') )
+                %partition using QRS detections
+                if( obj.overlapping_time < 5 ) %seconds
+                    warning('ECGwrapper:ArgCheck:Overlapp_too_low', 'The overlapping time between iterations is too low, consider increasing.\n' );
+                end
+            else
+                if( strcmpi(obj.partition_mode, 'ECG_contiguous') )
+                    %One segment after the other.
+                    obj.overlapping_time = 0;            
+                end
+            end
+
+        end
+
+        
         function obj = CheckECGrecording(obj)
         % internal method to check the correctness of the user input.
         
@@ -1627,65 +1694,4 @@ classdef ECGwrapper < handle
     
 end
 
-function obj = CheckArguments(obj)
-
-    %Object parsing
-    if( isobject(obj.ECGtaskHandle) )
-        for ii = 1:length(obj.cObjMethodsRequired)
-            if( ~ismethod(obj.ECGtaskHandle, obj.cObjMethodsRequired{ii}) )
-               error( 'ECGwrapper:ArgCheck:UserObjHdl', ['Method ' obj.cObjMethodsRequired{ii} ' not implemented in UserObjHdl.\n\n'] );
-            end        
-        end
-
-        for ii = 1:length(obj.cObjPropsRequired)
-            if( ~isprop(obj.ECGtaskHandle, obj.cObjPropsRequired{ii}) )
-               error( 'ECGwrapper:ArgCheck:UserObjHdl', ['Property ' obj.cObjPropsRequired{ii} ' not present in UserObjHdl.\n\n'] );
-            end        
-        end
-    else
-       error( 'ECGwrapper:ArgCheck:UserObjHdl', 'ECGtaskHandle is not a valid ECGtask handle.' );
-    end
-
-    if( isprop(obj.ECGtaskHandle, 'min_heartbeats_required') || isprop(obj.ECGtaskHandle, 'max_heartbeats_per_iter')  )
-        obj.partition_mode = 'QRS';
-    elseif( isprop(obj.ECGtaskHandle, 'min_length_required') || isprop(obj.ECGtaskHandle, 'max_length_per_iter') )
-        obj.partition_mode = 'ECG_overlapped';
-    end
-
-    %ECG parsing
-    obj = CheckECGrecording(obj);
-
-    if( isempty(obj.tmp_path) )
-        
-        obj.tmp_path = tempdir ;
-        
-    %         obj.tmp_path = [fileparts(mfilename('fullpath')) filesep 'tmp' filesep ];
-    %     obj.tmp_path = [fileparts(obj.recording_name) filesep ];
-    end
-    
-    if( isempty(obj.output_path) )
-        obj.output_path = obj.rec_path;
-    end
-
-    %check path integrity.
-    if(~exist(obj.tmp_path, 'dir'))
-        %try to create it
-        if( ~mkdir(obj.tmp_path) )
-            error('ECGwrapper:ArgCheck:InvalidPath', 'Invalid obj.tmp_path. Please provide a valid path.\n' );
-        end
-    end
-
-    if( strcmpi(obj.partition_mode, 'QRS') )
-        %partition using QRS detections
-        if( obj.overlapping_time < 5 ) %seconds
-            warning('ECGwrapper:ArgCheck:Overlapp_too_low', 'The overlapping time between iterations is too low, consider increasing.\n' );
-        end
-    else
-        if( strcmpi(obj.partition_mode, 'ECG_contiguous') )
-            %One segment after the other.
-            obj.overlapping_time = 0;            
-        end
-    end
-
-end
 

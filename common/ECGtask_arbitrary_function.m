@@ -28,7 +28,7 @@ classdef ECGtask_arbitrary_function < ECGtask
         started = false;
 
 % to track the signal range over the whole signal.         
-        range_min_max_tracking = [ realmax realmin ]
+        range_min_max_tracking = [ realmax realmin ];
         
     end
     
@@ -44,10 +44,10 @@ classdef ECGtask_arbitrary_function < ECGtask
         
         progress_handle 
         tmp_path
-        only_ECG_leads = false
+        only_ECG_leads = false;
         payload
-        lead_idx = []
-        signal_payload = false
+        lead_idx = [];
+        signal_payload = false;
         function_pointer
         finish_func_pointer = @default_finish_function;
         concate_func_pointer = @default_concatenate_function;

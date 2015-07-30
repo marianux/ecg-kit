@@ -30,11 +30,13 @@ function bHasPrivs = HasAdminPrivs(bAskUserForPrivs)
     pathdef_filename = fullfile(matlabroot,'toolbox', 'local', 'pathdef.m');
     pathdef_dummy_filename = [pathdef_filename '.delete_me'];
 
+    commmon_path = fileparts(mfilename('fullpath'));
+    
     % copy and delete
     if( ispc() )
-        str_command = [ 'is_admin.bat "' pathdef_filename '" "' pathdef_dummy_filename '"' ];
+        str_command = [ commmon_path filesep 'is_admin.bat "' pathdef_filename '" "' pathdef_dummy_filename '"' ];
     else
-        str_command = [ '. is_admin.sh ' pathdef_filename ' ' pathdef_dummy_filename ];
+        str_command = [ '. ' commmon_path filesep 'is_admin.sh ' pathdef_filename ' ' pathdef_dummy_filename ];
     end
 
     if( bAskUserForPrivs )

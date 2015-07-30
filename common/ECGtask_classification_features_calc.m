@@ -192,7 +192,7 @@ classdef ECGtask_classification_features_calc < ECGtask
             % log(RRmean1)
             %%%%%%%%%%%%%%%
 
-            aux_idx = arrayfun(@(a)( findStartEnd(  obj.series.QRS_locations >= (obj.series.QRS_locations(a) - 1*60*obj.sampling_rate) & ... 
+            aux_idx = arrayfun(@(a)( obj.findStartEnd(  obj.series.QRS_locations >= (obj.series.QRS_locations(a) - 1*60*obj.sampling_rate) & ... 
                                                     obj.series.QRS_locations <= obj.series.QRS_locations(a) )), ...
                                this_iter_QRS_idx, 'UniformOutput', false);
 
@@ -205,7 +205,7 @@ classdef ECGtask_classification_features_calc < ECGtask
             % log(RRmean20)
             %%%%%%%%%%%%%%%
 
-            aux_idx = arrayfun(@(a)( findStartEnd(  obj.series.RR_intervals >= (obj.series.RR_intervals(a) - 20*60*obj.sampling_rate) & ... 
+            aux_idx = arrayfun(@(a)( obj.findStartEnd(  obj.series.RR_intervals >= (obj.series.RR_intervals(a) - 20*60*obj.sampling_rate) & ... 
                                                     obj.series.RR_intervals <= obj.series.RR_intervals(a) )), ...
                                this_iter_QRS_idx, 'UniformOutput', false);
 
@@ -231,9 +231,9 @@ classdef ECGtask_classification_features_calc < ECGtask
                                      min(this_iter_ECG_resampled_size, QRS_locations(a) + round(0.2*obj.sampling_rate)) ]) , ...
                                this_iter_seq_idx, 'UniformOutput', false);
 
-            aux_featval = cellfun(@(a,b)(squeeze(wtECG(b(1):b(2),:,obj.scale_idx(4))) * autovec_calculation(squeeze(wtECG(a(1):a(2),:,obj.scale_idx(4)))) ), aux_idx, aux_idx2, 'UniformOutput', false);
+            aux_featval = cellfun(@(a,b)(squeeze(wtECG(b(1):b(2),:,obj.scale_idx(4))) * obj.autovec_calculation(squeeze(wtECG(a(1):a(2),:,obj.scale_idx(4)))) ), aux_idx, aux_idx2, 'UniformOutput', false);
             
-            [ aux_mp aux_zc ] = cellfun(@(a)(CalcModMaxPos(a(:,1))), aux_featval );
+            [ aux_mp aux_zc ] = cellfun(@(a)(obj.CalcModMaxPos(a(:,1))), aux_featval );
 
             featMat_ldc = [ featMat_ldc colvec(aux_zc) colvec(aux_mp) ];
 
@@ -245,7 +245,7 @@ classdef ECGtask_classification_features_calc < ECGtask
             % AutoCorr2PlanoWTModMaxPos
             %%%%%%%%%%%%%%%
 
-            [ aux_mp aux_zc ] = cellfun(@(a)(CalcModMaxPos(a(:,2))), aux_featval );
+            [ aux_mp aux_zc ] = cellfun(@(a)(obj.CalcModMaxPos(a(:,2))), aux_featval );
 
             featMat_ldc = [ featMat_ldc colvec(aux_zc) colvec(aux_mp) ];
 
@@ -320,7 +320,7 @@ classdef ECGtask_classification_features_calc < ECGtask
                                      min(this_iter_ECG_resampled_size, QRS_locations(a) + round(0.08*obj.sampling_rate)) ]) , ...
                                this_iter_seq_idx, 'UniformOutput', false);
 
-            aux_featval = cellfun(@(a)( Calc_QRS_max_scale_proj( wtECG(a(1):a(2),:,:), obj.scales) ), aux_idx);
+            aux_featval = cellfun(@(a)( obj.Calc_QRS_max_scale_proj( wtECG(a(1):a(2),:,:), obj.scales) ), aux_idx);
 
         %     iAreaAbs = squeeze(sum(abs(wtAux)))';
         %     MaxProjArea = scales * iAreaAbs ./ sum(iAreaAbs);
@@ -348,9 +348,9 @@ classdef ECGtask_classification_features_calc < ECGtask
 
             if( ECG_header.nsig > 2 ) 
                 % wtECG already projected in autovec.
-                aux_featval = cellfun(@(a)( CalcModMaxVal( squeeze(wtECG(a(1):a(2),:,obj.scale_idx(3))) ) ), aux_idx);
+                aux_featval = cellfun(@(a)( obj.CalcModMaxVal( squeeze(wtECG(a(1):a(2),:,obj.scale_idx(3))) ) ), aux_idx);
             else
-                aux_featval = cellfun(@(a)( CalcModMaxVal( squeeze(wtECG(a(1):a(2),:,obj.scale_idx(3))) * obj.autovec ) ), aux_idx);
+                aux_featval = cellfun(@(a)( obj.CalcModMaxVal( squeeze(wtECG(a(1):a(2),:,obj.scale_idx(3))) * obj.autovec ) ), aux_idx);
             end
 
             featMat_clust = [ featMat_clust colvec(aux_featval) ];
@@ -381,93 +381,99 @@ classdef ECGtask_classification_features_calc < ECGtask
         end
 
     end
+
+    %%%%%%%%%%%%%%%%%%
+    % Other functions
+    %%%%%%%%%%%%%%%%%%
+    
+    methods (Access = private)  
+
+        function autovec = autovec_calculation(obj, wtECGslice)
+
+            mean_wtECGslice = mean(wtECGslice);    
+            wtECGslice_cov = cov( bsxfun( @minus, wtECGslice, mean_wtECGslice ));
+            [autovec autoval] = eig(wtECGslice_cov); 
+            [~, autoval_idx] = sort(diag(autoval), 'descend');
+            autovec = autovec(:,autoval_idx);
+            
+        end
+
+        function [ ModMaxPos ZeroCross ] = CalcModMaxPos(obj, wtSignal )
+
+            ModMaxPos = nan;
+            ZeroCross = nan;
+
+            lwtSignal = size(wtSignal, 1);
+
+            if( all( wtSignal == 0 ) )
+                return
+            end
+
+            ac1 = conv(wtSignal(:,1), flipud(wtSignal(:,1)));
+
+            ac1 = ac1(lwtSignal:end);
+            ac1 = 1/ac1(1)*ac1;
+
+            interp_idx = (1:0.1:lwtSignal)';
+
+            ac1_interp = spline( 1:lwtSignal, ac1, interp_idx );
+            iZeroCrossPos_ac1 = myzerocros(ac1);
+
+            if( isempty(iZeroCrossPos_ac1))
+                return
+            else
+                if( iZeroCrossPos_ac1(1) < lwtSignal )
+                    if( sign(ac1(iZeroCrossPos_ac1(1))) ~= sign(ac1(iZeroCrossPos_ac1(1)+1)) )
+                        ZeroCross = iZeroCrossPos_ac1(1) - ac1(iZeroCrossPos_ac1(1)) / ( ac1(iZeroCrossPos_ac1(1)+1) - ac1(iZeroCrossPos_ac1(1)) );
+                    else
+                        ZeroCross = (iZeroCrossPos_ac1(1)-1) - ac1(iZeroCrossPos_ac1(1)-1) / ( ac1(iZeroCrossPos_ac1(1)) - ac1(iZeroCrossPos_ac1(1)-1) );
+                    end
+                else
+                    return
+                end   
+            end
+
+            ModMaxPos_ac1 = modmax( ac1_interp, 2, 0, 0 );
+
+            if( ~isempty(ModMaxPos_ac1) )
+                valid_ac1_max_idx = find(interp_idx(ModMaxPos_ac1) > ZeroCross);
+                if( ~isempty(valid_ac1_max_idx) )
+                    ModMaxPos = interp_idx(ModMaxPos_ac1(valid_ac1_max_idx(1)));
+                else
+                    return
+                end
+            else
+                return
+            end
+        end
+
+        function ModMaxVal = CalcModMaxVal(obj, wtSignal )
+
+            % std_wtSignal = std(wtSignal);
+            % wtSignal = bsxfun( @times, wtSignal, 1./std_wtSignal);
+
+            cc = conv(wtSignal(:,1), flipud(wtSignal(:,2)));
+
+            [~, max_pos] = max(abs(cc));
+
+            ModMaxVal = cc(max_pos);
+        end
+
+        function start_end_aux = findStartEnd(obj, bAux )
+
+            start_aux = find(  bAux, 1, 'first' );
+            end_aux = find(  bAux, 1, 'last' );
+            start_end_aux = [start_aux end_aux];
+                                                
+        end
+
+        function aux_slice = Calc_QRS_max_scale_proj(obj, aux_slice, scales)
+            aux_slice = squeeze(sum(abs(aux_slice(:,1,:))))';
+            aux_slice = scales * colvec(aux_slice) ./ sum(aux_slice);
+        end
+
+    end   
     
 end
 
 
-%%%%%%%%%%%%%%%%%%
-% Other functions
-%%%%%%%%%%%%%%%%%%
-
-function autovec = autovec_calculation(wtECGslice)
-
-    mean_wtECGslice = mean(wtECGslice);    
-    wtECGslice_cov = cov( bsxfun( @minus, wtECGslice, mean_wtECGslice ));
-    [autovec autoval] = eig(wtECGslice_cov); 
-    [~, autoval_idx] = sort(diag(autoval), 'descend');
-    autovec = autovec(:,autoval_idx);
-end
-
-function [ ModMaxPos ZeroCross ] = CalcModMaxPos( wtSignal )
-
-    ModMaxPos = nan;
-    ZeroCross = nan;
-
-    lwtSignal = size(wtSignal, 1);
-
-    if( all( wtSignal == 0 ) )
-        return
-    end
-
-    ac1 = conv(wtSignal(:,1), flipud(wtSignal(:,1)));
-
-    ac1 = ac1(lwtSignal:end);
-    ac1 = 1/ac1(1)*ac1;
-
-    interp_idx = (1:0.1:lwtSignal)';
-
-    ac1_interp = spline( 1:lwtSignal, ac1, interp_idx );
-    iZeroCrossPos_ac1 = myzerocros(ac1);
-
-    if( isempty(iZeroCrossPos_ac1))
-        return
-    else
-        if( iZeroCrossPos_ac1(1) < lwtSignal )
-            if( sign(ac1(iZeroCrossPos_ac1(1))) ~= sign(ac1(iZeroCrossPos_ac1(1)+1)) )
-                ZeroCross = iZeroCrossPos_ac1(1) - ac1(iZeroCrossPos_ac1(1)) / ( ac1(iZeroCrossPos_ac1(1)+1) - ac1(iZeroCrossPos_ac1(1)) );
-            else
-                ZeroCross = (iZeroCrossPos_ac1(1)-1) - ac1(iZeroCrossPos_ac1(1)-1) / ( ac1(iZeroCrossPos_ac1(1)) - ac1(iZeroCrossPos_ac1(1)-1) );
-            end
-        else
-            return
-        end   
-    end
-
-    ModMaxPos_ac1 = modmax( ac1_interp, 2, 0, 0 );
-
-    if( ~isempty(ModMaxPos_ac1) )
-        valid_ac1_max_idx = find(interp_idx(ModMaxPos_ac1) > ZeroCross);
-        if( ~isempty(valid_ac1_max_idx) )
-            ModMaxPos = interp_idx(ModMaxPos_ac1(valid_ac1_max_idx(1)));
-        else
-            return
-        end
-    else
-        return
-    end
-end
-
-function ModMaxVal = CalcModMaxVal( wtSignal )
-
-    % std_wtSignal = std(wtSignal);
-    % wtSignal = bsxfun( @times, wtSignal, 1./std_wtSignal);
-
-    cc = conv(wtSignal(:,1), flipud(wtSignal(:,2)));
-
-    [~, max_pos] = max(abs(cc));
-
-    ModMaxVal = cc(max_pos);
-end
-
-function start_end_aux = findStartEnd( bAux )
-
-    start_aux = find(  bAux, 1, 'first' );
-    end_aux = find(  bAux, 1, 'last' );
-    start_end_aux = [start_aux end_aux];
-                                        
-end
-
-function aux_slice = Calc_QRS_max_scale_proj(aux_slice, scales)
-    aux_slice = squeeze(sum(abs(aux_slice(:,1,:))))';
-    aux_slice = scales * colvec(aux_slice) ./ sum(aux_slice);
-end

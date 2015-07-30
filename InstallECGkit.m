@@ -1,4 +1,4 @@
-%% Installation script of ECGkit
+%% Installation script of ecg-kit
 % Script to install this toolbox.
 % 
 % ****************************************************************
@@ -7,15 +7,15 @@
 % 
 % Example
 % 
-%   InstallECGkit()
+%   Installecg-kit()
 % 
 % or
 % 
-%   InstallECGkit(false) 
+%   Installecg-kit(false) 
 % 
 % to avoid checking online for updates.
 % 
-% See also UnInstallECGkit
+% See also UnInstallecg-kit
 % 
 % Author: Mariano Llamedo Soria
 % <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
@@ -26,7 +26,7 @@
 % 
 function InstallECGkit(bIgnoreUpdate)
     
-    backup_string = 'ECGkit_backup';
+    backup_string = 'ecg-kit_backup';
 
     if( nargin < 1 || ~islogical(bIgnoreUpdate) )
         bIgnoreUpdate = false;
@@ -60,7 +60,7 @@ function InstallECGkit(bIgnoreUpdate)
     % get the correct command names in this architecture.
     sys_cmds = sys_command_strings();
     
-    ECGkitURL_str = 'http://github.com/marianux/ecg-kit/blob/master/LatestVersion';
+    ECGkit_URL_str = 'http://ecg-kit.readthedocs.org/en/master/';
     % Version info.
     release_str = 'v0.1.0 beta - 05/05/2015';
 
@@ -71,9 +71,9 @@ function InstallECGkit(bIgnoreUpdate)
     
     if( ~bAdminPrivs )
         disp_string_framed('*red', 'No admin/root privileges');
-        cprintf('SystemCommands', 'To install the ECGkit it is needed to run this script with administrator/root privileges.\nRun Matlab as administrator or ' );
+        cprintf('SystemCommands', 'To install tab-completion feature with the ecg-kit, it is suggested to run this script with administrator/root privileges.\nRun Matlab as administrator or ' );
         cprintf('*red', 'answer "YES"' );
-        cprintf('SystemCommands', ' when the system asks for permission.\n\n' );
+        cprintf('SystemCommands', ' when the system asks for permission. Otherwise, tab completion will not be available.\n\n' );
     end
     
     % Check if the GUI is up and working
@@ -92,31 +92,56 @@ function InstallECGkit(bIgnoreUpdate)
     elseif( bOctave )
         disp_string_framed([1,0.5,0], 'Octave is not fully supported');
         cprintf('Red', 'Although you can find problems using the toolbox in Octave, I am trying to make it fully compatible. Please report any problem that you could find.\n\n' );
+        
+        % Special functions not compatible with Matlab
+
+        octave_files = { ...
+                          'octave -ECGt.m' 'ECGtask.m' ...
+                        };
+                        
+        for ii = 1:size(octave_files,1)                  
+          
+          octave_file_src = fullfile(root_path,'common', octave_files{ii,1});
+          octave_file_dst = fullfile(root_path,'common', octave_files{ii,2});
+          
+          status = copyfile(octave_file_src, octave_file_dst, 'f');
+            
+          if( status == 0 )
+
+            disp_string_framed('*Red', 'Installation Error' );
+            fprintf(1, 'Failed copying "%s"  -->>  "%s".\n', octave_file_src, octave_file_dst );
+            cellfun(@(a)(rmpath(a)), default_paths);    
+            return
+          
+          end      
+          
+        end        
     end
     
     if ~bIgnoreUpdate
         
         fprintf(1, 'Checking for updates\n' );
         if( bMatlab )
-          [strResponse, URLstatus] = urlread( ECGkitURL_str,'TimeOut',5);
+          [strResponse, URLstatus] = urlread( ECGkit_URL_str,'TimeOut',5);
         elseif( bOctave )
-          [strResponse, URLstatus] = urlread( ECGkitURL_str);
+          [strResponse, URLstatus] = urlread( ECGkit_URL_str);
         end
           
         if( URLstatus == 1 )
             aux_idx = strfind(strResponse, '###');
-            latest_release_str = strResponse(aux_idx(1)+3:aux_idx(2)-1);
             
-            if( strcmpi(latest_release_str, release_str) )
-                disp_string_framed('Blue', 'ECGkit is up to the date');
-            else
-                disp_string_framed('*Red', sprintf('ECGkit %s version available', latest_release_str) );
-                fprintf(1, 'Consider updating %s.\n', '<a href = "https://code.google.com/p/ecg-kit/">here</a>' );
-                
-                cellfun(@(a)(rmpath(a)), default_paths);    
-                return
-            end
+            if( ~isempty(aux_idx) )
+              latest_release_str = strResponse(aux_idx(1)+3:aux_idx(2)-1);
             
+              if( ~strcmpi(latest_release_str, release_str) )
+                  disp_string_framed('*Red', sprintf('ecg-kit %s version available', latest_release_str) );
+                  fprintf(1, 'Consider updating %s.\n', '<a href = "http://marianux.github.io/ecg-kit/">here</a>' );
+                  
+                  cellfun(@(a)(rmpath(a)), default_paths);    
+                  return
+              end
+              
+            end            
         end
     end
 
@@ -148,146 +173,154 @@ function InstallECGkit(bIgnoreUpdate)
         cd(prev_folder);
     end
     
-    if( bUseDesktop || bMatlab )
+    if( bUseDesktop || bOctave )
 
-        % Tab completion of selected functions
-        % Modify the TC.xml and TC.xsd
-        fprintf(1, 'Installing tab-completion feature.\n' );
+        if( bMatlab )
         
-        bTabInstallError = false;
-        fid = 0;
+          % Tab completion of selected functions
+          % Modify the TC.xml and TC.xsd
+          fprintf(1, 'Installing tab-completion feature.\n' );
+          
+          bTabInstallError = false;
+          fid = 0;
 
-        tcxml_filename = fullfile(matlabroot,'toolbox', 'local', 'TC.xml');
-        tcxsd_filename = fullfile(matlabroot,'toolbox', 'local', 'TC.xsd');
-        
-        tmp_path = tempdir();
+          tcxml_filename = fullfile(matlabroot,'toolbox', 'local', 'TC.xml');
+          tcxsd_filename = fullfile(matlabroot,'toolbox', 'local', 'TC.xsd');
+          
+          tmp_path = tempdir();
 
-        my_tcxml_filename = [tmp_path 'TC.xml' ];
-        my_tcxsd_filename = [tmp_path 'TC.xsd' ];
-        
-        status = copyfile(tcxml_filename, my_tcxml_filename, 'f');
-        status = status & copyfile(tcxsd_filename, my_tcxsd_filename, 'f');
-        
-        if( status )
-
-            if( exist([tcxml_filename backup_string ], 'file') )
-                str_command = [];
-            else
-                str_command = [ sys_cmds.copy_command ' "' tcxml_filename '" "' tcxml_filename backup_string '"' sys_cmds.command_sep_str ];
-            end
-
-            if( ~exist([tcxsd_filename backup_string ], 'file') )
-                str_command = [ str_command sys_cmds.copy_command ' "' tcxsd_filename '" "' tcxsd_filename backup_string '"' sys_cmds.command_sep_str ];
-            end
-
-            try 
-
-                last_binding = [];
-                bStartFound = false;
-                bFinishFound = false;
-                fid = fopen(my_tcxml_filename, 'r+');
-
-                if( fid > 0 )
-
-                    while( ~feof(fid) && ~bFinishFound ) 
-
-                        str_aux = fgetl(fid);
-
-                        if( ~bStartFound && ~isempty(strfind( str_aux, '<!-- ECGkit start -->')) )
-                            bStartFound = true;
-                            break
-                        elseif( ~isempty(strfind( str_aux, '</TC>')) )
-                            bFinishFound = true;
-                            break
-                        elseif( ~isempty(strfind( str_aux, '</binding>')) )
-                            last_binding = ftell(fid);
-                        end
-                    end
-
-                    if( ~bStartFound && bFinishFound && ~isempty(last_binding) )
-
-                        fseek(fid, last_binding, 'bof');
-
-                        our_fid = fopen( [ root_path 'common' filesep 'TC.xml_additions.xml' ] , 'r');
-
-                        if( our_fid > 0 )
-                            fwrite(fid, fread(our_fid, inf, '*uint8') );
-                            fclose(our_fid);
-                        end
-                    end
-
-                    fclose(fid);
-                else
-                    bTabInstallError = true;
-                end
-
-            catch
-                if( fid > 0 )
-                    fclose(fid);
-                end
-                bTabInstallError = true;
-            end
-
-            try 
-
-                start_idx = [];
-                bStartFound = false;
-                fid = fopen(my_tcxsd_filename, 'r+');
-
-                if( fid > 0 )
-
-                    while( ~feof(fid) ) 
-
-                        last_binding = ftell(fid);
-                        str_aux = fgetl(fid);
-                        if( ~bStartFound && ~isempty(strfind( str_aux, '<!-- ECGkit start')) )
-                            bStartFound = true;
-                            break
-                        elseif( isempty(start_idx) && ~isempty(strfind( str_aux, '<xsd:pattern value="-[A-Za-z0-9]+" />')) )
-                            fseek(fid, 0, 'bof');
-                            str_aux_pre = rowvec(fread(fid, last_binding, '*char'));
-                            str_aux = rowvec(fgetl(fid));
-                            str_aux_post = rowvec(fread(fid, inf, '*char'));
-                            fseek(fid, 0, 'bof');
-                            fwrite(fid, [str_aux_pre sprintf('<!-- ECGkit start\n') str_aux sprintf('\nECGkit end -->\n	    <xsd:pattern value="[-_A-Za-z0-9]+" />\n') str_aux_post], 'char' );
-                        end
-                    end
-
-                    fclose(fid);
-
-                else
-                    bTabInstallError = true;
-                end
-
-            catch
-                if( fid > 0 )
-                    fclose(fid);
-                end
-                bTabInstallError = true;
-            end         
-
-            if( bTabInstallError)
-                disp_string_framed('*red', 'Could not setup tab completion');
-                cprintf('red', 'Some error happened during the tab completion installation. Do it manually or ask for help.\n' );
-            else
+          my_tcxml_filename = [tmp_path 'TC.xml' ];
+          my_tcxsd_filename = [tmp_path 'TC.xsd' ];
+          
+          if( exist(tcxml_filename, 'file') && exist(tcxsd_filename, 'file'))
+            status = copyfile(tcxml_filename, my_tcxml_filename, 'f');
+            status = status & copyfile(tcxsd_filename, my_tcxsd_filename, 'f');
+          else
+            status = false;
+          end
             
-                % apply changes
-                str_command = [ str_command ... 
-                                sys_cmds.copy_command ' "' my_tcxml_filename '" "' tcxml_filename '"' sys_cmds.command_sep_str ... 
-                                sys_cmds.copy_command ' "' my_tcxsd_filename '" "' tcxsd_filename '"'... 
-                                ];
+          if( status )
 
-                [status, ~] = system( str_command, '-runAsAdmin' );
-                if( status == 0 )
-                    cprintf('*blue', 'Remember to restart Matlab for function''s "tab completion" changes to take effect.\n' );
-                else                    
-                    bTabInstallError = true;
-                end
+              if( exist([tcxml_filename backup_string ], 'file') )
+                  str_command = [];
+              else
+                  str_command = [ sys_cmds.copy_command ' "' tcxml_filename '" "' tcxml_filename backup_string '"' sys_cmds.command_sep_str ];
+              end
 
-            end
-            
+              if( ~exist([tcxsd_filename backup_string ], 'file') )
+                  str_command = [ str_command sys_cmds.copy_command ' "' tcxsd_filename '" "' tcxsd_filename backup_string '"' sys_cmds.command_sep_str ];
+              end
+
+              try 
+
+                  last_binding = [];
+                  bStartFound = false;
+                  bFinishFound = false;
+                  fid = fopen(my_tcxml_filename, 'r+');
+
+                  if( fid > 0 )
+
+                      while( ~feof(fid) && ~bFinishFound ) 
+
+                          str_aux = fgetl(fid);
+
+                          if( ~bStartFound && ~isempty(strfind( str_aux, '<!-- ecg-kit start -->')) )
+                              bStartFound = true;
+                              break
+                          elseif( ~isempty(strfind( str_aux, '</TC>')) )
+                              bFinishFound = true;
+                              break
+                          elseif( ~isempty(strfind( str_aux, '</binding>')) )
+                              last_binding = ftell(fid);
+                          end
+                      end
+
+                      if( ~bStartFound && bFinishFound && ~isempty(last_binding) )
+
+                          fseek(fid, last_binding, 'bof');
+
+                          our_fid = fopen( [ root_path 'common' filesep 'TC.xml_additions.xml' ] , 'r');
+
+                          if( our_fid > 0 )
+                              fwrite(fid, fread(our_fid, inf, '*uint8') );
+                              fclose(our_fid);
+                          end
+                      end
+
+                      fclose(fid);
+                  else
+                      bTabInstallError = true;
+                  end
+
+              catch
+                  if( fid > 0 )
+                      fclose(fid);
+                  end
+                  bTabInstallError = true;
+              end
+
+              try 
+
+                  start_idx = [];
+                  bStartFound = false;
+                  fid = fopen(my_tcxsd_filename, 'r+');
+
+                  if( fid > 0 )
+
+                      while( ~feof(fid) ) 
+
+                          last_binding = ftell(fid);
+                          str_aux = fgetl(fid);
+                          if( ~bStartFound && ~isempty(strfind( str_aux, '<!-- ecg-kit start')) )
+                              bStartFound = true;
+                              break
+                          elseif( isempty(start_idx) && ~isempty(strfind( str_aux, '<xsd:pattern value="-[A-Za-z0-9]+" />')) )
+                              fseek(fid, 0, 'bof');
+                              str_aux_pre = rowvec(fread(fid, last_binding, '*char'));
+                              str_aux = rowvec(fgetl(fid));
+                              str_aux_post = rowvec(fread(fid, inf, '*char'));
+                              fseek(fid, 0, 'bof');
+                              fwrite(fid, [str_aux_pre sprintf('<!-- ecg-kit start\n') str_aux sprintf('\necg-kit end -->\n	    <xsd:pattern value="[-_A-Za-z0-9]+" />\n') str_aux_post], 'char' );
+                          end
+                      end
+
+                      fclose(fid);
+
+                  else
+                      bTabInstallError = true;
+                  end
+
+              catch
+                  if( fid > 0 )
+                      fclose(fid);
+                  end
+                  bTabInstallError = true;
+              end         
+
+              if( bTabInstallError)
+                  disp_string_framed('*red', 'Could not setup tab completion');
+                  cprintf('red', 'Some error happened during the tab completion installation. Do it manually or ask for help.\n' );
+              else
+              
+                  % apply changes
+                  str_command = [ str_command ... 
+                                  sys_cmds.copy_command ' "' my_tcxml_filename '" "' tcxml_filename '"' sys_cmds.command_sep_str ... 
+                                  sys_cmds.copy_command ' "' my_tcxsd_filename '" "' tcxsd_filename '"'... 
+                                  ];
+
+                  [status, ~] = system( str_command, '-runAsAdmin' );
+                  if( status == 0 )
+                      cprintf('*blue', 'Remember to restart Matlab for function''s "tab completion" changes to take effect.\n' );
+                  else                    
+                      bTabInstallError = true;
+                  end
+
+              end
+              
+          end
+        
         end
-        
+          
         bOk = savepath();
     
         if( bOk == 0 )
@@ -298,11 +331,24 @@ function InstallECGkit(bIgnoreUpdate)
             
             str_aux = [ 'examples' filesep 'examples.m'];
             
-            fprintf(1, '%s was correctly installed.\n\nYou can start reading the %s, or if you prefer, trying these %s.\nGo to the %s if you need help.\n', ...
-                '<a href = "matlab: web(''http://marianux.github.io/ecg-kit/'', ''-browser'' )">ecg-kit</a>', ...
-                '<a href = "matlab: web(''http://ecg-kit.readthedocs.org/en/master/'', ''-browser'' )">documentation</a>', ...
-                [ '<a href = "matlab: opentoline(' str_aux ',1)">examples</a>' ], ...
-                '<a href = "matlab: web(''https://groups.google.com/forum/#!forum/ecg-kit-users'', ''-browser'' )">forum</a>');
+            if( bMatlab )
+            
+              fprintf(1, '%s was correctly installed.\n\nYou can start reading the %s, or if you prefer, trying these %s.\nGo to the %s if you need help.\n', ...
+                  '<a href = "matlab: web(''http://marianux.github.io/ecg-kit/'', ''-browser'' )">ecg-kit</a>', ...
+                  '<a href = "matlab: web(''http://ecg-kit.readthedocs.org/en/master/'', ''-browser'' )">documentation</a>', ...
+                  [ '<a href = "matlab: opentoline(' str_aux ',1)">examples</a>' ], ...
+                  '<a href = "matlab: web(''https://groups.google.com/forum/#!forum/ecg-kit-users'', ''-browser'' )">forum</a>');
+                  
+             elseif( bOctave )
+             
+                fprintf(1, [ 'ecg-kit was correctly installed.\n\nYou can start reading the documentation, or if you prefer, trying these examples.\nGo to the forum if you need help.\n\n' ...
+                    'web-page:      http://marianux.github.io/ecg-kit/\n', ...
+                    'documentation: http://ecg-kit.readthedocs.org/en/master/\n', ...
+                    'examples:      .\' filesep 'examples\' filesep 'examples.m\n', ...
+                    'forum:         https://groups.google.com/forum/#!forum/ecg-kit-users\n' ]);
+                  
+             end
+                  
         else
 
             if( ispc() )
