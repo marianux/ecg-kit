@@ -14,7 +14,7 @@ classdef ECGtask_classification_features_calc < ECGtask
 % Last update: 18/2/2013
        
     properties(GetAccess = public, Constant)
-        name = 'ECGclassificationTask';
+        name = 'ECG_hb_class_fc';
         target_units = 'ADCu';
         doPayload = true;
         % if user = memory;
@@ -119,6 +119,8 @@ classdef ECGtask_classification_features_calc < ECGtask
             obj.series.QRS_locations = QRS_locations;
 
             obj.cant_QRS_locations = length(obj.series.RR_intervals);
+            
+            obj.started = true;
             
         end
         
@@ -368,7 +370,7 @@ classdef ECGtask_classification_features_calc < ECGtask
 
         end
         
-        function Finish(obj, ECG_header)
+        function payload = Finish(obj, payload, ECG_header)
             % not implemented
         end
         

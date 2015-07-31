@@ -73,7 +73,7 @@ if( strcmpi(recording_format, 'AHA') )
                         };
 
     cValidAnnotations =          cTranslationMatrix(:,5);
-    cAAMItranslation =           cTranslationMatrix(:,4);
+%     cAAMItranslation =           cTranslationMatrix(:,4);
     cAnnTranslation   =          cTranslationMatrix(:,2);
     cValidAnnotationsString =    cTranslationMatrix(:,1);
 
@@ -86,6 +86,7 @@ if( strcmpi(recording_format, 'AHA') )
                             {'Prematuro' 'Normal' 'Escape' 'Unclass'};
                             {'Normal' 'Aberrada' 'Unclass'} };
 
+    cAAMItranslation =           cLabListsLabels{LabConversion_idx};
 
     iLabListsTranslations = [ ...
         ...% AHA labelling:    'E' 'F' 'N' 'P' 'Q' 'R' 'U' 'V' '[' ']' 'ñ'
@@ -117,7 +118,7 @@ elseif( strcmpi(recording_format, 'HES') )
                         };
 
     cValidAnnotations =          cell2mat(cTranslationMatrix(:,5));
-    cAAMItranslation =           cTranslationMatrix(:,4);
+%     cAAMItranslation =           cTranslationMatrix(:,4);
     cAnnTranslation   =          cTranslationMatrix(:,2);
     cValidAnnotationsString =    cTranslationMatrix(:,1);
 
@@ -130,6 +131,7 @@ elseif( strcmpi(recording_format, 'HES') )
                             {'Prematuro' 'Normal' 'Escape' 'Unclass'};
                             {'Normal' 'Aberrada' 'Unclass'} };
 
+    cAAMItranslation =           cLabListsLabels{LabConversion_idx};
 
     iLabListsTranslations = [ ...
         ...% HES labelling:    'Q' 'N' 'N' 'S' 'Q' 'V' 'S'                         
@@ -163,7 +165,6 @@ elseif( strcmpi(recording_format, 'ISHNE') )
                         };
 
     cValidAnnotations =          cTranslationMatrix(:,5);
-    cAAMItranslation =           cTranslationMatrix(:,4);
     cAnnTranslation   =          cTranslationMatrix(:,2);
     cValidAnnotationsString =    cTranslationMatrix(:,1);
 
@@ -176,6 +177,7 @@ elseif( strcmpi(recording_format, 'ISHNE') )
                             {'Prematuro' 'Normal' 'Escape' 'Unclass'};
                             {'Normal' 'Aberrada' 'Unclass'} };
 
+    cAAMItranslation =           cLabListsLabels{LabConversion_idx};
 
     iLabListsTranslations = [ ...
         ...% ISHNE labelling:  'N' 'V' 'S' 'C' 'B' 'P' 'X' 'Q' 'ñ' 
@@ -230,7 +232,7 @@ elseif( strcmpi(recording_format, 'MIT') )
         };
 
     cValidAnnotations =          cTranslationMatrix(:,5);
-    cAAMItranslation =           cTranslationMatrix(:,4);
+%     cAAMItranslation =           cTranslationMatrix(:,4);
     cAnnTranslation   =          cTranslationMatrix(:,2);
     cValidAnnotationsString =    cTranslationMatrix(:,1);
 
@@ -244,6 +246,7 @@ elseif( strcmpi(recording_format, 'MIT') )
                             {'Prematuro' 'Normal' 'Escape' 'Unclass'};
                             {'Normal' 'Aberrada' 'Unclass'} };
 
+    cAAMItranslation =           cLabListsLabels{LabConversion_idx};
 
     iLabListsTranslations = [ ...
         ...% MITBIH labelling: 'N' 'ñ' 'L' 'R' 'A' 'a' 'J' 'S' 'V' 'F' '[' '!' ']' 'e' 'j' 'E' '/' 'f' 'x' 'p' 'Q' '|' '?' '+' 'r' 's' 'B' 'n' 'ñ'
@@ -296,4 +299,6 @@ for field = rowvec(fieldnames(ann))
 end
 
 %Convert to the proper labeling
-ann.anntyp = char(cAAMItranslation(colvec(iLabListsTranslations( LabConversion_idx, ann_types_idx(bValidBeats)))));
+aux_val = char(cAAMItranslation(colvec(iLabListsTranslations( LabConversion_idx, ann_types_idx(bValidBeats)))));
+ann.anntyp = aux_val(:,1);
+

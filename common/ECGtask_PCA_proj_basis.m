@@ -123,7 +123,7 @@ classdef ECGtask_PCA_proj_basis < ECGtask
             
         end
         
-        function Finish(obj, ECG_header)
+        function payload = Finish(obj, payload, ECG_header)
             
             ECG = cell2mat(obj.ECG_slices);
 
