@@ -569,21 +569,19 @@ classdef ECGwrapper < handle
 
                                 % create an annotation struct for this
                                 % iteration.
-                                if( isempty(obj.QRS_locations) )
+                                this_ann = obj.ECG_annotations;
 
-                                    this_ann = obj.ECG_annotations;
+                                if( ~isempty(this_ann) )
 
-                                    if( ~isempty(this_ann) )
-                                    
-                                        for field_names = rowvec(fieldnames(this_ann))
-                                            if( ~isempty( this_ann.(field_names{1}) ) )
-                                                this_ann.(field_names{1}) = this_ann.(field_names{1})(this_iter_QRS_start_idx:this_iter_QRS_end_idx);
-                                            end
+                                    for field_names = rowvec(fieldnames(this_ann))
+                                        if( ~isempty( this_ann.(field_names{1}) ) )
+                                            this_ann.(field_names{1}) = this_ann.(field_names{1})(this_iter_QRS_start_idx:this_iter_QRS_end_idx);
                                         end
-                                        this_ann.time = this_ann.time - this_iter_ECG_start_idx + 1;
                                     end
-                                    
-                                else
+                                    this_ann.time = this_ann.time - this_iter_ECG_start_idx + 1;
+                                end
+                                
+                                if( ~isempty(obj.QRS_locations) )
                                     this_ann.time = obj.QRS_locations(this_iter_QRS_start_idx:this_iter_QRS_end_idx) - this_iter_ECG_start_idx + 1;
                                 end
                                 

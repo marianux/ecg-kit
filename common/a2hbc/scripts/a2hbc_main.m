@@ -149,8 +149,14 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
                     end
                 end
 
-                [QRS_locations, true_labels ] = Annotation_process(ECG_annotations, recording_format, class_labeling);
+                [QRS_locations, aux_val ] = Annotation_process(ECG_annotations, recording_format, class_labeling);
 
+                true_labels = nan(size(aux_val));
+                for ii = 1:length(typical_lablists_anntyp)
+                    bAux = aux_val == typical_lablists_anntyp{ii};
+                    true_labels(bAux) = ii;
+                end
+                
                 rec_filename = ECG_header.recname;
                 
             elseif( ~isempty(recording_name) )
@@ -350,7 +356,14 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
                 ann = ECG_annotations;
             else
                 ann = ECGw.ECG_annotations;
-                true_labels = ann.anntyp;
+                aux_val = ann.anntyp;
+                
+                true_labels = nan(size(aux_val));
+                for ii = 1:length(typical_lablists_anntyp)
+                    bAux = aux_val == typical_lablists_anntyp{ii};
+                    true_labels(bAux) = ii;
+                end
+                
             end
             
             % clear unused objects before continue
@@ -412,8 +425,14 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
                 bLabelingChanged = false;
                 
                 % labeling changed
-                [QRS_locations, true_labels ] = Annotation_process(ann, recording_format, class_labeling);
+                [QRS_locations, aux_val ] = Annotation_process(ann, recording_format, class_labeling);
 
+                true_labels = nan(size(aux_val));
+                for ii = 1:length(typical_lablists_anntyp)
+                    bAux = aux_val == typical_lablists_anntyp{ii};
+                    true_labels(bAux) = ii;
+                end
+                
                 %change lablists
                 lablist_idx = find(strcmpi(class_labeling, cKnownLabelings));
                 typical_lablist = char(typical_lablists{lablist_idx});
@@ -437,6 +456,10 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
         pending_hb_idx = setdiff((1:cant_QRS_locations)', already_labeled_idx );
         bCancel = false;
 
+        % nasty addons
+        RR_intervals = diff(QRS_locations, 1);
+        RR_intervals = colvec([ RR_intervals(1); RR_intervals ]);
+        
         
         if( bHaveUserInterface )
             DisplayConfiguration;

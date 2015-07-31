@@ -5,6 +5,7 @@ cHeaderFieldNamesRequired = {'freq' 'nsamp' 'nsig' 'gain' 'adczero' };
 cAnnotationsFieldNamesRequired = {'time' };
 cKnownLabelings = {'AAMI', 'AAMI2'};
 
+typical_lablists_anntyp = { 'N' 'S' 'V' 'F' 'Q' };
 typical_lablists =  { ...
                     { 'Normal'; 'Supraventricular'; 'Ventricular'; 'Fusion'; 'Unclass'} ; ...   AAMI
                     { 'Normal'; 'Supraventricular'; 'Ventricular'; 'Unclass'} ; ...             AAMI2
