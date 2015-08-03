@@ -24,7 +24,7 @@ function UnInstallECGkit( bIgnoreAdminPrivs )
         bIgnoreAdminPrivs = false;
     end        
 
-    release_str = 'v0.1 beta - 22/07/2014';
+    release_str = 'v0.1.0 beta - 05/05/2015';
     backup_string = 'ECGkit_backup';
 
     % get the correct command names in this architecture.
@@ -40,42 +40,46 @@ function UnInstallECGkit( bIgnoreAdminPrivs )
     
         disp_string_framed('*Blue', sprintf('ECGkit for Matlab %s', release_str) );
         
-        % Tab completion of selected functions
-        % Modify the TC.xml and TC.xsd
-        bTabUnInstallError = false;
+        if( bMatlab )
         
-        tcxml_filename = fullfile(matlabroot,'toolbox', 'local', 'TC.xml');
-        tcxsd_filename = fullfile(matlabroot,'toolbox', 'local', 'TC.xsd');
-        
-        if( exist([tcxml_filename backup_string ], 'file') )
-            str_command = [ sys_cmds.copy_command ' "' tcxml_filename '" "' tcxml_filename backup_string '"' sys_cmds.command_sep_str ];
-        else
-            str_command = [];
-        end
+          % Tab completion of selected functions
+          % Modify the TC.xml and TC.xsd
+          bTabUnInstallError = false;
+          
+          tcxml_filename = fullfile(matlabroot,'toolbox', 'local', 'TC.xml');
+          tcxsd_filename = fullfile(matlabroot,'toolbox', 'local', 'TC.xsd');
+          
+          if( exist([tcxml_filename backup_string ], 'file') )
+              str_command = [ sys_cmds.copy_command ' "' tcxml_filename '" "' tcxml_filename backup_string '"' sys_cmds.command_sep_str ];
+          else
+              str_command = [];
+          end
 
-        if( exist([tcxsd_filename backup_string ], 'file') )
-            str_command = [ str_command sys_cmds.copy_command ' "' tcxsd_filename '" "' tcxsd_filename backup_string '"' ];
-        end
-        
-        if( isempty(str_command) )
-            status = 1;
-        else
-            [status, ~] = system( str_command, '-runAsAdmin' );
-        end
-        
-        if( status == 0 )
-            cprintf('*blue', 'Remember to restart Matlab for function''s "tab completion" changes to take effect.\n' );
-%             cprintf('SystemCommands', '\nIn case something went wrong regarding "tab completion" feature, you can restore the original files:\n%s\n%s\n\nTo the original versions, just removing the ', [tcxml_filename backup_string], [tcxsd_filename backup_string] );
-%             cprintf('*red', '"%s"', backup_string );
-%             cprintf('SystemCommands', ' extension.\n\n' );
-        else                    
-            disp_string_framed('*red', 'Could not uninstall tab completion');
-            cprintf('SystemCommands', 'to uninstall "tab completion" capability it is needed to run this script with administrator/root privileges, or say ' );
-            cprintf('*red', '"YES"' );
-            cprintf('SystemCommands', ' when.\nRun Matlab as administrator and execute this script again.\n\n' );
-            if( ~bIgnoreAdminPrivs )
-                return
-            end
+          if( exist([tcxsd_filename backup_string ], 'file') )
+              str_command = [ str_command sys_cmds.copy_command ' "' tcxsd_filename '" "' tcxsd_filename backup_string '"' ];
+          end
+          
+          if( isempty(str_command) )
+              status = 1;
+          else
+              [status, ~] = system( str_command, '-runAsAdmin' );
+          end
+          
+          if( status == 0 )
+              cprintf('*blue', 'Remember to restart Matlab for function''s "tab completion" changes to take effect.\n' );
+  %             cprintf('SystemCommands', '\nIn case something went wrong regarding "tab completion" feature, you can restore the original files:\n%s\n%s\n\nTo the original versions, just removing the ', [tcxml_filename backup_string], [tcxsd_filename backup_string] );
+  %             cprintf('*red', '"%s"', backup_string );
+  %             cprintf('SystemCommands', ' extension.\n\n' );
+          else                    
+              disp_string_framed('*red', 'Could not uninstall tab completion');
+              cprintf('SystemCommands', 'to uninstall "tab completion" capability it is needed to run this script with administrator/root privileges, or say ' );
+              cprintf('*red', '"YES"' );
+              cprintf('SystemCommands', ' when.\nRun Matlab as administrator and execute this script again.\n\n' );
+              if( ~bIgnoreAdminPrivs )
+                  return
+              end
+          end
+          
         end
         
     end

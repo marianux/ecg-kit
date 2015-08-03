@@ -71,6 +71,8 @@ classdef ECGtask_QRS_detection < ECGtask
         lead_idx = [];
         lead_names = [];
         
+        wavedet_config
+        
     end
     
     properties
@@ -79,9 +81,9 @@ classdef ECGtask_QRS_detection < ECGtask
         detectors = 'all-detectors';
         only_ECG_leads = false;
         gqrs_config_filename = [];
-        wavedet_config
         payload
         CalculatePerformance = false;
+        detection_threshold = 1;
         
     end
     
@@ -90,7 +92,7 @@ classdef ECGtask_QRS_detection < ECGtask
         function obj = ECGtask_QRS_detection(obj)
 
             obj.wavedet_config.setup.wavedet.QRS_detection_only = true;
-            
+
         end
         
         function Start(obj, ECG_header, ECG_annotations)
@@ -230,6 +232,8 @@ classdef ECGtask_QRS_detection < ECGtask
 
                         try
 
+                            obj.wavedet_config.setup.wavedet.QRS_detection_thr = repmat( obj.detection_threshold, 5, 1);
+                            
                             [position_multilead, positions_single_lead] = wavedet_interface(ECG, ECG_header, [], obj.lead_idx, obj.wavedet_config, ECG_sample_start_end_idx, ECG_start_offset, obj.progress_handle);
 
                             for jj = rowvec(obj.lead_idx)
@@ -260,7 +264,7 @@ classdef ECGtask_QRS_detection < ECGtask
                             
                             try
 
-                                aux_val = PeakDetection2(double(ECG(:,jj)), ECG_header.freq, [], [], [], [], [], obj.progress_handle);
+                                aux_val = PeakDetection2(double(ECG(:,jj)), ECG_header.freq, [], [], [], obj.detection_threshold * 0.2, [], obj.progress_handle);
 
                                 % filter and offset
                                 aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) &  aux_val <= ECG_sample_start_end_idx(2) ) + ECG_start_offset - 1;
@@ -294,24 +298,28 @@ classdef ECGtask_QRS_detection < ECGtask
 
                                 if( any(strcmpi( 'sqrs', this_detector ) ) )
                                     file_name_orig =  [obj.tmp_path_local ECG_header.recname '.qrs' ];
+                                    this_thrs = round(500 * obj.detection_threshold);
                                 elseif( any(strcmpi( 'wqrs' , this_detector ) ) )
                                     file_name_orig =  [obj.tmp_path_local ECG_header.recname '.wqrs' ];
+                                    this_thrs = round(100 * obj.detection_threshold);
                                 elseif( any(strcmpi( {'epltdqrs1' 'epltdqrs2'} , this_detector ) ) )
                                     file_name_orig =  [obj.tmp_path_local ECG_header.recname '.epl' ];
+                                    this_thrs = obj.detection_threshold;
                                 else
                                     file_name_orig =  [obj.tmp_path_local ECG_header.recname '.' this_detector num2str(jj) ];
+                                    this_thrs = obj.detection_threshold;
                                 end
 
                                 try
 
-                                    if( any(strcmpi( {'sqrs' 'wqrs'} , this_detector ) ) )
+                                    if( any(strcmpi( {'sqrs' 'wqrs' 'epltdqrs1' 'epltdqrs2'} , this_detector ) ) )
                                         % wqrs tiene una interface diferente
-                                        [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header.recname ' -s ' num2str(jj-1)]);
+                                        [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header.recname ' -s ' num2str(jj-1) ' -m ' num2str(this_thrs) ]);
                                         if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header.recname, ECG_header.desc(jj,:) ) ); end
                                     
-                                    elseif( any(strcmpi( {'epltdqrs1' 'epltdqrs2'}, this_detector ) ) )
-                                        [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' ' ECG_header.recname ' ' num2str(jj-1)]);
-                                        if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header.recname, ECG_header.desc(jj,:) ) ); end
+%                                     elseif( any(strcmpi( {'epltdqrs1' 'epltdqrs2'}, this_detector ) ) )
+%                                         [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' ' ECG_header.recname ' ' num2str(jj-1)]);
+%                                         if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header.recname, ECG_header.desc(jj,:) ) ); end
                                         
                                     elseif( any(strcmpi( 'ecgpuwave', this_detector ) ) )
                                         [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header.recname ' -a ' this_detector num2str(jj) ' -s ' num2str(jj-1)]);
@@ -322,7 +330,7 @@ classdef ECGtask_QRS_detection < ECGtask
                                         if( strcmpi( 'gqrs', this_detector ) && exist(obj.gqrs_config_filename, 'file') )
                                             % using the configuration file to
                                             % post-process
-                                            [status, ~] = system([ obj.WFDB_cmd_prefix_str 'gqrs -c ' obj.gqrs_config_filename ' -r ' ECG_header.recname ' -s ' num2str(jj-1)]);
+                                            [status, ~] = system([ obj.WFDB_cmd_prefix_str 'gqrs -c ' obj.gqrs_config_filename ' -r ' ECG_header.recname ' -s ' num2str(jj-1) ' -m ' num2str(this_thrs) ]);
                                             if( status == 0 )
                                                 [status, ~] = system([ obj.WFDB_cmd_prefix_str 'gqpost -c ' obj.gqrs_config_filename ' -r ' ECG_header.recname ' -o ' this_detector num2str(jj) ]);
                                                 if( status ~= 0 )
@@ -368,7 +376,7 @@ classdef ECGtask_QRS_detection < ECGtask
                                                 payload_out.([this_detector '_' obj.lead_names{jj} ]).time = [];
 
                                             else
-
+                                                
                                                 anns_test = AnnotationFilterConvert(anns_test, 'MIT', 'AAMI');
 
                                                 % filter and offset

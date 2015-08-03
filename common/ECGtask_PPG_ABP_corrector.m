@@ -46,7 +46,7 @@ classdef ECGtask_PPG_ABP_corrector < ECGtask
     properties
         
         progress_handle
-        caller_variable = 'payload'
+        caller_variable = 'payload';
         tmp_path
         payload
         

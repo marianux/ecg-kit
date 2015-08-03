@@ -130,28 +130,7 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
                 % ECG already read
                 
                 bECG_sample_provided = true;
-                
-                if( isempty(ECG_header))
-                   error( 'a2hbc:ArgCheck:InvalidHeader', 'Please provide the ECG header.\n\n' );
-                else
-                    if( ~isfield(ECG_header, cHeaderFieldNamesRequired ) )
-                        strAux = [ repmat(' + ', length(cHeaderFieldNamesRequired), 1) char(cHeaderFieldNamesRequired) repmat('\n', length(cHeaderFieldNamesRequired), 1 ) ];
-                        error( 'a2hbc:ArgCheck:InvalidHeader', ['Please provide the following fields in the header struct:\n ' rowvec(strAux') ] );
-                    end
-                end
 
-                if( isempty(ECG_annotations))
-                   error( 'a2hbc:ArgCheck:InvalidHeader', 'Please provide the ECG annotations.\n\n' );
-                else
-                    if( ~isfield(ECG_annotations, cAnnotationsFieldNamesRequired ) )
-                        strAux = [ repmat(' + ', length(cAnnotationsFieldNamesRequired), 1) char(cAnnotationsFieldNamesRequired) repmat('\n', length(cAnnotationsFieldNamesRequired), 1 ) ];
-                        error( 'a2hbc:ArgCheck:InvalidAnnotations', ['Please provide the following fields in the annotations struct:\n ' rowvec(strAux') ] );
-                    end
-                end
-
-                [QRS_locations, true_labels ] = Annotation_process(ECG_annotations, recording_format, class_labeling);
-
-                rec_filename = ECG_header.recname;
                 
             elseif( ~isempty(recording_name) )
 
@@ -161,23 +140,53 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
                 ECGw = ECGwrapper( ... 
                                     'recording_name', recording_name, ...
                                     'recording_format', recording_format, ...
-                                    'this_pid', this_pid, ...
-                                    'cant_pids', cant_pids ...
+                                    'tmp_path', tmp_path, ...
+                                    'this_pid', sprintf('%d/%d', this_pid, cant_pids) ...
                                     );
-
-                try
-                    ECGw.CheckECGrecording();
-                catch ME
-                    thisME = MException( 'a2hbc:ArgCheck:InvalidECGarg', 'Please provide an ECG recording as described in the documentation, help(''a2hbc'') maybe could help you.\n' );
-                    ME = addCause(ME, thisME );
-                    rethrow(ME);
-                end
-
+                                
+                ECG_header = ECGw.ECG_header;
+                ECG_annotations = ECGw.ECG_annotations;
+                
+                % annotations are already AAMI, this is in order not to
+                % convert again.
+                recording_format = '';
             else
             %     strAux = help('a2hbc'); %#ok<MCHLP>
                 error( 'a2hbc:ArgCheck:InvalidECGarg', 'Please provide an ECG recording as described in the documentation, help(''a2hbc'') maybe could help you.\n' );
             end
+            
+            if( isempty(ECG_header))
+               error( 'a2hbc:ArgCheck:InvalidHeader', 'Please provide the ECG header.\n\n' );
+            else
+                if( ~isfield(ECG_header, cHeaderFieldNamesRequired ) )
+                    strAux = [ repmat(' + ', length(cHeaderFieldNamesRequired), 1) char(cHeaderFieldNamesRequired) repmat('\n', length(cHeaderFieldNamesRequired), 1 ) ];
+                    error( 'a2hbc:ArgCheck:InvalidHeader', ['Please provide the following fields in the header struct:\n ' rowvec(strAux') ] );
+                end
+            end
 
+            if( isempty(ECG_annotations))
+               error( 'a2hbc:ArgCheck:InvalidAnnotations', 'Please provide the ECG annotations.\n\n' );
+            else
+                if( ~isfield(ECG_annotations, cAnnotationsFieldNamesRequired ) )
+                    strAux = [ repmat(' + ', length(cAnnotationsFieldNamesRequired), 1) char(cAnnotationsFieldNamesRequired) repmat('\n', length(cAnnotationsFieldNamesRequired), 1 ) ];
+                    error( 'a2hbc:ArgCheck:InvalidAnnotations', ['Please provide the following fields in the annotations struct:\n ' rowvec(strAux') ] );
+                end
+            end
+
+            [QRS_locations, aux_val ] = Annotation_process(ECG_annotations, recording_format, class_labeling);
+
+            if( isempty(QRS_locations))
+               error( 'a2hbc:ArgCheck:InvalidAnnotations', 'No QRS annotations available, please provide valid annotations or perform QRS detection.\n\n' );
+            end
+            
+            true_labels = nan(size(aux_val));
+            for ii = 1:length(typical_lablists_anntyp)
+                bAux = aux_val == typical_lablists_anntyp{ii};
+                true_labels(bAux) = ii;
+            end
+
+            rec_filename = ECG_header.recname;
+                
             bLabelingChanged = false;
 
             lablist_idx = find(strcmpi(class_labeling, cKnownLabelings));
@@ -262,12 +271,13 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
                 if( bECG_sample_provided )
 
                     aux_struct.time = QRS_locations;
+                    aux_struct.anntyp = true_labels;
                     
                     if( ECG_header.nsig > 1  )
                         % As no wrapper is needed, I manually execute the task
                         ECGtask_PCA_proj_basis_hdl.Start(ECG_header, aux_struct);
                         ECGtask_PCA_proj_basis_hdl.Process(ECG_total, 1, [1 ECG_header.nsig], ECG_header, aux_struct, [1 length(QRS_locations) ] );
-                        ECGtask_PCA_proj_basis_hdl.Finish(ECG_header);
+                        ECGtask_PCA_proj_basis_hdl.Finish([], ECG_header);
                     else
                         % PCA not need.
                         ECGtask_PCA_proj_basis_hdl.autovec = 1;
@@ -290,6 +300,10 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
                     
                 else
 
+                    aux_struct.time = QRS_locations;
+                    aux_struct.anntyp = true_labels;
+                    ECGw.ECG_annotations = aux_struct;
+                    
                     if( ECGw.ECG_header.nsig > 1  )
     %                     if( isempty(ECGw.ECG_annotations) )
     %                         ECGtask_PCA_proj_basis_hdl.cant_QRS_locations = 0;
@@ -298,7 +312,7 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
     %                     end
 
                         ECGw.partition_mode =  'QRS';
-                        ECGw.ECGtaskHdl = ECGtask_PCA_proj_basis_hdl;
+                        ECGw.ECGtaskHandle = ECGtask_PCA_proj_basis_hdl;
 
                         %calculate the basis
                         ECGw.Run();
@@ -311,14 +325,15 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
                     ECGtask_class_fc_hdl.autovec = ECGtask_PCA_proj_basis_hdl.autovec;
 
                     % assign the task to the wrapper.
-                    ECGw.ECGtaskHdl = ECGtask_class_fc_hdl;
+                    ECGw.ECGtaskHandle = ECGtask_class_fc_hdl;
                     ECGw.partition_mode =  'QRS';
 
                     %% Iterations over the whole ECG recording
                     ECGw.Run;
 
-                    CachedFeatMatFiles = dir([tmp_path 'tmpfile_a2hbc_' ECGtask_class_fc_hdl.name '_' rec_filename '*.mat']);
-                    
+                    CachedFeatMatFiles = [];
+                    [tmp_path, CachedFeatMatFiles.name] = fileparts(ECGw.Result_files{1});
+                    tmp_path = [tmp_path filesep];
                 end
                 
             end
@@ -350,12 +365,19 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
                 ann = ECG_annotations;
             else
                 ann = ECGw.ECG_annotations;
-                true_labels = ann.anntyp;
+                aux_val = ann.anntyp;
+                
+                true_labels = nan(size(aux_val));
+                for ii = 1:length(typical_lablists_anntyp)
+                    bAux = aux_val == typical_lablists_anntyp{ii};
+                    true_labels(bAux) = ii;
+                end
+                
             end
             
             % clear unused objects before continue
-            clear ECGw
-            clear ECGtask*
+%             clear ECGw
+%             clear ECGtask*
             
 %           recorrer ECGw.Result_files y armar las matrices de features.
 
@@ -412,8 +434,14 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
                 bLabelingChanged = false;
                 
                 % labeling changed
-                [QRS_locations, true_labels ] = Annotation_process(ann, recording_format, class_labeling);
+                [QRS_locations, aux_val ] = Annotation_process(ann, recording_format, class_labeling);
 
+                true_labels = nan(size(aux_val));
+                for ii = 1:length(typical_lablists_anntyp)
+                    bAux = aux_val == typical_lablists_anntyp{ii};
+                    true_labels(bAux) = ii;
+                end
+                
                 %change lablists
                 lablist_idx = find(strcmpi(class_labeling, cKnownLabelings));
                 typical_lablist = char(typical_lablists{lablist_idx});
@@ -437,6 +465,13 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
         pending_hb_idx = setdiff((1:cant_QRS_locations)', already_labeled_idx );
         bCancel = false;
 
+        % nasty addons
+        RR_intervals = diff(QRS_locations, 1);
+        RR_intervals = colvec([ RR_intervals(1); RR_intervals ]);
+        
+        if( ~bECG_sample_provided )
+            ECG_total = ECGw.read_signal(1, ECGw.ECG_header.nsamp);
+        end
         
         if( bHaveUserInterface )
             DisplayConfiguration;

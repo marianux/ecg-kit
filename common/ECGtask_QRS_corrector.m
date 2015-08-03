@@ -21,7 +21,7 @@ classdef ECGtask_QRS_corrector < ECGtask
 %
 % In this example, the GUI have four plots to represent the RR interval
 % series, the two in the top-left show the RR interval versus time at different
-% time windows. The bigger in the top-right, shows a _Poincaré_ plot, that
+% time windows. The bigger in the top-right, shows a _Poincarï¿½_ plot, that
 % is the current RR interval versus the following in the serie. The plot in
 % the bottom shows the selected signal/s versus time. Then the user can
 % interact with the *upper-left* plots according to the following mouse
@@ -76,7 +76,7 @@ classdef ECGtask_QRS_corrector < ECGtask
     properties
         
         progress_handle
-        caller_variable = 'payload'
+        caller_variable = 'payload';
         tmp_path
         payload
         

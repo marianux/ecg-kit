@@ -90,12 +90,16 @@ void ResetBDAC(void) ;
 int BeatDetectAndClassify(int ecgSample, int *beatType, int *beatMatch) ;
 
 // Local Prototypes.
+void help(void);
+char *prog_name(char *p);
+
 int  NextSample(int *vout,int nosig,int ifreq,
 		int ofreq,int init) ;
 int gcd(int x, int y);
 
 // Global variables.
-
+char *pname;			/* name of this program, used in messages */
+double user_thresh = 1.0;		/* normalized detection threshold */
 
 int main(int argc , char **argv)
 {
@@ -103,7 +107,7 @@ int main(int argc , char **argv)
 	int leads=0;
 	char *record, *output, *name;
 
-	int i=0,  delay, recNum=0 ;
+	int i=0,  delay, recNum=0, beats=0;
 
 	int ecg[WFDB_MAXSIG];
 	int ADCZero;
@@ -120,33 +124,56 @@ int main(int argc , char **argv)
 	int lead;
 
 	//FILE *log= fopen ("Log.txt", "w");
+    pname = prog_name(argv[0]);
 
-	if (argc<2)
+	// arg parsing from gqrs.c
+    for (i = 1; i < argc; i++) 
 	{
-		printf("No valid parameter. Please, enter a valid record\n");
-		return -1;
-	}
-
-	if (!strcmp(argv[1],"-h"))
-	{
-		printf("Hello World\n");
-		return 0;
-	}
-
-
-	if (argc<3)
-	{
-		printf("No valid lead");
-		return -1;
-	}
-
-
-	record = argv[1];
-	lead = atoi(argv[2]);
+		if (*argv[i] == '-') 
+		{
+			switch (*(argv[i]+1)) 
+			{
+			  case 'h':	/* help requested */
+				help();
+				return 0;
+			  case 'm':	/* threshold */
+				if (++i >= argc) {
+				(void)fprintf(stderr, "%s: threshold must follow -m\n", pname);
+				return 1;
+				}
+				user_thresh = atof(argv[i]);
+				break;
+			  case 'r':	/* record name */
+				if (++i >= argc) {
+				(void)fprintf(stderr, "%s: input record name must follow -r\n",
+						  pname);
+				return 1;
+				}
+				record = argv[i];
+				break;
+			  case 's':	/* signal name or number follows */
+				if (++i >= argc) {
+				(void)fprintf(stderr, "%s: signal name or # must follow -s\n",
+					pname);
+				return 1;
+				}
+				lead = i;
+				break;
+			  default:
+				(void)fprintf(stderr, "%s: unrecognized option %s\n", pname,
+					  argv[i]);
+				return 1;
+			}
+		}
+		else 
+		{
+			(void)fprintf(stderr, "%s: unrecognized argument %s\n", pname,
+				  argv[i]);
+			return 1;
+		}
+    }
 
 	output = "./";
-
-	name = (char*) malloc (sizeof(char)*(strlen(argv[2])+strlen(argv[1])+2));
 
 	printf("Record %s\n",record) ;
 	//setwfdb(".") ;
@@ -158,25 +185,38 @@ int main(int argc , char **argv)
 		printf("Couldn't open %s\n",record) ;
 		return -1;
 	}
-	ADCZero = sig_info[lead].adczero ;
-	gain = ( (double)200.0) / ( (double)sig_info[i].gain) ;
-
 
 	InputFileSampleFrequency = sampfreq(record) ;
 
+	name = (char*) malloc (sizeof(char)*(strlen(output)+strlen(record)+2));
 	sprintf(name,"%s%s",output,record);
 
 	ann_info[0].name = "epl";
 	ann_info[0].stat = WFDB_WRITE ;
 
-
 	if(annopen(name, ann_info, 1) < 0) 	return -1;
 
 	free(name);
 
+    if (lead > 0) {
+	i = findsig(argv[lead]);
+	if (i < 0) {
+	    (void)fprintf(stderr,
+			  "%s: (warning) no signal %s in record %s\n",
+			  pname, argv[lead], record);
+		return 1;
+	}
+	printf("%s: Processing %s.\n", pname, argv[lead]);
+	lead = i;
+    }
+
+	ADCZero = sig_info[lead].adczero ;
+	gain = ( (double)200.0) / ( (double)sig_info[lead].gain) ;
+
 	NextSample(ecg,leads,InputFileSampleFrequency,SAMPLE_RATE,1) ;
 	ResetBDAC() ;
 	SampleCount = 0 ;
+	beats = 0;
 
 	while(NextSample(ecg,leads,InputFileSampleFrequency,SAMPLE_RATE,0) >= 0)
 	{
@@ -198,6 +238,8 @@ int main(int argc , char **argv)
 			annot[0].time = DetectionTime ;
 			annot[0].anntyp = beatType ;
 
+			beats++;
+
 			//fprintf(log,"%d %d\n",annot.time,annot.anntyp) ;
 			//printf("%d %d\n",annot.time,annot.anntyp) ;
 			putann(0,annot) ;
@@ -210,9 +252,58 @@ int main(int argc , char **argv)
 
 	wfdbquit() ;
 
+	printf("%s: Detected %d heartbeats.\n", pname, beats);
 
 	return 0;
 }
+
+/* prog_name() extracts this program's name from argv[0], for use in error and
+   warning messages. */
+
+char *prog_name(char *s)
+{
+    char *p = s + strlen(s);
+
+#ifdef MSDOS
+    while (p >= s && *p != '\\' && *p != ':') {
+	if (*p == '.')
+	    *p = '\0';		/* strip off extension */
+	if ('A' <= *p && *p <= 'Z')
+	    *p += 'a' - 'A';	/* convert to lower case */
+	p--;
+    }
+#else
+    while (p >= s && *p != '/')
+	p--;
+#endif
+    return (p+1);
+}
+
+/* help() prints a (very) concise summary of how to use this program.
+   A more detailed summary is in the man page (gqrs.1). */
+
+static char *help_strings[] = {
+ "usage: %s -r RECORD [OPTIONS ...]\n",
+ "where RECORD is the name of the record to be analyzed, and OPTIONS may",
+ "include any of:",
+ " -h          print this usage summary",
+ " -m THRESH   set detector threshold to THRESH (default: 1.00)",
+ " -s SIGNAL   analyze specified SIGNAL (default: 0)",
+ "                (Note: SIGNAL may be specified by number or name.)",
+ "If too many beats are missed, decrease THRESH;  if there are too many extra",
+ "detections, increase THRESH.",
+NULL
+};
+
+void help()
+{
+    int i;
+
+    (void)fprintf(stderr, help_strings[0], pname);
+    for (i = 1; help_strings[i] != NULL; i++)
+	(void)fprintf(stderr, "%s\n", help_strings[i]);
+}
+
 
 /**********************************************************************
 	NextSample reads MIT/BIH Arrhythmia data from a file of data

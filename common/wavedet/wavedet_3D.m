@@ -189,6 +189,7 @@ end
 
 if ~isfield(messages,'setup'), messages.setup.wavedet=[]; end
 if ~isfield(messages.setup.wavedet,'QRS_detection_only'), messages.setup.wavedet.QRS_detection_only=false; end
+if ~isfield(messages.setup.wavedet,'QRS_detection_thr'), messages.setup.wavedet.QRS_detection_thr=ones(5,1); end
 if ~isfield(messages,'errors'), messages.errors=[]; end
 if ~isfield(messages,'errors_desc'), messages.errors_desc=[]; end
 if ~isfield(messages,'warnings'), messages.warnings=[]; end
@@ -1283,7 +1284,7 @@ while ((endsamp+1) < t(2))
 %     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %     eps= 0.5*sqrt(nanmean(swt));
-    eps= 0.5*sqrt(nanmedian(swt));
+    eps= rowvec(0.5*sqrt(nanmedian(swt))) .* rowvec(messages.setup.wavedet.QRS_detection_thr);
     eps(4) = eps(4)*2;
     
     %%%%%%% multilead%%% Rute 02.Dec.04

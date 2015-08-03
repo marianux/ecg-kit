@@ -1,7 +1,7 @@
 <productinfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:noNamespaceSchemaLocation="optional">
     <?xml-stylesheet type="text/xsl"href="optional"?>
-    <matlabrelease>2014a</matlabrelease>
+    <matlabrelease>2013b</matlabrelease>
     <name>ECGkit</name>
     <type>toolbox</type>
     <icon></icon>

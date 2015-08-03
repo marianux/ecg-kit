@@ -400,6 +400,7 @@ int median(int *array, int datnum)
  thresh() calculates the detection threshold from the qrs median and noise
  median estimates.
 ****************************************************************************/
+extern double user_thresh;		/* normalized detection threshold */
 
 int thresh(int qmedian, int nmedian)
 	{
@@ -408,7 +409,7 @@ int thresh(int qmedian, int nmedian)
 	dmed = qmedian - nmedian ;
 /*	thrsh = nmedian + (dmed>>2) + (dmed>>3) + (dmed>>4); */
 	temp = dmed ;
-	temp *= TH ;
+	temp *= (TH * user_thresh);
 	dmed = temp ;
 	thrsh = nmedian + dmed ; /* dmed * THRESHOLD */
 	return(thrsh) ;
