@@ -300,5 +300,7 @@ end
 
 %Convert to the proper labeling
 aux_val = char(cAAMItranslation(colvec(iLabListsTranslations( LabConversion_idx, ann_types_idx(bValidBeats)))));
-ann.anntyp = aux_val(:,1);
+if( ~isempty(aux_val) )
+    ann.anntyp = aux_val(:,1);
+end
 
