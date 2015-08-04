@@ -141,19 +141,25 @@ for win_length = win_lengths(bAux)
 
         fig_hdl = prepare_fig_hdl( fig_hdl );
         
-        if( strcmpi(report_mode, 'ECG only') )
-            plot_ecg_strip(ECG_w, 'PrettyPrint', true, 'Figure_handle', fig_hdl, 'Start_time', start_time, 'End_time', start_time + win_length);
-        else
+        
+        eval_str = 'plot_ecg_strip(ECG_w, ''PrettyPrint'', true, ''Figure_handle'', fig_hdl, ''Start_time'', start_time, ''End_time'', start_time + win_length ';
+        
+        if( any(strcmpi(report_mode, 'QRS detection')) )
+            eval_str = [ eval_str ',''QRS_locations'', ECG_w' ];
+        end
             
-            plot_ecg_strip(ECG_w, 'PrettyPrint', true, ... 
-                                  'Heartbeat_classification', ECG_w, ...
-                                  'QRS_locations', ECG_w, ...
-                                  'ECG_delineation_single_lead', ECG_w, ...
-                                  'ECG_delineation_multilead', ECG_w, ...
-                                  'Figure_handle', fig_hdl, ...
-                                  'Start_time', start_time, 'End_time', start_time + win_length);
+        if( any(strcmpi(report_mode, 'Wave delineation')) )
+            eval_str = [ eval_str ',''ECG_delineation_single_lead'', ECG_w, ''ECG_delineation_multilead'', ECG_w' ];
+        end
+            
+        if( any(strcmpi(report_mode, 'Heartbeat classification')) )
+            eval_str = [ eval_str ',''Heartbeat_classification'', ECG_w' ];
         end
 
+        eval_str = [ eval_str ');'];
+        
+        eval(eval_str);
+        
         set(fig_hdl, 'Visible', 'off');
         
         str_aux2 = [ str_aux ' - Start: ' Seconds2HMS(start_time) ];
