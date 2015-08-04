@@ -90,7 +90,7 @@ function InstallECGkit(bIgnoreUpdate)
         end
 
     elseif( bOctave )
-        disp_string_framed([1,0.5,0], 'Octave is not fully supported');
+        disp_string_framed('[1,0.5,0]', 'Octave is not fully supported');
         cprintf('Red', 'Although you can find problems using the toolbox in Octave, I am trying to make it fully compatible. Please report any problem that you could find.\n\n' );
         
         % Special functions not compatible with Matlab
@@ -156,19 +156,51 @@ function InstallECGkit(bIgnoreUpdate)
         prev_folder = cd(common_path);
     end
         
-    for ii = 1:lsource_files
-        [~, source_file_name] = fileparts( source_files(ii).name);
-        mex_file = dir([common_path  source_file_name '.' mexext ]);
-        if( isempty(mex_file) || mex_file.datenum <= source_files(ii).datenum  )
+    try
         
-            if( bMatlab )
-              eval(['mex -outdir ''' common_path ''' ''' [common_path source_files(ii).name] '''']);
-            elseif(bOctave)
-              eval(['mkoctfile --mex ''' [common_path source_files(ii).name] '''']);
+        for ii = 1:lsource_files
+            [~, source_file_name] = fileparts( source_files(ii).name);
+            mex_file = dir([common_path  source_file_name '.' mexext ]);
+            if( isempty(mex_file) || mex_file.datenum <= source_files(ii).datenum  )
+
+                if( bMatlab )
+                  eval(['mex -outdir ''' common_path ''' ''' [common_path source_files(ii).name] '''']);
+                elseif(bOctave)
+                  eval(['mkoctfile --mex ''' [common_path source_files(ii).name] '''']);
+                end
             end
         end
-    end
 
+    catch MException
+        
+        if( ismac() )
+            
+            disp_string_framed(2, 'Mex files compilation failed' );
+
+            fprintf(2, '\nAs we don''t include binaries for MAC, you will have to ask for help in order tu debug this error, here is the cause:\n');
+            
+            rethrow(MException);
+            
+        else
+            
+            if( bUseDesktop )
+                
+                disp_string_framed('[1,0.5,0]', 'Mex files compilation failed' );
+                
+                cprintf('[1,0.5,0]', '\nBut don''t worry, the kit includes several precompiled binaries for most architectures.\nTry the examples to check if yours is included. Down is the report error, use in case you want to ask for help in the forum:\n');
+                % report just in case 
+
+            else
+                disp_string_framed(2, 'Mex files compilation failed' );
+            end
+
+            report = getReport(MException);
+            fprintf(2, '\n%s\n', report);
+            
+        end
+        
+    end
+         
     if(bOctave)
         cd(prev_folder);
     end
@@ -298,8 +330,8 @@ function InstallECGkit(bIgnoreUpdate)
               end         
 
               if( bTabInstallError)
-                  disp_string_framed('*red', 'Could not setup tab completion');
-                  cprintf('red', 'Some error happened during the tab completion installation. Do it manually or ask for help.\n' );
+                  disp_string_framed('[1,0.5,0]', 'Could not setup tab completion');
+                  cprintf('[1,0.5,0]', 'Some error happened during the tab completion installation, but don''t worry, this will not diminish the ecg-kit functionality.\nDo it manually or ask for help in the forum.\n' );
               else
               
                   % apply changes
@@ -312,7 +344,8 @@ function InstallECGkit(bIgnoreUpdate)
                   if( status == 0 )
                       cprintf('*blue', 'Remember to restart Matlab for function''s "tab completion" changes to take effect.\n' );
                   else                    
-                      bTabInstallError = true;
+                      disp_string_framed('[1,0.5,0]', 'Could not setup tab completion');
+                      cprintf('[1,0.5,0]', 'Some error happened during the tab completion installation, but don''t worry, this will not diminish the ecg-kit functionality.\nDo it manually or ask for help in the forum.\n' );
                   end
 
               end
@@ -366,8 +399,8 @@ function InstallECGkit(bIgnoreUpdate)
             bOk = savepath([home_path 'pathdef.m'] );
             
             if( bOk ~= 0 )
-                disp_string_framed(2, 'Path Not Saved')
-                fprintf(2, 'Save path manually to install the ECG-Kit permanently.\n');
+                disp_string_framed(2, 'Path Not Saved');
+                fprintf(2, 'Save path manually to install the ecg-kit permanently for future sessions.\n');
             end
             
         end
@@ -375,6 +408,3 @@ function InstallECGkit(bIgnoreUpdate)
     end
     
 end
-
-
-
