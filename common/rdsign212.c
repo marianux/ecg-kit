@@ -2,7 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
+//#include <malloc.h>
 #include "mex.h"
 
 /*  Gateway Routine */
