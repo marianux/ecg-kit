@@ -363,7 +363,7 @@ function InstallECGkit(bIgnoreUpdate)
                 home_path = [home_path filesep];
             end
 
-            bOk = savepath([h   ome_path 'pathdef.m'] );
+            bOk = savepath([home_path 'pathdef.m'] );
             
             if( bOk ~= 0 )
                 disp_string_framed(2, 'Path Not Saved')
