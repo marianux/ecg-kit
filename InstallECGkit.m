@@ -62,7 +62,7 @@ function InstallECGkit(bIgnoreUpdate)
     
     ECGkit_URL_str = 'http://ecg-kit.readthedocs.org/en/master/';
     % Version info.
-    release_str = 'v0.1.1 beta - 08/04/2015';
+    release_str = 'v0.1.2 beta - 08/06/2015';
 
     % URL check for updates
 
