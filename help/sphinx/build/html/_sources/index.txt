@@ -47,7 +47,7 @@ The acknowledgements also goes to all these people, important in many ways to th
 Version info
 ------------
 
-###v0.1.0 beta - 05/05/2015###
+###v0.1.2 beta - 08/06/2015###
 
 .. toctree::
    :maxdepth: 4
