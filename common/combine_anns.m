@@ -34,9 +34,7 @@ function artificial_annotations = combine_anns(time_serie, estimated_labs, heade
     min_artificial_leads = 3;
 
 %     lreferences = length(time_serie);
-    for ii = 1:min_artificial_leads
-        artificial_annotations(ii).time = [];
-    end
+    artificial_annotations(1).time = [];
 
     start_sample = min(cell2mat(cellfun(@(a)(min(a)),time_serie, 'UniformOutput', false)));
     end_sample = max(cell2mat(cellfun(@(a)(max(a)),time_serie, 'UniformOutput', false))) + 1;
@@ -74,15 +72,17 @@ function artificial_annotations = combine_anns(time_serie, estimated_labs, heade
 %         aux_idx = arrayfun( @(ii)( cell2mat(arrayfun( @(jj)( find_disagreements(aux_idx, aux_q_idx, ii, jj ) ), 1:laux_seq , 'UniformOutput', false)) ), 1:3, 'UniformOutput', false );
 %     end
         
-    aux_val = arrayfun( @(ii)( cell2mat(cellfun( @(a, q_idx)( build_combined_series(time_serie, a, q_idx, ii ) ), aux_idx, aux_q_idx, 'UniformOutput', false)) ), 1:3, 'UniformOutput', false );
+    aux_val = arrayfun( @(ii)( cell2mat(cellfun( @(a, q_idx)( build_combined_series(time_serie, a, q_idx, ii ) ), aux_idx, aux_q_idx, 'UniformOutput', false)) ), 1:min_artificial_leads, 'UniformOutput', false );
     
-    cant_artificial_leads = min(min_artificial_leads, length(aux_val));
+    cant_artificial_leads = min(min_artificial_leads, sum(cellfun(@(a)(~isempty(a)), aux_val )) );
     
     for ii = 1:cant_artificial_leads
         % avoid annotations very close each other.
         aux_time_serie = aux_val{ii};
         aux_time_serie(find( diff(sort(aux_time_serie)) <= round(0.15 * header.freq) ) +1) = [];
-        artificial_annotations(ii).time = colvec(aux_time_serie);
+        if( ~isempty(aux_time_serie) )
+            artificial_annotations(ii).time = colvec(aux_time_serie);
+        end
     end
     
     if( cant_artificial_leads < min_artificial_leads )
