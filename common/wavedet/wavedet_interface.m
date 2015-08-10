@@ -105,8 +105,8 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
         
         lead_processed_ok = lead_processed_ok + 1;
     
-        single_lead_positions(lead_processed_ok) = aux_struct2;
-        marks{lead_processed_ok} = aux_marks;
+        single_lead_positions(ii) = aux_struct2;
+        marks{ii} = aux_marks;
         lead_processed_ok_idx = [lead_processed_ok_idx; ii];
         
     end
@@ -128,7 +128,7 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
         
         %Multilead rules.
 
-        SLRmarks = SLR(marks,ECG_header.freq);
+        SLRmarks = SLR(marks(lead_processed_ok_idx),ECG_header.freq);
 
         multilead_positions.Pon = round(SLRmarks(:,1));
         multilead_positions.P = round(SLRmarks(:,2));

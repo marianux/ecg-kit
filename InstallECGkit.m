@@ -135,7 +135,7 @@ function InstallECGkit(bIgnoreUpdate)
             
               if( ~strcmpi(latest_release_str, release_str) )
                   disp_string_framed('*Red', sprintf('ecg-kit %s version available', latest_release_str) );
-                  fprintf(1, 'Consider updating %s.\n', '<a href = "http://marianux.github.io/ecg-kit/">here</a>' );
+                  fprintf(1, 'Consider updating %s.\n', '<a href = "matlab: web(''http://marianux.github.io/ecg-kit/'', ''-browser'' )">here</a>' );
                   
                   cellfun(@(a)(rmpath(a)), default_paths);    
                   return
