@@ -76,18 +76,23 @@ function artificial_annotations = combine_anns(time_serie, estimated_labs, heade
     
     cant_artificial_leads = min(min_artificial_leads, sum(cellfun(@(a)(~isempty(a)), aux_val )) );
     
-    for ii = 1:cant_artificial_leads
-        % avoid annotations very close each other.
-        aux_time_serie = aux_val{ii};
-        aux_time_serie(find( diff(sort(aux_time_serie)) <= round(0.15 * header.freq) ) +1) = [];
-        if( ~isempty(aux_time_serie) )
-            artificial_annotations(ii).time = colvec(aux_time_serie);
+    if( cant_artificial_leads == 0 ) 
+        artificial_annotations = repmat(artificial_annotations, min_artificial_leads,1);      
+    else
+        
+        for ii = 1:cant_artificial_leads
+            % avoid annotations very close each other.
+            aux_time_serie = aux_val{ii};
+            aux_time_serie(find( diff(sort(aux_time_serie)) <= round(0.15 * header.freq) ) +1) = [];
+            if( ~isempty(aux_time_serie) )
+                artificial_annotations(ii).time = colvec(aux_time_serie);
+            end
         end
-    end
-    
-    if( cant_artificial_leads < min_artificial_leads )
-        for ii = cant_artificial_leads+1:min_artificial_leads
-            artificial_annotations(ii).time = artificial_annotations(cant_artificial_leads).time;
+        
+        if( cant_artificial_leads < min_artificial_leads )
+            for ii = cant_artificial_leads+1:min_artificial_leads
+                artificial_annotations(ii).time = artificial_annotations(cant_artificial_leads).time;
+            end
         end
     end
     
