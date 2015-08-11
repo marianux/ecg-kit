@@ -104,7 +104,7 @@ classdef ECGwrapper < handle
         % maximum debugging email report file size
         max_report_filesize = 4 * 1024^2; % bytes
         % Maximum time to wait for other PIDs finishing their work.
-        Time2WaitPIDs = 2 * 60; % seconds.
+        Time2WaitPIDs = 0 * 60; % seconds.
         
     end
     

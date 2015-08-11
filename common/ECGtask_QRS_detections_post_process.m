@@ -112,13 +112,16 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
             if( isstruct(obj.payload) )
 
                 AnnNames = obj.payload.series_quality.AnnNames(:,1);
+                aux_struct = obj.payload;
                 
                 for fn = rowvec(AnnNames)
                     aux_val = obj.payload.(fn{1}).time - ECG_start_offset + 1;
                     aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val < ECG_sample_start_end_idx(2) );
-                    obj.payload.(fn{1}).time = aux_val;
+                    aux_struct.(fn{1}).time = aux_val;
                 end
 
+            else
+                return
             end
 
             for this_func = rowvec(obj.post_proc_func)
@@ -130,7 +133,7 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
     %                 this_func_ptr = eval(['@' this_func]);
                     this_func_ptr = str2func(this_func{1});
 
-                    this_payload = this_func_ptr( obj.payload, ECG_header, ECG_sample_start_end_idx );
+                    this_payload = this_func_ptr( aux_struct, ECG_header, ECG_sample_start_end_idx );
 
                     for fn = rowvec(fieldnames(this_payload))
                         payload_out.(fn{1}) = this_payload.(fn{1});

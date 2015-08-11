@@ -180,20 +180,23 @@ classdef ECGtask_ECG_delineation < ECGtask
 
                 fnames = fieldnames(obj.payload);
                 aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'corrected_'))), fnames, 'UniformOutput', false)));
+                
+                aux_struct = obj.payload;
+                
                 if( isempty(aux_idx) )
 
-                    if( isfield(obj.payload, 'series_quality') )
-                        [~, aux_idx] = sort(obj.payload.series_quality.ratios, 'descend');
-                        aux_val = obj.payload.(obj.payload.series_quality.AnnNames{aux_idx(1),1}).(obj.payload.series_quality.AnnNames{aux_idx(1),2}) - ECG_start_offset + 1;
+                    if( isfield(aux_struct, 'series_quality') )
+                        [~, aux_idx] = sort(aux_struct.series_quality.ratios, 'descend');
+                        aux_val = aux_struct.(aux_struct.series_quality.AnnNames{aux_idx(1),1}).(aux_struct.series_quality.AnnNames{aux_idx(1),2}) - ECG_start_offset + 1;
                         aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val < ECG_sample_start_end_idx(2) );
-                        obj.payload = aux_val;
+                        aux_struct = aux_val;
                         
                     else
                         for fname = rowvec(fnames)
-                            if( isfield(obj.payload.(fname{1}), 'time') )
-                                aux_val = obj.payload.(fname{1}).time - ECG_start_offset + 1;
+                            if( isfield(aux_struct.(fname{1}), 'time') )
+                                aux_val = aux_struct.(fname{1}).time - ECG_start_offset + 1;
                                 aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val < ECG_sample_start_end_idx(2) );
-                                obj.payload = aux_val;
+                                aux_struct = aux_val;
                                 break
                             end
                         end
@@ -201,9 +204,9 @@ classdef ECGtask_ECG_delineation < ECGtask
                 else
                     
                     for ii = rowvec(aux_idx)
-                        aux_val = obj.payload.(fnames{ii}).time - ECG_start_offset + 1;
+                        aux_val = aux_struct.(fnames{ii}).time - ECG_start_offset + 1;
                         aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val < ECG_sample_start_end_idx(2) );
-                        obj.payload = aux_val;
+                        aux_struct = aux_val;
                     end
                 end
 
@@ -235,7 +238,7 @@ classdef ECGtask_ECG_delineation < ECGtask
                     
                         try
 
-                            [position_multilead, positions_single_lead] = wavedet_interface(ECG, ECG_header, obj.payload, obj.lead_idx, obj.wavedet_config, ECG_sample_start_end_idx, ECG_start_offset, obj.progress_handle);
+                            [position_multilead, positions_single_lead] = wavedet_interface(ECG, ECG_header, aux_struct, obj.lead_idx, obj.wavedet_config, ECG_sample_start_end_idx, ECG_start_offset, obj.progress_handle);
 
                             for jj = 1:length(obj.lead_idx)
                                 payload_out.wavedet.(obj.lead_names{obj.lead_idx(jj)}) = positions_single_lead(jj);
@@ -269,7 +272,7 @@ classdef ECGtask_ECG_delineation < ECGtask
 
                                 ECG_header_aux = trim_ECG_header(ECG_header, obj.lead_idx);
                                 
-                                [positions_single_lead, position_multilead] = ud_func_pointer( double(ECG(:,obj.lead_idx)), ECG_header_aux, obj.progress_handle, obj.payload);
+                                [positions_single_lead, position_multilead] = ud_func_pointer( double(ECG(:,obj.lead_idx)), ECG_header_aux, obj.progress_handle, aux_struct);
 
                                 % filter and offset delineation
                                 for jj = 1:length(obj.lead_idx)
