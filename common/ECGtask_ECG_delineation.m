@@ -210,6 +210,8 @@ classdef ECGtask_ECG_delineation < ECGtask
                     end
                 end
 
+            else
+                aux_struct = [];
             end
             
             cant_QRSdelineators = length(obj.delineators2do);

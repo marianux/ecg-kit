@@ -139,8 +139,8 @@ classdef ECGwrapper < handle
         cKnownECGtasks
         % private
         ErrorReport = [];
-        
-        
+        % using annotations from ECG heartbeat classification task.
+        bHB_task_annotations = false;
     end
     
     properties (SetAccess = private, GetAccess = public)  
@@ -369,6 +369,9 @@ classdef ECGwrapper < handle
                                 % take precedence to QRS locations provided
                                 % with the signal.
                                 obj.QRS_locations = obj.ECGtaskHandle.annotations;
+                                obj.bHB_task_annotations = true;
+                            else
+                                obj.bHB_task_annotations = false;
                             end
 
                             if( isprop(obj.ECGtaskHandle, 'min_heartbeats_required') )
@@ -567,22 +570,29 @@ classdef ECGwrapper < handle
                                 this_iter_ECG_start_idx = max(1, obj.QRS_locations(this_iter_QRS_start_idx) - overlapping_samples);
                                 this_iter_ECG_end_idx = min(obj.ECG_header.nsamp, obj.QRS_locations(this_iter_QRS_end_idx) + overlapping_samples);
 
-                                % create an annotation struct for this
-                                % iteration.
-                                this_ann = obj.ECG_annotations;
-
-                                if( ~isempty(this_ann) )
-
-                                    for field_names = rowvec(fieldnames(this_ann))
-                                        if( ~isempty( this_ann.(field_names{1}) ) )
-                                            this_ann.(field_names{1}) = this_ann.(field_names{1})(this_iter_QRS_start_idx:this_iter_QRS_end_idx);
-                                        end
-                                    end
-                                    this_ann.time = this_ann.time - this_iter_ECG_start_idx + 1;
-                                end
                                 
-                                if( ~isempty(obj.QRS_locations) )
-                                    this_ann.time = obj.QRS_locations(this_iter_QRS_start_idx:this_iter_QRS_end_idx) - this_iter_ECG_start_idx + 1;
+                                if( obj.bHB_task_annotations )
+                                    
+                                    if( ~isempty(obj.QRS_locations) )
+                                        this_ann.time = obj.QRS_locations(this_iter_QRS_start_idx:this_iter_QRS_end_idx) - this_iter_ECG_start_idx + 1;
+                                    end
+                                    
+                                else
+                                    
+                                    % create an annotation struct for this
+                                    % iteration.
+                                    this_ann = obj.ECG_annotations;
+
+                                    if( ~isempty(this_ann) )
+
+                                        for field_names = rowvec(fieldnames(this_ann))
+                                            if( ~isempty( this_ann.(field_names{1}) ) )
+                                                this_ann.(field_names{1}) = this_ann.(field_names{1})(this_iter_QRS_start_idx:this_iter_QRS_end_idx);
+                                            end
+                                        end
+                                        this_ann.time = this_ann.time - this_iter_ECG_start_idx + 1;
+                                    end
+                                    
                                 end
                                 
                                 % in QRS mode, this is not useful.
