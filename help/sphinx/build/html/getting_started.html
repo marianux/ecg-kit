@@ -145,8 +145,14 @@
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>To install the kit unpack or checkout the kit to
-&#8216;your_installation_folder&#8217; and type in Matlab</p>
+<p>The easiest way to install the latest stable version is downloading the project in <a class="reference external" href="http://marianux.github.io/ecg-kit/">zip or tgz</a>. If you want the latest development version, clone the master branch with your favorite GIT client. <a class="reference external" href="https://git-scm.com/downloads">Here</a> you can find one for each supported platform, and a nice GUI for Windows called <a class="reference external" href="https://code.google.com/p/tortoisegit/">Tortoise</a>. Then go to an empty folder, right click there and select <em>Git Clone</em></p>
+<p><img alt="image1" src="_images/tortoisegit-gitclone.png" /></p>
+<p>or execute in the shell:</p>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">git</span> <span class="n">clone</span> <span class="o">--</span><span class="n">recursive</span> <span class="n">git</span><span class="p">@</span><span class="n">github</span><span class="p">.</span><span class="n">com</span><span class="p">:</span><span class="n">marianux</span><span class="o">/</span><span class="n">ecg</span><span class="o">-</span><span class="n">kit</span><span class="p">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<p>To install the kit, after unpacking or cloning the kit to
+&#8216;your_installation_folder&#8217;, then type in Matlab</p>
 <div class="code highlight-Matlab"><div class="highlight"><pre><span class="n">cd</span> <span class="s">&#39;your_installation_folder&#39;</span>
 <span class="n">InstallECGkit</span><span class="p">()</span>
 </pre></div>
