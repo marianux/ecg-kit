@@ -34,7 +34,9 @@ function artificial_annotations = combine_anns(time_serie, estimated_labs, heade
     min_artificial_leads = 3;
 
 %     lreferences = length(time_serie);
-    artificial_annotations(1).time = [];
+    for ii = 1:min_artificial_leads
+        artificial_annotations(ii).time = [];
+    end
 
     start_sample = min(cell2mat(cellfun(@(a)(min(a)),time_serie, 'UniformOutput', false)));
     end_sample = max(cell2mat(cellfun(@(a)(max(a)),time_serie, 'UniformOutput', false))) + 1;
@@ -76,9 +78,7 @@ function artificial_annotations = combine_anns(time_serie, estimated_labs, heade
     
     cant_artificial_leads = min(min_artificial_leads, sum(cellfun(@(a)(~isempty(a)), aux_val )) );
     
-    if( cant_artificial_leads == 0 ) 
-        artificial_annotations = repmat(artificial_annotations, min_artificial_leads,1);      
-    else
+    if( cant_artificial_leads > 0 ) 
         
         for ii = 1:cant_artificial_leads
             % avoid annotations very close each other.
@@ -94,6 +94,7 @@ function artificial_annotations = combine_anns(time_serie, estimated_labs, heade
                 artificial_annotations(ii).time = artificial_annotations(cant_artificial_leads).time;
             end
         end
+        
     end
     
 function start_end_aux = findStartEnd( bAux )
