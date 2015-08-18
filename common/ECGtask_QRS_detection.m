@@ -58,6 +58,7 @@ classdef ECGtask_QRS_detection < ECGtask
     properties( Access = private, Constant)
         
         cQRSdetectors = {'all-detectors' 'wavedet' 'pantom' 'aristotle' 'gqrs' 'sqrs' 'wqrs' 'ecgpuwave' 'epltdqrs1' 'epltdqrs2' };
+        WFDBMaxSampRate = 260; % Hz
         
     end
     
@@ -65,6 +66,8 @@ classdef ECGtask_QRS_detection < ECGtask
         
         detectors2do
         bWFDBdetectors
+        WFDBtarget_samp_rate = 250; %Hz
+        WFDBResampled = false;
         tmp_path_local
         WFDB_bin_path
         WFDB_cmd_prefix_str 
@@ -179,23 +182,39 @@ classdef ECGtask_QRS_detection < ECGtask
             
             if(obj.bWFDBdetectors)
                 % MIT conversion is needed for WFDB detectors.
+                % Resampled to obj.WFDBtarget_samp_rate Hz for performance
                 
-                ECG_header.recname = regexprep(ECG_header.recname, '\W*(\w+)\W*', '$1');
-                ECG_header.recname = regexprep(ECG_header.recname, '\W', '_');
+                ECG_header_WFDB = ECG_header;
+                ECG_header_WFDB.recname = regexprep(ECG_header_WFDB.recname, '\W*(\w+)\W*', '$1');
+                ECG_header_WFDB.recname = regexprep(ECG_header_WFDB.recname, '\W', '_');
                 
-                MIT_filename = [ECG_header.recname '_' num2str(ECG_start_offset) '_' num2str(ECG_header.nsamp+ECG_start_offset-1) ];
-                ECG_header.recname = MIT_filename;
+                MIT_filename = [ECG_header_WFDB.recname '_' num2str(ECG_start_offset) '_' num2str(ECG_header_WFDB.nsamp+ECG_start_offset-1) ];
+                ECG_header_WFDB.recname = MIT_filename;
+                
+                if(ECG_header_WFDB.freq > obj.WFDBMaxSampRate )
+                    [p, q] = rat(obj.WFDBtarget_samp_rate/ECG_header_WFDB.freq);
+                    obj.WFDBResampled = true;
+                    ECG_header_WFDB.freq = round(ECG_header_WFDB.freq * p / q);
+                else
+                    obj.WFDBResampled = false;
+                end
+                
                 MIT_filename = [obj.tmp_path_local MIT_filename '.dat'];
                 fidECG = fopen(MIT_filename, 'w');
                 try
-                    fwrite(fidECG, ECG', 'int16', 0 );
+                    if( obj.WFDBResampled )
+                        fwrite(fidECG, int16(round(resample(double(ECG), p, q)))', 'int16', 0 );
+                    else
+                        fwrite(fidECG, ECG', 'int16', 0 );
+                    end
+                    
                     fclose(fidECG);
                 catch MEE
                     fclose(fidECG);
                     rethrow(MEE);
                 end
 
-                writeheader(obj.tmp_path_local, ECG_header);   
+                writeheader(obj.tmp_path_local, ECG_header_WFDB);   
 
                 if( isempty(obj.gqrs_config_filename) )
                     aux_str = obj.WFDB_bin_path;
@@ -297,16 +316,16 @@ classdef ECGtask_QRS_detection < ECGtask
                             for jj = rowvec(obj.lead_idx)
 
                                 if( any(strcmpi( 'sqrs', this_detector ) ) )
-                                    file_name_orig =  [obj.tmp_path_local ECG_header.recname '.qrs' ];
+                                    file_name_orig =  [obj.tmp_path_local ECG_header_WFDB.recname '.qrs' ];
                                     this_thrs = round(500 * obj.detection_threshold);
                                 elseif( any(strcmpi( 'wqrs' , this_detector ) ) )
-                                    file_name_orig =  [obj.tmp_path_local ECG_header.recname '.wqrs' ];
+                                    file_name_orig =  [obj.tmp_path_local ECG_header_WFDB.recname '.wqrs' ];
                                     this_thrs = round(100 * obj.detection_threshold);
                                 elseif( any(strcmpi( {'epltdqrs1' 'epltdqrs2'} , this_detector ) ) )
-                                    file_name_orig =  [obj.tmp_path_local ECG_header.recname '.epl' ];
+                                    file_name_orig =  [obj.tmp_path_local ECG_header_WFDB.recname '.epl' ];
                                     this_thrs = obj.detection_threshold;
                                 else
-                                    file_name_orig =  [obj.tmp_path_local ECG_header.recname '.' this_detector num2str(jj) ];
+                                    file_name_orig =  [obj.tmp_path_local ECG_header_WFDB.recname '.' this_detector num2str(jj) ];
                                     this_thrs = obj.detection_threshold;
                                 end
 
@@ -314,41 +333,41 @@ classdef ECGtask_QRS_detection < ECGtask
 
                                     if( any(strcmpi( {'sqrs' 'wqrs' 'epltdqrs1' 'epltdqrs2'} , this_detector ) ) )
                                         % wqrs tiene una interface diferente
-                                        [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header.recname ' -s ' num2str(jj-1) ' -m ' num2str(this_thrs) ]);
-                                        if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header.recname, ECG_header.desc(jj,:) ) ); end
+                                        [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header_WFDB.recname ' -s ' num2str(jj-1) ' -m ' num2str(this_thrs) ]);
+                                        if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header_WFDB.recname, ECG_header_WFDB.desc(jj,:) ) ); end
                                     
 %                                     elseif( any(strcmpi( {'epltdqrs1' 'epltdqrs2'}, this_detector ) ) )
-%                                         [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' ' ECG_header.recname ' ' num2str(jj-1)]);
-%                                         if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header.recname, ECG_header.desc(jj,:) ) ); end
+%                                         [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' ' ECG_header_WFDB.recname ' ' num2str(jj-1)]);
+%                                         if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header_WFDB.recname, ECG_header_WFDB.desc(jj,:) ) ); end
                                         
                                     elseif( any(strcmpi( 'ecgpuwave', this_detector ) ) )
-                                        [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header.recname ' -a ' this_detector num2str(jj) ' -s ' num2str(jj-1)]);
-                                        if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header.recname, ECG_header.desc(jj,:) ) ); end
+                                        [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header_WFDB.recname ' -a ' this_detector num2str(jj) ' -s ' num2str(jj-1)]);
+                                        if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header_WFDB.recname, ECG_header_WFDB.desc(jj,:) ) ); end
                                         
                                     elseif( any(strcmpi( 'aristotle', this_detector ) ) )
-                                        [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header.recname ' -o ' this_detector num2str(jj) ' -s ' num2str(jj-1) ' -G ' num2str(this_thrs) ]);
-                                        if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header.recname, ECG_header.desc(jj,:) ) ); end
+                                        [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header_WFDB.recname ' -o ' this_detector num2str(jj) ' -s ' num2str(jj-1) ' -G ' num2str(this_thrs) ]);
+                                        if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header_WFDB.recname, ECG_header_WFDB.desc(jj,:) ) ); end
                                         
                                     else
                                         
                                         if( strcmpi( 'gqrs', this_detector ) && exist(obj.gqrs_config_filename, 'file') )
                                             % using the configuration file to
                                             % post-process
-                                            [status, ~] = system([ obj.WFDB_cmd_prefix_str 'gqrs -c ' obj.gqrs_config_filename ' -r ' ECG_header.recname ' -s ' num2str(jj-1) ' -m ' num2str(this_thrs) ]);
+                                            [status, ~] = system([ obj.WFDB_cmd_prefix_str 'gqrs -c ' obj.gqrs_config_filename ' -r ' ECG_header_WFDB.recname ' -s ' num2str(jj-1) ' -m ' num2str(this_thrs) ]);
                                             if( status == 0 )
-                                                [status, ~] = system([ obj.WFDB_cmd_prefix_str 'gqpost -c ' obj.gqrs_config_filename ' -r ' ECG_header.recname ' -o ' this_detector num2str(jj) ]);
+                                                [status, ~] = system([ obj.WFDB_cmd_prefix_str 'gqpost -c ' obj.gqrs_config_filename ' -r ' ECG_header_WFDB.recname ' -o ' this_detector num2str(jj) ]);
                                                 if( status ~= 0 )
-                                                    disp_string_framed(2, sprintf('gqpost failed in recording %s lead %s', ECG_header.recname, ECG_header.desc(jj,:) ) );
+                                                    disp_string_framed(2, sprintf('gqpost failed in recording %s lead %s', ECG_header_WFDB.recname, ECG_header_WFDB.desc(jj,:) ) );
                                                 end
                                             else
-                                                disp_string_framed(2, sprintf('gqrs failed in recording %s lead %s', ECG_header.recname, ECG_header.desc(jj,:) ) );
+                                                disp_string_framed(2, sprintf('gqrs failed in recording %s lead %s', ECG_header_WFDB.recname, ECG_header_WFDB.desc(jj,:) ) );
                                             end
 
-                                            delete([obj.tmp_path_local ECG_header.recname '.qrs' ]);
+                                            delete([obj.tmp_path_local ECG_header_WFDB.recname '.qrs' ]);
                                         else
                                             % run only WFDB compatible detector
-                                            [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header.recname ' -o ' this_detector num2str(jj) ' -s ' num2str(jj-1)]);
-                                            if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header.recname, ECG_header.desc(jj,:) ) ); end
+                                            [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header_WFDB.recname ' -o ' this_detector num2str(jj) ' -s ' num2str(jj-1)]);
+                                            if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header_WFDB.recname, ECG_header_WFDB.desc(jj,:) ) ); end
                                         end
 
                                     end
@@ -356,7 +375,7 @@ classdef ECGtask_QRS_detection < ECGtask
                                 catch aux_ME
 
 
-                                    strAux = sprintf( '%s failed in recording %s lead %d\n', this_detector, ECG_header.recname, jj);
+                                    strAux = sprintf( '%s failed in recording %s lead %d\n', this_detector, ECG_header_WFDB.recname, jj);
 
                                     report = getReport(aux_ME);
                                     fprintf(2, '%s\nError report:\n%s', strAux, report);
@@ -383,9 +402,16 @@ classdef ECGtask_QRS_detection < ECGtask
                                                 
                                                 anns_test = AnnotationFilterConvert(anns_test, 'MIT', 'AAMI');
 
+                                                if( obj.WFDBResampled )
+                                                    %take sample locations
+                                                    %to its original
+                                                    %sampling rate
+                                                    anns_test.time = round(anns_test.time * ECG_header.freq / ECG_header_WFDB.freq);
+                                                end
+                                                
                                                 % filter and offset
                                                 anns_test.time = anns_test.time(anns_test.time >= ECG_sample_start_end_idx(1) & anns_test.time <= ECG_sample_start_end_idx(2)) + ECG_start_offset - 1;
-
+                                                
                                                 payload_out.([this_detector '_' obj.lead_names{jj} ]).time = colvec(anns_test.time);
 
                                             end
@@ -395,7 +421,7 @@ classdef ECGtask_QRS_detection < ECGtask
                                             if( strcmpi(aux_ME.identifier, 'MATLAB:nomem') )
                                                 payload_out.([this_detector '_' obj.lead_names{jj} ]).time = [];
                                             else
-                                                strAux = sprintf( '%s failed in recording %s lead %s\n', this_detector, ECG_header.recname, ECG_header.desc(jj,:) );
+                                                strAux = sprintf( '%s failed in recording %s lead %s\n', this_detector, ECG_header_WFDB.recname, ECG_header_WFDB.desc(jj,:) );
 
                                                 report = getReport(aux_ME);
                                                 error('ECGtask_QRS_detection:WFDB', '%s\nError report:\n%s', strAux, report);

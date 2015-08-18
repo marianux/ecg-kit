@@ -99,17 +99,18 @@ end
 
 init_ghostscript();
 
-bAux = (win_lengths * heasig.freq) <= heasig.nsamp;
+win_lengths = bsxfun( @min, win_lengths, floor(heasig.nsamp/heasig.freq) );
+win_lengths = sort(unique(win_lengths), 'descend');
 
 % Activate the progress_struct bar.
 pb = progress_bar('Report ECG');
 
-pb.Loops2Do = sum(bAux);
+pb.Loops2Do = length(win_lengths);
 
 ii = 1;
 fig_hdl = [];
 
-for win_length = win_lengths(bAux)
+for win_length = win_lengths
     
     pb.start_loop();
     
