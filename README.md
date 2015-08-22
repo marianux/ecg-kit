@@ -30,6 +30,7 @@ Many thanks to Andrés Demski from UTN who helped to this project before he lear
 
 * Pablo Laguna, Juan Pablo Martínez, Rute Almeida and Juan Bolea, for the wavedet ECG delineator and many parts of the Biosig browser project that were adapted to this project. 
 * Jesús Lázaro and Eduardo Gil for the PPG / ABP pulse detection code.
+* Li-wei Lehman from Physionet/MIT helped a lot in testing the first versions of the kit.
 
 ## Involuntary contributions
 The acknowledgements also goes to all these people, important in many ways to the fulfilment of this project
@@ -39,5 +40,3 @@ The acknowledgements also goes to all these people, important in many ways to th
 * Bob Duin and all the team behind [PRtools](http://prtools.org/)
 * Yair Altman from [undocumented Matlab](http://undocumentedmatlab.com/)
 * Diego Armando Maradona for [this](https://github.com/marianux/ecg-kit/blob/master/common/genio_inspirador.jpeg?raw=true).
-
-
