@@ -60,9 +60,24 @@ function InstallECGkit(bIgnoreUpdate)
     % get the correct command names in this architecture.
     sys_cmds = sys_command_strings();
     
-    ECGkit_URL_str = 'http://ecg-kit.readthedocs.org/en/master/';
+%     ECGkit_URL_str = 'http://ecg-kit.readthedocs.org/en/master/';
+    ECGkit_URL_str = 'https://github.com/marianux/ecg-kit/releases';
+
     % Version info.
-    release_str = 'v0.1.2 beta - 08/06/2015';
+    
+    fid = fopen([ root_path 'LatestVersion' ]);
+    if fid < 0
+        % version check not possible - force update message
+        this_release_str  = 'v0.1.1 beta - 05/05/2015';
+    else
+        try
+            this_release_str  = fgetl(fid);
+            fclose(fid);
+        catch MException
+            fclose(fid);
+            throw(MException);
+        end
+    end
 
     % URL check for updates
 
@@ -128,18 +143,26 @@ function InstallECGkit(bIgnoreUpdate)
         end
           
         if( URLstatus == 1 )
-            aux_idx = strfind(strResponse, '###');
+            aux_pattern_pre = '/marianux/ecg-kit/tree/';
+            aux_idx = strfind(strResponse, aux_pattern_pre);
             
             if( ~isempty(aux_idx) )
-              latest_release_str = strResponse(aux_idx(1)+3:aux_idx(2)-1);
-            
-              if( ~strcmpi(latest_release_str, release_str) )
-                  disp_string_framed('*Red', sprintf('ecg-kit %s version available', latest_release_str) );
-                  fprintf(1, 'Consider updating %s.\n', '<a href = "matlab: web(''http://marianux.github.io/ecg-kit/'', ''-browser'' )">here</a>' );
-                  
-                  cellfun(@(a)(rmpath(a)), default_paths);    
-                  return
-              end
+                aux_pattern_pos = '" ';
+                aux_idx2 = strfind(strResponse(aux_idx(1):end), aux_pattern_pos);
+                
+                if( ~isempty(aux_idx2) )
+                
+                    online_latest_release_str = strResponse(aux_idx(1)+(length(aux_pattern_pre):(aux_idx2(1)-2)) );
+                    
+                    if( islater(online_latest_release_str, this_release_str) )
+                      disp_string_framed('*Red', sprintf('ecg-kit %s version available', online_latest_release_str) );
+                      fprintf(1, 'Consider updating %s.\n', '<a href = "matlab: web(''http://marianux.github.io/ecg-kit/'', ''-browser'' )">here</a>' );
+
+                      cellfun(@(a)(rmpath(a)), default_paths);    
+                      return
+                    end
+                    
+                end
               
             end            
         end
@@ -360,7 +383,7 @@ function InstallECGkit(bIgnoreUpdate)
 
             fprintf(1, 'done !\n' );
             
-            disp_string_framed('*Blue', sprintf('ecg-kit for Matlab %s', release_str) );
+            disp_string_framed('*Blue', sprintf('ecg-kit for Matlab %s', this_release_str) );
             
             str_aux = [ 'examples' filesep 'examples.m'];
             

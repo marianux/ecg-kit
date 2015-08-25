@@ -43,12 +43,6 @@ The acknowledgements also goes to all these people, important in many ways to th
 * Yair Altman from `undocumented Matlab <http://undocumentedmatlab.com/>`__
 * Diego Armando Maradona for `this <https://github.com/marianux/ecg-kit/blob/master/common/genio_inspirador.jpeg?raw=true>`__.
 
-
-Version info
-------------
-
-###v0.1.2 beta - 08/06/2015###
-
 .. toctree::
    :maxdepth: 4
    :titlesonly:
