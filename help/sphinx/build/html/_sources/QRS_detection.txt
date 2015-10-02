@@ -56,9 +56,9 @@ The properties that this task uses are the following:
 	- aristotle
 	- `gqrs <http://www.physionet.org/physiotools/wag/gqrs-1.htm>`__
 	- `sqrs <http://www.physionet.org/physiotools/wag/sqrs-1.htm>`__
-	- `wqrs <http://www.physionet.org/physiotools/wag/gqrs-1.htm>`__
+	- `wqrs <http://www.physionet.org/physiotools/wag/wqrs-1.htm>`__
 	- `ecgpuwave <http://www.physionet.org/physiotools/ecgpuwave/>`__
-	- `epltdqrs1 or epltdqrs2 <http://www.physionet.org/physiotools/ecgpuwave/>`__
+	- `epltdqrs1 or epltdqrs2 <http://www.eplimited.com/confirmation.htm>`__
 
 ``only_ECG_leads`` — Process only ECG signals. ``true (default)``
 
