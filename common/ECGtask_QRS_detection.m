@@ -515,6 +515,7 @@ classdef ECGtask_QRS_detection < ECGtask
                 AnnNames = payload_out.series_quality.AnnNames(:,1);
                 cant_lead_name = size(AnnNames,1);
                 payload_out.series_performance.conf_mat = zeros(2,2,cant_lead_name);
+                payload_out.series_performance.error = nan(cant_lead_name,2);
                 
                 if(isempty(ECG_annotations)) 
                     disp_string_framed(2, sprintf('Trusted references not found for %s', ECG_header.recname) );
@@ -522,7 +523,11 @@ classdef ECGtask_QRS_detection < ECGtask
                     % offset refs, produced anns were already shifted
                     ECG_annotations.time = ECG_annotations.time + ECG_start_offset - 1;
                     for kk = 1:cant_lead_name
-                        payload_out.series_performance.conf_mat(:,:,kk) = bxb(ECG_annotations, payload_out.(AnnNames{kk}).time, ECG_header );
+                        this_lead_det = payload_out.(AnnNames{kk}).time;
+                        [payload_out.series_performance.conf_mat(:,:,kk), TP_gs_idx, TP_det_idx] = bxb(ECG_annotations, this_lead_det, ECG_header );
+                        % meadian/mad of the error wrt the gold standard
+                        aux_val = this_lead_det(TP_det_idx) - ECG_annotations(TP_gs_idx);
+                        payload_out.series_performance.error(kk,:) = [ median(aux_val) mad(aux_val) ];
                     end            
                 end
 

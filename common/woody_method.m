@@ -16,8 +16,8 @@
 %   annotations(i) - realization_limit(1) to annotations(i) +
 %   realization_limit(2).  
 % 
-%   + outliers_proportion: Proportions of outliers to assume, and discard
-%   from the template calculation. 
+%   + outliers_proportion: Proportions of true heartbeats respect to
+%   outliers to assume, and discard from the template calculation. Default 0.9.  
 % 
 %   + bRobust: Calculate the template with median instead of mean.
 % 
