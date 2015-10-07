@@ -77,6 +77,7 @@ function payload = ConcatenateQRSdetectionPayloads(obj, plA, plB)
 
                 if( isfield(plA, 'series_performance') && isfield(plB, 'series_performance') )
                     payload.series_performance.conf_mat = plA.series_performance.conf_mat(:,:,aux_idxA) + plB.series_performance.conf_mat(:,:,aux_idxB);
+                    payload.series_performance.error = cat(3, plA.series_performance.error(aux_idxA,:,:), plB.series_performance.error(aux_idxA,:));
                 else
                     if( obj.CalculatePerformance )
                         disp_string_framed(2, 'WARNING!! Performance not calculated ' );

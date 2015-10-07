@@ -1,9 +1,10 @@
-%% Create an artificial set of QRS detections, based on multilead QRS detections.
+%% Create an artificial set of QRS detections, based on multilead QRS detections created with wavedet algorithm.
 % This is an auxiliar function for the ECGtask_QRS_detections_post_process.
 % This function creates an artificial set of QRS detections, based on single
 % lead detections, as described in [add reference].
 % 
-%   all_detections = wavedet_QRS_detection_mix(struct_in, ECG_header, start_end_this_segment )
+% 
+%   all_detections = wavedetMix(struct_in, ECG_header, start_end_this_segment )
 % 
 % Arguments:
 % 
@@ -36,12 +37,12 @@
 % 
 %     ECG_w.ECGtaskHandle = 'QRS_detections_post_process';
 %     % Mix QRS detections strategy function
-%     ECG_w.ECGtaskHandle.post_proc_func = 'calculate_artificial_QRS_detections';
+%     ECG_w.ECGtaskHandle.post_proc_func = 'wavedet_QRS_detection_mix';
 %     ECG_w.ECGtaskHandle.payload = load(cached_filenames{1});
 %     ECG_w.ECGtaskHandle.CalculatePerformance = true;
 %     ECG_w.Run;
 % 
-% See also ECGtask_QRS_detections_post_process, wavedet_QRS_detection_mix
+% See also ECGtask_QRS_detections_post_process, calculate_artificial_QRS_detections
 % 
 % Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
 % Version: 0.1 beta
@@ -49,16 +50,21 @@
 % Last update: 14/07/2015
 % Copyright 2008-2015
 % 
-function all_detections = calculate_artificial_QRS_detections(struct_in, ECG_header, start_end_this_segment)
+function all_detections = wavedetMix(struct_in, ECG_header, start_end_this_segment )
 
     all_detections = [];
-
-    if( nargin < 3 || isempty(start_end_this_segment) ) 
-        start_end_this_segment = [1 ECG_header.nsamp];
-    end
+    
     % attemp to build a better detection from single-lead detections.
 
-    [~, all_annotations] = getAnnNames(struct_in);
+    AnnNames = struct_in.series_quality.AnnNames(:,1);
+    detector_name = cellfun( @(a)( strtok(a, '_')), AnnNames, 'UniformOutput', false);
+    
+    aux_idx = find(strcmpi(detector_name, 'wavedet'));
+    
+    all_annotations = {};
+    for ii = rowvec(aux_idx)
+        all_annotations = [all_annotations; {struct_in.(struct_in.series_quality.AnnNames{ii,1}).time}];
+    end
 
     [ ratios, estimated_labs ] = CalcRRserieRatio(all_annotations, ECG_header, start_end_this_segment);
 
@@ -69,9 +75,8 @@ function all_detections = calculate_artificial_QRS_detections(struct_in, ECG_hea
     artificial_annotations = combine_anns(all_annotations(aux_idx), estimated_labs(aux_idx), ECG_header );
 
     for ii = 1:length(artificial_annotations)
-        aux_str = ['mixartif_ECGmix' num2str(ii)];
+        aux_str = ['wavedetMix_ECGmix' num2str(ii)];
         all_detections.(aux_str) = artificial_annotations(ii);
     end
-
 
 

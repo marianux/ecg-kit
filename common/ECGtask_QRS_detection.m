@@ -87,6 +87,8 @@ classdef ECGtask_QRS_detection < ECGtask
         payload
         CalculatePerformance = false;
         detection_threshold = 1;
+        bRecalculateNewDetections = false;
+        bRecalcQualityAndPerformance = false;
         
     end
     
@@ -180,6 +182,7 @@ classdef ECGtask_QRS_detection < ECGtask
                 end
             end
             
+            % Signal conversion to MIT format to be used by WFDB detectors.
             if(obj.bWFDBdetectors)
                 % MIT conversion is needed for WFDB detectors.
                 % Resampled to obj.WFDBtarget_samp_rate Hz for performance
@@ -226,13 +229,63 @@ classdef ECGtask_QRS_detection < ECGtask
                 end
                 
             end
+
+            detectors_calculated = [];
+
+            if( obj.bRecalcQualityAndPerformance )
             
+                % payload property is used in this task to input an external QRS
+                % detector, or manually corrected detections.
+                if( isstruct(obj.payload) )
+
+                    aux_struct = obj.payload;
+                    
+                    if( isfield(aux_struct, 'series_quality') )
+                        
+                        detectors_calculated = aux_struct.series_quality.AnnNames(:,1);
+                        
+                        for ii = 1:size(aux_struct.series_quality.AnnNames,1)
+                            aux_val = aux_struct.(aux_struct.series_quality.AnnNames{ii,1}).(aux_struct.series_quality.AnnNames{ii,2}) - ECG_start_offset + 1;
+                            aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val <= ECG_sample_start_end_idx(2) );
+                            aux_val = aux_val + ECG_start_offset - 1;
+                            payload_out.(aux_struct.series_quality.AnnNames{ii,1}).(aux_struct.series_quality.AnnNames{ii,2}) = aux_val;
+                        end
+
+                    else
+                        fnames = fieldnames(obj.payload);
+                        for fname = rowvec(fnames)
+                            if( isfield(aux_struct.(fname{1}), 'time') )
+                                aux_val = aux_struct.(fname{1}).time - ECG_start_offset + 1;
+                                aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val <= ECG_sample_start_end_idx(2) );
+                                aux_val = aux_val + ECG_start_offset - 1;
+                                payload_out.(fname{1}).time = aux_val;
+                                detectors_calculated = [detectors_calculated; fname];
+                            end
+                        end
+                    end
+
+                    detectors_calculated = unique(cellfun( @(a)(a{1}), regexp(detectors_calculated, '(.+)_.+', 'tokens')));
+                    
+                else
+                    cprintf('*[1,0.5,0]', 'Unable to parse payload struct for %s.\n', ECG_header.recname);
+                    return                    
+                end                
+
+            end
+            
+            if( ~obj.bRecalculateNewDetections )
+                % If recalculate only new detections, we exclude
+                % detectors already processed.
+                obj.detectors2do = setdiff(obj.detectors2do, detectors_calculated);
+            end
+
+            % Actual QRS detection
             cant_QRSdetectors = length(obj.detectors2do);
-            
+
             for ii = 1:cant_QRSdetectors
 
                 this_detector = obj.detectors2do{ii};
-                
+
                 [this_detector, this_detector_name] = strtok(this_detector, ':');
                 if( isempty(this_detector_name) )
                     this_detector_name = this_detector;
@@ -241,7 +294,7 @@ classdef ECGtask_QRS_detection < ECGtask
                 end
 
                 cprintf( 'Blue', [ 'Processing QRS detector ' this_detector_name '\n' ] );
-                
+
                 %% perform QRS detection
 
                 switch( this_detector )
@@ -252,19 +305,19 @@ classdef ECGtask_QRS_detection < ECGtask
                         try
 
                             obj.wavedet_config.setup.wavedet.QRS_detection_thr = repmat( obj.detection_threshold, 5, 1);
-                            
+
                             [position_multilead, positions_single_lead] = wavedet_interface(ECG, ECG_header, [], obj.lead_idx, obj.wavedet_config, ECG_sample_start_end_idx, ECG_start_offset, obj.progress_handle);
 
                             for jj = rowvec(obj.lead_idx)
                                 % QRS detections in milliseconds
                                 payload_out.(['wavedet_' obj.lead_names{jj} ]).time = colvec(positions_single_lead(jj).qrs);
                             end
-                            
+
                             % QRS detections in milliseconds
                             payload_out.wavedet_multilead.time = colvec(position_multilead.qrs);
 
                         catch aux_ME
-                            
+
 
                             strAux = sprintf('Wavedet failed in recording %s\n', ECG_header.recname);
                             strAux = sprintf('%s\n', strAux);
@@ -280,19 +333,19 @@ classdef ECGtask_QRS_detection < ECGtask
                         for jj = rowvec(obj.lead_idx)
 
                             obj.progress_handle.checkpoint(['Lead ' ECG_header.desc(jj,:)])
-                            
+
                             try
 
                                 aux_val = PeakDetection2(double(ECG(:,jj)), ECG_header.freq, [], [], [], obj.detection_threshold * 0.2, [], obj.progress_handle);
 
                                 % filter and offset
                                 aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) &  aux_val <= ECG_sample_start_end_idx(2) ) + ECG_start_offset - 1;
-                                
+
                                 % QRS detections in milliseconds
                                 payload_out.(['pantom_' obj.lead_names{jj} ]).time = colvec(aux_val);
-                                
+
                             catch aux_ME
-                                
+
 
                                 strAux = sprintf('Pan & Tompkins failed in recording %s lead %s\n', ECG_header.recname, ECG_header.desc(jj,:) );
                                 strAux = sprintf('%s\n', strAux);
@@ -303,12 +356,12 @@ classdef ECGtask_QRS_detection < ECGtask
                             end
 
                         end
-                        
+
                     case { 'aristotle' 'gqrs' 'sqrs' 'wqrs' 'ecgpuwave' 'epltdqrs1' 'epltdqrs2'}
                     %% WFDB_comp_interface (sqrs, wqrs, aristotle, ecgpuwave)
 
                         [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -h' ]);
-                        
+
                         if( status ~= 0 )
                             disp_string_framed(2, sprintf('Could not execute "%s" QRS detector.', this_detector));  
                         else
@@ -335,21 +388,21 @@ classdef ECGtask_QRS_detection < ECGtask
                                         % wqrs tiene una interface diferente
                                         [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header_WFDB.recname ' -s ' num2str(jj-1) ' -m ' num2str(this_thrs) ]);
                                         if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header_WFDB.recname, ECG_header_WFDB.desc(jj,:) ) ); end
-                                    
+
 %                                     elseif( any(strcmpi( {'epltdqrs1' 'epltdqrs2'}, this_detector ) ) )
 %                                         [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' ' ECG_header_WFDB.recname ' ' num2str(jj-1)]);
 %                                         if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header_WFDB.recname, ECG_header_WFDB.desc(jj,:) ) ); end
-                                        
+
                                     elseif( any(strcmpi( 'ecgpuwave', this_detector ) ) )
                                         [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header_WFDB.recname ' -a ' this_detector num2str(jj) ' -s ' num2str(jj-1)]);
                                         if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header_WFDB.recname, ECG_header_WFDB.desc(jj,:) ) ); end
-                                        
+
                                     elseif( any(strcmpi( 'aristotle', this_detector ) ) )
                                         [status, ~] = system([ obj.WFDB_cmd_prefix_str  this_detector ' -r ' ECG_header_WFDB.recname ' -o ' this_detector num2str(jj) ' -s ' num2str(jj-1) ' -G ' num2str(this_thrs) ]);
                                         if( status ~= 0 );  disp_string_framed(2, sprintf('%s failed in recording %s lead %s', this_detector, ECG_header_WFDB.recname, ECG_header_WFDB.desc(jj,:) ) ); end
-                                        
+
                                     else
-                                        
+
                                         if( strcmpi( 'gqrs', this_detector ) && exist(obj.gqrs_config_filename, 'file') )
                                             % using the configuration file to
                                             % post-process
@@ -382,9 +435,9 @@ classdef ECGtask_QRS_detection < ECGtask
 
                                 end
 
-    
+
                                 if( status == 0  )
-                                    
+
                                     if( exist(file_name_orig, 'file') )
                                         % reference comparison
 
@@ -399,7 +452,7 @@ classdef ECGtask_QRS_detection < ECGtask
                                                 payload_out.([this_detector '_' obj.lead_names{jj} ]).time = [];
 
                                             else
-                                                
+
                                                 anns_test = AnnotationFilterConvert(anns_test, 'MIT', 'AAMI');
 
                                                 if( obj.WFDBResampled )
@@ -408,10 +461,10 @@ classdef ECGtask_QRS_detection < ECGtask
                                                     %sampling rate
                                                     anns_test.time = round(anns_test.time * ECG_header.freq / ECG_header_WFDB.freq);
                                                 end
-                                                
+
                                                 % filter and offset
                                                 anns_test.time = anns_test.time(anns_test.time >= ECG_sample_start_end_idx(1) & anns_test.time <= ECG_sample_start_end_idx(2)) + ECG_start_offset - 1;
-                                                
+
                                                 payload_out.([this_detector '_' obj.lead_names{jj} ]).time = colvec(anns_test.time);
 
                                             end
@@ -439,32 +492,32 @@ classdef ECGtask_QRS_detection < ECGtask
                                     end
 
                                 else
-                                    
+
                                     payload_out.([this_detector '_' obj.lead_names{jj} ]).time = [];
-                                    
+
                                     if( exist(file_name_orig, 'file') )
                                         delete(file_name_orig);
                                     end
                                 end
-                                
+
                             end
-                            
+
                         end
-                        
+
                     case 'user'
                         %% user-defined QRS detector
 
                         try
 
                             if( exist(this_detector_name) == 2 )
-                                
+
 %                                 ud_func_pointer = eval(['@' this_detector_name]);
                                 ud_func_pointer = str2func(this_detector_name);
-                                
+
                                 obj.progress_handle.checkpoint([ 'User defined function: ' this_detector_name])
 
                                 ECG_header_aux = trim_ECG_header(ECG_header, obj.lead_idx);
-                                
+
                                 [positions_single_lead, position_multilead] = ud_func_pointer( double(ECG(:,obj.lead_idx)), ECG_header_aux, obj.progress_handle, obj.payload);
 
                                 for jj = 1:length(obj.lead_idx)
@@ -483,12 +536,12 @@ classdef ECGtask_QRS_detection < ECGtask
                                     position_multilead = position_multilead( position_multilead >= ECG_sample_start_end_idx(1) &  position_multilead <= ECG_sample_start_end_idx(2) ) + ECG_start_offset - 1;
                                     payload_out.([ this_detector_name '_multilead' ]).time = colvec(position_multilead);
                                 end
-                                
+
                             else
                                 disp_string_framed(2, sprintf('Function "%s" is not reachable in path.', this_detector_name));  
                                 fprintf(1, 'Make sure that exist(%s) == 2\n',this_detector_name);
                             end
-                            
+
                         catch aux_ME
 
                             disp_string_framed(2, sprintf('Detector "%s" failed in recording %s lead %s', this_detector_name, ECG_header.recname, ECG_header.desc(jj,:) ) );                                
@@ -499,7 +552,7 @@ classdef ECGtask_QRS_detection < ECGtask
                         end
 
                 end
-    
+
             end
 
             % Add QRS detections quality metrics, Names, etc.
@@ -512,24 +565,8 @@ classdef ECGtask_QRS_detection < ECGtask
             
             % calculate performance
             if( obj.CalculatePerformance )
-                AnnNames = payload_out.series_quality.AnnNames(:,1);
-                cant_lead_name = size(AnnNames,1);
-                payload_out.series_performance.conf_mat = zeros(2,2,cant_lead_name);
-                payload_out.series_performance.error = nan(cant_lead_name,2);
                 
-                if(isempty(ECG_annotations)) 
-                    disp_string_framed(2, sprintf('Trusted references not found for %s', ECG_header.recname) );
-                else
-                    % offset refs, produced anns were already shifted
-                    ECG_annotations.time = ECG_annotations.time + ECG_start_offset - 1;
-                    for kk = 1:cant_lead_name
-                        this_lead_det = payload_out.(AnnNames{kk}).time;
-                        [payload_out.series_performance.conf_mat(:,:,kk), TP_gs_idx, TP_det_idx] = bxb(ECG_annotations, this_lead_det, ECG_header );
-                        % meadian/mad of the error wrt the gold standard
-                        aux_val = this_lead_det(TP_det_idx) - ECG_annotations(TP_gs_idx);
-                        payload_out.series_performance.error(kk,:) = [ median(aux_val) mad(aux_val) ];
-                    end            
-                end
+                payload_out = CalculatePerformanceECGtaskQRSdet(payload_out, ECG_annotations, ECG_header, ECG_start_offset);
 
             end
             
