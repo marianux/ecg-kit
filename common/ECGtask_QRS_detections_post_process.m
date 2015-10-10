@@ -75,11 +75,14 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
     end
     
     properties
+        
         post_proc_func
         progress_handle
         payload
         tmp_path
         CalculatePerformance = false;
+        bRecalcQualityAndPerformance = false;
+        bRecalculateNewDetections = false;
         
     end
     
@@ -107,23 +110,82 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
                 end
             end
             
-            % payload property is used in this task to input an external QRS
-            % detector, or manually corrected detections.
-            if( isstruct(obj.payload) )
+            post_proc_func_calc = [];
 
-                AnnNames = obj.payload.series_quality.AnnNames(:,1);
-                aux_struct = obj.payload;
+            if( obj.bRecalcQualityAndPerformance )
+            
+                % payload property is used in this task to input an external QRS
+                % detector, or manually corrected detections. In this case,
+                % with previous detections performed by this task.
                 
-                for fn = rowvec(AnnNames)
-                    aux_val = obj.payload.(fn{1}).time - ECG_start_offset + 1;
-                    aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val < ECG_sample_start_end_idx(2) );
-                    aux_struct.(fn{1}).time = aux_val;
-                end
+                if( iscell(obj.payload) && length(obj.payload) > 1  )
+                    
+                    post_proc_struct = obj.payload{1};
+                    QRSdet_struct = obj.payload{2};
+                    
+                    if( isstruct(post_proc_struct) && isstruct(QRSdet_struct) )
+                    
+                        for ii = 1:size(post_proc_struct.series_quality.AnnNames,1)
+                            aux_val = post_proc_struct.(post_proc_struct.series_quality.AnnNames{ii,1}).(post_proc_struct.series_quality.AnnNames{ii,2}) - ECG_start_offset + 1;
+                            aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val <= ECG_sample_start_end_idx(2) );
+                            % the previous detections must be shifted in
+                            % order to mantain the references
+                            aux_val = aux_val + ECG_start_offset - 1;
+                            payload_out.(post_proc_struct.series_quality.AnnNames{ii,1}).(post_proc_struct.series_quality.AnnNames{ii,2}) = aux_val;
+                        end
+
+                        post_proc_func_calc = post_proc_struct.series_quality.AnnNames(:,1);
+                        post_proc_func_calc = unique(cellfun( @(a)(a{1}), regexp(post_proc_func_calc, '(.+)_.+', 'tokens')));
+
+                        AnnNames = QRSdet_struct.series_quality.AnnNames(:,1);
+
+                        for fn = rowvec(AnnNames)
+                            aux_val = QRSdet_struct.(fn{1}).time - ECG_start_offset + 1;
+                            aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val <= ECG_sample_start_end_idx(2) );
+                            QRSdet_struct.(fn{1}).time = aux_val;
+                        end
+                        
+                        
+                    else
+                        cprintf('*[1,0.5,0]', 'Unable to parse payload struct for %s.\n', ECG_header.recname);
+                        return                    
+                    end
+                    
+                else
+                    cprintf('*[1,0.5,0]', 'Unable to parse payload struct for %s.\n', ECG_header.recname);
+                    return                    
+                end                
 
             else
-                return
-            end
 
+                % payload property is used in this task to input an external QRS
+                % detector, or manually corrected detections.
+                if( isstruct(obj.payload) )
+
+                    QRSdet_struct = obj.payload;
+                    AnnNames = QRSdet_struct.series_quality.AnnNames(:,1);
+
+                    for fn = rowvec(AnnNames)
+                        aux_val = QRSdet_struct.(fn{1}).time - ECG_start_offset + 1;
+                        aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val <= ECG_sample_start_end_idx(2) );
+                        QRSdet_struct.(fn{1}).time = aux_val;
+                    end
+
+                else
+                    cprintf('*[1,0.5,0]', 'Unable to parse payload struct for %s.\n', ECG_header.recname);
+                    return
+                end                
+
+            end
+            
+            if( ~obj.bRecalculateNewDetections )
+                % If recalculate only new detections, we exclude
+                % detectors already processed.
+                obj.post_proc_func = setdiff(obj.post_proc_func, post_proc_func_calc);
+            end
+            
+            
+            % Actual postproc functions
             for this_func = rowvec(obj.post_proc_func)
                 
                 try
@@ -133,10 +195,12 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
     %                 this_func_ptr = eval(['@' this_func]);
                     this_func_ptr = str2func(this_func{1});
 
-                    this_payload = this_func_ptr( aux_struct, ECG_header, ECG_sample_start_end_idx );
+                    this_payload = this_func_ptr( QRSdet_struct, ECG_header, ECG_sample_start_end_idx );
 
                     for fn = rowvec(fieldnames(this_payload))
                         payload_out.(fn{1}) = this_payload.(fn{1});
+                        aux_val = payload_out.(fn{1}).time + ECG_start_offset - 1;
+                        payload_out.(fn{1}).time = aux_val;
                     end
                     
                 catch aux_ME
@@ -153,38 +217,12 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
             obj.progress_handle.checkpoint('Adding quality metrics')
 
             % Add QRS detections quality metrics, Names, etc.
-            payload_out = calculateSeriesQuality(payload_out, ECG_header, ECG_sample_start_end_idx );
-
-            % offset in time
-            AnnNames = payload_out.series_quality.AnnNames(:,1);
-            for fn = rowvec(AnnNames)
-                aux_val = payload_out.(fn{1}).time + ECG_start_offset - 1;
-                payload_out.(fn{1}).time = aux_val;
-            end
+            payload_out = calculateSeriesQuality(payload_out, ECG_header, [1 ECG_header.nsamp] + ECG_start_offset - 1 );
 
             % calculate performance
             if( obj.CalculatePerformance )
-                AnnNames = payload_out.series_quality.AnnNames(:,1);
-                cant_lead_name = size(AnnNames,1);
-                payload_out.series_performance.conf_mat = zeros(2,2,cant_lead_name);
-                payload_out.series_performance.error = nan(cant_lead_name,2);
-
-                if(isempty(ECG_annotations)) 
-                    disp_string_framed(2, sprintf('Trusted references not found for %s', ECG_header.recname) );
-                else
-                    % offset refs, produced anns were already shifted
-                    ECG_annotations.time = ECG_annotations.time + ECG_start_offset - 1;
-                    for kk = 1:cant_lead_name
-                        this_lead_det = payload_out.(AnnNames{kk}).time;
-                        [payload_out.series_performance.conf_mat(:,:,kk), TP_gs_idx, TP_det_idx] = bxb(ECG_annotations, this_lead_det, ECG_header );
-                        % meadian/mad of the error wrt the gold standard
-                        aux_val = this_lead_det(TP_det_idx) - ECG_annotations(TP_gs_idx);
-                        payload_out.series_performance.error(kk,:) = [ median(aux_val) mad(aux_val) ];
-                    end            
-                end
-
+                payload_out = CalculatePerformanceECGtaskQRSdet(payload_out, ECG_annotations, ECG_header, ECG_start_offset);
             end
-
 
             obj.progress_handle.checkpoint('Done')
             
@@ -208,7 +246,9 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
 
         function set.post_proc_func(obj, x)
             
-            if( ischar(x) )
+            if( isempty(x) )
+                obj.post_proc_func = x;
+            elseif( ischar(x) )
                 
                 if( exist(x) == 2 )
                     obj.post_proc_func = cellstr(x);
