@@ -59,12 +59,12 @@ function WFDB_bin_path =  init_WFDB_library(tmp_path_local)
     common_path = fileparts(mfilename('fullpath'));
     WFDB_bin_path = [common_path filesep bin_path filesep];         
     
+    aux_str = tmp_path_local;
+    if( aux_str(end) == filesep )
+        aux_str = aux_str(1:end-1);
+    end
     wfdb_val = getenv('WFDB');
-    if( isempty(strfind(wfdb_val, tmp_path_local ) ))
-        aux_str = tmp_path_local;
-        if( aux_str(end) == filesep )
-            aux_str = aux_str(1:end-1);
-        end
+    if( isempty(strfind(wfdb_val, aux_str ) ))
         if( isempty(wfdb_val))
             wfdb_val = aux_str;
         else
