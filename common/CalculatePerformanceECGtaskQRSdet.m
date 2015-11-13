@@ -50,7 +50,7 @@ function payload_out = CalculatePerformanceECGtaskQRSdet(payload_out, ECG_annota
                 FP_idx ] = bxb(ECG_annotations, this_lead_det, ECG_header );
             
             % details about the confusion matrix
-            payload_out.series_performance.conf_mat_details(kk) = { TP_gs_idx, TP_det_idx, FN_idx, FP_idx };
+            payload_out.series_performance.conf_mat_details(kk) = { [TP_gs_idx, TP_det_idx, FN_idx, FP_idx] };
             
             % meadian/mad of the error wrt the gold standard
             if( ~isempty(TP_det_idx) )
