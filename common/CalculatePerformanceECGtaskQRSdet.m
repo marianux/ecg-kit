@@ -39,7 +39,7 @@ function payload_out = CalculatePerformanceECGtaskQRSdet(payload_out, ECG_annota
         % offset refs, produced anns were already shifted
         ECG_annotations.time = ECG_annotations.time + ECG_start_offset - 1;
         
-        payload_out.series_performance.conf_mat_details = cell(cant_lead_name,1);
+        payload_out.series_performance.conf_mat_details = cell(cant_lead_name,4);
         
         for kk = 1:cant_lead_name
             this_lead_det = payload_out.(AnnNames{kk}).time;
@@ -50,7 +50,7 @@ function payload_out = CalculatePerformanceECGtaskQRSdet(payload_out, ECG_annota
                 FP_idx ] = bxb(ECG_annotations, this_lead_det, ECG_header );
             
             % details about the confusion matrix
-            payload_out.series_performance.conf_mat_details(kk) = { [TP_gs_idx, TP_det_idx, FN_idx, FP_idx] };
+            payload_out.series_performance.conf_mat_details(kk,:) = { TP_gs_idx, TP_det_idx, FN_idx, FP_idx };
             
             % meadian/mad of the error wrt the gold standard
             if( ~isempty(TP_det_idx) )
