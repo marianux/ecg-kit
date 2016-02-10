@@ -1,4 +1,4 @@
-%% (Internal) Concatenate two payloads.
+%% (Internal) Calculate the performance data of a QRS detection task.
 % This function is used by the ECGtask related with QRS detection to
 % calculate performance of detectors.
 %   
