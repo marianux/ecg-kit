@@ -11,3 +11,4 @@ build
 /common/tmp
 /common/*.asv
 video
+/common/export_fig/.ignore
