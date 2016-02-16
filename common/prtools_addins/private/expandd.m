@@ -19,3 +19,20 @@
 % 
 % SEE ALSO 
 % RENUMLAB
+
+% Copyright: R.P.W. Duin, duin@ph.tn.tudelft.nl
+% Faculty of Applied Physics, Delft University of Technology
+% P.O. Box 5046, 2600 GA Delft, The Netherlands
+
+% $Id: expandd.m,v 1.2 2006/03/08 22:06:58 duin Exp $
+
+function a = expandd(x,m)
+
+	x = x(:);
+	n = length(x);
+	if (nargin == 1) 
+		m = max(x); 
+	end
+	a = (x(:,ones(1,m)) == ones(n,1) * linspace(1,m,m));
+
+return;
