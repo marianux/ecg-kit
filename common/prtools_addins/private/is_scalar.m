@@ -10,3 +10,11 @@
 %
 % DESCRIPTION
 % The function IS_SCALAR tests if P is scalar.
+
+function n = is_scalar(p)
+		
+	n = all(size(p) == [1 1]);
+	if (nargout == 0) & (n == 0)
+		error([newline 'Scalar variable expected.'])
+	end
+return;
