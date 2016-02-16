@@ -6,6 +6,7 @@
 %   eps2pdf(source, dest, crop, append)
 %   eps2pdf(source, dest, crop, append, gray)
 %   eps2pdf(source, dest, crop, append, gray, quality)
+%   eps2pdf(source, dest, crop, append, gray, quality, gs_options)
 %
 % This function converts an eps file to pdf format. The output can be
 % optionally cropped and also converted to grayscale. If the output pdf
@@ -31,6 +32,8 @@
 %   quality - scalar indicating the level of image bitmap quality to
 %             output. A larger value gives a higher quality. quality > 100
 %             gives lossless output. Default: ghostscript prepress default.
+%   gs_options - optional ghostscript options (e.g.: '-dNoOutputFonts'). If
+%                multiple options are needed, enclose in call array: {'-a','-b'}
 
 % Copyright (C) Oliver Woodford 2009-2011
 
@@ -43,8 +46,13 @@
 % which was fixed for lossless compression settings.
 
 % 9/12/2011 Pass font path to ghostscript.
+% 26/02/15: If temp dir is not writable, use the dest folder for temp
+%           destination files (Javier Paredes)
+% 28/02/15: Enable users to specify optional ghostscript options (issue #36)
+% 01/03/15: Upon GS error, retry without the -sFONTPATH= option (this might solve
+%           some /findfont errors according to James Rankin, FEX Comment 23/01/15)
 
-function eps2pdf(source, dest, crop, append, gray, quality)
+function eps2pdf(source, dest, crop, append, gray, quality, gs_options)
 % Intialise the options string for ghostscript
 options = ['-q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -sOutputFile="' dest '"'];
 % Set crop option
@@ -73,10 +81,33 @@ if nargin > 5 && ~isempty(quality)
         options = sprintf('%s -c ".setpdfwrite << /ColorImageDict %s /GrayImageDict %s >> setdistillerparams"', options, s, s);
     end
 end
+% Enable users to specify optional ghostscript options (issue #36)
+if nargin > 6 && ~isempty(gs_options)
+    if iscell(gs_options)
+        gs_options = sprintf(' %s',gs_options{:});
+    elseif ~ischar(gs_options)
+        error('gs_options input argument must be a string or cell-array of strings');
+    else
+        gs_options = [' ' gs_options];
+    end
+    options = [options gs_options];
+end
 % Check if the output file exists
 if nargin > 3 && append && exist(dest, 'file') == 2
     % File exists - append current figure to the end
     tmp_nam = tempname;
+    try
+        % Ensure that the temp dir is writable (Javier Paredes 26/2/15)
+        fid = fopen(tmp_nam,'w');
+        fwrite(fid,1);
+        fclose(fid);
+        delete(tmp_nam);
+    catch
+        % Temp dir is not writable, so use the dest folder
+        [dummy,fname,fext] = fileparts(tmp_nam); %#ok<ASGLU>
+        fpath = fileparts(dest);
+        tmp_nam = fullfile(fpath,[fname fext]);
+    end
     % Copy the file
     copyfile(dest, tmp_nam);
     % Add the output file names
@@ -100,14 +131,25 @@ else
 end
 % Check for error
 if status
+    % Retry without the -sFONTPATH= option (this might solve some GS
+    % /findfont errors according to James Rankin, FEX Comment 23/01/15)
+    if ~isempty(fp)
+        options = regexprep(options, ' -sFONTPATH=[^ ]+ ',' ');
+        status = ghostscript(options);
+        if ~status, return; end  % hurray! (no error)
+    end
     % Report error
     if isempty(message)
         error('Unable to generate pdf. Check destination directory is writable.');
     else
+        fprintf(2, 'Ghostscript error: perhaps %s is open by some other application\n', dest);
+        if ~isempty(gs_options)
+            fprintf(2, '  or maybe the%s option(s) are not accepted by your GS version\n\n', gs_options);
+        end
         error(message);
     end
 end
-return
+end
 
 % Function to return (and create, where necessary) the font path
 function fp = font_path()
@@ -131,4 +173,4 @@ else
     fp = [fp '/usr/share/fonts:/usr/local/share/fonts:/usr/share/fonts/X11:/usr/local/share/fonts/X11:/usr/share/fonts/truetype:/usr/local/share/fonts/truetype'];
 end
 user_string('gs_font_path', fp);
-return
+end

@@ -171,10 +171,10 @@ for win_length = win_lengths
                 
                 if( jj == 1 )
 %                     export_fig(filename, '-nocrop', '-bookmark', Seconds2HMS(win_length), '-append', ['-' report_format], fig_hdl);
-                    export_fig(filename, '-nocrop', '-append', ['-' report_format], fig_hdl);
+                    export_fig(filename, '-nocrop', '-append', ['-' report_format], fig_hdl, '-painters');
                 else
 %                     export_fig(filename, '-nocrop', '-bookmark', ['    ' Seconds2HMS(start_time)], '-append', ['-' report_format], fig_hdl);
-                    export_fig(filename, '-nocrop', '-append', ['-' report_format], fig_hdl);
+                    export_fig(filename, '-nocrop', '-append', ['-' report_format], fig_hdl, '-painters');
                 end
                 
             otherwise
