@@ -26,6 +26,16 @@
 % 
 function InstallECGkit(bIgnoreUpdate)
     
+
+    % MAC compatibility alert
+    if( ismac() )
+        disp_string_framed('*red', 'MAC is not fully supported at the moment');
+        fprintf(1, 'If you think you can help, please contact us through the %s at the project %s.\n\n', ...
+              '<a href = "matlab: web(''https://groups.google.com/forum/#!forum/ecg-kit-users'', ''-browser'' )">forum</a>', ...
+              '<a href = "matlab: web(''http://marianux.github.io/ecg-kit/'', ''-browser'' )">ecg-kit web''s page</a>' );
+        return
+    end
+
     backup_string = 'ecg-kit_backup';
 
     if( nargin < 1 || ~islogical(bIgnoreUpdate) )

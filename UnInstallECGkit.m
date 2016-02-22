@@ -20,6 +20,11 @@
 
 function UnInstallECGkit( bIgnoreAdminPrivs )
 
+    % MAC exit
+    if( ismac() )
+        return
+    end
+
     if( nargin < 1 || isempty(bIgnoreAdminPrivs) )
         bIgnoreAdminPrivs = false;
     end        
