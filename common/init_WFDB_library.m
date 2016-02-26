@@ -24,7 +24,7 @@ function WFDB_bin_path =  init_WFDB_library(tmp_path_local)
 
     WFDB_paths = { ...
                     ['wfdb' filesep 'linux-amd64' filesep ] ...
-                    ['wfdb' filesep 'macosx-x86_64' filesep 'bin' ] ...
+                    ['wfdb' filesep 'macosx-x86_64' ] ...
                     ['wfdb' filesep 'windows-amd64' filesep 'bin' ] ...
                     };
     WFDB_UNIX_idx = 1;
@@ -42,8 +42,8 @@ function WFDB_bin_path =  init_WFDB_library(tmp_path_local)
         path_OS_var = 'PATH';
         libpath_OS_var = 'DYLD_LIBRARY_PATH';
         path_sep = ':';
-        bin_path  = WFDB_paths{WFDB_MAC_idx};
-        lib_path  = WFDB_paths{WFDB_MAC_idx};
+        bin_path  = [ WFDB_paths{WFDB_UNIX_idx} 'bin'];
+        lib_path  = [ WFDB_paths{WFDB_UNIX_idx} 'lib'];
 
     elseif( isunix()  )            
         path_OS_var = 'PATH';
