@@ -38,17 +38,19 @@ function WFDB_bin_path =  init_WFDB_library(tmp_path_local)
         path_sep = ';';
         bin_path  = WFDB_paths{WFDB_WIN_idx};
 
+     elseif( ismac() )            
+        path_OS_var = 'PATH';
+        libpath_OS_var = 'DYLD_LIBRARY_PATH';
+        path_sep = ':';
+        bin_path  = WFDB_paths{WFDB_MAC_idx};
+        lib_path  = WFDB_paths{WFDB_MAC_idx};
+
     elseif( isunix()  )            
         path_OS_var = 'PATH';
         libpath_OS_var = 'LD_LIBRARY_PATH';
         path_sep = ':';
         bin_path  = [ WFDB_paths{WFDB_UNIX_idx} 'bin'];
         lib_path  = [ WFDB_paths{WFDB_UNIX_idx} 'lib64'];
-
-    elseif( ismac() )            
-        path_OS_var = 'PATH';
-        path_sep = ':';
-        bin_path  = WFDB_paths{WFDB_MAC_idx};
 
     else
         warning('Unknown system architecture. WFDB library QRS detectors probably won''t work.')

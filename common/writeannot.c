@@ -8,6 +8,7 @@
 
 #include 	"mex.h"
 #include        <stdio.h>
+#include        <string.h>
 #define NCODIGOS 41
 #define MAXINT10 0x03FF
 
@@ -77,7 +78,7 @@ const mxArray	*prhs[]
     for (i=0;i<nfields;i++)
     {if (mxGetNumberOfDimensions(mxGetFieldByNumber(prhs[1],0,i))>2)
         mexErrMsgTxt("Fields should have less than 3 dimensions");
-    if (N=mxGetN(mxGetFieldByNumber(prhs[1],0,i))!=1)
+    if ((N=mxGetN(mxGetFieldByNumber(prhs[1],0,i)))!=1)
         if (strcmp(mxGetFieldNameByNumber(prhs[1],i),"aux")!=0)
             mexErrMsgTxt("Only aux field can have more than one column");
     M = mxGetM(mxGetFieldByNumber(prhs[1],0,i));
@@ -159,7 +160,7 @@ const mxArray	*prhs[]
     defaultchanfield = '0';
     currchanfield = '0';
     defaultsubtyp = '0';
-    defaultauxfield = &zero;
+    defaultauxfield = (unsigned char *) &zero;
     
 /**************** Writing of first annotation ************************/
     for (i=0;i<dim;i++) {
@@ -221,11 +222,12 @@ const mxArray	*prhs[]
 /* Finish file with two zero bytes */
     data[0]=0;data[1]=0;
     fwrite(data,sizeof(char),2,fid);
-    fclose(fid); /*
+    fclose(fid); 
                   
                   
                   
 /****************** Free Memory   ******************/
+    
     mxFree(filename);
     mxFree(aux);
     
