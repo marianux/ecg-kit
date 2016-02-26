@@ -1,3 +1,3 @@
-setenv WFDB ". ${HOME}/database /Users/admin/Documents/workspace/wfdb-app-toolbox/mcode/nativelibs/macosx/build//database /cdrom http://www.physionet.org/physiobank/database"
+setenv WFDB ". ${HOME}/database /Users/mariano/wfdb//database /cdrom http://www.physionet.org/physiobank/database"
 # Change www.physionet.org above to your favorite mirror if you wish
 setenv WFDBCAL wfdbcal
