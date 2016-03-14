@@ -146,6 +146,8 @@ function InstallECGkit(bIgnoreUpdate)
     if ~bIgnoreUpdate
         
         fprintf(1, 'Checking for updates\n' );
+        URLstatus = 0;
+        
         if( bMatlab )
           [strResponse, URLstatus] = urlread( ECGkit_URL_str,'TimeOut',5);
         elseif( bOctave )
