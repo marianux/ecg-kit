@@ -217,6 +217,38 @@ page for details.</div></blockquote>
 reference annotations found by the ECGwrapper object in the same folder
 where the signals are. This reference annotations are loaded, if
 detected, in the ECG_annotations property.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">bRecalcQualityAndPerformance</span></code> — Recalculate algorithm performances without performing heartbeat detection. <code class="docutils literal"><span class="pre">false</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>Boolean value. Recalculate algorithm performances without performing
+heartbeat detection. This feature is useful for BIG jobs where only
+a small change in performance calculation methodology was changed.
+. The cached result is passed to the task via the payload property
+as in the example:</div></blockquote>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% If only recaclulate performance is needed.</span>
+<span class="n">ECGw</span><span class="p">.</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">bRecalcQualityAndPerformance</span> <span class="p">=</span> <span class="n">true</span><span class="p">;</span>
+<span class="c">% in order to avoid skiping the task</span>
+<span class="n">ECGw</span><span class="p">.</span><span class="n">cacheResults</span> <span class="p">=</span> <span class="n">false</span><span class="p">;</span>
+<span class="c">%payload has the current detections</span>
+<span class="n">cached_filenames</span> <span class="p">=</span> <span class="n">ECGw</span><span class="p">.</span><span class="n">GetCahchedFileName</span><span class="p">(</span><span class="s">&#39;QRS_detection&#39;</span><span class="p">);</span>
+<span class="n">ECGw</span><span class="p">.</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">payload</span> <span class="p">=</span> <span class="n">load</span><span class="p">(</span><span class="n">cached_filenames</span><span class="p">{</span><span class="mi">1</span><span class="p">});</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">bRecalculateNewDetections</span></code> — Calculate only heartbeat detections not performed before. <code class="docutils literal"><span class="pre">false</span> <span class="pre">(default)</span></code></p>
+<blockquote>
+<div>Boolean value. The heartbeat detection is only performed in the
+algorithms not executed in a previous cached result. The cached
+result is passed to the task via the payload property as in the
+example:</div></blockquote>
+<div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% this is needed in order to recalculate tasks.</span>
+    <span class="c">% Useful if a new detector is added</span>
+    <span class="n">ECGw</span><span class="p">.</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">bRecalculateNewDetections</span> <span class="p">=</span> <span class="n">true</span><span class="p">;</span>
+    <span class="c">% in order to avoid skiping the task</span>
+    <span class="n">ECGw</span><span class="p">.</span><span class="n">cacheResults</span> <span class="p">=</span> <span class="n">false</span><span class="p">;</span>
+    <span class="c">%payload has the current detections</span>
+    <span class="n">cached_filenames</span> <span class="p">=</span> <span class="n">ECGw</span><span class="p">.</span><span class="n">GetCahchedFileName</span><span class="p">(</span><span class="s">&#39;QRS_detection&#39;</span><span class="p">);</span>
+    <span class="n">ECGw</span><span class="p">.</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">payload</span> <span class="p">=</span> <span class="n">load</span><span class="p">(</span><span class="n">cached_filenames</span><span class="p">{</span><span class="mi">1</span><span class="p">});</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="adding-a-custom-detection-algorithm">
 <span id="id1"></span><h2>Adding a custom detection algorithm<a class="headerlink" href="#adding-a-custom-detection-algorithm" title="Permalink to this headline">¶</a></h2>
@@ -235,7 +267,7 @@ for details.</p>
 <p><strong>progress_handle</strong>, is a handle to a <a class="reference external" href="progress_bar.htm">progress_bar</a>
 object, that can be used to track the progress within your function.</p>
 <p><strong>payload_in</strong>, is a user variable, of arbitrary format, allowed to be sent
-to your function. It is sent via the <a class="reference internal" href="#payload-prop"><span>payload property</span></a>
+to your function. It is sent via the <a class="reference internal" href="QRScorrector.html#payload-prop"><span>payload property</span></a>
 of this class, for example:</p>
 </div></blockquote>
 <div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% One variable</span>

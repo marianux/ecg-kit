@@ -89,6 +89,43 @@ The properties that this task uses are the following:
 	where the signals are. This reference annotations are loaded, if
 	detected, in the ECG\_annotations property.
  
+``bRecalcQualityAndPerformance`` — Recalculate algorithm performances without performing heartbeat detection. ``false (default)``
+
+	Boolean value. Recalculate algorithm performances without performing 
+	heartbeat detection. This feature is useful for BIG jobs where only 
+	a small change in performance calculation methodology was changed.
+	. The cached result is passed to the task via the payload property 
+	as in the example:
+ 
+.. code::
+
+	% If only recaclulate performance is needed.
+	ECGw.ECGtaskHandle.bRecalcQualityAndPerformance = true;    
+	% in order to avoid skiping the task
+	ECGw.cacheResults = false; 
+	%payload has the current detections
+	cached_filenames = ECGw.GetCahchedFileName('QRS_detection');
+	ECGw.ECGtaskHandle.payload = load(cached_filenames{1});
+ 
+``bRecalculateNewDetections`` — Calculate only heartbeat detections not performed before. ``false (default)``
+
+	Boolean value. The heartbeat detection is only performed in the 
+	algorithms not executed in a previous cached result. The cached 
+	result is passed to the task via the payload property as in the 
+	example:
+ 
+.. code::
+
+    % this is needed in order to recalculate tasks.
+	% Useful if a new detector is added 
+	ECGw.ECGtaskHandle.bRecalculateNewDetections = true;    
+	% in order to avoid skiping the task
+	ECGw.cacheResults = false; 
+	%payload has the current detections
+	cached_filenames = ECGw.GetCahchedFileName('QRS_detection');
+	ECGw.ECGtaskHandle.payload = load(cached_filenames{1});
+			
+			
 .. _Adding_a_custom_detection_algorithm:
 
 Adding a custom detection algorithm
