@@ -1,6 +1,6 @@
 %% Reads an ECG recording
 % This function is the main I/O interface with ECG recordings. It can read
-% several formats, such as 'MIT' 'AHA' 'ISHNE', 'HES', 'MAT' and 'Mortara'.
+% several formats, such as 'MIT' 'AHA' 'ISHNE', 'HES', 'MAT', 'Mortara' and 'HL7a'.
 % Also has the feature of "auto-detect" file format.
 % 
 % Example
@@ -62,7 +62,7 @@ function [ECG heasig ann recording_format end_sample] = read_ECG(recording_name,
 ECG = [];
 heasig = [];
 ann = [];
-cKnownFormats = {'MIT' 'AHA' 'ISHNE', 'HES', 'MAT', 'Mortara'};
+cKnownFormats = {'MIT' 'AHA' 'ISHNE', 'HES', 'MAT', 'Mortara', 'HL7a'};
 
 matformat_definitions();
 
@@ -142,6 +142,10 @@ elseif( strcmp(recording_format, 'MAT') )
 elseif( strcmp(recording_format, 'Mortara') )
     
     [ECG heasig end_sample] = read_Mortara_format(recording_name, ECG_start_idx, ECG_end_idx );
+    
+elseif( strcmp(recording_format, 'HL7a') )
+    
+    [ECG heasig ann end_sample] = read_hl7a_format(recording_name, ECG_start_idx, ECG_end_idx );
     
 elseif( strcmp(recording_format, 'AHA') )
     if( nargout > 1 )

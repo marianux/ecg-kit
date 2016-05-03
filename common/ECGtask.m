@@ -44,8 +44,8 @@ classdef ECGtask < handle
                 
 % ECG_header is the header for this signal
 % ECG_annotations are the QRS locations available for this signal
-        Start(obj, ECG_header, ECG_annotations)
-        
+        function Start(obj, ECG_header, ECG_annotations)
+        endfunction
 % ECG is the ECG signal
 % ECG_start_offset is the location of ECG(1,:) within the whole signal
 % ECG_sample_start_end_idx are the start and end samples within ECG to
@@ -55,15 +55,17 @@ classdef ECGtask < handle
 % ECG_annotations_start_end_idx are the start and end indexes corresponding
 %    to the first and last element of ECG_annotations in the current
 %    iteration.
-        payload = Process(ECG, ECG_start_offset, ECG_sample_start_end_idx, ECG_header, ECG_annotations, ECG_annotations_start_end_idx )
-
+        function payload = Process(ECG, ECG_start_offset, ECG_sample_start_end_idx, ECG_header, ECG_annotations, ECG_annotations_start_end_idx )
+        endfunction
 % payload is the result of the task, after the final processing done by this method        
 % ECG_header is the header for this signal
-        payload = Finish(obj, payload, ECG_header)
-        
+        function payload = Finish(obj, payload, ECG_header)
+        endfunction
+
         
 % plA, plB are two payloads produced by the Process method.
-        payload = Concatenate(plA, plB)
+        function payload = Concatenate(plA, plB)
+        endfunction
 
     end
     
