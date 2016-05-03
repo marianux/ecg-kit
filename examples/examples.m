@@ -83,8 +83,10 @@ function examples(pid_str, examples_path, user_str)
 
     % In case of running in a user-assisted fashion.
     bUseDesktop = usejava('desktop');
-
-    if( bUseDesktop )
+    bMatlab = isMatlab();
+    bOctave = isOctave();
+    
+    if( (bMatlab && bUseDesktop) || bOctave )
         tmp_path = tempdir;
         output_path = [ examples_path 'results' filesep ];
     else
@@ -156,9 +158,14 @@ function examples(pid_str, examples_path, user_str)
             if( strfind(MException.identifier, 'ECGwrapper:ArgCheck:InvalidFormat') )
                 disp_string_framed('*Red', sprintf( 'Could not guess the format of %s', ECG_w.recording_name) );
             else
-                % report just in case 
-                report = getReport(MException);
-                fprintf(2, '\n%s\n', report);
+            
+                if( bMatlab )
+                  % report just in case 
+                  report = getReport(MException);
+                  fprintf(2, '\n%s\n', report);
+                elseif(bOctave)
+                  lasterror
+                end
             end
         end
     

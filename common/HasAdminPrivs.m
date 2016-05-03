@@ -36,7 +36,8 @@ function bHasPrivs = HasAdminPrivs(bAskUserForPrivs)
     if( ispc() )
         str_command = [ commmon_path filesep 'is_admin.bat "' pathdef_filename '" "' pathdef_dummy_filename '"' ];
     else
-        str_command = [ '. ' commmon_path filesep 'is_admin.sh ' pathdef_filename ' ' pathdef_dummy_filename ];
+%        str_command = [ '. ' commmon_path filesep 'is_admin.sh ' pathdef_filename ' ' pathdef_dummy_filename ];
+        str_command = [ '. ' commmon_path filesep 'is_admin.sh'];
     end
 
     if( bAskUserForPrivs )
