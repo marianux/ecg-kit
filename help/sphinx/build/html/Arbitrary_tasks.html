@@ -197,7 +197,7 @@ object, that can be used to track the progress within your function.</div></bloc
 <p><strong>progress_handle</strong>, is a handle to a <a class="reference internal" href="progress_bar.html"><em>progress_bar</em></a>
 object, that can be used to track the progress within your function.</p>
 <p><strong>payload_in</strong>, is a user variable, of arbitrary format, allowed to be sent
-to your function. It is sent via the <a class="reference internal" href="QRS_detection.html#payload-prop"><span>payload property</span></a>
+to your function. It is sent via the <a class="reference internal" href="QRScorrector.html#payload-prop"><span>payload property</span></a>
 of this class, for example:</p>
 </div></blockquote>
 <div class="code highlight-Matlab"><div class="highlight"><pre><span class="c">% One variable</span>
@@ -269,7 +269,7 @@ template-matching on an ECGwrapper (arbitrary big recording) object.</p>
 <span class="n">aux_w</span><span class="p">.</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">signal_payload</span> <span class="p">=</span> <span class="n">true</span><span class="p">;</span>
 
 <span class="c">% Add a user-string to identify the run</span>
-<span class="n">aux_w</span><span class="p">.</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="p">[</span><span class="s">&#39;similarity_calc_for_lead_&#39;</span> <span class="n">num2str</span><span class="p">(</span><span class="n">sort</span><span class="p">(</span><span class="n">lead_idx</span><span class="p">))</span> <span class="p">];</span>
+<span class="n">aux_w</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="p">[</span><span class="s">&#39;similarity_calc_for_lead_&#39;</span> <span class="n">num2str</span><span class="p">(</span><span class="n">sort</span><span class="p">(</span><span class="n">lead_idx</span><span class="p">))</span> <span class="p">];</span>
 
 <span class="c">% add your function pointer</span>
 <span class="n">aux_w</span><span class="p">.</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">function_pointer</span> <span class="p">=</span> <span class="p">@</span><span class="n">similarity_calculation</span><span class="p">;</span>

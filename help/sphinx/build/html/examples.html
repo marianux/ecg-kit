@@ -98,7 +98,8 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="other_functions.html">Other functions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="progress_bar.html">A progress bar</a></li>
-<li class="toctree-l2"><a class="reference internal" href="progress_bar.html">Docs to come ...</a></li>
+<li class="toctree-l2"><a class="reference internal" href="list_all_ECGtask.html">List installed ECGtask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="progress_bar.html">More docs soon ...</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="extensions.html">Extending the ECGkit</a><ul class="simple">
@@ -280,7 +281,7 @@ details of the ECG signal. This object is able to invoke any kind of algorithm
 through the interface provided of other object, called <a class="reference internal" href="ECGtask.html"><em>ECGtask</em></a> objects.</p>
 <p>The <a class="reference internal" href="ECGtask.html"><em>ECGtask</em></a> objects actually perform specific task on the ECG signal,
 in this case, the QRS complex detection. Each task have general
-properties such as <em>user_string</em>, <em>progress_handle</em> (see
+properties such as <em>progress_handle</em> (see
 <a class="reference internal" href="ECGtask.html"><em>ECGtask</em></a> class properties for more details) and other specific for a certain task, such as
 <em>detectors</em>, <em>only_ECG_leads</em>, <em>wavedet_config</em>,
 <em>gqrs_config_filename</em> (see others in <a class="reference internal" href="QRS_detection.html"><em>QRS detection task</em></a>).</p>
@@ -303,10 +304,7 @@ properties such as <em>user_string</em>, <em>progress_handle</em> (see
 <span class="c">%         &quot;your_QRS_detector_func_name&quot; can be your own detector.</span>
         <span class="n">ECGt_QRSd</span><span class="p">.</span><span class="n">detectors</span> <span class="p">=</span> <span class="p">{</span><span class="s">&#39;wavedet&#39;</span> <span class="s">&#39;gqrs&#39;</span> <span class="s">&#39;wqrs&#39;</span> <span class="s">&#39;user:example_worst_ever_QRS_detector&#39;</span><span class="p">};</span>
         <span class="c">% you can individualize each run of the QRS detector with an</span>
-        <span class="c">% external string</span>
-        <span class="n">ECGt_QRSd</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
         <span class="c">% or group by the config used</span>
-<span class="c">%         ECGt_QRSd.user_string = ECGt_QRSd.detectors;</span>
 <span class="c">%         ECGt_QRSd.only_ECG_leads = false;    % consider all signals ECG</span>
         <span class="n">ECGt_QRSd</span><span class="p">.</span><span class="n">only_ECG_leads</span> <span class="p">=</span> <span class="n">true</span><span class="p">;</span>    <span class="c">% Identify ECG signals based on their header description.</span>
         <span class="n">ECG_w</span> <span class="p">=</span> <span class="n">ECGwrapper</span><span class="p">(</span> <span class="s">&#39;recording_name&#39;</span><span class="p">,</span> <span class="n">rec_filename</span><span class="p">,</span> <span class="c">...</span>
@@ -314,6 +312,8 @@ properties such as <em>user_string</em>, <em>progress_handle</em> (see
                             <span class="s">&#39;tmp_path&#39;</span><span class="p">,</span> <span class="n">tmp_path</span><span class="p">,</span> <span class="c">...</span>
                             <span class="s">&#39;output_path&#39;</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="c">...</span>
                             <span class="s">&#39;ECGtaskHandle&#39;</span><span class="p">,</span> <span class="n">ECGt_QRSd</span><span class="p">);</span>
+        <span class="c">% external string</span>
+        <span class="n">ECG_w</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
         <span class="k">try</span>
             <span class="c">% process the task</span>
             <span class="n">ECG_w</span><span class="p">.</span><span class="n">Run</span><span class="p">;</span>
@@ -373,7 +373,7 @@ if not available the result of the QRS detection task.</p>
                     <span class="c">% This task is supposed to be supervised, so only one pid is enough.</span>
                     <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">this_pid</span> <span class="p">=</span> <span class="s">&#39;1/1&#39;</span><span class="p">;</span>
                     <span class="c">% user provided name to individualize each run</span>
-                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
                     <span class="c">% to avoid loading cached results and exit, this flag</span>
                     <span class="c">% allows the re-editing of the current state of the</span>
                     <span class="c">% detections.</span>
@@ -426,7 +426,7 @@ and <a class="reference external" href="wabp-1.htm','-browser')">Physionet&#8217
     <span class="c">% set the delineator task name and run again.</span>
     <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span> <span class="p">=</span> <span class="s">&#39;PPG_ABP_detector&#39;</span><span class="p">;</span>
     <span class="c">% user provided name to individualize each run</span>
-    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
+    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
     <span class="c">% process the task</span>
     <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">Run</span><span class="p">;</span>
 <span class="k">end</span>
@@ -467,7 +467,7 @@ interface is almost the same used for the QRS correction task.</p>
                     <span class="c">% This task is supposed to be supervised, so only one pid is enough.</span>
                     <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">this_pid</span> <span class="p">=</span> <span class="s">&#39;1/1&#39;</span><span class="p">;</span>
                     <span class="c">% user provided name to individualize each run</span>
-                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
                     <span class="c">% to avoid loading cached results and exit, this flag</span>
                     <span class="c">% allows the re-editing of the current state of the</span>
                     <span class="c">% detections.</span>
@@ -521,7 +521,7 @@ in the following code.</p>
         <span class="c">% set the delineator task name and run again.</span>
         <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span> <span class="p">=</span> <span class="s">&#39;ECG_delineation&#39;</span><span class="p">;</span>
         <span class="c">% user provided name to individualize each run</span>
-        <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
+        <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
         <span class="c">% Identify ECG signals based on their header description and</span>
         <span class="c">% perform delineation in those leads.</span>
         <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">only_ECG_leads</span> <span class="p">=</span> <span class="n">true</span><span class="p">;</span>
@@ -572,7 +572,7 @@ assosiation of a wave fiducial point to a heartbeat.</p>
                     <span class="c">% This task is supposed to be supervised, so only one pid is enough.</span>
                     <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">this_pid</span> <span class="p">=</span> <span class="s">&#39;1/1&#39;</span><span class="p">;</span>
                     <span class="c">% user provided name to individualize each run</span>
-                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
+                    <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
                     <span class="c">% to avoid loading cached results and exit, this flag</span>
                     <span class="c">% allows the re-editing of the current state of the</span>
                     <span class="c">% detections.</span>
@@ -635,7 +635,7 @@ documentation</a>.</p>
 <span class="c">%             ECG_all_wrappers(ii).ECGtaskHandle.mode = &#39;slightly-assisted&#39;;</span>
 <span class="c">%             ECG_all_wrappers(ii).ECGtaskHandle.mode = &#39;assisted&#39;;</span>
             <span class="c">% user provided name to individualize each run</span>
-            <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">ECGtaskHandle</span><span class="p">.</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
+            <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">user_string</span> <span class="p">=</span> <span class="n">user_str</span><span class="p">;</span>
             <span class="c">% process the task</span>
             <span class="n">ECG_all_wrappers</span><span class="p">(</span><span class="n">ii</span><span class="p">).</span><span class="n">Run</span><span class="p">;</span>
         <span class="k">end</span>

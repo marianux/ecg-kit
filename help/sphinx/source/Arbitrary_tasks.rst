@@ -168,7 +168,7 @@ Examples
  	aux_w.ECGtaskHandle.signal_payload = true;
  
  	% Add a user-string to identify the run
- 	aux_w.ECGtaskHandle.user_string = ['similarity_calc_for_lead_' num2str(sort(lead_idx)) ];
+ 	aux_w.user_string = ['similarity_calc_for_lead_' num2str(sort(lead_idx)) ];
  
  	% add your function pointer
  	aux_w.ECGtaskHandle.function_pointer = @similarity_calculation;

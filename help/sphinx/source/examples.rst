@@ -156,7 +156,7 @@ through the interface provided of other object, called :doc:`ECGtask <ECGtask>` 
 
 The :doc:`ECGtask <ECGtask>` objects actually perform specific task on the ECG signal,
 in this case, the QRS complex detection. Each task have general
-properties such as *user\_string*, *progress\_handle* (see
+properties such as *progress\_handle* (see
 :doc:`ECGtask <ECGtask>` class properties for more details) and other specific for a certain task, such as
 *detectors*, *only\_ECG\_leads*, *wavedet\_config*,
 *gqrs\_config\_filename* (see others in :doc:`QRS detection task <QRS_detection>`).
@@ -182,10 +182,7 @@ properties such as *user\_string*, *progress\_handle* (see
 	%         "your_QRS_detector_func_name" can be your own detector.
 	        ECGt_QRSd.detectors = {'wavedet' 'gqrs' 'wqrs' 'user:example_worst_ever_QRS_detector'};
 	        % you can individualize each run of the QRS detector with an
-	        % external string
-	        ECGt_QRSd.user_string = user_str;
 	        % or group by the config used
-	%         ECGt_QRSd.user_string = ECGt_QRSd.detectors;
 	%         ECGt_QRSd.only_ECG_leads = false;    % consider all signals ECG
 	        ECGt_QRSd.only_ECG_leads = true;    % Identify ECG signals based on their header description.
 	        ECG_w = ECGwrapper( 'recording_name', rec_filename, ...
@@ -193,6 +190,8 @@ properties such as *user\_string*, *progress\_handle* (see
 	                            'tmp_path', tmp_path, ...
 	                            'output_path', output_path, ...
 	                            'ECGtaskHandle', ECGt_QRSd);
+	        % external string
+	        ECG_w.user_string = user_str;
 	        try
 	            % process the task
 	            ECG_w.Run;
@@ -258,7 +257,7 @@ if not available the result of the QRS detection task.
                             % This task is supposed to be supervised, so only one pid is enough.
                             ECG_all_wrappers(ii).this_pid = '1/1';
                             % user provided name to individualize each run
-                            ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+                            ECG_all_wrappers(ii).user_string = user_str;
                             % to avoid loading cached results and exit, this flag
                             % allows the re-editing of the current state of the
                             % detections.
@@ -320,7 +319,7 @@ other task can be performed on the same objects
             % set the delineator task name and run again.
             ECG_all_wrappers(ii).ECGtaskHandle = 'PPG_ABP_detector';
             % user provided name to individualize each run
-            ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+            ECG_all_wrappers(ii).user_string = user_str;
             % process the task
             ECG_all_wrappers(ii).Run;
         end
@@ -368,7 +367,7 @@ interface is almost the same used for the QRS correction task.
                             % This task is supposed to be supervised, so only one pid is enough.
                             ECG_all_wrappers(ii).this_pid = '1/1';
                             % user provided name to individualize each run
-                            ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+                            ECG_all_wrappers(ii).user_string = user_str;
                             % to avoid loading cached results and exit, this flag
                             % allows the re-editing of the current state of the
                             % detections.
@@ -428,7 +427,7 @@ other task can be performed on the same objects
             % set the delineator task name and run again.
             ECG_all_wrappers(ii).ECGtaskHandle = 'ECG_delineation';
             % user provided name to individualize each run
-            ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+            ECG_all_wrappers(ii).user_string = user_str;
             % Identify ECG signals based on their header description and
             % perform delineation in those leads.
             ECG_all_wrappers(ii).ECGtaskHandle.only_ECG_leads = true;
@@ -484,7 +483,7 @@ assosiation of a wave fiducial point to a heartbeat.
                             % This task is supposed to be supervised, so only one pid is enough.
                             ECG_all_wrappers(ii).this_pid = '1/1';
                             % user provided name to individualize each run
-                            ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+                            ECG_all_wrappers(ii).user_string = user_str;
                             % to avoid loading cached results and exit, this flag
                             % allows the re-editing of the current state of the
                             % detections.
@@ -551,7 +550,7 @@ documentation <../../../../../../:D:/Mariano/misc/ECGkit/help/robohelp/ECGkit/ma
     %             ECG_all_wrappers(ii).ECGtaskHandle.mode = 'slightly-assisted';
     %             ECG_all_wrappers(ii).ECGtaskHandle.mode = 'assisted';
                 % user provided name to individualize each run
-                ECG_all_wrappers(ii).ECGtaskHandle.user_string = user_str;
+                ECG_all_wrappers(ii).user_string = user_str;
                 % process the task
                 ECG_all_wrappers(ii).Run;
             end
