@@ -1656,6 +1656,10 @@ classdef ECGwrapper < handle
                     end        
                     obj.ECG_header = read_ishne_header(obj.recording_name);
 
+                elseif( strcmp(obj.recording_format, 'HL7a') )
+
+                    [~, obj.ECG_header, ann_aux ] = read_ECG(obj.recording_name, [], [], obj.recording_format);
+                    
                 elseif( strcmp(obj.recording_format, 'Mortara') )
                     ann_aux = [];
                     obj.ECG_header = read_Mortara_header(obj.recording_name);

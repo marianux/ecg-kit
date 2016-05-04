@@ -12,7 +12,7 @@
 % 
 % Example:
 % 
-% See also ECGformat, read_ECG, isAHAformat
+% See also ECGformat, read_ECG, isHL7aformat
 % 
 % Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
 % Version: 0.1 beta

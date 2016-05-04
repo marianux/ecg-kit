@@ -19,7 +19,7 @@ function recording_format = ECGformat(recording_filename)
     
     recording_format = [];
 
-    cKnownFormats = {'MIT' 'ISHNE', 'AHA', 'HES', 'MAT', 'Mortara'};
+    cKnownFormats = {'MIT' 'ISHNE', 'AHA', 'HES', 'MAT', 'Mortara', 'HL7a'};
     matformat_definitions();
     lcKnownFormats = length(cKnownFormats);
 
@@ -58,17 +58,21 @@ function recording_format = ECGformat(recording_filename)
         fg_idx = find(strcmp(cKnownFormats, 'MIT'));
         aux_idx = [fg_idx aux_idx(aux_idx~=fg_idx)];
     elseif( strcmpi(rec_fileExt, '.ecg' ) )
-        % ISHNE and AHA first
+        % ISHNE and AHA 
         fg_idx = find(strcmp(cKnownFormats, 'ISHNE'));
         aux_idx = [fg_idx aux_idx(aux_idx~=fg_idx)];
         fg_idx = find(strcmp(cKnownFormats, 'AHA'));
         aux_idx = [fg_idx aux_idx(aux_idx~=fg_idx)];
     elseif( strcmpi(rec_fileExt, '.mat' ) )
-        % Matlab first
+        % Matlab 
         fg_idx = find(strcmp(cKnownFormats, 'MAT'));
         aux_idx = [fg_idx aux_idx(aux_idx~=fg_idx)];
+    elseif( strcmpi(rec_fileExt, '.xml' ) )
+        % Matlab 
+        fg_idx = find(strcmp(cKnownFormats, 'HL7a'));
+        aux_idx = [fg_idx aux_idx(aux_idx~=fg_idx)];
     elseif( strcmpi(rec_fileExt, '.hes' ) )
-        % Matlab first
+        % HES 
         fg_idx = find(strcmp(cKnownFormats, 'HES'));
         aux_idx = [fg_idx aux_idx(aux_idx~=fg_idx)];
     end
@@ -89,6 +93,13 @@ function recording_format = ECGformat(recording_filename)
         elseif( strcmp(cKnownFormats{ii}, 'ISHNE') )
             
             if(isISHNEformat(recording_filename))
+                recording_format = cKnownFormats{ii};
+                return
+            end
+
+        elseif( strcmp(cKnownFormats{ii}, 'HL7a') )
+            
+            if(isHL7aformat(recording_filename))
                 recording_format = cKnownFormats{ii};
                 return
             end
