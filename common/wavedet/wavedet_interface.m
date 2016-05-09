@@ -32,8 +32,7 @@ function [multilead_positions single_lead_positions rhythm_parameters] = wavedet
         lead_names = num2str((1:ECG_header.nsig)');
     end
     
-    cAnnotationOutputFields = { 'Pon' 'P' 'Poff' 'Ptipo' 'QRSon' 'qrs' 'Q' 'R' 'S' 'QRSoff' 'Ton' 'T' 'Tprima' 'Toff' 'Ttipo' };
-    cAnnotationSLRfields = { 'Pon' 'P' 'Poff' 'QRSon' 'qrs' 'QRSoff' 'Ton' 'T' 'Tprima' 'Toff' };
+    ecgkit_wave_defs();
 
     rhythm_parameters = [];
     multilead_positions = [];

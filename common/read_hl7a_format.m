@@ -506,8 +506,88 @@ heasig.units = char(heasig.units);
 %% Annotations parsing
 
 if(bAnnRequired)
+
+    % get annotationSet tag in the file
+    annSets = xDoc.getElementsByTagName('annotationSet');
+
+    for annSet_idx = 0:(annSets.getLength-1)
+
+        annSets = annSets.item(annSet_idx);
+
+        allComponents = annSets.getElementsByTagName('component');
+
+        for comp_idx = 0:(allComponents.getLength-1)
+
+            thisComp = allComponents.item(ii);
+
+            thisAnn = thisComp.getElementsByTagName('annotation');
+
+            thisAnn = thisAnn.item(0);
+
+            thisCode = thisAnn.getElementsByTagName('code');
+            thisValue = thisAnn.getElementsByTagName('value');
+            
+            if( xml_tag_value(thisCode, 'code', 'MDC_ECG_BEAT' ) ) 
+                % wave annotation (onset-offset)
+                
+                if( xml_tag_value(thisValue, 'code', 'MDC_ECG_BEAT_NORMAL' ) ) 
+                    % normal beat
+                    
+                else
+                    % other unexpected beat -> report
+                    
+                end
+                
+            elseif( strcmpi(xml_tag_value(thisCode, 'code'), 'MDC_ECG_WAVC' ) ) 
+                % peak annotation
+                
+                switch( xml_tag_value(thisValue, 'code') )
+                    
+                    case 'MDC_ECG_WAVC_PWAVE'
+                        
+                    case 'MDC_ECG_WAVC_QWAVE'
+                        
+                    case 'MDC_ECG_WAVC_RWAVE'
+                        
+                    case 'MDC_ECG_WAVC_SWAVE'
+                        
+                    case 'MDC_ECG_WAVC_QRSWAVE'
+                        
+                    case 'MDC_ECG_WAVC_QSWAVE'
+                        
+                    case 'MDC_ECG_WAVC_TWAVE'
+                        
+                    otherwise
+                        
+                end
+                
+            end
+            
+        end
     
-    
+    end
     
 end
 
+
+function [bRetVal, tagActualValue] = xml_tag_value(element, tagName, tagValue)
+
+    bRetVal = false;
+
+    element = element.item(0);
+
+    thisCode_att = element.getAttributes;        
+
+    for ii = 0:(thisCode_att.getLength-1)
+
+        this_att = thisCode_att.item(kk);
+
+        aux_val = this_att.getName;
+
+        if( strcmpi(aux_val, tagName) )
+            tagActualValue = char(this_att.getValue);
+            bRetVal = strcmpi(tagActualValue, tagValue);
+        end
+        
+    end
+    
