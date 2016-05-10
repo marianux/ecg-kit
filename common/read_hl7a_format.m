@@ -181,6 +181,10 @@ cWaveNamesHL7a = { ...
                     'MDC_ECG_WAVC_VAT', 'Ventricular Activation', 'Time Ventricular Activation Time also termed the intrinsic (or intrinsicoid) deflection onset to peak of depolarization wave.'; ...
                     };
 
+                
+ [~, wave_subset_idx] = intersect(cWaveNamesHL7a, { 'MDC_ECG_WAVC_PWAVE', 'MDC_ECG_WAVC_QWAVE', 'MDC_ECG_WAVC_RWAVE', 'MDC_ECG_WAVC_SWAVE', 'MDC_ECG_WAVC_QRSWAVE', 'MDC_ECG_WAVC_QSWAVE', 'MDC_ECG_WAVC_TWAVE' });
+                
+                
 %% Beat types
 
 % The second column is an arbitrary asignation of HL7a beats to AAMI EC-57
@@ -509,39 +513,56 @@ if(bAnnRequired)
 
     % get annotationSet tag in the file
     annSets = xDoc.getElementsByTagName('annotationSet');
+    
+    annSet_idx = 0;
+    thisAnnSet = annSets.item(annSet_idx);
 
-    for annSet_idx = 0:(annSets.getLength-1)
+    while( annSet_idx < thisAnnSet.getLength )
 
-        annSets = annSets.item(annSet_idx);
+        thisAnnSet = annSets.item(annSet_idx);
+        
+        comp_idx = 0;
+        allComponents = thisAnnSet.getElementsByTagName('component');
+        thisComp = allComponents.item(comp_idx);
 
-        allComponents = annSets.getElementsByTagName('component');
+        while( comp_idx < allComponents.getLength )
 
-        for comp_idx = 0:(allComponents.getLength-1)
-
-            thisComp = allComponents.item(ii);
-
+            thisComp = allComponents.item(comp_idx);
+            
             thisAnn = thisComp.getElementsByTagName('annotation');
 
             thisAnn = thisAnn.item(0);
 
             thisCode = thisAnn.getElementsByTagName('code');
+            
             thisValue = thisAnn.getElementsByTagName('value');
             
-            if( xml_tag_value(thisCode, 'code', 'MDC_ECG_BEAT' ) ) 
+            if( xml_tag_value(thisCode.item(0), 'code', 'MDC_ECG_BEAT' ) ) 
                 % wave annotation (onset-offset)
                 
-                if( xml_tag_value(thisValue, 'code', 'MDC_ECG_BEAT_NORMAL' ) ) 
-                    % normal beat
-                    
-                else
-                    % other unexpected beat -> report
-                    
+                if( xml_tag_value(thisCode.item(1), 'code', 'MDC_ECG_WAVC' ) ) 
+                    % ECG wave
+
+                    [~, strAux ] = xml_tag_value(thisValue.item(1), 'code' );
+
+                    [~, aux_idx ] = intersect(cWaveNamesHL7a(wave_subset_idx,1), strAux);
+
+                    if( isempty(aux_idx) )
+                        disp_string_framed(2, sprintf('Unexpected wave found: %s', strAux) );
+                    else
+                        thisOnset = thisAnn.getElementsByTagName('low');
+                        thisOffset = thisAnn.getElementsByTagName('high');
+
+                    end
+
                 end
                 
-            elseif( strcmpi(xml_tag_value(thisCode, 'code'), 'MDC_ECG_WAVC' ) ) 
+            elseif( xml_tag_value(thisCode.item(0), 'code', 'MDC_ECG_WAVC' ) ) 
                 % peak annotation
                 
-                switch( xml_tag_value(thisValue, 'code') )
+                [~, strAux] = xml_tag_value(thisValue.item(0), 'code');
+                
+                switch( strAux )
                     
                     case 'MDC_ECG_WAVC_PWAVE'
                         
@@ -558,36 +579,21 @@ if(bAnnRequired)
                     case 'MDC_ECG_WAVC_TWAVE'
                         
                     otherwise
+                        disp_string_framed(2, sprintf('Unexpected wave found: %s', strAux) );
                         
                 end
                 
             end
             
+            comp_idx = comp_idx + 1;
+            
         end
     
+        annSet_idx = annSet_idx + 1;
+        
     end
     
 end
 
 
-function [bRetVal, tagActualValue] = xml_tag_value(element, tagName, tagValue)
-
-    bRetVal = false;
-
-    element = element.item(0);
-
-    thisCode_att = element.getAttributes;        
-
-    for ii = 0:(thisCode_att.getLength-1)
-
-        this_att = thisCode_att.item(kk);
-
-        aux_val = this_att.getName;
-
-        if( strcmpi(aux_val, tagName) )
-            tagActualValue = char(this_att.getValue);
-            bRetVal = strcmpi(tagActualValue, tagValue);
-        end
-        
-    end
     
