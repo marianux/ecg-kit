@@ -145,19 +145,19 @@ cLeadNamesHL7a = { ...
 
 cWaveNamesHL7a = { ...
                     'MDC_ECG_WAVC_PWAVE', 'P', 'P wave'; ...
-                    'MDC_ECG_WAVC_PPWAVE', 'P´', 'P´ wave (second deflection in P wave) (P and P´ waves have opposite signs)'; ...
-                    'MDC_ECG_WAVC_PPPWAVE', 'P"', 'P" wave (third deflection in P wave) (P´ and P" waves have opposite signs)'; ...
+                    'MDC_ECG_WAVC_PPWAVE', 'PÂ´', 'PÂ´ wave (second deflection in P wave) (P and PÂ´ waves have opposite signs)'; ...
+                    'MDC_ECG_WAVC_PPPWAVE', 'P"', 'P" wave (third deflection in P wave) (PÂ´ and P" waves have opposite signs)'; ...
                     'MDC_ECG_WAVC_QWAVE', 'Q', 'Q wave'; ...
                     'MDC_ECG_WAVC_QSWAVE', 'QS', 'QS wave'; ...
                     'MDC_ECG_WAVC_RWAVE', 'R', 'R wave'; ...
-                    'MDC_ECG_WAVC_RRWAVE', 'R´', 'R´ wave (second deflection in R Wave) (R and R´ have same sign)'; ...
-                    'MDC_ECG_WAVC_RRRWAVE', 'R"', 'R" wave (third deflection in R Wave) (R, R´ and R" have same sign)'; ...
+                    'MDC_ECG_WAVC_RRWAVE', 'RÂ´', 'RÂ´ wave (second deflection in R Wave) (R and RÂ´ have same sign)'; ...
+                    'MDC_ECG_WAVC_RRRWAVE', 'R"', 'R" wave (third deflection in R Wave) (R, RÂ´ and R" have same sign)'; ...
                     'MDC_ECG_WAVC_NOTCH', 'Notch', 'Notch a slight but distinct change in the direction of a WAVC deflection, contained entirely within that deflection. Typically associated with Q-, R- and/or S-wave.'; ...
-                    'MDC_ECG_WAVC_SWAVE', 'S', 'S wave (S and R/R´ waves have opposite signs)'; ...
-                    'MDC_ECG_WAVC_SSWAVE', 'S´', 'S´ wave (second deflection in S Wave) (S´ and R´/R" waves have opposite signs)'; ...
-                    'MDC_ECG_WAVC_SSSWAVE', 'S"', 'S´´ wave (third deflection in S Wave) (S´ and R´/R" waves have opposite signs)'; ...
+                    'MDC_ECG_WAVC_SWAVE', 'S', 'S wave (S and R/RÂ´ waves have opposite signs)'; ...
+                    'MDC_ECG_WAVC_SSWAVE', 'SÂ´', 'SÂ´ wave (second deflection in S Wave) (SÂ´ and RÂ´/R" waves have opposite signs)'; ...
+                    'MDC_ECG_WAVC_SSSWAVE', 'S"', 'S" wave (third deflection in S Wave) (SÂ´ and RÂ´/R" waves have opposite signs)'; ...
                     'MDC_ECG_WAVC_TWAVE', 'T', 'T wave'; ...
-                    'MDC_ECG_WAVC_TTWAVE', 'T´', 'T´ wave (second deflection in T Wave) (T and T´ waves have opposite signs)'; ...
+                    'MDC_ECG_WAVC_TTWAVE', 'TÂ´', 'TÂ´ wave (second deflection in T Wave) (T and TÂ´ waves have opposite signs)'; ...
                     'MDC_ECG_WAVC_UWAVE', 'U', 'U wave'; ...
                     'MDC_ECG_WAVC_DELTA', 'Delta', 'Delta wave'; ...
                     'MDC_ECG_WAVC_IWAVE', 'I', 'Isoelectric region between global QRS onset and actual onset of QRS in given lead'; ...
@@ -181,8 +181,9 @@ cWaveNamesHL7a = { ...
                     'MDC_ECG_WAVC_VAT', 'Ventricular Activation', 'Time Ventricular Activation Time also termed the intrinsic (or intrinsicoid) deflection onset to peak of depolarization wave.'; ...
                     };
 
-                
- [~, wave_subset_idx] = intersect(cWaveNamesHL7a, { 'MDC_ECG_WAVC_PWAVE', 'MDC_ECG_WAVC_QWAVE', 'MDC_ECG_WAVC_RWAVE', 'MDC_ECG_WAVC_SWAVE', 'MDC_ECG_WAVC_QRSWAVE', 'MDC_ECG_WAVC_QSWAVE', 'MDC_ECG_WAVC_TWAVE' });
+ecgkit_wave_defs;
+
+[~, wave_subset_idx] = intersect(cWaveNamesHL7a, cHL7aECG_translation(:,1) );
                 
                 
 %% Beat types
@@ -312,12 +313,13 @@ sequenceSet = sequenceSet.item(0);
 allComponents = sequenceSet.getElementsByTagName('component');
 
 heasig.nsig = allComponents.getLength-1;
-heasig.desc = cell(heasig.nsig,1);
+heasig.desc = repmat({''}, heasig.nsig,1);
 heasig.adczero = zeros(heasig.nsig,1);
 heasig.gain = ones(heasig.nsig,1);
-heasig.units = cell(heasig.nsig,1);
+heasig.units = repmat({''}, heasig.nsig,1);
 
 lead_idx = 1;
+lead_translate_idx = zeros(size(cLeadNamesHL7a,1),1);
 
 for ii = 0:(allComponents.getLength-1)
 
@@ -442,6 +444,7 @@ for ii = 0:(allComponents.getLength-1)
                             error('read_hl7a_format:ParseError', 'Unknown lead name at %s. Check lead %s.\n', filename, char(this_att.getValue));
                         else
                             heasig.desc(lead_idx) = cLeadNamesHL7a(aux_idx,2);
+                            lead_translate_idx(aux_idx) = lead_idx;
                         end
                     end
 
@@ -511,6 +514,12 @@ heasig.units = char(heasig.units);
 
 if(bAnnRequired)
 
+    % empty output struct
+    for fn = cAnnotationOutputFields
+        single_lead_positions.(fn{1}) = [];
+    end
+    single_lead_positions = repmat(single_lead_positions, heasig.nsig, 1);
+    
     % get annotationSet tag in the file
     annSets = xDoc.getElementsByTagName('annotationSet');
     
@@ -545,14 +554,44 @@ if(bAnnRequired)
 
                     [~, strAux ] = xml_tag_value(thisValue.item(1), 'code' );
 
-                    [~, aux_idx ] = intersect(cWaveNamesHL7a(wave_subset_idx,1), strAux);
+                    [~, wave_idx ] = intersect(cWaveNamesHL7a(wave_subset_idx,1), strAux);
 
-                    if( isempty(aux_idx) )
+                    if( isempty(wave_idx) )
                         disp_string_framed(2, sprintf('Unexpected wave found: %s', strAux) );
                     else
+
+                        % Annotation is global, unless specified by a "code"
+                        % tag
+                        bAllleads = true;
+                        code_idx = 2;
+                        while(code_idx < thisCode.getLength)
+                            [~, strAux] = xml_tag_value(thisCode.item(code_idx), 'code');
+                            [~, lead_idx ]= intersect(upper(cLeadNamesHL7a(:,1)), upper(strAux));
+
+                            if( ~isempty(lead_idx) )
+                                bAllleads = false;
+                                break;
+                            end
+                            
+                            code_idx = code_idx + 1;
+                        end
+                        
                         thisOnset = thisAnn.getElementsByTagName('low');
                         thisOffset = thisAnn.getElementsByTagName('high');
 
+                        this_onset = get_time_from_xml_tag(thisOnset.item(0));
+                        this_offset = get_time_from_xml_tag(thisOffset.item(0));
+                        
+                        if( bAllleads )
+                            aux_idx = 1:heasig.nsig;
+                        else
+                            aux_idx = lead_translate_idx(lead_idx);
+                        end
+                        
+                        % onset
+                        single_lead_positions(aux_idx).(cHL7aECG_translation{wave_idx,3}) = round( this_onset * heasig.freq);
+                        % offset
+                        single_lead_positions(aux_idx).(cHL7aECG_translation{wave_idx,4}) = round( this_offset * heasig.freq);
                     end
 
                 end

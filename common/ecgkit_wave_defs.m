@@ -14,3 +14,11 @@
 cAnnotationOutputFields = { 'Pon' 'P' 'Poff' 'Ptipo' 'QRSon' 'qrs' 'Q' 'R' 'S' 'QRSoff' 'Ton' 'T' 'Tprima' 'Toff' 'Ttipo' };
 cAnnotationSLRfields =    { 'Pon' 'P' 'Poff'         'QRSon' 'qrs'             'QRSoff' 'Ton' 'T' 'Tprima' 'Toff' };
 
+cHL7aECG_translation = ...    
+    { 'MDC_ECG_WAVC_PWAVE',   'P', 'Pon', 'Poff';
+      'MDC_ECG_WAVC_QWAVE',   'Q', '', '';
+      'MDC_ECG_WAVC_RWAVE',   'R', '', '';
+      'MDC_ECG_WAVC_SWAVE',   'S', '', '';
+      'MDC_ECG_WAVC_QRSWAVE', 'qrs', 'QRSon', 'QRSoff';
+      'MDC_ECG_WAVC_QSWAVE',  'qrs', 'QRSon', 'QRSoff';
+      'MDC_ECG_WAVC_TWAVE',   'T', 'Ton', 'Toff' };
