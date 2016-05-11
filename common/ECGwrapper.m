@@ -1658,7 +1658,7 @@ classdef ECGwrapper < handle
 
                 elseif( strcmp(obj.recording_format, 'HL7a') )
 
-                    [~, obj.ECG_header, ann_aux ] = read_ECG(obj.recording_name, [], [], obj.recording_format);
+                    [~, obj.ECG_header, ann_aux, single_lead_positions ] = read_ECG(obj.recording_name, [], [], obj.recording_format);
                     
                 elseif( strcmp(obj.recording_format, 'Mortara') )
                     ann_aux = [];
@@ -1679,7 +1679,7 @@ classdef ECGwrapper < handle
 
                 elseif( strcmp(obj.recording_format, 'MAT') )
 
-                    [~, obj.ECG_header, ann_aux ] = read_ECG(obj.recording_name, [], [], obj.recording_format);
+                    [~, obj.ECG_header, ann_aux, single_lead_positions ] = read_ECG(obj.recording_name, [], [], obj.recording_format);
                     
                 end
 

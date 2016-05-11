@@ -28,7 +28,7 @@
 % Last update: 02/05/2016
 % Copyright 2008-2016
 % 
-function [ ECG, heasig, ann, last_sample ] = read_hl7a_format(filename, start_sample, end_sample)
+function [ ECG, heasig, ann, single_lead_positions, last_sample ] = read_hl7a_format(filename, start_sample, end_sample)
 
 %% Tables
 
@@ -184,7 +184,7 @@ cWaveNamesHL7a = { ...
 ecgkit_wave_defs;
 
 [~, wave_subset_idx] = intersect(cWaveNamesHL7a, cHL7aECG_translation(:,1) );
-                
+[~, QRwaves_idx] = intersect(cWaveNamesHL7a, {'MDC_ECG_WAVC_QWAVE', 'MDC_ECG_WAVC_RWAVE'} );
                 
 %% Beat types
 
@@ -231,6 +231,7 @@ cBeatTypesHL7a = { ...
                     'MDC_ECG_BEAT_LEARN', 'Q', 'Learning (beat during initial learning phase)'; ...
                     };
 
+                
 %% Code
 %No leer bloques mas grandes de 200 megabytes
 MaxIOread = 200; %megabytes
@@ -514,6 +515,13 @@ heasig.units = char(heasig.units);
 
 if(bAnnRequired)
 
+    bDesktop = usejava('desktop');
+    
+    if(bDesktop)            
+        % Activate the progress_struct bar.
+        pb = progress_bar(heasig.recname);
+    end
+    
     % empty output struct
     for fn = cAnnotationOutputFields
         single_lead_positions.(fn{1}) = [];
@@ -525,112 +533,197 @@ if(bAnnRequired)
     
     annSet_idx = 0;
     thisAnnSet = annSets.item(annSet_idx);
+    
+    while( annSet_idx < annSets.getLength )
 
-    while( annSet_idx < thisAnnSet.getLength )
-
+        strAnnSet = sprintf( 'Annotation set %d', annSet_idx );
+        
         thisAnnSet = annSets.item(annSet_idx);
+        
+        AnnSetHash = thisAnnSet.hashCode;
         
         comp_idx = 0;
         allComponents = thisAnnSet.getElementsByTagName('component');
-        thisComp = allComponents.item(comp_idx);
 
+        pb.Loops2Do = max(1, allComponents.getLength-1);
+        
         while( comp_idx < allComponents.getLength )
 
+            if(bDesktop)
+                %start of the progress_struct loop 0%
+                pb.start_loop();
+            end
+            
+            bCompParsedOk = false;
+            
             thisComp = allComponents.item(comp_idx);
+
+            parentNode = thisComp.getParentNode;
+
+            if(AnnSetHash == parentNode.hashCode)
+            % check that components are at the same XML tree level
             
-            thisAnn = thisComp.getElementsByTagName('annotation');
+                thisAnn = thisComp.getElementsByTagName('annotation');
 
-            thisAnn = thisAnn.item(0);
+                if( thisAnn.getLength > 0 )
 
-            thisCode = thisAnn.getElementsByTagName('code');
-            
-            thisValue = thisAnn.getElementsByTagName('value');
-            
-            if( xml_tag_value(thisCode.item(0), 'code', 'MDC_ECG_BEAT' ) ) 
-                % wave annotation (onset-offset)
-                
-                if( xml_tag_value(thisCode.item(1), 'code', 'MDC_ECG_WAVC' ) ) 
-                    % ECG wave
+                    thisAnn = thisAnn.item(0);
 
-                    [~, strAux ] = xml_tag_value(thisValue.item(1), 'code' );
+                    thisCode = thisAnn.getElementsByTagName('code');
 
-                    [~, wave_idx ] = intersect(cWaveNamesHL7a(wave_subset_idx,1), strAux);
+                    thisValue = thisAnn.getElementsByTagName('value');
 
-                    if( isempty(wave_idx) )
-                        disp_string_framed(2, sprintf('Unexpected wave found: %s', strAux) );
-                    else
+                    pb.checkpoint();
+                    
+                    if( xml_tag_value(thisCode.item(0), 'code', 'MDC_ECG_BEAT' ) ) 
+                        % wave annotation (onset-offset)
 
-                        % Annotation is global, unless specified by a "code"
-                        % tag
-                        bAllleads = true;
-                        code_idx = 2;
-                        while(code_idx < thisCode.getLength)
-                            [~, strAux] = xml_tag_value(thisCode.item(code_idx), 'code');
-                            [~, lead_idx ]= intersect(upper(cLeadNamesHL7a(:,1)), upper(strAux));
+                        if( xml_tag_value(thisCode.item(1), 'code', 'MDC_ECG_WAVC' ) ) 
+                            % ECG wave
 
-                            if( ~isempty(lead_idx) )
-                                bAllleads = false;
-                                break;
+                            [~, strAux ] = xml_tag_value(thisValue.item(1), 'code' );
+
+                            [~, wave_idx ] = intersect(cWaveNamesHL7a(wave_subset_idx,1), strAux);
+
+                            if( ~isempty(wave_idx) )
+
+                                % Annotation is global, unless specified by a "code"
+                                % tag
+                                bAllleads = true;
+                                code_idx = 2;
+                                while(code_idx < thisCode.getLength)
+                                    [~, strAux] = xml_tag_value(thisCode.item(code_idx), 'code');
+                                    [~, lead_idx ]= intersect(upper(cLeadNamesHL7a(:,1)), upper(strAux));
+
+                                    if( ~isempty(lead_idx) )
+                                        bAllleads = false;
+                                        break;
+                                    end
+
+                                    code_idx = code_idx + 1;
+                                end
+
+                                thisOnset = thisAnn.getElementsByTagName('low');
+                                thisOffset = thisAnn.getElementsByTagName('high');
+
+                                this_onset = get_time_from_xml_tag(thisOnset.item(0));
+                                this_offset = get_time_from_xml_tag(thisOffset.item(0));
+
+                                if( bAllleads )
+                                    aux_idx = 1:heasig.nsig;
+                                else
+                                    aux_idx = lead_translate_idx(lead_idx);
+                                end
+
+                                for ii = aux_idx
+
+                                    bCompParsedOk = true;
+
+                                    if( ~isempty(cHL7aECG_translation{wave_idx,3}) )
+                                        % onset
+                                        aux_idx = single_lead_positions(ii).(cHL7aECG_translation{wave_idx,3});
+                                        aux_idx = [aux_idx; round( this_onset * heasig.freq)];
+                                        single_lead_positions(ii).(cHL7aECG_translation{wave_idx,3}) = aux_idx;
+                                    end
+                                    if( ~isempty(cHL7aECG_translation{wave_idx,4}) )
+                                        % offset
+                                        aux_idx = single_lead_positions(ii).(cHL7aECG_translation{wave_idx,4});
+                                        aux_idx = [aux_idx; round( this_offset * heasig.freq)];
+                                        single_lead_positions(ii).(cHL7aECG_translation{wave_idx,4}) = aux_idx;
+                                    end
+                                end
+
                             end
-                            
-                            code_idx = code_idx + 1;
-                        end
-                        
-                        thisOnset = thisAnn.getElementsByTagName('low');
-                        thisOffset = thisAnn.getElementsByTagName('high');
 
-                        this_onset = get_time_from_xml_tag(thisOnset.item(0));
-                        this_offset = get_time_from_xml_tag(thisOffset.item(0));
-                        
-                        if( bAllleads )
-                            aux_idx = 1:heasig.nsig;
-                        else
-                            aux_idx = lead_translate_idx(lead_idx);
                         end
-                        
-                        % onset
-                        single_lead_positions(aux_idx).(cHL7aECG_translation{wave_idx,3}) = round( this_onset * heasig.freq);
-                        % offset
-                        single_lead_positions(aux_idx).(cHL7aECG_translation{wave_idx,4}) = round( this_offset * heasig.freq);
+
+                    elseif( xml_tag_value(thisCode.item(0), 'code', 'MDC_ECG_WAVC' ) ) 
+                        % peak annotation
+
+                        [~, strAux] = xml_tag_value(thisValue.item(0), 'code');
+
+                        [~, wave_idx ] = intersect(cWaveNamesHL7a(wave_subset_idx,1), strAux);
+
+                        if( ~isempty(wave_idx) )
+
+                            if( xml_tag_value(thisValue.item(1), 'code', 'MDC_ECG_WAVC_PEAK') )
+
+                                % Annotation is global, unless specified by a "code"
+                                % tag
+                                bAllleads = true;
+                                code_idx = 2;
+                                while(code_idx < thisCode.getLength)
+                                    [~, strAux] = xml_tag_value(thisCode.item(code_idx), 'code');
+                                    [~, lead_idx ]= intersect(upper(cLeadNamesHL7a(:,1)), upper(strAux));
+
+                                    if( ~isempty(lead_idx) )
+                                        bAllleads = false;
+                                        break;
+                                    end
+
+                                    code_idx = code_idx + 1;
+                                end
+
+                                this_peak = get_time_from_xml_tag(thisValue.item(2));
+
+                                if( bAllleads )
+                                    aux_idx = 1:heasig.nsig;
+                                else
+                                    aux_idx = lead_translate_idx(lead_idx);
+                                end
+                                
+                                aux_val = round( this_peak * heasig.freq);
+                                
+                                for ii = aux_idx
+
+                                    bCompParsedOk = true;
+
+                                    % peak
+                                    aux_idx = single_lead_positions(ii).(cHL7aECG_translation{wave_idx,2});
+                                    aux_idx = [aux_idx; aux_val];
+                                    single_lead_positions(ii).(cHL7aECG_translation{wave_idx,2}) = aux_idx;
+                                end
+
+                                % heartbeat type
+                                ann.time = [ann.time; aux_val];
+
+                            end
+
+                        end
+
+                    end
+
+                    pb.checkpoint();
+                    
+                    if(~bCompParsedOk)
+                        disp_string_framed(2, sprintf('Component %d from %s could not be parsed', comp_idx, filename) );
+
+                        fprintf(2, sprintf('%s\n', disp_xml_nodes(thisValue) ) );
+                        fprintf(2, sprintf('%s\n', disp_xml_nodes(thisCode) ) );
+
                     end
 
                 end
-                
-            elseif( xml_tag_value(thisCode.item(0), 'code', 'MDC_ECG_WAVC' ) ) 
-                % peak annotation
-                
-                [~, strAux] = xml_tag_value(thisValue.item(0), 'code');
-                
-                switch( strAux )
-                    
-                    case 'MDC_ECG_WAVC_PWAVE'
-                        
-                    case 'MDC_ECG_WAVC_QWAVE'
-                        
-                    case 'MDC_ECG_WAVC_RWAVE'
-                        
-                    case 'MDC_ECG_WAVC_SWAVE'
-                        
-                    case 'MDC_ECG_WAVC_QRSWAVE'
-                        
-                    case 'MDC_ECG_WAVC_QSWAVE'
-                        
-                    case 'MDC_ECG_WAVC_TWAVE'
-                        
-                    otherwise
-                        disp_string_framed(2, sprintf('Unexpected wave found: %s', strAux) );
-                        
-                end
-                
+
             end
             
             comp_idx = comp_idx + 1;
+            
+            if(bDesktop)
+                pb.end_loop();
+            end
             
         end
     
         annSet_idx = annSet_idx + 1;
         
     end
+    
+    if(bDesktop)            
+        % destroy the progress bar.
+        pb.delete;
+    end
+    
     
 end
 

@@ -180,7 +180,11 @@ classdef progress_bar < handle
         
         function checkpoint(obj, Message )
         
-            if( ischar(Message) )
+            if(nargin < 2)
+                Message = [];
+            end
+            
+            if(  ischar(Message) )
                 obj.Message = Message;
             end
             
