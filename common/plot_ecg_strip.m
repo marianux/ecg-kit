@@ -4046,13 +4046,10 @@ end
     function this_hdl = PlotWaveMarks( this_annotation, field_names, lead, vertTextOffset, this_color)
 
         this_hdl = {};
-        
-        cant_anns = 0;
-        
+       
         if( isfield(this_annotation, field_names{1} ) )
             aux_on = colvec(this_annotation.(field_names{1}));
             aux_on( aux_on < 1 | aux_on > heasig.nsamp) = nan;
-            cant_anns = length(aux_on);
         else
             aux_on = [];
         end
@@ -4060,7 +4057,6 @@ end
         if( isfield(this_annotation, field_names{2} ) )
             aux_peak = colvec(this_annotation.(field_names{2}));
             aux_peak( aux_peak < 1 | aux_peak > heasig.nsamp) = nan;
-            cant_anns = max(cant_anns, length(aux_peak));
         else
             aux_peak = [];
         end
@@ -4068,13 +4064,11 @@ end
         if( isfield(this_annotation, field_names{3} ) )
             aux_off = colvec(this_annotation.(field_names{3}));
             aux_off( aux_off < 1 | aux_off > heasig.nsamp) = nan;
-            cant_anns = max(cant_anns, length(aux_off));
         else
             aux_off = [];
         end
         
-        
-        
+        [aux_on, aux_peak, aux_off] = alineate_positions( {aux_on, aux_peak, aux_off} );
         
 %         aux_mat = match_positions(aux_mat);
         
