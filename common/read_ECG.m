@@ -57,7 +57,7 @@
 % Last update: 19/11/2014
 % Copyright 2008-2015
 % 
-function [ECG heasig ann recording_format single_lead_positions end_sample] = read_ECG(recording_name, ECG_start_idx, ECG_end_idx, recording_format)
+function [ECG heasig ann single_lead_positions recording_format end_sample] = read_ECG(recording_name, ECG_start_idx, ECG_end_idx, recording_format)
 
 ECG = [];
 heasig = [];
@@ -97,7 +97,6 @@ elseif( strcmp(recording_format, 'MAT') )
     fnames = fieldnames(aux_load);
     signal_name = intersect( fnames, cMatSignalNames);
     header_name = intersect( fnames, cMatSignalHeaderNames);
-    ann_name = intersect( fnames, cMatSignalAnnNames);
 
     if( isempty(header_name) )
         error( 'read_ECG:HeaderNotFound', ['Can''t find annotations for file : ' rowvec(recording_name') ] );
@@ -105,8 +104,16 @@ elseif( strcmp(recording_format, 'MAT') )
         heasig = aux_load.(header_name{1});
     end
     
-    if( nargout > 1 )
+    if( nargout > 3 )
+        slp = intersect( fnames, cMatSignalSLP);
+        if( ~isempty(slp) )
+            single_lead_positions = aux_load.(slp{1});            
+        end
         
+    end
+
+    if( nargout > 1 )
+        ann_name = intersect( fnames, cMatSignalAnnNames);
         if( ~isempty(ann_name) )
             ann = aux_load.(ann_name{1});            
         end
@@ -141,21 +148,29 @@ elseif( strcmp(recording_format, 'MAT') )
     
 elseif( strcmp(recording_format, 'Mortara') )
     
-    [ECG heasig end_sample] = read_Mortara_format(recording_name, ECG_start_idx, ECG_end_idx );
+    [ECG, heasig, end_sample] = read_Mortara_format(recording_name, ECG_start_idx, ECG_end_idx );
     
 elseif( strcmp(recording_format, 'HL7a') )
     
-    [ECG heasig ann end_sample] = read_hl7a_format(recording_name, ECG_start_idx, ECG_end_idx );
+    if( nargout == 1 )
+        ECG = read_hl7a_format(recording_name, ECG_start_idx, ECG_end_idx );
+    elseif( nargout > 3 )
+        [ECG, heasig, ann, single_lead_positions, end_sample] = read_hl7a_format(recording_name, ECG_start_idx, ECG_end_idx );
+    elseif( nargout > 2 )
+        [ECG, heasig, ann] = read_hl7a_format(recording_name, ECG_start_idx, ECG_end_idx );
+    elseif( nargout > 1 )
+        [ECG, heasig] = read_hl7a_format(recording_name, ECG_start_idx, ECG_end_idx );
+    end
     
 elseif( strcmp(recording_format, 'AHA') )
     if( nargout > 1 )
-        [ECG heasig ann end_sample] = read_AHA_format(recording_name, ECG_start_idx, ECG_end_idx );
+        [ECG, heasig, ann, end_sample] = read_AHA_format(recording_name, ECG_start_idx, ECG_end_idx );
     else
         ECG = read_AHA_format(recording_name, ECG_start_idx, ECG_end_idx );
     end
 elseif( strcmp(recording_format, 'HES') )
     if( nargout > 1 )
-        [ECG heasig ann end_sample] = read_HES_format(recording_name, ECG_start_idx, ECG_end_idx );
+        [ECG, heasig, ann, end_sample] = read_HES_format(recording_name, ECG_start_idx, ECG_end_idx );
     else
         ECG = read_HES_format(recording_name, ECG_start_idx, ECG_end_idx );
     end

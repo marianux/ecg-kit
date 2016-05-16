@@ -189,7 +189,7 @@ elseif( strcmpi(recording_format, 'ISHNE') )
                             ];
 
 
-elseif( strcmpi(recording_format, 'MIT') )
+elseif( strcmpi(recording_format, 'MIT') || strcmpi(recording_format, 'HL7a') )
 
 %%%%%%%%%%%%%%%%%
 %%% MIT FORMAT %%%

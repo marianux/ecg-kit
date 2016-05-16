@@ -168,6 +168,8 @@ classdef ECGwrapper < handle
         recording_format
         % annotations performed in the ECG (in MIT format)
         ECG_annotations 
+        % Wave delineation performed in the ECG
+        ECG_delineation 
         % information about the ECG recording
         ECG_header        
         % total amount of pid's
@@ -193,7 +195,6 @@ classdef ECGwrapper < handle
         
     end
     
-
     methods 
         
         function obj = ECGwrapper(varargin)
@@ -1194,11 +1195,8 @@ classdef ECGwrapper < handle
             for this_name = rowvec(task_names)
                 
                 obj.ECGtaskHandle = this_name{1};
-                
-                if( obj.bArgChanged )
-                    obj = obj.CheckArguments();
-                    obj.bArgChanged = false;
-                end
+
+                obj.CheckTaskHandle();
 
                 if( isempty(obj.user_string) )
                     aux_user_prefix = [];
@@ -1217,10 +1215,7 @@ classdef ECGwrapper < handle
             % leave things as we found.
             obj.ECGtaskHandle = prev_ECGtaskHandle;
             
-            if( obj.bArgChanged )
-                obj = obj.CheckArguments();
-                obj.bArgChanged = false;
-            end
+            obj.CheckTaskHandle();
             
         end
    
@@ -1467,7 +1462,7 @@ classdef ECGwrapper < handle
         function set.ECGtaskHandle(obj,value)
             if( isa(value, 'ECGtask') )
                 obj.ECGtaskHandle = value;
-                obj.bArgChanged = true;
+                obj.CheckTaskHandle();
                 
             elseif( ischar(value) )
                 
@@ -1477,7 +1472,7 @@ classdef ECGwrapper < handle
                     obj.ECGtaskHandle = ECGtask_do_nothing();
                 else
                     obj.ECGtaskHandle = obj.cKnownECGtasksHdl{aux_idx};
-                    obj.bArgChanged = true;
+                    obj.CheckTaskHandle();
                 end
             elseif( isempty(value) )
                 
@@ -1508,8 +1503,10 @@ classdef ECGwrapper < handle
     
     methods (Access = private)  
         
-        function obj = CheckArguments(obj)
-
+        function obj = CheckTaskHandle(obj)
+        %%
+        % 
+        
             %Object parsing
             if( isobject(obj.ECGtaskHandle) )
                 for ii = 1:length(obj.cObjMethodsRequired)
@@ -1525,7 +1522,14 @@ classdef ECGwrapper < handle
                 end
             else
                error( 'ECGwrapper:ArgCheck:UserObjHdl', 'ECGtaskHandle is not a valid ECGtask handle.' );
-            end
+            end    
+        end
+        
+        
+        function obj = CheckArguments(obj)
+
+            %Object parsing
+            obj.CheckTaskHandle();
 
             if( isprop(obj.ECGtaskHandle, 'min_heartbeats_required') || isprop(obj.ECGtaskHandle, 'max_heartbeats_per_iter')  )
                 obj.partition_mode = 'QRS';
@@ -1574,6 +1578,8 @@ classdef ECGwrapper < handle
         function obj = CheckECGrecording(obj)
         % internal method to check the correctness of the user input.
         
+            single_lead_positions = [];
+            
             if( isempty(obj.recording_name) )
                 error( 'ECGwrapper:ArgCheck:InvalidECGarg', 'Please provide an ECG recording as described in the documentation, help(''ECGwrapper'') maybe could help you.\n' );
             else
@@ -1685,6 +1691,8 @@ classdef ECGwrapper < handle
 
             end
 
+            obj.ECG_delineation = single_lead_positions;
+            
             if(isempty(ann_aux))
                 obj.ECG_annotations = [];
                 obj.QRS_locations = [];

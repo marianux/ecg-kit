@@ -13,3 +13,4 @@
 cMatSignalNames = {'sig' 'signal' 'ECG'};
 cMatSignalHeaderNames = {'header' 'heasig' 'hea'};
 cMatSignalAnnNames = {'ann' 'annotations' 'qrs'};
+cMatSignalSLP = {'single_lead_positions' 'positions' 'slp'};

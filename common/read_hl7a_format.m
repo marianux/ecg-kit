@@ -183,8 +183,8 @@ cWaveNamesHL7a = { ...
 
 ecgkit_wave_defs;
 
-[~, wave_subset_idx] = intersect(cWaveNamesHL7a, cHL7aECG_translation(:,1) );
-[~, QRwaves_idx] = intersect(cWaveNamesHL7a, {'MDC_ECG_WAVC_QWAVE', 'MDC_ECG_WAVC_RWAVE'} );
+[~, wave_subset_idx] = intersect(cWaveNamesHL7a(:,1), cHL7aECG_translation(:,1) );
+[~, QRwaves_idx] = intersect(cWaveNamesHL7a(wave_subset_idx,1), {'MDC_ECG_WAVC_QWAVE', 'MDC_ECG_WAVC_RWAVE', 'MDC_ECG_WAVC_QSWAVE', 'MDC_ECG_WAVC_QRSWAVE'} );
                 
 %% Beat types
 
@@ -458,10 +458,23 @@ for ii = 0:(allComponents.getLength-1)
             thisDigits = thisDigits.item(0);            
 
             if( isempty(ECG) )
-                ECG(:,lead_idx) = colvec(str2num(thisDigits.getTextContent));
+                ECG = colvec(str2num(thisDigits.getTextContent));
                 heasig.nsamp = size(ECG,1);
+                
+                if( nargin < 3 || isempty( end_sample ) )
+                    %Intento la lectura total por defecto
+                    samples2read = heasig.nsamp - (start_sample-1);
+                else
+                    samples2read = min(heasig.nsamp, end_sample) - (start_sample-1);
+                end
+                
+                end_sample = start_sample + samples2read - 1;
+                heasig.nsamp = samples2read;              
+                ECG = colvec(ECG(start_sample:end_sample));
+                
             else
-                ECG(1:heasig.nsamp,lead_idx) = colvec(str2num(thisDigits.getTextContent));
+                aux_val = colvec(str2num(thisDigits.getTextContent));
+                ECG(:,lead_idx) = colvec(aux_val(start_sample:end_sample));
             end
             
             lead_idx = lead_idx + 1;
@@ -515,6 +528,9 @@ heasig.units = char(heasig.units);
 
 if(bAnnRequired)
 
+    ann.time = [];
+    ann.anntyp = [];
+    
     bDesktop = usejava('desktop');
     
     if(bDesktop)            
@@ -622,17 +638,28 @@ if(bAnnRequired)
                                     if( ~isempty(cHL7aECG_translation{wave_idx,3}) )
                                         % onset
                                         aux_idx = single_lead_positions(ii).(cHL7aECG_translation{wave_idx,3});
-                                        aux_idx = [aux_idx; round( this_onset * heasig.freq)];
+                                        aux_val = round( this_onset * heasig.freq);
+                                        aux_idx = [aux_idx; aux_val];
                                         single_lead_positions(ii).(cHL7aECG_translation{wave_idx,3}) = aux_idx;
                                     end
                                     if( ~isempty(cHL7aECG_translation{wave_idx,4}) )
                                         % offset
                                         aux_idx = single_lead_positions(ii).(cHL7aECG_translation{wave_idx,4});
-                                        aux_idx = [aux_idx; round( this_offset * heasig.freq)];
+                                        aux_val = [aux_val; round( this_offset * heasig.freq)];
+                                        wave_midpoint = round(mean(aux_val));
+                                        aux_idx = [aux_idx; aux_val(end)];
                                         single_lead_positions(ii).(cHL7aECG_translation{wave_idx,4}) = aux_idx;
                                     end
                                 end
 
+                                if( any(QRwaves_idx == wave_idx) )
+                                    % heartbeat type
+                                    ann.time = [ann.time; wave_midpoint];
+                                    [~, strAux ] = xml_tag_value(thisValue.item(0), 'code' );
+                                    [~, beat_type_idx ]= intersect(cBeatTypesHL7a(:,1), upper(strAux));
+                                    ann.anntyp = [ann.anntyp; cBeatTypesHL7a{beat_type_idx,2}];
+                                end
+                                
                             end
 
                         end
@@ -684,9 +711,6 @@ if(bAnnRequired)
                                     single_lead_positions(ii).(cHL7aECG_translation{wave_idx,2}) = aux_idx;
                                 end
 
-                                % heartbeat type
-                                ann.time = [ann.time; aux_val];
-
                             end
 
                         end
@@ -724,8 +748,15 @@ if(bAnnRequired)
         pb.delete;
     end
     
+    % filter repetitions, one label per heartbeat.
+    [ann.time, aux_idx] = unique_w_tolerance(ann.time, round(0.15*heasig.freq) );
+    ann.anntyp = ann.anntyp(aux_idx);
+    
+    % filter repetitions, one wave fiducial point per heartbeat.
+    for ii = 1:length(single_lead_positions)
+        for fname = rowvec(fieldnames(single_lead_positions(ii)))
+            single_lead_positions(ii).(fname{1}) = unique_w_tolerance(single_lead_positions(ii).(fname{1}), round(0.15*heasig.freq) );
+        end
+    end
     
 end
-
-
-    

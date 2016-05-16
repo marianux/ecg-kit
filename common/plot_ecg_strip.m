@@ -383,6 +383,11 @@ if( ~isempty(annotations_wrapper) )
     end    
 end
 
+% todo: handle multiple delineations structs
+if( ~isempty(ECG_w) && ~isempty(ECG_w.ECG_delineation) )
+    annotations = ECG_w.ECG_delineation;
+end
+
 if( isa(global_annotations, 'ECGwrapper') )
     global_annotations_wrapper = global_annotations;
 elseif( bWrapper_provided )
@@ -4042,9 +4047,12 @@ end
 
         this_hdl = {};
         
+        cant_anns = 0;
+        
         if( isfield(this_annotation, field_names{1} ) )
             aux_on = colvec(this_annotation.(field_names{1}));
             aux_on( aux_on < 1 | aux_on > heasig.nsamp) = nan;
+            cant_anns = length(aux_on);
         else
             aux_on = [];
         end
@@ -4052,6 +4060,7 @@ end
         if( isfield(this_annotation, field_names{2} ) )
             aux_peak = colvec(this_annotation.(field_names{2}));
             aux_peak( aux_peak < 1 | aux_peak > heasig.nsamp) = nan;
+            cant_anns = max(cant_anns, length(aux_peak));
         else
             aux_peak = [];
         end
@@ -4059,9 +4068,15 @@ end
         if( isfield(this_annotation, field_names{3} ) )
             aux_off = colvec(this_annotation.(field_names{3}));
             aux_off( aux_off < 1 | aux_off > heasig.nsamp) = nan;
+            cant_anns = max(cant_anns, length(aux_off));
         else
             aux_off = [];
         end
+        
+        
+        
+        
+%         aux_mat = match_positions(aux_mat);
         
         if( ann_graph_mode == kLinesAnns ) 
             
@@ -4090,8 +4105,14 @@ end
             
             % wave start
             bOn = ~isnan(aux_on) & aux_on >= start_sample & aux_on <= end_sample;
+            if( isempty(bOn) )
+                bOn = false(size(cant_anns,1));
+            end
             % wave end
             bOff = ~isnan(aux_off) & aux_off >= start_sample & aux_off <= end_sample;
+            if( isempty(bOff) )
+                bOff = false(size(cant_anns,1));
+            end
             
             % wave peak
             bPeak = ~isnan(aux_peak) & aux_peak >= start_sample & aux_peak <= end_sample;
