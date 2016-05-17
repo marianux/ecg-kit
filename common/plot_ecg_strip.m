@@ -4068,8 +4068,6 @@ end
             aux_off = [];
         end
         
-        [aux_on, aux_peak, aux_off] = alineate_positions( {aux_on, aux_peak, aux_off} );
-        
 %         aux_mat = match_positions(aux_mat);
         
         if( ann_graph_mode == kLinesAnns ) 

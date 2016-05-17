@@ -27,7 +27,7 @@
 % Last update: 14/05/2016
 % Copyright 2008-2016
 % 
-function [s, varargout] = alineate_positions( val1, max_tol )
+function varargout = alineate_positions( val1, max_tol )
 
 if( nargin < 2 || isempty(max_tol) )
     max_tol = realmax;
@@ -36,6 +36,11 @@ end
 sizes = cellfun( @(a)(length(a)), val1 );
 can_val1 = length(sizes);
 max_size = max(sizes);
+
+nnargout = nargout;
+if nnargout ~= can_val1
+    error('alineate_positions:OutputError', 'You must expect the same amount of arguments you provide. %d arguments provided, %d expected.\n', can_val1, nnargout);
+end
 
 % indexes of can_val1 pairwise distances 
 aux_idx = colvec(1:sizes(end));
@@ -57,38 +62,31 @@ for ii = 1:can_pw
     dis_mat2_idx(dis_mat_idx(ii,2), dis_mat_idx(ii,1)) = ii;
 end
 
-dis_mat = cell2mat(arrayfun( @(a,b)( abs( repmat( [val1{a}; nan(max_size-length(val1{a}),1)] , 1, max_size) - repmat([val1{b}; nan(max_size-length(val1{b}),1)], 1, max_size)' ) ), reshape(dis_mat_idx(:,1),1,1,size(dis_mat_idx,1) ), reshape(dis_mat_idx(:,2),1,1,size(dis_mat_idx,1) ), 'UniformOutput', false));
-
+aux_mat = cell2mat(arrayfun( @(a)( [val1{a}; nan(max_size-length(val1{a}),1)]) , 1:can_val1, 'UniformOutput', false));
+dis_mat = cell2mat(arrayfun( @(a,b)( abs( repmat( aux_mat(:,a) , 1, max_size) - repmat(aux_mat(:,b), 1, max_size)' ) ), reshape(dis_mat_idx(:,1),1,1,size(dis_mat_idx,1) ), reshape(dis_mat_idx(:,2),1,1,size(dis_mat_idx,1) ), 'UniformOutput', false));
 
 total_comp = max_size^can_val1;
-dist_array = zeros(total_comp,1);
+dist_array = nan(max_size^can_val1,1);
 
 for ii = 1:total_comp
-    dist_array(ii) = 
-    for jj = 1:can_pw-1
-        dist_array(ii) = dist_array(ii) + dis_mat( aux_idx(ii,jj), aux_idx(ii,jj+1), dis_mat2_idx(aux_idx(jj), aux_idx(jj+1)) )
+    dist_array(ii) = dis_mat(aux_idx(ii,1), aux_idx(ii,end), dis_mat2_idx(1, can_val1) );
+    for jj = 2:can_pw
+        dist_array(ii) = dist_array(ii) + dis_mat(aux_idx(ii,jj-1), aux_idx(ii,jj), dis_mat2_idx(jj-1, jj) );
     end
 end
 
-[~, s_idx] = sort(dis_mat);
+[~, s_idx] = sort(dist_array);
 
 aligned_pos = nan(max_size,can_val1);
 for ii = 1:max_size
 %     [] = ind2sub([max_size,max_size,can_val1], s_idx(ii));
 %     aligned_pos(ii) = ;
-    
+    aligned_pos(ii,:) = arrayfun( @(a)(aux_mat(aux_idx(s_idx(ii),a),a)), 1:can_val1 );
 end
 
-sub2ind()
+[~, s_idx] = sort(aligned_pos(:,1));
+aligned_pos = aligned_pos(s_idx,:);
 
-aux_dist = sum(aux_dist,3);
-
-[~, aux_idx] = sort(aux_dist(:));
-
-ind2sub([cant_anns, length(val1)], aux_idx(1:cant_anns) );
-
-nout = max(nargout,1) - 1;
-s = size(x);
-for k = 1:nout
-   varargout{k} = s(k);
+for ii = 1:nnargout
+   varargout{ii} = aligned_pos(:,ii);
 end
