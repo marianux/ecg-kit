@@ -59,11 +59,15 @@ end
 
 dis_mat = cell2mat(arrayfun( @(a,b)( abs( repmat( [val1{a}; nan(max_size-length(val1{a}),1)] , 1, max_size) - repmat([val1{b}; nan(max_size-length(val1{b}),1)], 1, max_size)' ) ), reshape(dis_mat_idx(:,1),1,1,size(dis_mat_idx,1) ), reshape(dis_mat_idx(:,2),1,1,size(dis_mat_idx,1) ), 'UniformOutput', false));
 
+
 total_comp = max_size^can_val1;
-dist_array = nan(max_size^can_val1,1);
+dist_array = zeros(total_comp,1);
 
 for ii = 1:total_comp
-    
+    dist_array(ii) = 
+    for jj = 1:can_pw-1
+        dist_array(ii) = dist_array(ii) + dis_mat( aux_idx(ii,jj), aux_idx(ii,jj+1), dis_mat2_idx(aux_idx(jj), aux_idx(jj+1)) )
+    end
 end
 
 [~, s_idx] = sort(dis_mat);
