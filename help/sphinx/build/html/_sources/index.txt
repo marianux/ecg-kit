@@ -14,9 +14,9 @@ The main feature of the this toolbox is the possibility to use several popular a
 * `Wavedet ECG delineator <http://diec.unizar.es/~laguna/personal/publicaciones/wavedet_tbme04.pdf>`__
 * Pulse wave detectors as `wabp <http://www.physionet.org/physiotools/wag/wabp-1.htm>`__ and `wavePPG <http://dx.doi.org/10.1109/JBHI.2013.2267096>`__
 * `a2hbc <https://code.google.com/p/a2hbc/>`__ and `EP limited <http://www.eplimited.com/confirmation.htm>`__ heartbeat classifiers.
-* And other scritps for inspecting, correcting and reporting all these results. 
+* And other scritps for inspecting, correcting and reporting all these results.
 
-with the same application programmer interface (API) directly in Matlab, under Windows, Linux or Mac. The kit also implements a recording interface which allows processing several ECG formats, such as MIT, ISHNE, HES, Mortara, and AHA, of arbitrary recording size (the record so far is a 1 week recording of 3 leads, sampled at 500 Hz).
+with the same application programmer interface (API) directly in Matlab, under Windows, Linux or Mac. The kit also implements a recording interface which allows processing several ECG formats, such as HL7-aECG, MIT, ISHNE, HES, Mortara, and AHA, of arbitrary recording size (the record so far is a 1 week recording of 3 leads, sampled at 500 Hz).
 
 .. image:: ex_ABP_PPG_Registro_01M_full_Pagina_05.png
 
@@ -24,13 +24,17 @@ with the same application programmer interface (API) directly in Matlab, under W
 
 .. image:: 208_full_14.png
 
+.. image:: 1.png
+
+.. image:: 2.png
+
 This kit also includes many open-source projects such as `WFDB Toolbox for MATLAB and Octave <http://physionet.org/physiotools/matlab/wfdb-app-matlab/>`__ from `Physionet <http://physionet.org/>`__, `PRtools <http://prtools.org/>`__, `Libra <https://wis.kuleuven.be/stat/robust/LIBRA>`__, `export_fig <http://undocumentedmatlab.com/blog/export_fig>`__ from `undocumented Matlab <http://undocumentedmatlab.com/>`__, and other open-source scripts that have their proper references to the original projects or authors.
 
 Voluntary contributions
 -----------------------
 Many thanks to Andrés Demski from UTN who helped to this project before he learned how to use it. To **all** the friends in Zaragoza, Porto and Lund, but in special to the ones closest to the project:
 
-* Pablo Laguna, Juan Pablo Martínez, Rute Almeida and Juan Bolea, for the wavedet ECG delineator and many parts of the Biosig browser project that were adapted to this project. 
+* Pablo Laguna, Juan Pablo Martínez, Rute Almeida and Juan Bolea, for the wavedet ECG delineator and many parts of the Biosig browser project that were adapted to this project.
 * Jesús Lázaro and Eduardo Gil for the PPG / ABP pulse detection code.
 
 Involuntary contributions
@@ -57,4 +61,3 @@ The acknowledgements also goes to all these people, important in many ways to th
    Plotting and reporting <reportECG>
    Other functions <other_functions>
    Extending the ECGkit <extensions>
-

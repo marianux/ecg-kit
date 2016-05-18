@@ -5,9 +5,9 @@
 % 
 % Arguments:
 % 
-%   + aux_mat: data elements, 
+%   +  {onset, peak, offset}: data elements to alineate 
 % 
-%   + win_size: tolerance to consider aux_mat(i) == aux_mat(i+1).
+%   + max_tol: tolerance to alineate positions into the same wave.
 % 
 % Output:
 % 
@@ -27,7 +27,7 @@
 % Last update: 14/05/2016
 % Copyright 2008-2016
 % 
-function varargout = alineate_positions( val1, max_tol )
+function [valout, varargout] = alineate_positions( val1, max_tol )
 
 if( nargin < 2 || isempty(max_tol) )
     max_tol = realmax;
@@ -38,8 +38,25 @@ can_val1 = length(sizes);
 max_size = max(sizes);
 
 nnargout = nargout;
-if nnargout ~= can_val1
+if( nnargout ~= 1 && nnargout ~= can_val1 )
     error('alineate_positions:OutputError', 'You must expect the same amount of arguments you provide. %d arguments provided, %d expected.\n', can_val1, nnargout);
+end
+
+if( ~all(sizes > 1) )
+    
+    val1 = arrayfun( @(a)( [val1{a}; nan(max_size-length(val1{a}),1)]) , 1:can_val1, 'UniformOutput', false);
+    
+    % identify outputs
+    if( nnargout == 1 )
+       valout = val1;
+    else
+        valout = val1{1};
+        for ii = 2:can_val1
+           varargout{ii-1} = val1{ii};
+        end
+    end
+    
+    return
 end
 
 % indexes of can_val1 pairwise distances 
@@ -79,14 +96,21 @@ end
 
 aligned_pos = nan(max_size,can_val1);
 for ii = 1:max_size
-%     [] = ind2sub([max_size,max_size,can_val1], s_idx(ii));
-%     aligned_pos(ii) = ;
     aligned_pos(ii,:) = arrayfun( @(a)(aux_mat(aux_idx(s_idx(ii),a),a)), 1:can_val1 );
 end
 
+% sort aligned positions
 [~, s_idx] = sort(aligned_pos(:,1));
 aligned_pos = aligned_pos(s_idx,:);
 
-for ii = 1:nnargout
-   varargout{ii} = aligned_pos(:,ii);
+% identify outputs
+if( nnargout == 1 )
+    for ii = 1:can_val1
+       valout{ii} = aligned_pos(:,ii);
+    end
+else
+    valout = aligned_pos(:,1);
+    for ii = 1:can_val1-1
+       varargout{ii} = aligned_pos(:,ii+1);
+    end
 end

@@ -1538,8 +1538,10 @@ classdef ECGwrapper < handle
             end
 
             %ECG parsing
-            obj = CheckECGrecording(obj);
-
+            if( obj.bECG_rec_changed )
+                obj = obj.CheckECGrecording();
+            end
+            
             if( isempty(obj.tmp_path) )
                 
                 obj.tmp_path = tempdir ;

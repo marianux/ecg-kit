@@ -748,15 +748,17 @@ if(bAnnRequired)
         pb.delete;
     end
     
+    single_lead_positions = groupnlineup_waves(single_lead_positions);
+    
     % filter repetitions, one label per heartbeat.
     [ann.time, aux_idx] = unique_w_tolerance(ann.time, round(0.15*heasig.freq) );
     ann.anntyp = ann.anntyp(aux_idx);
     
-    % filter repetitions, one wave fiducial point per heartbeat.
-    for ii = 1:length(single_lead_positions)
-        for fname = rowvec(fieldnames(single_lead_positions(ii)))
-            single_lead_positions(ii).(fname{1}) = unique_w_tolerance(single_lead_positions(ii).(fname{1}), round(0.15*heasig.freq) );
-        end
-    end
+%     % filter repetitions, one wave fiducial point per heartbeat.
+%     for ii = 1:length(single_lead_positions)
+%         for fname = rowvec(fieldnames(single_lead_positions(ii)))
+%             single_lead_positions(ii).(fname{1}) = unique_w_tolerance(single_lead_positions(ii).(fname{1}), round(0.15*heasig.freq) );
+%         end
+%     end
     
 end
