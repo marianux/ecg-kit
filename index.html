@@ -49,8 +49,51 @@
 <li>And other scritps for inspecting, correcting and reporting all these results. </li>
 </ul>
 
-<p>with the same application programmer interface (API) directly in Matlab, under Windows or Linux. The kit also implements a recording interface which allows processing several ECG formats, such as MIT, ISHNE, HES, Mortara, and AHA, of arbitrary recording size (the record so far is a 1 week recording of 3 leads, sampled at 500 Hz).</p>
+<p>with the same application programmer interface (API) directly in Matlab, under Windows or Linux. The kit also implements a recording interface which allows processing several ECG formats, such as HL7-aECG, MIT, ISHNE, HES, Mortara, and AHA, of arbitrary recording size (the record so far is a 1 week recording of 3 leads, sampled at 500 Hz).</p>
 <p>A note for MAC users: the kit is prepared to run without problem in MAC, however we dont have any MAC hardware to test the kit properly. If you are interested in helping to port it to MAC, contact us through the forum below.</p>
+
+
+<h2><a id="news-" class="anchor" href="#news-" aria-hidden="true"><span class="octicon octicon-link"></span></a>News</h2>
+
+<p>The annotated ECG (aECG) HL7 format is now accepted by ecg-kit. The <a href="http://58.210.56.164:88/resource_en.jsp#">Chinese Cardiovascular Disease Database (CCDD)</a> is stored in HL7-aECG format, and recently it was made publicly available to the community. Here are some screenshots of the kit accessing these recordings.</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #666666">&gt;&gt;</span> ECGw = ECGwrapper( <span style="color: #BA2121">&#39;recording_name&#39;</span>, <span style="color: #BA2121">&#39;/path_to_data/1.xml&#39;</span>)
+<span style="color: #666666">&gt;&gt;</span> plot_ecg_strip(ECGw)
+</pre></div>
+
+<p><img src="http://ecg-kit.readthedocs.io/en/latest/_images/1.png" alt="Image not found"></p>
+
+<p>As you can note, the database includes several wave annotations to validate ECG delineators.</p>
+
+<p><img src="http://ecg-kit.readthedocs.io/en/latest/_images/2.png" alt="Image not found"></p>
+
+
+
+<h2>
+<a id="Installation" class="anchor" href="#Installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>
+The easiest way to install the latest stable version is downloading the project in <a href="https://github.com/marianux/ecg-kit/archive/v0.1.4.zip">zip</a> or <a href="https://github.com/marianux/ecg-kit/archive/v0.1.4.tar.gz">tgz</a>. If you want the latest development version, clone the master branch with your favorite GIT client. <a href="https://git-scm.com/downloads">Here</a> you can find one for each supported platform, and a nice GUI for Windows called <a href="https://code.google.com/p/tortoisegit/">Tortoise</a>. Then go to an empty folder, right click there and select Git Clone
+
+<p><img src="http://ecg-kit.readthedocs.org/en/latest/_images/tortoisegit-gitclone.png" alt="Image not found"></p>
+
+<p>or execute in the shell:</p>
+
+<p><!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">git clone --recursive https://github.com/marianux/ecg-kit.git
+</pre></div></p>
+
+<p>To install the kit, after unpacking or cloning the kit to ‘your_installation_folder’, then type in Matlab:</p>
+
+<p><!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">cd <span style="background-color: #fff0f0">&#39;your_installation_folder&#39;</span>
+InstallECGkit()
+</pre></div></p>
+
+<p>You can try then the <code>your_installation_folder/examples/examples.m</code> script in order to check the correct installation in some included recordings:</p>
+
+<p><!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">examples()
+</pre></div></p>
+
+<p>These screenshots where generated with the example script.</p>
 
 <p><img src="http://ecg-kit.readthedocs.org/en/latest/_images/ex_ABP_PPG_Registro_01M_full_Pagina_05.png" alt="Image not found"></p>
 
@@ -83,31 +126,6 @@
      + '&showsearch=true&showpopout=true&showtabs=false'
      + '&parenturl=' + encodeURIComponent(window.location.href);
 </script>
-
-
-<h2>
-<a id="Installation" class="anchor" href="#Installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
-
-<p>
-The easiest way to install the latest stable version is downloading the project in <a href="https://github.com/marianux/ecg-kit/archive/v0.1.4.zip">zip</a> or <a href="https://github.com/marianux/ecg-kit/archive/v0.1.4.tar.gz">tgz</a>. If you want the latest development version, clone the master branch with your favorite GIT client. <a href="https://git-scm.com/downloads">Here</a> you can find one for each supported platform, and a nice GUI for Windows called <a href="https://code.google.com/p/tortoisegit/">Tortoise</a>. Then go to an empty folder, right click there and select Git Clone
-
-<p><img src="http://ecg-kit.readthedocs.org/en/latest/_images/tortoisegit-gitclone.png" alt="Image not found"></p>
-
-<p>or execute in the shell:</p>
-
-<p><!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">git clone --recursive https://github.com/marianux/ecg-kit.git
-</pre></div></p>
-
-<p>To install the kit, after unpacking or cloning the kit to ‘your_installation_folder’, then type in Matlab:</p>
-
-<p><!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">cd <span style="background-color: #fff0f0">&#39;your_installation_folder&#39;</span>
-InstallECGkit()
-</pre></div></p>
-
-<p>You can try then the <code>your_installation_folder/examples/examples.m</code> script in order to check the correct installation in some included recordings:</p>
-
-<p><!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">examples()
-</pre></div></p>
 
 <h2>
 <a id="voluntary-contributions" class="anchor" href="#voluntary-contributions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Voluntary contributions</h2>
