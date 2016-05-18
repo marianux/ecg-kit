@@ -183,7 +183,8 @@ cWaveNamesHL7a = { ...
 
 ecgkit_wave_defs;
 
-[~, wave_subset_idx] = intersect(cWaveNamesHL7a(:,1), cHL7aECG_translation(:,1) );
+[~, wave_subset_idx, aux_idx] = intersect(cWaveNamesHL7a(:,1), cHL7aECG_translation(:,1) );
+cHL7aECG_translation = cHL7aECG_translation(aux_idx,:);
 [~, QRwaves_idx] = intersect(cWaveNamesHL7a(wave_subset_idx,1), {'MDC_ECG_WAVC_QWAVE', 'MDC_ECG_WAVC_RWAVE', 'MDC_ECG_WAVC_QSWAVE', 'MDC_ECG_WAVC_QRSWAVE'} );
                 
 %% Beat types
@@ -746,6 +747,28 @@ if(bAnnRequired)
     if(bDesktop)            
         % destroy the progress bar.
         pb.delete;
+    end
+    
+    % Assume the heartbeat fiducial point in the dominant wave of the QRS
+    % complex
+    for ii = 1:length(single_lead_positions)
+        if( isempty(single_lead_positions(ii).R) )
+            aux_val = [];
+        else
+            aux_val = single_lead_positions(ii).R(~isnan(single_lead_positions(ii).R));
+        end
+        
+        if( ~isempty(single_lead_positions(ii).Q) )
+            bAux = ~isnan(single_lead_positions(ii).Q) & isnan(aux_val);
+            aux_val(bAux) = single_lead_positions(ii).Q(bAux);
+        end
+        
+        if( ~isempty(single_lead_positions(ii).S) )
+            bAux = ~isnan(single_lead_positions(ii).S) & isnan(aux_val);
+            aux_val(bAux) = single_lead_positions(ii).S(bAux);
+        end
+        
+        single_lead_positions(ii).qrs = aux_val;
     end
     
     single_lead_positions = groupnlineup_waves(single_lead_positions);
