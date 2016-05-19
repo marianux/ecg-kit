@@ -551,6 +551,8 @@ if(bAnnRequired)
     annSet_idx = 0;
     thisAnnSet = annSets.item(annSet_idx);
     
+    bAnnSetFound = false;
+    
     while( annSet_idx < annSets.getLength )
 
         strAnnSet = sprintf( 'Annotation set %d', annSet_idx );
@@ -642,6 +644,7 @@ if(bAnnRequired)
                                         aux_val = round( this_onset * heasig.freq);
                                         aux_idx = [aux_idx; aux_val];
                                         single_lead_positions(ii).(cHL7aECG_translation{wave_idx,3}) = aux_idx;
+                                        bAnnSetFound = true;
                                     end
                                     if( ~isempty(cHL7aECG_translation{wave_idx,4}) )
                                         % offset
@@ -650,6 +653,7 @@ if(bAnnRequired)
                                         wave_midpoint = round(mean(aux_val));
                                         aux_idx = [aux_idx; aux_val(end)];
                                         single_lead_positions(ii).(cHL7aECG_translation{wave_idx,4}) = aux_idx;
+                                        bAnnSetFound = true;
                                     end
                                 end
 
@@ -710,6 +714,7 @@ if(bAnnRequired)
                                     aux_idx = single_lead_positions(ii).(cHL7aECG_translation{wave_idx,2});
                                     aux_idx = [aux_idx; aux_val];
                                     single_lead_positions(ii).(cHL7aECG_translation{wave_idx,2}) = aux_idx;
+                                    bAnnSetFound = true;
                                 end
 
                             end
@@ -749,39 +754,43 @@ if(bAnnRequired)
         pb.delete;
     end
     
-    % Assume the heartbeat fiducial point in the dominant wave of the QRS
-    % complex
-    for ii = 1:length(single_lead_positions)
-        if( isempty(single_lead_positions(ii).R) )
-            aux_val = [];
-        else
-            aux_val = single_lead_positions(ii).R(~isnan(single_lead_positions(ii).R));
-        end
+    if( bAnnSetFound )
         
-        if( ~isempty(single_lead_positions(ii).Q) )
-            bAux = ~isnan(single_lead_positions(ii).Q) & isnan(aux_val);
-            aux_val(bAux) = single_lead_positions(ii).Q(bAux);
+        % Assume the heartbeat fiducial point in the dominant wave of the QRS
+        % complex
+        for ii = 1:length(single_lead_positions)
+            if( isempty(single_lead_positions(ii).R) )
+                aux_val = [];
+            else
+                aux_val = single_lead_positions(ii).R(~isnan(single_lead_positions(ii).R));
+            end
+
+            if( ~isempty(single_lead_positions(ii).Q) )
+                bAux = ~isnan(single_lead_positions(ii).Q) & isnan(aux_val);
+                aux_val(bAux) = single_lead_positions(ii).Q(bAux);
+            end
+
+            if( ~isempty(single_lead_positions(ii).S) )
+                bAux = ~isnan(single_lead_positions(ii).S) & isnan(aux_val);
+                aux_val(bAux) = single_lead_positions(ii).S(bAux);
+            end
+
+            single_lead_positions(ii).qrs = aux_val;
         end
-        
-        if( ~isempty(single_lead_positions(ii).S) )
-            bAux = ~isnan(single_lead_positions(ii).S) & isnan(aux_val);
-            aux_val(bAux) = single_lead_positions(ii).S(bAux);
+
+        % filter repetitions, one label per heartbeat.
+        [ann.time, aux_idx] = unique_w_tolerance(ann.time, round(0.15*heasig.freq) );
+        ann.anntyp = ann.anntyp(aux_idx);
+
+        % filter repetitions, one wave fiducial point per heartbeat.
+        for ii = 1:length(single_lead_positions)
+            for fname = rowvec(fieldnames(single_lead_positions(ii)))
+                single_lead_positions(ii).(fname{1}) = unique_w_tolerance(single_lead_positions(ii).(fname{1}), round(0.15*heasig.freq) );
+            end
         end
-        
-        single_lead_positions(ii).qrs = aux_val;
+
+        single_lead_positions = groupnlineup_waves(single_lead_positions);
+
     end
-    
-    single_lead_positions = groupnlineup_waves(single_lead_positions);
-    
-    % filter repetitions, one label per heartbeat.
-    [ann.time, aux_idx] = unique_w_tolerance(ann.time, round(0.15*heasig.freq) );
-    ann.anntyp = ann.anntyp(aux_idx);
-    
-%     % filter repetitions, one wave fiducial point per heartbeat.
-%     for ii = 1:length(single_lead_positions)
-%         for fname = rowvec(fieldnames(single_lead_positions(ii)))
-%             single_lead_positions(ii).(fname{1}) = unique_w_tolerance(single_lead_positions(ii).(fname{1}), round(0.15*heasig.freq) );
-%         end
-%     end
     
 end

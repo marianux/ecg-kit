@@ -4097,14 +4097,8 @@ end
             
             % wave start
             bOn = ~isnan(aux_on) & aux_on >= start_sample & aux_on <= end_sample;
-            if( isempty(bOn) )
-                bOn = false(size(cant_anns,1));
-            end
             % wave end
             bOff = ~isnan(aux_off) & aux_off >= start_sample & aux_off <= end_sample;
-            if( isempty(bOff) )
-                bOff = false(size(cant_anns,1));
-            end
             
             % wave peak
             bPeak = ~isnan(aux_peak) & aux_peak >= start_sample & aux_peak <= end_sample;

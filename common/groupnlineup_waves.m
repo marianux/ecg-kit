@@ -34,6 +34,10 @@ for this_lead = 1:cant_leads
     this_pos_mat = slpos_mat{this_lead};
     cant_anns = size(this_pos_mat,1);
     
+    if( isempty(this_pos_mat) )
+        continue
+    end
+    
     prev_QRS = 1;
     
     for ii = 1:cant_QRS
