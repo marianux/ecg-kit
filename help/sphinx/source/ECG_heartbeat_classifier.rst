@@ -201,9 +201,13 @@ further information.
 Results format
 --------------
  
-The result file will have two variables, the annotation type or classification label ``anntyp``,
-containing a ``char`` label per heartbeat. And a vector of samples called ``time`` (in correspondence with 
-``anntyp``), with the occurrence of all heartbeats used in this task.
+The results file includes three variables, the annotation type or 
+classification label ``anntyp``, containing a ``char`` label per heartbeat, 
+which is the initial letter of the heartbeat label. A vector of samples 
+called ``time`` (in correspondence with ``anntyp``), with the occurrence of 
+each heartbeat labeled in this task. The last variable, is a label list 
+called ``lablist``, which is a cell array of strings with the full name 
+of each label in ``anntyp``.
  
 
 More About

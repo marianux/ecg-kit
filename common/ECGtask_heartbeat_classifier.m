@@ -111,10 +111,9 @@ classdef ECGtask_heartbeat_classifier < ECGtask
                             'op_mode', obj.mode );
 
             bAux = ECG_annotations.time > ECG_sample_start_end_idx(1) & ECG_annotations.time < ECG_sample_start_end_idx(2);
-            ECG_annotations.anntyp = lablist(colvec(aux_val(bAux)),1);
-            ECG_annotations.time = ECG_annotations.time(bAux) + ECG_start_offset - 1;
-            
-            payload_out = ECG_annotations;
+            payload_out.anntyp = lablist(colvec(aux_val(bAux)),1);
+            payload_out.time = ECG_annotations.time(bAux) + ECG_start_offset - 1;
+            payload_out.lablist = lablist;
             
         end
         

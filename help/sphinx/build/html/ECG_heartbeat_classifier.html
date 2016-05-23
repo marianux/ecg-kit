@@ -317,9 +317,13 @@ further information.</p>
 </div>
 <div class="section" id="results-format">
 <span id="classifier-det-result-format"></span><h2>Results format<a class="headerlink" href="#results-format" title="Permalink to this headline">¶</a></h2>
-<p>The result file will have two variables, the annotation type or classification label <code class="docutils literal"><span class="pre">anntyp</span></code>,
-containing a <code class="docutils literal"><span class="pre">char</span></code> label per heartbeat. And a vector of samples called <code class="docutils literal"><span class="pre">time</span></code> (in correspondence with
-<code class="docutils literal"><span class="pre">anntyp</span></code>), with the occurrence of all heartbeats used in this task.</p>
+<p>The results file includes three variables, the annotation type or
+classification label <code class="docutils literal"><span class="pre">anntyp</span></code>, containing a <code class="docutils literal"><span class="pre">char</span></code> label per heartbeat,
+which is the initial letter of the heartbeat label. A vector of samples
+called <code class="docutils literal"><span class="pre">time</span></code> (in correspondence with <code class="docutils literal"><span class="pre">anntyp</span></code>), with the occurrence of
+each heartbeat labeled in this task. The last variable, is a label list
+called <code class="docutils literal"><span class="pre">lablist</span></code>, which is a cell array of strings with the full name
+of each label in <code class="docutils literal"><span class="pre">anntyp</span></code>.</p>
 </div>
 <div class="section" id="more-about">
 <h2>More About<a class="headerlink" href="#more-about" title="Permalink to this headline">¶</a></h2>
