@@ -901,8 +901,8 @@ end
 if( isempty(lead_offset) )
     
     if( cant_leads > 1 )
-        lead_offset = 1.1*( (ecg_min(1:end-1) - ecg_median(1:end-1))  .* gains(1:end-1) - ( ecg_max(2:end) - ecg_median(2:end) ) .* gains(2:end) );
-        offsets = ecg_median .* gains + abs([0; cumsum(lead_offset)]) ;
+        lead_offset = [0; 1.1*( (ecg_min(1:end-1) - ecg_median(1:end-1))  .* gains(1:end-1) - ( ecg_max(2:end) - ecg_median(2:end) ) .* gains(2:end) ) ];
+        offsets = ecg_median .* gains + abs(cumsum(lead_offset));
     else
         lead_offset = 0;
         offsets = 0;
