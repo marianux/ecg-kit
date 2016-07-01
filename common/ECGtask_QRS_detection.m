@@ -34,7 +34,7 @@ classdef ECGtask_QRS_detection < ECGtask
 %    + position_multilead, a numeric vector with the QRS locations
 %          calculated using multilead rules.
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Birthdate  : 18/2/2013
 % Last update: 18/2/2013

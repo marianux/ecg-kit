@@ -43,7 +43,7 @@ classdef ECGtask_ECG_delineation < ECGtask
 %          calculated using multilead rules.
 % 
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Birthdate  : 18/2/2013
 % Last update: 18/2/2013
@@ -176,43 +176,7 @@ classdef ECGtask_ECG_delineation < ECGtask
             
             % payload property is used in this task to input an external QRS
             % detector, or manually corrected detections.
-            if( isstruct(obj.payload) )
-
-                fnames = fieldnames(obj.payload);
-                aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'corrected_'))), fnames, 'UniformOutput', false)));
-                
-                aux_struct = obj.payload;
-                
-                if( isempty(aux_idx) )
-
-                    if( isfield(aux_struct, 'series_quality') )
-                        [~, aux_idx] = sort(aux_struct.series_quality.ratios, 'descend');
-                        aux_val = aux_struct.(aux_struct.series_quality.AnnNames{aux_idx(1),1}).(aux_struct.series_quality.AnnNames{aux_idx(1),2}) - ECG_start_offset + 1;
-                        aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val < ECG_sample_start_end_idx(2) );
-                        aux_struct = aux_val;
-                        
-                    else
-                        for fname = rowvec(fnames)
-                            if( isfield(aux_struct.(fname{1}), 'time') )
-                                aux_val = aux_struct.(fname{1}).time - ECG_start_offset + 1;
-                                aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val < ECG_sample_start_end_idx(2) );
-                                aux_struct = aux_val;
-                                break
-                            end
-                        end
-                    end
-                else
-                    
-                    for ii = rowvec(aux_idx)
-                        aux_val = aux_struct.(fnames{ii}).time - ECG_start_offset + 1;
-                        aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val < ECG_sample_start_end_idx(2) );
-                        aux_struct = aux_val;
-                    end
-                end
-
-            else
-                aux_struct = [];
-            end
+            aux_struct = get_QRS_from_payload(obj.payload, ECG_start_offset, ECG_sample_start_end_idx);
             
             cant_QRSdelineators = length(obj.delineators2do);
             

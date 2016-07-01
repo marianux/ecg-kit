@@ -1,4 +1,4 @@
-%% Very simple example of how to use the ECGkit in a cluster
+%% Very simple example of how to use the ecg-kit in a cluster
 % 
 % This script is the same as "first_simple_example" but it is prepared to
 % run locally without arguments, or in a cluster environment by
@@ -24,7 +24,7 @@ function second_simple_example(pid_str)
     end
 
     root_path = fileparts(mfilename('fullpath'));
-    % get the parent or ECGkit root folder.
+    % get the parent or ecg-kit root folder.
     root_path = fileparts(root_path);
     % default folder to look at
     examples_path = [root_path filesep 'recordings' filesep ];

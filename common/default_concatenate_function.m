@@ -7,7 +7,7 @@
 % See also default_finish_function, ECGtask_arbitrary_function
 % 
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Birthdate  : 17/4/2015
 % Last update: 17/4/2015

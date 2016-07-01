@@ -8,7 +8,7 @@ classdef ECGtask_do_nothing < ECGtask
 % Abstract class for defining ECGtask interface
 % 
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Birthdate  : 20/2/2013
 % Last update: 20/2/2013

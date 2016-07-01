@@ -31,7 +31,7 @@
 % See also writeannot, read_ECG, ECGwrapper
 % 
 % Author: Salvador Olmos, Juan Pablo Martínez and/or Juan Bolea
-% adapted to ECGkit by: Mariano Llamedo Soria
+% adapted to ecg-kit by: Mariano Llamedo Soria
 % <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
 % Version: 0.1 beta
 % Birthdate: 5/01/2014

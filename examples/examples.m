@@ -1,6 +1,6 @@
 function examples(pid_str, examples_path, user_str)
 
-% Example of how to use the ECGkit
+% Example of how to use the ecg-kit
 % ---------------------------------
 % 
 % Description:
@@ -31,7 +31,7 @@ function examples(pid_str, examples_path, user_str)
 % 
 %    examples()
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Birthdate  : 11/2/2014
 % Last update: 18/7/2014

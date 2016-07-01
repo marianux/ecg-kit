@@ -8,7 +8,7 @@ classdef ECGtask_heartbeat_classifier < ECGtask
 % Abstract class for defining ECGtask interface
 % 
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Birthdate  : 18/2/2013
 % Last update: 18/2/2013
@@ -52,9 +52,6 @@ classdef ECGtask_heartbeat_classifier < ECGtask
         min_heartbeats_required = 500;
         % maximum amount of heartbeats to process each iteration
         max_heartbeats_per_iter = 4000;
-        % qrs locations provided to the task, result of previous QRS
-        % detections / correction
-        annotations = [];
                 
     end
     
@@ -82,10 +79,20 @@ classdef ECGtask_heartbeat_classifier < ECGtask
                 return
             end
             
-            obj.annotations = ParsePayloadAnnotations(obj);
             
-            if( (~isempty(obj.annotations) && length(obj.annotations) > obj.min_heartbeats_required ) || ( isfield(ECG_annotations, 'time') && ~isempty(ECG_annotations.time))  )
+            if(( isfield(ECG_annotations, 'time') && ~isempty(ECG_annotations.time)) ) 
                 obj.started = true;
+            else
+                
+                % payload property is used in this task to input an external QRS
+                % detector, or manually corrected detections.
+                aux_val = get_QRS_from_payload(obj.payload);
+                
+                if(~isempty(aux_val) && length(aux_val.time) > obj.min_heartbeats_required ) 
+                    obj.started = true;
+                else
+                    warning('ECGtask_HB_classifier:BadPayload', 'Not enough heartbeats to perform classification. Try decreasing "min_heartbeats_required" or increasing the amount of heartbeats.\n');
+                end
             end
             
         end
@@ -102,6 +109,16 @@ classdef ECGtask_heartbeat_classifier < ECGtask
                 end
             end
             
+            % payload property is used in this task to input an external QRS
+            % detector, or manually corrected detections.
+            aux_QRS_loc = get_QRS_from_payload(obj.payload, ECG_start_offset, ECG_sample_start_end_idx);
+            
+            if(isempty(aux_QRS_loc))
+                annotations_used = ECG_annotations;
+            else
+                annotations_used = aux_QRS_loc;
+            end
+            
 %             aux_val = ECG_sample_start_end_idx + ECG_start_offset - 1;
 %             disp_string_title(1, sprintf( 'Classifying from %d to %d', aux_val(1), aux_val(2) ) );
             
@@ -109,12 +126,12 @@ classdef ECGtask_heartbeat_classifier < ECGtask
             
             [aux_val, ~, lablist ] = a2hbc('ECG', ECG(:,lead_idx), ...
                             'ECG_header', ECG_header, ...
-                            'ECG_annotations', ECG_annotations, ...
+                            'ECG_annotations', annotations_used, ...
                             'op_mode', obj.mode );
 
-            bAux = ECG_annotations.time > ECG_sample_start_end_idx(1) & ECG_annotations.time < ECG_sample_start_end_idx(2);
+            bAux = annotations_used.time > ECG_sample_start_end_idx(1) & annotations_used.time < ECG_sample_start_end_idx(2);
             payload_out.anntyp = lablist(colvec(aux_val(bAux)),1);
-            payload_out.time = ECG_annotations.time(bAux) + ECG_start_offset - 1;
+            payload_out.time = annotations_used.time(bAux) + ECG_start_offset - 1;
             payload_out.lablist = lablist;
             
         end
@@ -149,7 +166,7 @@ classdef ECGtask_heartbeat_classifier < ECGtask
             if( ischar(x) && ~isempty(strcmpi(x, obj.cKnownModesOfOperation)) )
                 obj.mode = x;
             else
-                warning('ECGtask_QRS_detection:BadArg', 'Invalid detectors.');
+                warning('ECGtask_HB_classifier:BadArg', 'Invalid mode.');
             end
         end
 
@@ -157,69 +174,7 @@ classdef ECGtask_heartbeat_classifier < ECGtask
     end
     
     methods ( Access = private )
-        
-        function aux_val = ParsePayloadAnnotations(obj)
-
-            aux_val = [];
-            
-            if( isstruct(obj.payload) )
-                
-                aux_fn = fieldnames(obj.payload);
-                
-                jj = 1;
-                
-                while( isempty( aux_val ) )
-                    
-                    % prefer manually reviewed annotations corrected 
-                    aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'corrected_'))), aux_fn, 'UniformOutput', false)));
-
-                    if( isempty(aux_idx) )
-
-                        if( isfield(obj.payload, 'series_quality') )
-                            % choose the best ranked automatic detection
-                            [~, aux_idx] = sort(obj.payload.series_quality.ratios, 'descend' );
-                            if( jj <= length(aux_idx))
-                                aux_val = obj.payload.(obj.payload.series_quality.AnnNames{aux_idx(jj),1} ).(obj.payload.series_quality.AnnNames{aux_idx(jj),2});
-                                delineation_chosen = obj.payload.series_quality.AnnNames{aux_idx(jj),1};
-                            else
-                                break
-                            end
-                        else
-                            % choose the first of wavedet
-                            aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'wavedet_'))), aux_fn, 'UniformOutput', false)));
-                            if( isempty(aux_idx) )
-                                disp_string_framed(2, 'Could not identify QRS detections in the input payload.');
-                                return
-                            else
-                                if( jj <= length(aux_idx))
-                                    aux_val = obj.payload.(aux_fn{aux_idx(jj)}).time;
-                                    delineation_chosen = aux_fn{aux_idx(jj)};
-                                else
-                                    break
-                                end
-                            end
-                        end
-                    else
-                        % choose the first manually audited
-                        if( jj <= length(aux_idx))
-                            aux_val = obj.payload.(aux_fn{aux_idx(jj)}).time;
-                            delineation_chosen = aux_fn{aux_idx(jj)};
-                        else
-                            break
-                        end
-                    end
-
-                    cprintf('blue', [' + Using ' delineation_chosen ' detections.\n' ] );
-                    aux_val = sort(unique(aux_val));
-                    jj = jj + 1;
-                end
-                
-            elseif( isnumeric(obj.payload) )
-                aux_val = sort(unique(obj.payload));
-            end
-            
-        end        
-        
+          
     end
     
 end

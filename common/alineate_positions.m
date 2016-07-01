@@ -21,7 +21,7 @@
 % 
 % See also soft_set_intersect
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Birthdate: 14/05/2016
 % Last update: 14/05/2016

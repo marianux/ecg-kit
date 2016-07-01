@@ -36,7 +36,7 @@
 % 
 % See also plot_ecg_strip
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Last update: 17/6/2014
 % Birthdate  : 15/8/2012

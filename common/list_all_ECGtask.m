@@ -1,5 +1,5 @@
 %% List al ECGtask availables
-% Look for the available ECGtask classes defined in the ECGkit\common
+% Look for the available ECGtask classes defined in the ecg-kit_rootpath\common
 % folder.
 %   
 % Example

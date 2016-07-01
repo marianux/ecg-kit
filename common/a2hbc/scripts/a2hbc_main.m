@@ -4,7 +4,7 @@ function [ Labels, ConfusionMatrix, LabelList ] = a2hbc_main(varargin)
 % -----------------
 % See a2hbc.m in the parent directory or the documentation for help.
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Birthdate  : 16/8/2011
 % Last update: 9/2/2012
 
