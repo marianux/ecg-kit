@@ -1,6 +1,6 @@
-%% Very simple example of how to use the ECGkit
+%% Very simple example of how to use the ecg-kit
 % 
-% This script exemplifies the use of the ECGkit in a very short multimodal
+% This script exemplifies the use of the ecg-kit in a very short multimodal
 % cardiovascular recording which includes arterial blood pressure (ABP),
 % plethysmographic (PPG) and electrocardiogram signals. The following tasks
 % will be performed in this example:  
@@ -31,7 +31,7 @@
 function first_simple_example()
 
     root_path = fileparts(mfilename('fullpath'));
-    % get the parent or ECGkit root folder.
+    % get the parent or ecg-kit root folder.
     root_path = fileparts(root_path);
     % default folder to look at
     examples_path = [root_path filesep 'recordings' filesep ];

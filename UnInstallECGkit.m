@@ -1,4 +1,4 @@
-%% Uninstallation script of ECGkit
+%% Uninstallation script of ecg-kit
 % Script to install this toolbox.
 % 
 % ****************************************************************
@@ -43,7 +43,7 @@ function UnInstallECGkit( bIgnoreAdminPrivs )
     
     if( bUseDesktop || bOctave )
     
-        disp_string_framed('*Blue', sprintf('ECGkit for Matlab %s', release_str) );
+        disp_string_framed('*Blue', sprintf('ecg-kit for Matlab %s', release_str) );
         
         if( bMatlab )
         

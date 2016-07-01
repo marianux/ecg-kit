@@ -8,7 +8,7 @@ classdef ECGtask_PCA_proj_basis < ECGtask
 % Abstract class for defining ECGtask interface
 % 
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Birthdate  : 18/2/2013
 % Last update: 18/2/2013

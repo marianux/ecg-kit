@@ -24,7 +24,7 @@
 % 
 % See also read_ECG
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Birthdate: 29/05/2014
 % Last update: 29/05/2014

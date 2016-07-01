@@ -27,7 +27,8 @@ bRetval = false;
 try
    xDoc = xmlread(filename);
 catch
-    error('isHL7aformat:ReadError', 'Failed to read XML file %s.\n', filename);
+%     error('isHL7aformat:ReadError', 'Failed to read XML file %s.\n', filename);
+    return
 end
 
 AnnECGtag = xDoc.getElementsByTagName('AnnotatedECG');

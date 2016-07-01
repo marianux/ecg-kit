@@ -2,6 +2,6 @@
 % Version 0.1 01-Oct-2014
 % Files
 
-%   InstallECGkit   - Installation script of ECGkit
-%   UnInstallECGkit - Uninstallation script of ECGkit
-%   ECGkit_examples - Example of how to use the ECGkit
+%   InstallECGkit   - Installation script of ecg-kit
+%   UnInstallECGkit - Uninstallation script of ecg-kit
+%   ECGkit_examples - Example of how to use the ecg-kit

@@ -24,7 +24,7 @@
 % 
 % See also ECGwrapper
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Birthdate  : 30/7/2014
 % Last update: 30/7/2014

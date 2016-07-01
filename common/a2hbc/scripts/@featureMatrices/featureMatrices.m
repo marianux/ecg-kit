@@ -30,7 +30,7 @@ classdef featureMatrices < handle
 %   Probably a lot :( ... but dont panic! send me feedback if you need
 %   help.
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Birthdate  : 20/3/2012
 % Last update: 20/3/2012

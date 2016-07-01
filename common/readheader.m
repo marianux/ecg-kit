@@ -20,7 +20,7 @@
 % Authors:
 % Salvador Olmos
 % Last update Juan Bolea 07/10/2008
-% adapted to the kit by Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% adapted to the kit by Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Birthdate: 29/05/2014
 % Last update: 29/05/2014

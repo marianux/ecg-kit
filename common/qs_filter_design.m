@@ -40,7 +40,7 @@
 %     fvtool(q_filters, 'fs', fs )
 % end
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Birthdate: 17/2/11
 % Last update: 22/02/13
