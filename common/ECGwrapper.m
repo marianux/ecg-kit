@@ -1196,8 +1196,11 @@ classdef ECGwrapper < handle
                 
                 obj.ECGtaskHandle = this_name{1};
 
-                obj.CheckTaskHandle();
-
+                if( obj.bArgChanged )
+                    obj = obj.CheckArguments();
+                    obj.bArgChanged = false;
+                end
+                
                 if( isempty(obj.user_string) )
                     aux_user_prefix = [];
                 else

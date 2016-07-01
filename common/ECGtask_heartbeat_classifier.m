@@ -71,12 +71,14 @@ classdef ECGtask_heartbeat_classifier < ECGtask
         function Start(obj, ECG_header, ECG_annotations)
 
             if( ECG_header.nsig == 1 )
+                disp_string_framed(2, 'The classifier was not developed for single lead signals.');
                 return
             end
 
             lead_idx = get_ECG_idx_from_header(ECG_header);
 
             if( length(lead_idx) <= 1 )
+                disp_string_framed(2, 'The classifier was not developed for single lead signals.');
                 return
             end
             
