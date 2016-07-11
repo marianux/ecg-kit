@@ -164,6 +164,9 @@ returned_handles = [];
 % Avoid IO greater than MaxIOread
 MaxIOread = 10; %megabytes
 
+
+Default_time_window = 10; % seconds
+
 %multilead
 color_Pwave_global =        [210 255 189]/255;
 color_QRScomplex_global =   [255 200 255]/255;
@@ -492,7 +495,9 @@ if( ~isempty(hb_labels_wrapper) )
     
 end
 
-if( (isempty(QRS_locations) || (iscell(QRS_locations) && all(cellfun(@(a)(isempty(a)), QRS_locations)))) && isempty(annotations) && isempty(global_annotations))
+if( ( (isempty(QRS_locations) || (iscell(QRS_locations) && all(cellfun(@(a)(isempty(a)), QRS_locations)))) && isempty(annotations) && isempty(global_annotations) ) || ...
+    ( isnumeric(QRS_locations) && (QRS_locations(end) - QRS_locations(1)) < (Default_time_window * heasig.freq) || (iscell(QRS_locations) && all(cellfun(@(a)((a(end) - a(1)) < (Default_time_window * heasig.freq)), QRS_locations)))) ...
+  )
     %no annotations at all
     QRS_start_idx = [];
     cant_qrs = [];
@@ -515,21 +520,21 @@ else
         end
 
         if( isempty(cant_qrs) )
-            cant_qrs = 10;
+            cant_qrs = min([ 10; colvec(cellfun(@(a)(length(a)), QRS_locations)) ]);
         end
-        
+
     else
 
         if( isempty(start_time) )
             if( isempty(end_time) )
                 start_time = 0;
             else
-                start_time = end_time - 10;
+                start_time = end_time - Default_time_window;
             end
         end
 
         if( isempty(end_time) )
-            end_time = start_time + 10;
+            end_time = start_time + Default_time_window;
         end
         
     end
