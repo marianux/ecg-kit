@@ -19,7 +19,7 @@
 % 
 % See also plot_ecg_mosaic
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Birthdate: 21/7/2010
 % Last update: 20/02/2013

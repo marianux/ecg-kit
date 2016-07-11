@@ -78,7 +78,7 @@ classdef ECGwrapper < handle
        
     properties(GetAccess = private, Constant)
         
-        % all ECG formats that ECGkit can handle
+        % all ECG formats that ecg-kit can handle
         cKnownFormats = {'MIT' 'ISHNE', 'AHA', 'HES', 'MAT', 'Mortara', 'auto'};
         % The fields required in the ECGheader property
         cHeaderFieldNamesRequired = {'freq' 'nsamp' 'nsig' 'gain' 'adczero' };
@@ -1196,8 +1196,11 @@ classdef ECGwrapper < handle
                 
                 obj.ECGtaskHandle = this_name{1};
 
-                obj.CheckTaskHandle();
-
+                if( obj.bArgChanged )
+                    obj = obj.CheckArguments();
+                    obj.bArgChanged = false;
+                end
+                
                 if( isempty(obj.user_string) )
                     aux_user_prefix = [];
                 else
@@ -1418,6 +1421,15 @@ classdef ECGwrapper < handle
             value = obj.ECG_annotations;
         end
         
+        function value = get.ECG_delineation(obj)
+            
+            if( obj.bECG_rec_changed )
+                obj = obj.CheckECGrecording();
+            end
+            
+            value = obj.ECG_delineation;
+        end
+                
         function value = get.ECG_header(obj)
             
             if( obj.bECG_rec_changed )

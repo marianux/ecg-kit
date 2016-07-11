@@ -81,7 +81,7 @@
 % %this clear and close all.
 % clear pb
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Birthdate  : 23/8/2011
 % Last update: 24/3/2014

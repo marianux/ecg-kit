@@ -34,7 +34,7 @@ function reportECG(ECG_w, detailLevel, report_mode, win_lengths, report_format, 
 %                of the original recording handled by ECG_w.
 % 
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Last update: 17/6/2014
 % Birthdate  : 15/8/2012

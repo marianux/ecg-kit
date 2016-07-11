@@ -132,7 +132,7 @@ function [ Labels, ConfusionMatrix, LabelList ] = a2hbc(varargin)
 %   Probably a lot :( ... but dont panic! send me feedback if you need
 %   help.
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Birthdate  : 16/8/2011
 % Last update: 9/2/2012

@@ -8,7 +8,7 @@ classdef ECGtask_arbitrary_function < ECGtask
 % Task to perform linear filtering in ECG signals
 % 
 % 
-% Author: Mariano Llamedo Soria (llamedom at {electron.frba.utn.edu.ar; unizar.es}
+% Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
 % Birthdate  : 25/2/2015
 % Last update: 25/2/2015

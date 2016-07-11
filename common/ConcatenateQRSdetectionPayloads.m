@@ -77,8 +77,14 @@ function payload = ConcatenateQRSdetectionPayloads(obj, plA, plB)
 
                 if( isfield(plA, 'series_performance') && isfield(plB, 'series_performance') )
                     payload.series_performance.conf_mat = plA.series_performance.conf_mat(:,:,aux_idxA) + plB.series_performance.conf_mat(:,:,aux_idxB);
+                    payload.series_performance.error = cat(3, plA.series_performance.error(aux_idxA,:,:), plB.series_performance.error(aux_idxB,:));
+                    % contemplo el max_idx del tramo anterior para TP y FP, el gold
+                    % standard ya tiene los índices adecuados.
+                    aux_not_empty_idx = find(cellfun(@(a,b)(~isempty([colvec(a);colvec(b)])), plA.series_performance.conf_mat_details(aux_idxA,2), plA.series_performance.conf_mat_details(aux_idxA,4) ));
+                    aux_max_idx = cellfun(@(a,b)(max([colvec(a);colvec(b)])), plA.series_performance.conf_mat_details(aux_idxA(aux_not_empty_idx),2), plA.series_performance.conf_mat_details(aux_idxA(aux_not_empty_idx),4), 'UniformOutput', false );
+                    plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),2) = cellfun(@(a,b)(a + b + 1), plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),2), aux_max_idx, 'UniformOutput', false );
+                    plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),4) = cellfun(@(a,b)(a + b + 1), plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),4), aux_max_idx, 'UniformOutput', false );
                     payload.series_performance.conf_mat_details = cellfun(@(a,b)([colvec(a);colvec(b)]), plA.series_performance.conf_mat_details(aux_idxA,:), plB.series_performance.conf_mat_details(aux_idxB,:), 'UniformOutput', false );
-                    payload.series_performance.error = cat(3, plA.series_performance.error(aux_idxA,:,:), plB.series_performance.error(aux_idxA,:));
                 else
                     if( obj.CalculatePerformance )
                         disp_string_framed(2, 'WARNING!! Performance not calculated ' );
