@@ -57,11 +57,12 @@
 % Last update: 19/11/2014
 % Copyright 2008-2015
 % 
-function [ECG heasig ann single_lead_positions recording_format end_sample] = read_ECG(recording_name, ECG_start_idx, ECG_end_idx, recording_format)
+function [ECG, heasig, ann, single_lead_positions, recording_format, end_sample] = read_ECG(recording_name, ECG_start_idx, ECG_end_idx, recording_format)
 
 ECG = [];
 heasig = [];
 ann = [];
+single_lead_positions = [];
 cKnownFormats = {'MIT' 'AHA' 'ISHNE', 'HES', 'MAT', 'Mortara', 'HL7a'};
 
 matformat_definitions();
