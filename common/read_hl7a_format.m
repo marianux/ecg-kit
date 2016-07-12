@@ -557,6 +557,7 @@ if(bAnnRequired)
     % get annotationSet tag in the file
     annSets = xDoc.getElementsByTagName('annotationSet');
     
+    next_index_base = 0;
     annSet_idx = 0;
     thisAnnSet = annSets.item(annSet_idx);
     
@@ -590,205 +591,212 @@ if(bAnnRequired)
             
             thisComp = allComponents.item(comp_idx);
 
-            parentNode = thisComp.getParentNode;
+            if( thisComp.getNodeIndex > next_index_base )
 
-            thisAnn = thisComp.getElementsByTagName('annotation');
+                thisAnn = thisComp.getElementsByTagName('annotation');
 
-            if( thisAnn.getLength > 0 )
+                if( thisAnn.getLength > 0 )
 
-                thisAnn = thisAnn.item(0);
+                    thisAnn = thisAnn.item(0);
 
-                thisCode = thisAnn.getElementsByTagName('code');
+                    thisCode = thisAnn.getElementsByTagName('code');
 
-                thisValue = thisAnn.getElementsByTagName('value');
+                    thisValue = thisAnn.getElementsByTagName('value');
 
-                pb.checkpoint();
+                    pb.checkpoint();
 
-                if( ( xml_tag_value(thisCode.item(0), 'code', 'MDC_ECG_WAVC' ) || xml_tag_value(thisCode.item(0), 'code', 'MDC_ECG_WAVC_TYPE' ) ) && ...
-                        xml_tag_value(thisValue.item(1), 'code', 'MDC_ECG_WAVC_PEAK') ) 
-                    % peak annotation
+                    if( ( xml_tag_value(thisCode.item(0), 'code', 'MDC_ECG_WAVC' ) || xml_tag_value(thisCode.item(0), 'code', 'MDC_ECG_WAVC_TYPE' ) ) && ...
+                            xml_tag_value(thisValue.item(1), 'code', 'MDC_ECG_WAVC_PEAK') ) 
+                        % peak annotation
 
-                    [~, strAux] = xml_tag_value(thisValue.item(0), 'code');
+                        [~, strAux] = xml_tag_value(thisValue.item(0), 'code');
 
-                    [~, wave_idx ] = intersect(cWaveNamesHL7a(wave_subset_idx,1), strAux);
-
-                    if( ~isempty(wave_idx) )
-
-                        % Annotation is global, unless specified by a "code"
-                        % tag
-                        bTimeRelative = true;
-                        bAllleads = true;
-                        code_idx = 2;
-                        while(code_idx < thisCode.getLength)
-                            [~, strAux] = xml_tag_value(thisCode.item(code_idx), 'code');
-
-                            if( strcmpi(strAux, 'TIME_ABSOLUTE') )
-
-                                bTimeRelative = false;
-
-                            else
-                                [~, lead_idx ]= intersect(upper(cLeadNamesHL7a(:,1)), upper(strAux));
-
-                                if( ~isempty(lead_idx) )
-                                    bAllleads = false;
-                                    break;
-                                end
-                            end
-
-                            code_idx = code_idx + 1;
-                        end
-
-                        this_peak = get_time_from_xml_tag(thisValue.item(2), bTimeRelative);
-
-                        if( ~bTimeRelative )
-                            % make annotations relative to the
-                            % origin
-                            this_peak = etime(datevec(this_peak), datevec(base_time));
-                        end
-
-                        if( bAllleads )
-                            aux_idx = 1:heasig.nsig;
-                        else
-                            aux_idx = lead_translate_idx(lead_idx);
-                        end
-
-                        aux_val = round( this_peak * heasig.freq);
-
-                        for ii = aux_idx
-
-                            bCompParsedOk = true;
-
-                            % peak
-                            aux_idx = single_lead_positions(ii).(cHL7aECG_translation{wave_idx,2});
-                            aux_idx = [aux_idx; aux_val];
-                            single_lead_positions(ii).(cHL7aECG_translation{wave_idx,2}) = aux_idx;
-                            bAnnSetFound = true;
-                        end
-
-                    end
-
-                
-                elseif( (   xml_tag_value(thisCode.item(0), 'code', 'MDC_ECG_BEAT' ) && ...
-                        xml_tag_value(thisCode.item(1), 'code', 'MDC_ECG_WAVC' ) ...
-                    ) || ...
-                        xml_tag_value(thisCode.item(0), 'code', 'MDC_ECG_WAVC' )) 
-                    % wave annotation (onset-offset)
-
-                    [~, strAux ] = xml_tag_value(thisValue.item(0), 'code' );
-                    [~, wave_idx ] = intersect(cWaveNamesHL7a(wave_subset_idx,1), strAux);
-                    code_idx = 1;
-
-                    if( isempty(wave_idx) )
-                        code_idx = 2;
-                        [~, strAux ] = xml_tag_value(thisValue.item(1), 'code' );
                         [~, wave_idx ] = intersect(cWaveNamesHL7a(wave_subset_idx,1), strAux);
-                    end
 
-                    if( ~isempty(wave_idx) )
+                        if( ~isempty(wave_idx) )
 
-                        % Annotation is global, unless specified by a "code"
-                        % tag
-                        bAllleads = true;
-                        bTimeRelative = true;
-                        while(code_idx < thisCode.getLength)
-                            [~, strAux] = xml_tag_value(thisCode.item(code_idx), 'code');
+                            % Annotation is global, unless specified by a "code"
+                            % tag
+                            bTimeRelative = true;
+                            bAllleads = true;
+                            code_idx = 2;
+                            while(code_idx < thisCode.getLength)
+                                [~, strAux] = xml_tag_value(thisCode.item(code_idx), 'code');
 
-                            if( strcmpi(strAux, 'TIME_ABSOLUTE') )
+                                if( strcmpi(strAux, 'TIME_ABSOLUTE') )
 
-                                bTimeRelative = false;
+                                    bTimeRelative = false;
 
-                            else
+                                else
+                                    [~, lead_idx ]= intersect(upper(cLeadNamesHL7a(:,1)), upper(strAux));
 
-                                [~, lead_idx ]= intersect(upper(cLeadNamesHL7a(:,1)), upper(strAux));
-
-                                if( ~isempty(lead_idx) )
-                                    bAllleads = false;
-                                    break;
+                                    if( ~isempty(lead_idx) )
+                                        bAllleads = false;
+                                        break;
+                                    end
                                 end
 
+                                code_idx = code_idx + 1;
                             end
 
-                            code_idx = code_idx + 1;
-                        end
+                            this_peak = get_time_from_xml_tag(thisValue.item(2), bTimeRelative);
 
-                        thisOnset = thisAnn.getElementsByTagName('low');
-                        thisOffset = thisAnn.getElementsByTagName('high');
-
-                        this_onset = get_time_from_xml_tag(thisOnset.item(0), bTimeRelative);
-                        this_offset = get_time_from_xml_tag(thisOffset.item(0), bTimeRelative);
-
-                        if( ~bTimeRelative )
-                            % make annotations relative to the
-                            % origin
-                            if( ~isempty(this_onset) )
-                                this_onset = etime(datevec(this_onset), datevec(base_time));
+                            if( ~bTimeRelative )
+                                % make annotations relative to the
+                                % origin
+                                this_peak = etime(datevec(this_peak), datevec(base_time));
                             end
-                            if( ~isempty(this_offset) )
-                                this_offset = etime(datevec(this_offset), datevec(base_time));
-                            end
-                        end
 
-
-                        if( bAllleads )
-                            lead_idx2 = 1:heasig.nsig;
-                        else
-                            lead_idx2 = lead_translate_idx(lead_idx);
-                        end
-
-                        for ii = lead_idx2
-
-                            bCompParsedOk = true;
-
-                            if( ~isempty(cHL7aECG_translation{wave_idx,3}) )
-                                % onset
-                                aux_idx = single_lead_positions(ii).(cHL7aECG_translation{wave_idx,3});
-                                aux_val = round( this_onset * heasig.freq);
-                                aux_idx = [aux_idx; aux_val];
-                                single_lead_positions(ii).(cHL7aECG_translation{wave_idx,3}) = aux_idx;
-                                bAnnSetFound = true;
-                            end
-                            if( ~isempty(cHL7aECG_translation{wave_idx,4}) )
-                                % offset
-                                aux_idx = single_lead_positions(ii).(cHL7aECG_translation{wave_idx,4});
-                                aux_val = [aux_val; round( this_offset * heasig.freq)];
-                                wave_midpoint = round(mean(aux_val));
-                                aux_idx = [aux_idx; aux_val(end)];
-                                single_lead_positions(ii).(cHL7aECG_translation{wave_idx,4}) = aux_idx;
-                                bAnnSetFound = true;
-                            end
-                        end
-
-                        if( any(QRwaves_idx == wave_idx) )
-                            % heartbeat type
-                            ann.time = [ann.time; wave_midpoint];
-                            [~, strAux ] = xml_tag_value(thisValue.item(0), 'code' );
-                            [~, beat_type_idx ]= intersect(cBeatTypesHL7a(:,1), upper(strAux));
-                            if( isempty(beat_type_idx) )
-                                % Unclassified beat
-                                ann.anntyp = [ann.anntyp; cBeatTypesHL7a{1,2}];
+                            if( bAllleads )
+                                aux_idx = 1:heasig.nsig;
                             else
-                                ann.anntyp = [ann.anntyp; cBeatTypesHL7a{beat_type_idx,2}];
+                                aux_idx = lead_translate_idx(lead_idx);
                             end
+
+                            aux_val = round( this_peak * heasig.freq);
+
+                            for ii = aux_idx
+
+                                bCompParsedOk = true;
+
+                                % peak
+                                aux_idx = single_lead_positions(ii).(cHL7aECG_translation{wave_idx,2});
+                                aux_idx = [aux_idx; aux_val];
+                                single_lead_positions(ii).(cHL7aECG_translation{wave_idx,2}) = aux_idx;
+                                bAnnSetFound = true;
+                            end
+
+                            aux_val = thisValue.item(2);
+                            next_index_base = aux_val.getNodeIndex;
+
+                        end
+
+
+                    elseif( (   xml_tag_value(thisCode.item(0), 'code', 'MDC_ECG_BEAT' ) && ...
+                            xml_tag_value(thisCode.item(1), 'code', 'MDC_ECG_WAVC' ) ...
+                        ) || ...
+                            xml_tag_value(thisCode.item(0), 'code', 'MDC_ECG_WAVC' )) 
+                        % wave annotation (onset-offset)
+
+                        [~, strAux ] = xml_tag_value(thisValue.item(0), 'code' );
+                        [~, wave_idx ] = intersect(cWaveNamesHL7a(wave_subset_idx,1), strAux);
+                        code_idx = 1;
+
+                        if( isempty(wave_idx) )
+                            code_idx = 2;
+                            [~, strAux ] = xml_tag_value(thisValue.item(1), 'code' );
+                            [~, wave_idx ] = intersect(cWaveNamesHL7a(wave_subset_idx,1), strAux);
+                        end
+
+                        if( ~isempty(wave_idx) )
+
+                            % Annotation is global, unless specified by a "code"
+                            % tag
+                            bAllleads = true;
+                            bTimeRelative = true;
+                            while(code_idx < thisCode.getLength)
+                                [~, strAux] = xml_tag_value(thisCode.item(code_idx), 'code');
+
+                                if( strcmpi(strAux, 'TIME_ABSOLUTE') )
+
+                                    bTimeRelative = false;
+
+                                else
+
+                                    [~, lead_idx ]= intersect(upper(cLeadNamesHL7a(:,1)), upper(strAux));
+
+                                    if( ~isempty(lead_idx) )
+                                        bAllleads = false;
+                                        break;
+                                    end
+
+                                end
+
+                                code_idx = code_idx + 1;
+                            end
+
+                            thisOnset = thisAnn.getElementsByTagName('low');
+                            thisOffset = thisAnn.getElementsByTagName('high');
+
+                            this_onset = get_time_from_xml_tag(thisOnset.item(0), bTimeRelative);
+                            this_offset = get_time_from_xml_tag(thisOffset.item(0), bTimeRelative);
+
+                            if( ~bTimeRelative )
+                                % make annotations relative to the
+                                % origin
+                                if( ~isempty(this_onset) )
+                                    this_onset = etime(datevec(this_onset), datevec(base_time));
+                                end
+                                if( ~isempty(this_offset) )
+                                    this_offset = etime(datevec(this_offset), datevec(base_time));
+                                end
+                            end
+
+
+                            if( bAllleads )
+                                lead_idx2 = 1:heasig.nsig;
+                            else
+                                lead_idx2 = lead_translate_idx(lead_idx);
+                            end
+
+                            for ii = lead_idx2
+
+                                bCompParsedOk = true;
+
+                                if( ~isempty(cHL7aECG_translation{wave_idx,3}) )
+                                    % onset
+                                    aux_idx = single_lead_positions(ii).(cHL7aECG_translation{wave_idx,3});
+                                    aux_val = round( this_onset * heasig.freq);
+                                    aux_idx = [aux_idx; aux_val];
+                                    single_lead_positions(ii).(cHL7aECG_translation{wave_idx,3}) = aux_idx;
+                                    bAnnSetFound = true;
+                                end
+                                if( ~isempty(cHL7aECG_translation{wave_idx,4}) )
+                                    % offset
+                                    aux_idx = single_lead_positions(ii).(cHL7aECG_translation{wave_idx,4});
+                                    aux_val = [aux_val; round( this_offset * heasig.freq)];
+                                    wave_midpoint = round(mean(aux_val));
+                                    aux_idx = [aux_idx; aux_val(end)];
+                                    single_lead_positions(ii).(cHL7aECG_translation{wave_idx,4}) = aux_idx;
+                                    bAnnSetFound = true;
+                                end
+                            end
+
+                            if( any(QRwaves_idx == wave_idx) )
+                                % heartbeat type
+                                ann.time = [ann.time; wave_midpoint];
+                                [~, strAux ] = xml_tag_value(thisValue.item(0), 'code' );
+                                [~, beat_type_idx ]= intersect(cBeatTypesHL7a(:,1), upper(strAux));
+                                if( isempty(beat_type_idx) )
+                                    % Unclassified beat
+                                    ann.anntyp = [ann.anntyp; cBeatTypesHL7a{1,2}];
+                                else
+                                    ann.anntyp = [ann.anntyp; cBeatTypesHL7a{beat_type_idx,2}];
+                                end
+                            end
+
+                            aux_val = thisOffset.item(0);
+                            next_index_base = aux_val.getNodeIndex;
+
                         end
 
                     end
+
+                    pb.checkpoint();
+
+%                     % to debug not supported components
+%                     if(~bCompParsedOk)
+%                         disp_string_framed(2, sprintf('Component %d from %s could not be parsed', comp_idx, filename) );
+% 
+%                         fprintf(2, sprintf('%s\n', disp_xml_nodes(thisValue) ) );
+%                         fprintf(2, sprintf('%s\n', disp_xml_nodes(thisCode) ) );
+% 
+%                     end
 
                 end
 
-                pb.checkpoint();
-
-% to debug not supported components
-%                 if(~bCompParsedOk)
-%                     disp_string_framed(2, sprintf('Component %d from %s could not be parsed', comp_idx, filename) );
-% 
-%                     fprintf(2, sprintf('%s\n', disp_xml_nodes(thisValue) ) );
-%                     fprintf(2, sprintf('%s\n', disp_xml_nodes(thisCode) ) );
-% 
-%                 end
-
             end
-
-
+            
             comp_idx = comp_idx + 1;
             
             if(bDesktop)
