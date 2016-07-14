@@ -78,12 +78,14 @@ function payload = ConcatenateQRSdetectionPayloads(obj, plA, plB)
                 if( isfield(plA, 'series_performance') && isfield(plB, 'series_performance') )
                     payload.series_performance.conf_mat = plA.series_performance.conf_mat(:,:,aux_idxA) + plB.series_performance.conf_mat(:,:,aux_idxB);
                     payload.series_performance.error = cat(3, plA.series_performance.error(aux_idxA,:,:), plB.series_performance.error(aux_idxB,:));
-                    % contemplo el max_idx del tramo anterior para TP y FP, el gold
-                    % standard ya tiene los índices adecuados.
+                    % contemplo el max_idx del tramo anterior
                     aux_not_empty_idx = find(cellfun(@(a,b)(~isempty([colvec(a);colvec(b)])), plA.series_performance.conf_mat_details(aux_idxA,2), plA.series_performance.conf_mat_details(aux_idxA,4) ));
-                    aux_max_idx = cellfun(@(a,b)(max([colvec(a);colvec(b)])), plA.series_performance.conf_mat_details(aux_idxA(aux_not_empty_idx),2), plA.series_performance.conf_mat_details(aux_idxA(aux_not_empty_idx),4), 'UniformOutput', false );
-                    plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),2) = cellfun(@(a,b)(a + b + 1), plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),2), aux_max_idx, 'UniformOutput', false );
-                    plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),4) = cellfun(@(a,b)(a + b + 1), plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),4), aux_max_idx, 'UniformOutput', false );
+                    aux_max_detetctor_idx = cellfun(@(a,b)(max([colvec(a);colvec(b)])), plA.series_performance.conf_mat_details(aux_idxA(aux_not_empty_idx),2), plA.series_performance.conf_mat_details(aux_idxA(aux_not_empty_idx),4), 'UniformOutput', false );
+                    aux_max_goldstd_idx = cellfun(@(a,b)(max([colvec(a);colvec(b)])), plA.series_performance.conf_mat_details(aux_idxA(aux_not_empty_idx),1), plA.series_performance.conf_mat_details(aux_idxA(aux_not_empty_idx),3), 'UniformOutput', false );
+                    plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),1) = cellfun(@(a,b)(a + b + 1), plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),1), aux_max_goldstd_idx, 'UniformOutput', false );
+                    plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),3) = cellfun(@(a,b)(a + b + 1), plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),3), aux_max_goldstd_idx, 'UniformOutput', false );
+                    plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),2) = cellfun(@(a,b)(a + b + 1), plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),2), aux_max_detetctor_idx, 'UniformOutput', false );
+                    plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),4) = cellfun(@(a,b)(a + b + 1), plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),4), aux_max_detetctor_idx, 'UniformOutput', false );
                     payload.series_performance.conf_mat_details = cellfun(@(a,b)([colvec(a);colvec(b)]), plA.series_performance.conf_mat_details(aux_idxA,:), plB.series_performance.conf_mat_details(aux_idxB,:), 'UniformOutput', false );
                 else
                     if( obj.CalculatePerformance )
