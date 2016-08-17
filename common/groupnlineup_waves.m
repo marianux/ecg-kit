@@ -70,8 +70,13 @@ for this_lead = 1:cant_leads
         
     end
     
-    % group remaining waves if any
-    slposout_mat = positions2matrix(slpos_out(this_lead));
+    if( cant_QRS == 0 )
+        slposout_mat = [];
+    else
+        % group remaining waves if any
+        slposout_mat = positions2matrix(slpos_out(this_lead));
+    end
+    
     cant_names = length(slpos_names);
     other_waves = cell(1,cant_names);
     
@@ -79,8 +84,12 @@ for this_lead = 1:cant_leads
         if( all(isnan(this_pos_mat(:,ii))) )
             other_waves{ii} = [];
         else
-             aux_val = setdiff(this_pos_mat(:,ii), slposout_mat(:,ii));
-             other_waves{ii} = aux_val(~isnan(aux_val));
+            if( isempty(slposout_mat) )
+                aux_val = this_pos_mat(:,ii);
+            else
+                aux_val = setdiff(this_pos_mat(:,ii), slposout_mat(:,ii));
+            end
+            other_waves{ii} = aux_val(~isnan(aux_val));
         end
     end
     
@@ -89,7 +98,7 @@ for this_lead = 1:cant_leads
         [~, wave_idx] = intersect(slpos_names, {'Pon' 'P' 'Poff'});
         if( any(cellfun(@(a)(~isempty(a)), other_waves(wave_idx) )) )
             other_waves(wave_idx) = alineate_positions( other_waves(wave_idx) );
-            aux_val = nan(length(other_waves(wave_idx(1))),cant_names);
+            aux_val = nan(length(other_waves{wave_idx(1)}),cant_names);
             aux_val(:,wave_idx) = cell2mat(other_waves(wave_idx)); 
             slposout_mat = [ slposout_mat; aux_val ];
         end
@@ -98,7 +107,7 @@ for this_lead = 1:cant_leads
         [~, wave_idx] = intersect(slpos_names, {'QRSon' 'qrs' 'Q' 'R' 'S' 'QRSoff'});
         if( any(cellfun(@(a)(~isempty(a)), other_waves(wave_idx) )) )
             other_waves(wave_idx) = alineate_positions( other_waves(wave_idx) );
-            aux_val = nan(length(other_waves(wave_idx(1))),cant_names);
+            aux_val = nan(length(other_waves{wave_idx(1)}),cant_names);
             aux_val(:,wave_idx) = cell2mat(other_waves(wave_idx)); 
             slposout_mat = [ slposout_mat; aux_val ];
         end
@@ -107,7 +116,7 @@ for this_lead = 1:cant_leads
         [~, wave_idx] = intersect(slpos_names, {'Ton' 'T' 'Toff'});
         if( any(cellfun(@(a)(~isempty(a)), other_waves(wave_idx) )) )
             other_waves(wave_idx) = alineate_positions( other_waves(wave_idx) );
-            aux_val = nan(length(other_waves(wave_idx(1))),cant_names);
+            aux_val = nan(length(other_waves{wave_idx(1)}),cant_names);
             aux_val(:,wave_idx) = cell2mat(other_waves(wave_idx)); 
             slposout_mat = [ slposout_mat; aux_val ];
         end

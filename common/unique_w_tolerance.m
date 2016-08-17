@@ -41,6 +41,11 @@ end
 
 [val1, idx] = unique(val1);
 
+if( length( val1) == 1 )
+    unique_elements = val1;
+    return;
+end
+
 bAux = true;
 while( any(bAux) )
     bAux = abs(val1(1:end-1) - val1(2:end)) <= win_size;
