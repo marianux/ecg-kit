@@ -634,7 +634,9 @@ while ( ~bUserExit && repeat_idx <= Repetitions )
                         
                     else
                         clust_sample_centroid_idx = clust_dist2mu_sorted_idx(1);
-                        fprintf(1, ['Suggestion: ' typical_lablist(true_labels(not_labeled_idx(aux_idx(aux_idx2(clust_sample_centroid_idx)))),:) '\n']);
+                        if( ~isempty(true_labels) )
+                            fprintf(1, ['Suggestion: ' typical_lablist(true_labels(not_labeled_idx(aux_idx(aux_idx2(clust_sample_centroid_idx)))),:) '\n']);
+                        end
                         
                         %find heartbeat samples to show to the expert.
                         FindClusterExamples;

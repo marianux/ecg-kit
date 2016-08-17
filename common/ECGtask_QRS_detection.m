@@ -273,7 +273,7 @@ classdef ECGtask_QRS_detection < ECGtask
 
             end
             
-            if( ~obj.bRecalculateNewDetections )
+            if( obj.bRecalculateNewDetections )
                 % If recalculate only new detections, we exclude
                 % detectors already processed.
                 obj.detectors2do = setdiff(obj.detectors2do, detectors_calculated);
