@@ -248,11 +248,12 @@ elseif( strcmpi(recording_format, 'MIT') || strcmpi(recording_format, 'HL7a') )
 
     cAAMItranslation =           cLabListsLabels{LabConversion_idx};
 
+    % cambio de las clases e y j a -> Supra
     iLabListsTranslations = [ ...
         ...% MITBIH labelling: 'N' 'ñ' 'L' 'R' 'A' 'a' 'J' 'S' 'V' 'F' '[' '!' ']' 'e' 'j' 'E' '/' 'f' 'x' 'p' 'Q' '|' '?' '+' 'r' 's' 'B' 'n' 'ñ'
                                 1:size(cTranslationMatrix,1);
-                                1   1   1   1   2   2   2   2   3   4   6   6   6   1   1   3   5   5   6   6   5   6   6   6   3   6   1   1   6;
-                                1   1   1   1   2   2   2   2   3   3   5   5   5   1   1   3   4   4   5   5   4   5   5   5   3   5   1   1   5;
+                                1   1   1   1   2   2   2   2   3   4   6   6   6   2   2   3   5   5   6   6   5   6   6   6   3   6   1   1   6;
+                                1   1   1   1   2   2   2   2   3   3   5   5   5   2   2   3   4   4   5   5   4   5   5   5   3   5   1   1   5;
                                 2   2   2   2   1   1   1   1   1   1   4   4   4   3   3   3   4   4   4   4   4   4   4   4   1   4   2   3   4;
                                 1   1   1   1   1   2   1   1   2   2   3   3   3   1   1   2   3   3   3   3   3   3   3   3   2   3   1   1   3;
                             ];

@@ -1599,15 +1599,15 @@ classdef ECGwrapper < handle
             else
                 
                 % ECG to be read
+                [obj.rec_path, obj.rec_filename] = fileparts(obj.recording_name);
+                
+                aux_filename = fullfile(obj.rec_path, obj.rec_filename);
 
                 if( exist(obj.recording_name, 'file') )
                     
-                    [obj.rec_path, obj.rec_filename] = fileparts(obj.recording_name);
                     obj.rec_path = [obj.rec_path filesep];
                     
                 else
-                    
-                    [obj.rec_path, obj.rec_filename] = fileparts(obj.recording_name);
                     
                     obj.rec_path = [obj.rec_path filesep];
                     
@@ -1648,7 +1648,7 @@ classdef ECGwrapper < handle
                     annFileName = {};
                     bAnnotationFound = false;
                     for ii = 1:length(strAnnExtension)
-                        aux_str = [obj.recording_name(1:end-3) strAnnExtension{ii}];
+                        aux_str = [aux_filename '.' strAnnExtension{ii}];
                         if( exist(aux_str, 'file') )
                             annFileName = [ annFileName aux_str ];
                             bAnnotationFound = true;
@@ -1665,10 +1665,10 @@ classdef ECGwrapper < handle
                         end
                     end
 
-                    obj.ECG_header = readheader([obj.recording_name(1:end-3) 'hea']);
+                    obj.ECG_header = readheader([aux_filename '.hea']);
 
                 elseif( strcmp(obj.recording_format, 'ISHNE') )
-                    annFileName = [obj.recording_name(1:end-3) 'ann'];
+                    annFileName = [aux_filename '.ann'];
                     if( exist(annFileName, 'file') )
                         ann_aux = read_ishne_ann(annFileName);
                     else
@@ -1688,7 +1688,7 @@ classdef ECGwrapper < handle
                     
 
                 elseif( strcmp(obj.recording_format, 'HES') )
-                    ann_aux = read_HES_ann([obj.recording_name(1:end-3) 'lst']);
+                    ann_aux = read_HES_ann([aux_filename '.lst']);
                     header_aux = read_HES_header(obj.recording_name);
                     ann_aux.time = round(ann_aux.time * header_aux.freq);
                     obj.ECG_header = header_aux;

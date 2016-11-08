@@ -158,7 +158,7 @@
 % Last update: 19/10/2014
 % Birthdate  : 16/2/2012
 % Copyright 2008-2015
-function [ ECG_hdl axes_hdl fig_hdl all_yranges ] = plot_ecg_mosaic( ECG, varargin )
+function [ ECG_hdl, axes_hdl, fig_hdl, all_yranges ] = plot_ecg_mosaic( ECG, varargin )
 
     %% constants
 

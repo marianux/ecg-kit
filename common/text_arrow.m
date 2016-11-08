@@ -81,8 +81,8 @@ function text_arrow_handles = text_arrow( x, y, text_str, text_arrow_prop_vals, 
 
     aux_hdl = plot( x, y );
 
-    
-    [~, aux_idx] = setdiff(text_arrow_prop_vals(:,1), {'String' 'TextColor'});
+    aux_idx = find(cellfun( @(a)(isprop(aux_hdl, a)), text_arrow_prop_vals(:,1) ));
+%     [~, aux_idx] = setdiff(text_arrow_prop_vals(:,1), {'String' 'TextColor'});
     set( aux_hdl, text_arrow_prop_vals(aux_idx,1)', text_arrow_prop_vals(aux_idx,2)' );
     this_colour = get(aux_hdl, 'Color');
     set( aux_hdl, 'MarkerEdgeColor', 1-this_colour );

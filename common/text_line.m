@@ -55,7 +55,8 @@ function text_line_handles = text_line( x, y, text_str, text_line_prop_vals, axe
 
     hold(axes_hdl, 'off');
     
-    [~, aux_idx] = setdiff(text_line_prop_vals(:,1), {'String' 'TextColor'});
+    aux_idx = find(cellfun( @(a)(isprop(aux_hdl, a)), text_line_prop_vals(:,1) ));
+%     [~, aux_idx] = setdiff(text_line_prop_vals(:,1), {'String' 'TextColor'});
     
     set( aux_hdl, text_line_prop_vals(aux_idx,1)', text_line_prop_vals(aux_idx,2)' );
     this_colour = get(aux_hdl, 'Color');

@@ -594,6 +594,11 @@ if( isempty(ECG) )
     % in case not all signals are ECG.
     if( bOnlyECG )
         [ECG_signals_idx, heasig] = get_ECG_idx_from_header(heasig);
+        if( isempty(ECG_signals_idx) )
+            cprintf('[1,0.5,0]', disp_option_enumeration('Could not find any ECG signal, check the lead description of the recording:', cellstr(heasig.desc) ) );
+            fprintf(1, '\n');
+        end
+        
         cant_leads = length(ECG_signals_idx);
     else
         ECG_signals_idx = get_ECG_idx_from_header(heasig);
@@ -623,6 +628,10 @@ else
     if( bOnlyECG )
         % retain only ECG signals
         [ECG_signals_idx, heasig] = get_ECG_signals_idx_from_header(heasig);
+        if( isempty(ECG_signals_idx) )
+            cprintf('[1,0.5,0]', disp_option_enumeration('Could not find any ECG signal, check the lead description of the recording:', cellstr(heasig.desc) ) );
+            fprintf(1, '\n');
+        end
         cant_leads = length(ECG_signals_idx);
         ECG = ECG(:,ECG_signals_idx);
     else
