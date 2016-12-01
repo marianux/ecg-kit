@@ -64,11 +64,17 @@ for ii = 1:size(cTypicalUnits,1)
 end
 
 if( isempty(origin_units_idx) )
-    error('ADC2units:UnknownUnits', ['Unknown units: ' header.units(1,:) ]);
+%     error('ADC2units:UnknownUnits', ['Unknown units: ' header.units(1,:) ]);
+    fprintf(2, 'Unknown units: %s\n', header.units(1,:) );
+    new_header = header;
+    return
 end
 
 if( isempty(target_units_idx) )
-    error('ADC2units:UnknownUnits', ['Unknown units: ' target_units ]);
+%     error('ADC2units:UnknownUnits', ['Unknown units: ' target_units ]);
+    fprintf(2, ['Unknown units: %s\n', target_units]);
+    new_header = header;
+    return
 end
 
 x = ADC2realunits(x, header.adczero, header.gain);

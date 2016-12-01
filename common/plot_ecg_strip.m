@@ -245,6 +245,8 @@ report_filename = p.Results.ReportFilename;
 
 clear p
 
+aux_val = dbstack;
+bCalledFromWorkspace = length(aux_val) == 1;
 cLinespecs = [];
 this_path = fileparts(mfilename('fullpath'));
 cLinespecs = load([ this_path filesep 'clinespecs.mat']);
@@ -359,7 +361,7 @@ if( ~isempty(annotations_wrapper) )
     
     cached_filenames = annotations_wrapper.GetCahchedFileName();
     if( isempty(cached_filenames) )
-        if( ~isempty(annotations) )
+        if( ~isempty(annotations) && bCalledFromWorkspace )
             cprintf('[1,0.5,0]', 'Delineation not found for this wrapper object.\n');
         end
         annotations = [];
@@ -406,7 +408,7 @@ if( ~isempty(global_annotations_wrapper) )
     
     cached_filenames = global_annotations_wrapper.GetCahchedFileName();
     if( isempty(cached_filenames) )
-        if( ~isempty(global_annotations) )
+        if( ~isempty(global_annotations) && bCalledFromWorkspace  )
             cprintf('[1,0.5,0]', 'Multilead/global Delineation not found for this wrapper object.\n');
         end
         global_annotations = [];
@@ -418,11 +420,15 @@ if( ~isempty(global_annotations_wrapper) )
             if( isfield(global_annotations.wavedet, 'multilead') )
                 global_annotations = global_annotations.wavedet.multilead;
             else
-                cprintf('[1,0.5,0]', 'Multilead/global Delineation not found for this wrapper object.\n');
+                if( bCalledFromWorkspace )
+                    cprintf('[1,0.5,0]', 'Multilead/global Delineation not found for this wrapper object.\n');
+                end
                 global_annotations = [];
             end
         else
-            cprintf('[1,0.5,0]', 'Multilead/global Delineation not found for this wrapper object.\n');
+            if( bCalledFromWorkspace )
+                cprintf('[1,0.5,0]', 'Multilead/global Delineation not found for this wrapper object.\n');
+            end
             global_annotations = [];
         end
     end    
@@ -442,7 +448,9 @@ else
         else
             hb_labels = [];
             hb_labels_idx = [];
-            cprintf('[1,0.5,0]', disp_option_enumeration('Missing fields within structure:', cAnnotationsFieldNamesRequired ) );
+            if( bCalledFromWorkspace )
+                cprintf('[1,0.5,0]', disp_option_enumeration('Missing fields within structure:', cAnnotationsFieldNamesRequired ) );
+            end
         end
     end
     
@@ -456,7 +464,7 @@ if( ~isempty(hb_labels_wrapper) )
     
     cached_filenames = hb_labels_wrapper.GetCahchedFileName();
     if( isempty(cached_filenames) )
-        if( ~isempty(hb_labels) )
+        if( ~isempty(hb_labels) && bCalledFromWorkspace )
             cprintf('[1,0.5,0]', 'Heartbeat classification not found for this wrapper object.\n\n');
         end
         hb_labels = [];
@@ -540,9 +548,11 @@ else
     end
 end
 
-if( isempty(heasig) )
+if( isempty(heasig) && bCalledFromWorkspace )
 %     warning('plot_ecg_strip:UnknownSamplingRate', 'Assuming sampling rate of 1000 Hz.')
-    cprintf('[1,0.5,0]', 'Assuming sampling rate of 1000 Hz.\n')
+    if( bCalledFromWorkspace )
+        cprintf('[1,0.5,0]', 'Assuming sampling rate of 1000 Hz.\n')
+    end
     heasig.freq = 1000;
 end
 
@@ -594,7 +604,7 @@ if( isempty(ECG) )
     % in case not all signals are ECG.
     if( bOnlyECG )
         [ECG_signals_idx, heasig] = get_ECG_idx_from_header(heasig);
-        if( isempty(ECG_signals_idx) )
+        if( isempty(ECG_signals_idx) && bCalledFromWorkspace  )
             cprintf('[1,0.5,0]', disp_option_enumeration('Could not find any ECG signal, check the lead description of the recording:', cellstr(heasig.desc) ) );
             fprintf(1, '\n');
         end
@@ -612,7 +622,9 @@ if( isempty(ECG) )
     aux_MaxIOread = (MaxIOread * 1024^2) / heasig.nsig / 2;
     if( cant_samp > aux_MaxIOread && isempty(start_time) && isempty(end_time) )
         cant_samp = aux_MaxIOread;
-        cprintf('[1,0.5,0]','Recording too big, reading only %d samples. Use "Start_time" and "End_time" arguments to select other parts.\n', cant_samp);
+        if( bCalledFromWorkspace )
+            cprintf('[1,0.5,0]','Recording too big, reading only %d samples. Use "Start_time" and "End_time" arguments to select other parts.\n', cant_samp);
+        end
     end
     
     cant_leads = heasig.nsig;
@@ -628,7 +640,7 @@ else
     if( bOnlyECG )
         % retain only ECG signals
         [ECG_signals_idx, heasig] = get_ECG_signals_idx_from_header(heasig);
-        if( isempty(ECG_signals_idx) )
+        if( isempty(ECG_signals_idx)  && bCalledFromWorkspace )
             cprintf('[1,0.5,0]', disp_option_enumeration('Could not find any ECG signal, check the lead description of the recording:', cellstr(heasig.desc) ) );
             fprintf(1, '\n');
         end
@@ -665,13 +677,17 @@ cant_QRS_locations = cellfun(@(a)(length(a)), QRS_locations);
 
 if( ~isfield( heasig, 'adczero' ) )
 %     warning('plot_ecg_strip:UnknownADCzero', 'Assuming 0 ADC zero.')
-    cprintf('[1,0.5,0]','Assuming 0 ADC zero.\n')
+    if( bCalledFromWorkspace )
+        cprintf('[1,0.5,0]','Assuming 0 ADC zero.\n')
+    end
     heasig.adczero = zeros(cant_leads,1);
 end
 
 if( ~isfield( heasig, 'gain' ) )
 %     warning('plot_ecg_strip:UnknownADCgain', 'Assuming gain 1 uV/samp.')
-    cprintf('[1,0.5,0]','Assuming gain 1 uV/samp.\n')
+    if( bCalledFromWorkspace )
+        cprintf('[1,0.5,0]','Assuming gain 1 uV/samp.\n')
+    end
     heasig.gain = repmat(1, cant_leads,1);
 end
 
@@ -701,7 +717,9 @@ if( isfield( heasig, 'units' ) )
                 heasig.gain(ii) = heasig.gain(ii) / 1e6;
 
             otherwise
-                cprintf('[1,0.5,0]', 'Unknown units, assuming uV.\n')            
+                if( bCalledFromWorkspace )
+                    cprintf('[1,0.5,0]', 'Unknown units, assuming uV.\n')            
+                end
 
         end
     end
@@ -713,7 +731,9 @@ if( isfield( heasig, 'units' ) )
     
 else
 %     warning('plot_ecg_strip:UnknownADCunits', 'Assuming uV.')
-    cprintf('[1,0.5,0]', 'Unknown units, assuming uV.\n')   
+    if( bCalledFromWorkspace )
+        cprintf('[1,0.5,0]', 'Unknown units, assuming uV.\n')   
+    end
     volt_idx = 1:cant_leads;
     heasig.units = repmat('uV', cant_leads,1);
     
@@ -737,7 +757,9 @@ elseif(sum(heasig.btime == ':') == 3 )
     formatIn = 'HH:MM:SS:FFF';
 else
     formatIn = [];
-    cprintf('[1,0.5,0]', 'Unknown base time format %s.\n', heasig.btime);
+    if( bCalledFromWorkspace )
+        cprintf('[1,0.5,0]', 'Unknown base time format %s.\n', heasig.btime);
+    end
 end
 
 if( isempty(formatIn) )
@@ -829,7 +851,20 @@ if( down_factor > 1 )
 
     if( isempty(ECG) )
 
-        ECGd = resample(double(ECG_w.read_signal(aux_idx_downsample(1), aux_idx_downsample(end))), 1, down_factor, fir_coeffs);
+        % envelope resampling
+%         aux_val1 = double(ECG_w.read_signal(aux_idx_downsample(1), aux_idx_downsample(end)));
+%         aux_val1 = hilbert(aux_val1);
+%         aux_val2 = abs(aux_val1);
+%         ECGd = resample(aux_val2, 1, down_factor, fir_coeffs);
+        
+        % just decimation
+        aux_val1 = double(ECG_w.read_signal(aux_idx_downsample(1), aux_idx_downsample(end)));
+        aux_val2 = aux_idx_downsample(end) - aux_idx_downsample(1) + 1;
+        ECGd = aux_val1(round(linspace(1,aux_val2,round(aux_val2/down_factor))),:);
+        % anti alias - decimation
+%         ECGd = resample(double(ECG_w.read_signal(aux_idx_downsample(1), aux_idx_downsample(end))), 1, down_factor, fir_coeffs);
+
+
         ECGd = ECGd(aux_idx_downsample_start:aux_idx_downsample_end,:);
         ECG = ECG_w.read_signal(aux_idx(1), aux_idx(end));
 
@@ -981,7 +1016,7 @@ lead_selected_idx = 1:cant_leads;
 bPaperModeOn = false;
 major_tick_values_time = round([0.5 1 2 5 10 30 60]*heasig.freq); % seconds
 major_tick_values_time = unique([major_tick_values_time major_tick_values_time*60 ]);
-major_tick_values_voltage = [ [1 2 5 ] [1 2 5 ] * 10^1 [1 2 5 ] * 10^1 [1 2 5 ] * 10^2 [1 2 5] * 10^3 [1 2 5] * 10^4 [1 2 5] * 10^5 [1 2 5] * 10^6  ]; % seconds
+major_tick_values_voltage = [ [1 2 5 ] * 10^(-3) [1 2 5 ] * 10^(-2) [1 2 5 ] * 10^(-1)  [1 2 5 ] [1 2 5 ] * 10^1 [1 2 5 ] * 10^2 [1 2 5] * 10^3 [1 2 5] * 10^4 [1 2 5] * 10^5 [1 2 5] * 10^6  ]; % seconds
 paperModeHdl = {};
 topLevelHdl = {};
 ECGd_hdl = [];
@@ -1497,7 +1532,7 @@ end
 
             UserChnageViewHdls = [ UserChnageViewHdls; {text( aux_seq(1) - xTextOffset, plotYtimeAxis, Seconds2HMS( (aux_seq(1) + base_time )/heasig.freq ) , 'FontSize', 8, 'HorizontalAlignment', 'right') } ];
             for jj = rowvec(aux_seq(2:end-1))
-                UserChnageViewHdls = [ UserChnageViewHdls; {text( jj, plotYtimeAxis, Seconds2HMS( jj/heasig.freq ) , 'FontSize', 8, 'HorizontalAlignment', 'center')}];
+                UserChnageViewHdls = [ UserChnageViewHdls; {text( jj, plotYtimeAxis, Seconds2HMS( (jj-aux_seq(1))/heasig.freq ) , 'FontSize', 8, 'HorizontalAlignment', 'center')}];
             end
             UserChnageViewHdls = [ UserChnageViewHdls; {text( aux_seq(end) + xTextOffset, plotYtimeAxis, Seconds2HMS( (aux_seq(end) + base_time )/heasig.freq ) , 'FontSize', 8, 'HorizontalAlignment', 'left')}];
 
@@ -2519,7 +2554,9 @@ end
             update_title_efimero( ['Exported to ' report_filename], 5 );
 
         else
-            cprintf('[1,0.5,0]', 'Could not create report file: folder %s does not exist\n', report_path );
+            if( bCalledFromWorkspace )
+                cprintf('[1,0.5,0]', 'Could not create report file: folder %s does not exist\n', report_path );
+            end
         end        
         
     end
@@ -2670,7 +2707,17 @@ end
         
         paperModeHdl = [ ... 
                             paperModeHdl; ...
-                            colvec(arrayfun( @(a)(text( a, bottom_frame + yTextOffset, Seconds2HMS( (a + base_time )/heasig.freq, precision ) , 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', [1 1 1])), major_tick_x, 'UniformOutput', false)) ...
+                            text( major_tick_x(1), bottom_frame + yTextOffset, Seconds2HMS( (major_tick_x(1) + base_time )/heasig.freq, precision ) , 'FontSize', 8, 'HorizontalAlignment', 'Left', 'BackgroundColor', [1 1 1]) ...
+                            ];
+        
+        paperModeHdl = [ ... 
+                            paperModeHdl; ...
+                            text( major_tick_x(end), bottom_frame + yTextOffset, Seconds2HMS( (major_tick_x(end) + base_time )/heasig.freq, precision ) , 'FontSize', 8, 'HorizontalAlignment', 'Right', 'BackgroundColor', [1 1 1]) ...
+                            ];
+        
+        paperModeHdl = [ ... 
+                            paperModeHdl; ...
+                            colvec(arrayfun( @(a)(text( a, bottom_frame + yTextOffset, Seconds2HMS( (a - major_tick_x(1) )/heasig.freq, precision ) , 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', [1 1 1])), major_tick_x(2:end-1), 'UniformOutput', false)) ...
                             ];
         
         % frame

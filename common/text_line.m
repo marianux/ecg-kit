@@ -43,7 +43,7 @@ function text_line_handles = text_line( x, y, text_str, text_line_prop_vals, axe
     end
 
     bStr = strcmpi('String', text_line_prop_vals(:,1));
-    if( isempty(text_line_prop_vals{bStr,2}) )
+    if( all(~bStr) || isempty(text_line_prop_vals{bStr,2}) )
         text_line_handles = [];
     else
         text_line_handles = text_arrow(x(1), y(1), '', text_line_prop_vals, axes_hdl);

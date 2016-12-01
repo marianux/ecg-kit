@@ -198,6 +198,7 @@ function [ ECG_hdl, axes_hdl, fig_hdl, all_yranges ] = plot_ecg_mosaic( ECG, var
     p.addParamValue('RowsCols', [], @(x)( all(isnumeric(x)) && all(x > 0) ) );
     p.addParamValue('FigureHdl', [], @(x)( ishandle(x) ) );
     p.addParamValue('AllowEdition', false, @(x)(islogical(x)) );
+    p.addParamValue('Title', '', @(x)(ischar(x)) );
 
     try
         p.parse( varargin{:} );
@@ -213,6 +214,7 @@ function [ ECG_hdl, axes_hdl, fig_hdl, all_yranges ] = plot_ecg_mosaic( ECG, var
         fprintf(2, '+ MaxECGrange\n' );
         fprintf(2, '+ RowsCols\n' );
         fprintf(2, '+ FigureHdl\n' );
+        fprintf(2, '+ Title\n' );
         fprintf(2, '\nOr run ''doc plot_ecg_mosaic'' for details.\n\n' );
         rethrow(MyError);    
     end
@@ -226,9 +228,11 @@ function [ ECG_hdl, axes_hdl, fig_hdl, all_yranges ] = plot_ecg_mosaic( ECG, var
     rowscols = p.Results.RowsCols;
     fig_hdl = p.Results.FigureHdl;
     bAllowEdition = p.Results.AllowEdition;
-
+    strTitle = p.Results.Title;
     delete(p)
 
+    bTitle = ~strcmpi(strTitle, '');
+    
     if( isempty(fig_hdl) )
         fig_hdl = gcf;
     else
@@ -344,8 +348,8 @@ function [ ECG_hdl, axes_hdl, fig_hdl, all_yranges ] = plot_ecg_mosaic( ECG, var
         screen_size = get(fig_hdl,'outerposition');
 
         % restore originals
-        set(fig_hdl,'outerposition',prev_size);
         set(fig_hdl,'units',prev_units);
+        set(fig_hdl,'outerposition',prev_size);
         set(fig_hdl,'Visible', 'on');
 
         target_aspect = screen_size(3)/screen_size(4);
@@ -357,8 +361,8 @@ function [ ECG_hdl, axes_hdl, fig_hdl, all_yranges ] = plot_ecg_mosaic( ECG, var
         end
         aux_aspects = aux_val(1,:)./aux_val(2,:);
         [~, aux_idx] = sort(abs(aux_aspects - target_aspect));
-        n_rows = aux_val(1,aux_idx(1));
-        n_cols = aux_val(2,aux_idx(1));
+        n_cols = aux_val(1,aux_idx(1));
+        n_rows = aux_val(2,aux_idx(1));
     else
         n_rows = rowscols(1);
         n_cols = rowscols(2);
@@ -377,13 +381,13 @@ function [ ECG_hdl, axes_hdl, fig_hdl, all_yranges ] = plot_ecg_mosaic( ECG, var
     axes_hdl = nan(cant_sig,1);
     anns_hdl = [];
 
-    if( isnan(ECG_header.freq) )
+%     if( isnan(ECG_header.freq) || (lECG/ECG_header.freq) < 250 )
         xTimeGridSpacing = round(lECG/5); % mseg
         xTimeGrid = 0:xTimeGridSpacing:lECG;
-    else
-        xTimeGridSpacing = 50; % mseg
-        xTimeGrid = 0:(xTimeGridSpacing/1e3*ECG_header.freq):lECG;
-    end
+%     else
+%         xTimeGridSpacing = 50; % mseg
+%         xTimeGrid = 0:round(xTimeGridSpacing/1e3*ECG_header.freq):lECG;
+%     end
 
 
     plotXmin = 1;
@@ -397,10 +401,19 @@ function [ ECG_hdl, axes_hdl, fig_hdl, all_yranges ] = plot_ecg_mosaic( ECG, var
         lineWidth = 1;
     end
 
-    v_space = 0.02/(n_rows+1);
-    h_space = 0.02/(n_cols+2);
-    axe_width = 0.98/n_rows;
-    axe_height = 0.98/n_cols;
+    if( bTitle )
+        title_gap = 0.02;
+    else
+        title_gap = 0;
+    end
+    
+    total_height_used = 1-title_gap;
+    v_space_total = 0.02;
+    total_width_used = 0.98;
+    v_space = v_space_total/(n_rows+1);
+    h_space = (1-total_width_used)/(n_cols+2);
+    axe_width = total_width_used/n_cols;
+    axe_height = (total_height_used-v_space_total)/n_rows;
     axe_x = h_space;
     axe_y = 1-axe_height-v_space;
 
@@ -432,17 +445,33 @@ function [ ECG_hdl, axes_hdl, fig_hdl, all_yranges ] = plot_ecg_mosaic( ECG, var
         set(axes_hdl(ii), 'Xcolor', [1 1 1] );
         set(axes_hdl(ii), 'Ycolor', [1 1 1] );
 
-        [x_loc, y_loc] = ind2sub([n_rows n_cols], ii);
-        axe_x = h_space * x_loc + axe_width * (x_loc-1);
-        axe_y = 1-( v_space * y_loc + axe_height * y_loc);
+        [row_loc, col_loc] = ind2sub([n_rows n_cols], ii);
+        axe_x = h_space * col_loc + axe_width * (col_loc-1);
+        axe_y = 1-( v_space * row_loc + axe_height * row_loc);
 
     %     aux_val = get(axes_hdl(ii), 'Position' );
     %     set(axes_hdl(ii), 'Position', [ aux_val(1:2) - (k_magnify-1)/2*aux_val(3:4) k_magnify*aux_val(3:4) ] );
-        set(axes_hdl(ii), 'Position', [ axe_x axe_y axe_width axe_height ] );
+        set(axes_hdl(ii), 'Position', [ axe_x axe_y-title_gap axe_width axe_height ] );
 
         
     end
+    
+    if( bTitle )
+        
+        % Title Axe
+        title_height = title_gap-v_space;
+        title_width = 1-2*h_space;
+        axes_hdl(cant_sig+1) = axes('Position', [h_space 1-title_height-(v_space/2) title_width title_height], 'Visible','on', 'Units', 'normalized');
 
+        set(axes_hdl(cant_sig+1), 'Box', 'off' );
+        set(axes_hdl(cant_sig+1), 'Xtick', [] );
+        set(axes_hdl(cant_sig+1), 'Ytick', [] );
+
+        text(0.1,0.5, strTitle, 'Interpreter', 'none');
+
+    end
+    
+    
     max_yrange = [min(all_yranges(:,1)) max(all_yranges(:,2)) ];
     % min_range = min(all_yranges(:,2) - all_yranges(:,1));
 
@@ -748,17 +777,20 @@ function [ ECG_hdl, axes_hdl, fig_hdl, all_yranges ] = plot_ecg_mosaic( ECG, var
 
                     if(cant_realizations > 1)
                         if( isempty(all_annotations{lead_idx,y1_idx,jj}) )
-                            all_annotations{lead_idx,y1_idx,jj} = min(squeeze(ECG(all_annotations{lead_idx,x1_idx,jj},lead_idx,:)),[],2);
+%                             all_annotations{lead_idx,y1_idx,jj} = nanmin(nanmin(squeeze(ECG(all_annotations{lead_idx,x1_idx,jj},lead_idx,:)),[],2));
+                            all_annotations{lead_idx,y1_idx,jj} = y_lims(1);
+                            
                         end
                         if( isempty(all_annotations{lead_idx,y2_idx,jj}) )
-                            all_annotations{lead_idx,y2_idx,jj} = max(squeeze(ECG(all_annotations{lead_idx,x1_idx,jj},lead_idx,:)),[],2);
+%                             all_annotations{lead_idx,y2_idx,jj} = nanmax(nanmax(squeeze(ECG(all_annotations{lead_idx,x1_idx,jj},lead_idx,:)),[],2));
+                            all_annotations{lead_idx,y2_idx,jj} = y_lims(2);
                         end
                     else
                         if( isempty(all_annotations{lead_idx,y1_idx,jj}) )
-                            all_annotations{lead_idx,y1_idx,jj} = repmat(min(ECG(:,lead_idx)),1,length(all_annotations{lead_idx,x1_idx,jj}));
+                            all_annotations{lead_idx,y1_idx,jj} = repmat(nanmin(ECG(:,lead_idx)),1,length(all_annotations{lead_idx,x1_idx,jj}));
                         end
                         if( isempty(all_annotations{lead_idx,y2_idx,jj}) )
-                            all_annotations{lead_idx,y2_idx,jj} = repmat(max(ECG(:,lead_idx)),1,length(all_annotations{lead_idx,x1_idx,jj}));
+                            all_annotations{lead_idx,y2_idx,jj} = repmat(nanmax(ECG(:,lead_idx)),1,length(all_annotations{lead_idx,x1_idx,jj}));
                         end
                     end
 
