@@ -876,11 +876,13 @@ if( down_factor > 1 )
 
     else
         ECGd = resample( ECG(aux_idx_downsample(1):aux_idx_downsample(end),:), 1, down_factor, fir_coeffs );
-        ECGd = ECGd(aux_idx_downsample_start:aux_idx_downsample_end);
+        ECGd = ECGd(aux_idx_downsample_start:aux_idx_downsample_end,:);
         ECGd = bsxfun( @rdivide, bsxfun( @minus, double(ECGd), rowvec(double(heasig.adczero)) ), rowvec(double(heasig.gain)) ) ;
 
         %transform to real units
         ECG = bsxfun( @rdivide, bsxfun( @minus, double(ECG(aux_idx,:)), rowvec(double(heasig.adczero)) ), rowvec(double(heasig.gain)) ) ;
+        [cant_samp, cant_leads] = size(ECG);
+        
     end
     
 else
