@@ -7,6 +7,7 @@ ECGwrapper
    :titlesonly:
 
    Matlab file format <Matlab_format>
+   Header format <header_format>
    Adding your own formats <custom_formats>
 
 

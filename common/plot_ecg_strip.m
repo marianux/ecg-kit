@@ -847,7 +847,7 @@ if( down_factor > 1 )
     fir_coeffs = design_downsample_filter(down_factor);
 
     aux_idx_downsample_start = max(1, round((aux_idx(1) - aux_idx_downsample(1) + 1)/down_factor));
-    aux_idx_downsample_end = length( aux_idx(1):down_factor:aux_idx(end) ) + aux_idx_downsample_start - 1;
+    aux_idx_downsample_end = length( linspace(aux_idx(1),aux_idx(end),round((aux_idx(end)-aux_idx(1)+1)/down_factor)) ) + aux_idx_downsample_start - 1;
 
     if( isempty(ECG) )
 
@@ -858,12 +858,11 @@ if( down_factor > 1 )
 %         ECGd = resample(aux_val2, 1, down_factor, fir_coeffs);
         
         % just decimation
-        aux_val1 = double(ECG_w.read_signal(aux_idx_downsample(1), aux_idx_downsample(end)));
-        aux_val2 = aux_idx_downsample(end) - aux_idx_downsample(1) + 1;
-        ECGd = aux_val1(round(linspace(1,aux_val2,round(aux_val2/down_factor))),:);
+%         aux_val1 = double(ECG_w.read_signal(aux_idx_downsample(1), aux_idx_downsample(end)));
+%         aux_val2 = aux_idx_downsample(end) - aux_idx_downsample(1) + 1;
+%         ECGd = aux_val1(round(linspace(1,aux_val2,round(aux_val2/down_factor))),:);
         % anti alias - decimation
-%         ECGd = resample(double(ECG_w.read_signal(aux_idx_downsample(1), aux_idx_downsample(end))), 1, down_factor, fir_coeffs);
-
+        ECGd = resample(double(ECG_w.read_signal(aux_idx_downsample(1), aux_idx_downsample(end))), 1, down_factor, fir_coeffs);
 
         ECGd = ECGd(aux_idx_downsample_start:aux_idx_downsample_end,:);
         ECG = ECG_w.read_signal(aux_idx(1), aux_idx(end));
@@ -1554,41 +1553,31 @@ end
         aux_seq = cellfun( @(a)({1:length(a)}), qrs2plot );
         
         % for far zoom views
+        if( ~isempty(QRSfpFarHdls) )
+            cellfun(@(a)( CheckAndDeleteHdl(a) ), QRSfpFarHdls);
+        end
+        
         bAux = eDetailLevel ~= kNoDetail && ( ( eDetailLevel == kMediumDetailML || eDetailLevel == kMediumDetailAll  ) && ( plotXrange > mediumDetailSampSize && plotXrange < farDetailSampSize ) );
-        if( isempty(QRSfpFarHdls) )
-            if( bAux )
-                QRSfpFarHdls = cellfun( @(a,b,c,d)( plot(axes_hdl, rowvec(a(b(c))), repmat(titleYposition - (d* 0.1 * plotYrange), 1,length(c)) )), qrs_ploted, qrs2plot, aux_seq, num2cell(linspace(0.9, 1.1, length(aux_seq))), 'UniformOutput', false );
-                cellfun( @(a,b)(set_a_linespec(a, b)), QRSfpFarHdls, cLinespecsNone(1:length(QRSfpFarHdls)) );
-            end
-        else
-            if( bAux )
-                str_aux = 'on';
-            else
-                str_aux = 'off';
-            end
-            cellfun(@(a)(set(a, 'Visible', str_aux )), QRSfpFarHdls);
-            
+        if( bAux )
+            QRSfpFarHdls = cellfun( @(a,b,c,d)( plot(axes_hdl, rowvec(a(b(c))), repmat(titleYposition - (d* 0.1 * plotYrange), 1,length(c)) )), qrs_ploted, qrs2plot, aux_seq, num2cell(linspace(0.9, 1.1, length(aux_seq))), 'UniformOutput', false );
+            cellfun( @(a,b)(set_a_linespec(a, b)), QRSfpFarHdls, cLinespecsNone(1:length(QRSfpFarHdls)) );
         end
 
         % for closer zoom views
+        if( ~isempty(QRSfpHdls) ) 
+            cellfun(@(a)( CheckAndDeleteHdl(a) ), QRSfpHdls);
+        end
 
         bAux = eDetailLevel ~= kNoDetail && ( (eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) && plotXrange < mediumDetailSampSize);
-        if( isempty(QRSfpHdls) ) 
+        if( bAux )
             bAux2 = any( colvec(cellfun( @(a,b,c)(~isempty(a(b(c)))), qrs_ploted, qrs2plot, aux_seq ) ));
-            if( bAux && bAux2 )
+            if( bAux2 )
                 QRSfpHdls = colvec(cellfun( @(a,b,c,d)( plot(axes_hdl, repmat(rowvec(a(b(c))), 2,1), [ repmat(plotYmin + d*(0.06 * plotYrange), 1,length(c)); repmat(titleYposition - d*(0.1 * plotYrange), 1,length(c)) ] ) ), qrs_ploted, qrs2plot, aux_seq, num2cell(linspace(0.9, 1.1, length(aux_seq))), 'UniformOutput', false));
                 cellfun( @(a,b)(set_a_linespec(a, b)), QRSfpHdls, cLinespecs(1:length(QRSfpHdls)) );
                 cellfun(@(a)(set(a, 'LineWidth', 0.25)), QRSfpHdls);
             end
-        else
-            if( bAux )
-                str_aux = 'on';
-            else
-                str_aux = 'off';
-            end
-            cellfun(@(a)(set(a, 'Visible', str_aux )), QRSfpHdls);
         end
-
+        
     else
         
         bAux = eDetailLevel ~= kNoDetail && ( (eDetailLevel == kCloseDetailML || eDetailLevel == kCloseDetailAll ) && plotXrange <= closeDetailSampSize );
@@ -2597,7 +2586,7 @@ end
         set(ECG_hdl, 'Visible', 'off')
         
         hold(axes_hdl, 'on');
-        ECGd_hdl = plot(axes_hdl, start_sample:down_factor:end_sample, bsxfun( @minus, bsxfun( @times, ECGd, rowvec(gains)), rowvec(offsets) ), 'LineWidth', 1.3 );
+        ECGd_hdl = plot(axes_hdl, round(linspace(start_sample, end_sample, size(ECGd,1))), bsxfun( @minus, bsxfun( @times, ECGd, rowvec(gains)), rowvec(offsets) ), 'LineWidth', 1.3 );
         hold(axes_hdl, 'off');
         
         UserChangeView( fig_hdl, [], 'zoom');
@@ -2707,20 +2696,23 @@ end
             precision = 3;
         end
         
-        paperModeHdl = [ ... 
-                            paperModeHdl; ...
-                            text( major_tick_x(1), bottom_frame + yTextOffset, Seconds2HMS( (major_tick_x(1) + base_time )/heasig.freq, precision ) , 'FontSize', 8, 'HorizontalAlignment', 'Left', 'BackgroundColor', [1 1 1]) ...
-                            ];
-        
-        paperModeHdl = [ ... 
-                            paperModeHdl; ...
-                            text( major_tick_x(end), bottom_frame + yTextOffset, Seconds2HMS( (major_tick_x(end) + base_time )/heasig.freq, precision ) , 'FontSize', 8, 'HorizontalAlignment', 'Right', 'BackgroundColor', [1 1 1]) ...
-                            ];
-        
-        paperModeHdl = [ ... 
-                            paperModeHdl; ...
-                            colvec(arrayfun( @(a)(text( a, bottom_frame + yTextOffset, Seconds2HMS( (a - major_tick_x(1) )/heasig.freq, precision ) , 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', [1 1 1])), major_tick_x(2:end-1), 'UniformOutput', false)) ...
-                            ];
+        if( ~isempty(major_tick_x) )
+            
+            paperModeHdl = [ ... 
+                                paperModeHdl; ...
+                                text( major_tick_x(1), bottom_frame + yTextOffset, Seconds2HMS( (major_tick_x(1) + base_time )/heasig.freq, precision ) , 'FontSize', 8, 'HorizontalAlignment', 'Left', 'BackgroundColor', [1 1 1]) ...
+                                ];
+
+            paperModeHdl = [ ... 
+                                paperModeHdl; ...
+                                text( major_tick_x(end), bottom_frame + yTextOffset, Seconds2HMS( (major_tick_x(end) + base_time )/heasig.freq, precision ) , 'FontSize', 8, 'HorizontalAlignment', 'Right', 'BackgroundColor', [1 1 1]) ...
+                                ];
+
+            paperModeHdl = [ ... 
+                                paperModeHdl; ...
+                                colvec(arrayfun( @(a)(text( a, bottom_frame + yTextOffset, Seconds2HMS( (a - major_tick_x(1) )/heasig.freq, precision ) , 'FontSize', 8, 'HorizontalAlignment', 'center', 'BackgroundColor', [1 1 1])), major_tick_x(2:end-1), 'UniformOutput', false)) ...
+                                ];
+        end
         
         % frame
         aux_frame_idx = length(paperModeHdl) + 1;

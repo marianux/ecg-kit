@@ -8,7 +8,7 @@ ensure that your mat file follows these naming convention:
  
  1. Your signal variable must be named ``'sig', 'signal' or 'ECG'``. Remember that the signals or leads 
     must be placed column-wise, that is ``signal = [ lead1 lead2 lead3 ... lead_nsig]``.
- 2. The header or signal information must be stored in a struct named ``'header', 'heasig' or 'hea'``.
+ 2. The header or signal information must be stored in a struct named ``'header', 'heasig' or 'hea'``. The header variable is a struct with the fields defined :ref:`here <header_format>`.
  3. (Optional) In case of including annotations or QRS detections, be sure to be a struct named ``'ann', 
     'annotations' or 'qrs'`` and which includes the fields described for the MIT format in `Physionet <http://www.physionet.org/physiobank/annotations.shtml>`__.
 
