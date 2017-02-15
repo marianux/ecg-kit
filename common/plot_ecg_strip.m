@@ -1015,7 +1015,7 @@ report_format_idx = find(strcmpi(report_format,cKnownReportFormats),1);
 lead_selected_idx = 1:cant_leads;
 
 bPaperModeOn = false;
-major_tick_values_time = round([0.5 1 2 5 10 30 60]*heasig.freq); % seconds
+major_tick_values_time = round([0.1 0.2 0.5 1 2 5 10 30 60]*heasig.freq); % seconds
 major_tick_values_time = unique([major_tick_values_time major_tick_values_time*60 ]);
 major_tick_values_voltage = [ [1 2 5 ] * 10^(-3) [1 2 5 ] * 10^(-2) [1 2 5 ] * 10^(-1)  [1 2 5 ] [1 2 5 ] * 10^1 [1 2 5 ] * 10^2 [1 2 5] * 10^3 [1 2 5] * 10^4 [1 2 5] * 10^5 [1 2 5] * 10^6  ]; % seconds
 paperModeHdl = {};
@@ -2299,7 +2299,8 @@ end
             % offset
             k_offset = verScrollCount * ecg_range .* gains * 0.05;
 
-            this_lead_offset = max( 0, lead_offset + k_offset);
+            this_lead_offset = lead_offset + k_offset;
+%             this_lead_offset = max( 0, lead_offset + k_offset);
 
             if( all(prev_offset == this_lead_offset) )
                 return
