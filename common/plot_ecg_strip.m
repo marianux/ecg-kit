@@ -65,7 +65,7 @@
 %                                 Start at the i-th QRS_start_index heartbeat
 %                                 in QRS_locations, or QRS_locations(QRS_start_index). (empty) 
 %     
-%     +QRS_start_complexes: [numeric] OPTIONAL. Default values enclosed in () 
+%     +QRS_complexes: [numeric] OPTIONAL. Default values enclosed in () 
 %                                     Display the amount of QRS_start_complexes heartbeats from the QRS_start_index. (empty)
 %     
 %     +Lead_offset: [numeric] OPTIONAL. Default values enclosed in () 
@@ -320,9 +320,13 @@ if( ~isempty(QRS_locations_wrapper) )
             if( isempty(aux_idx) )
                 % no corrected annotations
                 if( isfield(aux_annotations, 'series_quality') )
-                    [~, aux_idx] = max(aux_annotations.series_quality.ratios);
-                    QRS_locations_names = [QRS_locations_names aux_annotations.series_quality.AnnNames{aux_idx,1} ];
-                    QRS_locations = [QRS_locations {aux_annotations.(aux_annotations.series_quality.AnnNames{aux_idx,1}).(aux_annotations.series_quality.AnnNames{aux_idx,2})}];
+                    QRS_locations_found = length(aux_annotations.series_quality.ratios);
+                    [~, aux_idx] = sort(aux_annotations.series_quality.ratios, 'descend');
+                    aux_idx2 = 1:min(QRS_locations_found, 3);
+                    QRS_locations_names = [QRS_locations_names aux_annotations.series_quality.AnnNames{aux_idx(aux_idx2),1} ];
+                    for kk = rowvec(aux_idx(aux_idx2))
+                        QRS_locations = [QRS_locations {aux_annotations.(aux_annotations.series_quality.AnnNames{kk,1}).(aux_annotations.series_quality.AnnNames{kk,2})}];
+                    end
                 end
             else
                 aux_val = length(aux_idx);
@@ -767,6 +771,10 @@ if( isempty(formatIn) )
 else
     base_time = (datenum( heasig.btime , formatIn) - datenum( '00:00:00' , 'HH:MM:SS')) * 60 * 60 * 24 * heasig.freq; % in samples
 end
+% Bool to control if the time is measured relative from the begining of the
+% recording
+bRelative_begin = false;
+prev_base_time = base_time;
 
 if( isempty(QRS_start_idx) )
     aux_idx = max(1,round(start_time * heasig.freq)):min(cant_samp, round(end_time * heasig.freq));
@@ -2280,9 +2288,8 @@ end
             ZoomMouse(direction);
             PointerCrossUpdate();
             MagnifierZoomChange(direction);
+            UserChangeView( fig_hdl, [], 'zoom');
         end
-        
-        UserChangeView( fig_hdl, [], 'zoom');
         
     end
 %--------------------------------------------------------------------------
@@ -2309,9 +2316,10 @@ end
             end
             
             % retain all not selected
-            lead_offset(~bLeadMask(2:end)) = prev_offset(~bLeadMask(2:end));
+            lead_offset(~bLeadMask) = prev_offset(~bLeadMask);
             
-            offsets = abs(cumsum(lead_offset));
+%             offsets = abs(cumsum(lead_offset));
+            offsets = cumsum(lead_offset);
             
         else
             % gain
@@ -2324,8 +2332,6 @@ end
 
             % retain all not selected
             gains(~bLeadMask) = prev_gain(~bLeadMask);
-            
-            update_title_efimero( num2str(rowvec(gains)), 5 );
             
         end
 
@@ -2507,6 +2513,19 @@ end
             case 's'
                 
                 SaveReport();
+
+            case 'b'
+                
+                if( bRelative_begin )
+                    bRelative_begin = false;
+                    base_time = prev_base_time;
+                    update_title_efimero( 'Absolute time', 5 );
+                else
+                    bRelative_begin = true;
+                    prev_base_time = base_time;
+                    base_time = 1;
+                    update_title_efimero( 'Relative from start time', 5 );
+                end
                 
         end
     end
