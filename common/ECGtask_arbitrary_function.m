@@ -98,7 +98,7 @@ classdef ECGtask_arbitrary_function < ECGtask
                 aux_payload = obj.function_pointer( double(ECG(:,obj.lead_idx)) );
             else
                 ECG_header_aux = trim_ECG_header(ECG_header, obj.lead_idx);
-                aux_payload = obj.function_pointer( ECG(:,obj.lead_idx), ECG_header_aux, obj.progress_handle, obj.payload);
+                aux_payload = obj.function_pointer( ECG(:,obj.lead_idx), ECG_header_aux, ECG_start_offset, obj.progress_handle, obj.payload);
             end
             
             if( obj.signal_payload )
