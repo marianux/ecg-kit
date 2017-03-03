@@ -299,10 +299,10 @@ classdef ECGwrapper < handle
             % check for cached results
             if( obj.cacheResults )
                 
-                if( isprop(obj.ECGtaskHandle, 'signal_payload') )
+                if( isprop(obj.ECGtaskHandle, 'signal_payload') && obj.ECGtaskHandle.signal_payload )
                     % The results is a signal for arbitrary tasks, so check
                     % the result signal instead
-                    
+
                     MIT_filename = [ obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name ];
 
                     MIT_filename = regexprep(MIT_filename, '\W*(\w+)\W*', '$1');

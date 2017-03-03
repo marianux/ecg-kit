@@ -20,6 +20,8 @@
 %   outliers to assume, and discard from the template calculation. Default 0.9.  
 % 
 %   + bRobust: Calculate the template with median instead of mean.
+%
+%   + bSubstract_mean: Remove mean value from each realization.
 % 
 % Output:
 % 
@@ -39,7 +41,11 @@
 % Last update: 20/02/2013
 % Copyright 2008-2015
 % 
-function [best_esemble_avg, min_anns_refined, all_anns_matched_with_BEA] = woody_method(signal, annotations, realization_limit, outliers_proportion, bRobust )
+function [best_esemble_avg, min_anns_refined, all_anns_matched_with_BEA] = woody_method(signal, annotations, realization_limit, outliers_proportion, bRobust, bSubstract_mean )
+
+if( nargin < 6 || isempty(bSubstract_mean ) )
+    bSubstract_mean = true;
+end
 
 if( nargin < 5 || isempty(bRobust ) )
     bRobust = false;
@@ -71,7 +77,7 @@ min_crit = inf;
 
 while( loop_count < MAX_LOOPS && crit(max(loop_count-1,1)) > 0.001 )
 
-    [avg_pack, aux_idx, anns_idx ] = pack_signal(signal, anns_refined, realization_limit);    
+    [avg_pack, aux_idx, anns_idx ] = pack_signal(signal, anns_refined, realization_limit, bSubstract_mean);    
 
     if( bRobust )
         esemble_avg = flipud(squeeze(median(avg_pack,3)));
