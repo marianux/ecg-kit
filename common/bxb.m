@@ -29,11 +29,15 @@
 % Birthdate  : 21/4/2015
 % Copyright 2008-2015
 % 
-function [C, TP_ann_idx, TP_det_idx, FN_idx, FP_idx] = bxb( ann, test_qrs_idx, heasig, strDBformat)
+function [C, TP_ann_idx, TP_det_idx, FN_idx, FP_idx] = bxb( ann, test_qrs_idx, heasig, strDBformat, bFilterAnnotations)
 
 % constants
 win_in_samples = round(0.15*heasig.freq);
 
+
+if( nargin < 5 || isempty(bFilterAnnotations) )
+    bFilterAnnotations = false;
+end
 
 if( nargin < 4 || isempty(strDBformat) )
     strDBformat = 'MIT';
@@ -44,7 +48,7 @@ if( isstruct(test_qrs_idx) && isfield(ann, 'time') )
 end
 
 %filtramos las anotaciones que son latidos
-if( isfield(ann, 'anntyp') )
+if( bFilterAnnotations && isfield(ann, 'anntyp') )
     ann = AnnotationFilterConvert(ann, strDBformat, 'AAMI');
 end
 
