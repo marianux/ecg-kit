@@ -381,13 +381,8 @@ function [ ECG_hdl, axes_hdl, fig_hdl, all_yranges ] = plot_ecg_mosaic( ECG, var
     axes_hdl = nan(cant_sig,1);
     anns_hdl = [];
 
-%     if( isnan(ECG_header.freq) || (lECG/ECG_header.freq) < 250 )
-        xTimeGridSpacing = round(lECG/5); % mseg
-        xTimeGrid = 0:xTimeGridSpacing:lECG;
-%     else
-%         xTimeGridSpacing = 50; % mseg
-%         xTimeGrid = 0:round(xTimeGridSpacing/1e3*ECG_header.freq):lECG;
-%     end
+    xTimeGridSpacing = round(lECG/5); % mseg
+    xTimeGrid = 0:xTimeGridSpacing:lECG;
 
 
     plotXmin = 1;
@@ -567,7 +562,7 @@ function [ ECG_hdl, axes_hdl, fig_hdl, all_yranges ] = plot_ecg_mosaic( ECG, var
         if( isnan(ECG_header.freq) )
             aux_str =  [ num2str(xTimeGridSpacing) ' #' ];
         else
-            aux_str =  [ num2str(xTimeGridSpacing) ' ms' ];
+            aux_str =  [ num2str(xTimeGridSpacing * 1000 / ECG_header.freq) ' ms' ];
         end
 
         ECG_lgd = [ECG_lgd; text( mean(xTimeGrid(2:3)),  plotYmin + 0.05*plotYrange + 5*yTextOffset, aux_str, 'FontSize', 8, 'HorizontalAlignment', 'center') ];
@@ -575,10 +570,10 @@ function [ ECG_hdl, axes_hdl, fig_hdl, all_yranges ] = plot_ecg_mosaic( ECG, var
         % scale Y
     %         plot( [ -xTextOffset 0 0 -xTextOffset] + 0.95*lECG, plotYmin + 5/7*plotYrange + [-yTimeGridSpacing/2 -yTimeGridSpacing/2 yTimeGridSpacing/2 yTimeGridSpacing/2], 'Color', [0 0 0], 'LineWidth', 1 );
         if( bArrow )
-            ECG_lgd = [ECG_lgd; arrow( [0.95*lECG - xTextOffset; yTimeGrid(aux_idx(2))], [0.95*lECG - xTextOffset; yTimeGrid(aux_idx(3))], 2, 0.5, [0 0 0], axes_hdl(ii) )];
+            ECG_lgd = [ECG_lgd; arrow( [0.95*lECG - xTextOffset; yTimeGrid(aux_idx(end-1))], [0.95*lECG - xTextOffset; yTimeGrid(aux_idx(end))], 2, 0.5, [0 0 0], axes_hdl(ii) )];
         end
 
-        ECG_lgd = [ECG_lgd; text( 0.95*lECG - 10*xTextOffset, mean(yTimeGrid(aux_idx(2:3))), [ num2str(yTimeGridSpacing) ' ' ECG_header.units(ii,:) ], 'FontSize', 8, 'HorizontalAlignment', 'center', 'Rotation', 90)];
+        ECG_lgd = [ECG_lgd; text( 0.95*lECG - 10*xTextOffset, mean(yTimeGrid(aux_idx(end-1:end))), [ num2str(yTimeGridSpacing) ' ' ECG_header.units(ii,:) ], 'FontSize', 8, 'HorizontalAlignment', 'center', 'Rotation', 90)];
 
         txthdl = [];
 

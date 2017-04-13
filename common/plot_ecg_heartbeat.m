@@ -191,7 +191,7 @@ hold(axes_hdl, 'on')
 ECG_hdl = colvec(arrayfun(@(sig_idx, col_idx)(plot(axes_hdl, aux_idx, aux_sig(:,sig_idx), 'Color', ColorOrder(col_idx,:) )), 1:length(lead_idx), lead_idx, 'UniformOutput', false ));
 
 % ECG_hdl = [ECG_hdl; colvec( arrayfun( @(a,b)( plot(axes_hdl, a, b , 'r--' )), repmat(rowvec(QRS_locations(qrs_ploted) - ECG_start_idx + 1 ),2,1), [ repmat(ecg_max, 1,length(qrs_ploted)) ; zeros(1,length(qrs_ploted)) ], 'UniformOutput', false ) ) ];
-ECG_hdl = [ECG_hdl; colvec( cellfun( @(a,b)( plot(axes_hdl, a, b, 'r--' )), mat2cell( repmat(rowvec(QRS_locations(qrs_ploted) - ECG_start_idx + 1 ),2,1), 2, ones(length(qrs_ploted),1) ), mat2cell ( [ repmat(ecg_max, 1,length(qrs_ploted)) ; zeros(1,length(qrs_ploted))], 2, ones(length(qrs_ploted),1) ), 'UniformOutput', false) ) ];
+ECG_hdl = [ECG_hdl; colvec( cellfun( @(a,b)( plot(axes_hdl, a, b, ':r' )), mat2cell( repmat(rowvec(QRS_locations(qrs_ploted) - ECG_start_idx + 1 ),2,1), 2, ones(length(qrs_ploted),1) ), mat2cell ( [ repmat(ecg_max, 1,length(qrs_ploted)) ; repmat(ecg_min, 1,length(qrs_ploted))], 2, ones(length(qrs_ploted),1) ), 'UniformOutput', false) ) ];
 
 aux_yrange = get(axes_hdl, 'Ylim');
 
@@ -209,8 +209,17 @@ if( ~isempty(qrs_ploted) )
 
     aux_val = unique(QRS_locations(qrs_ploted) - ECG_start_idx + 1 );
     set(axes_hdl, 'XTick', rowvec(aux_val) );
-    set(axes_hdl, 'XTickLabel', Seconds2HMS(colvec(aux_val + base_start_time - 1 + ECG_start_idx - 1)*1/heasig.freq) );
-
+    if( length(aux_val) > 1 )
+        aux_str = cellstr(Seconds2HMS(colvec(aux_val(1) + base_start_time - 1 + ECG_start_idx - 1)*1/heasig.freq));
+        if( length(aux_val) > 2 )
+            aux_str = [aux_str; cellstr(Seconds2HMS(colvec(aux_val(2:end-1))*1/heasig.freq,3)) ];
+        end
+        aux_str = [aux_str; cellstr(Seconds2HMS(colvec(aux_val(end) + base_start_time - 1 + ECG_start_idx - 1)*1/heasig.freq)) ];
+        set(axes_hdl, 'XTickLabel', aux_str );
+    else
+        aux_str = cellstr(Seconds2HMS(colvec(aux_val + base_start_time - 1 + ECG_start_idx - 1)*1/heasig.freq));
+        set(axes_hdl, 'XTickLabel', aux_str );
+    end
 end
 
 

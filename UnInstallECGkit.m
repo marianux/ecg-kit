@@ -26,7 +26,7 @@ function UnInstallECGkit( bIgnoreAdminPrivs )
     end
 
     if( nargin < 1 || isempty(bIgnoreAdminPrivs) )
-        bIgnoreAdminPrivs = false;
+        bIgnoreAdminPrivs = true;
     end        
 
     release_str = 'v0.1.0 beta - 05/05/2015';

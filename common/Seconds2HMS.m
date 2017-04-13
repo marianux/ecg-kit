@@ -65,15 +65,27 @@ for ii = 1:ldata
     if( iMins(ii) > 0 )
         strAux = [  strAux num2str(iMins(ii)) ''' ' ]; 
     end
-
-    if (iSeconds(ii) > 0  || isempty(strAux) )
-        if( prec > 0 && iMilliSeconds(ii) > 0 )
-            strAux = [  strAux sprintf( [ '%d.' ] , iSeconds(ii) ) ]; 
-            strAux2 = sprintf( '%03d', round(iMilliSeconds(ii)) ); 
-            strAux = [  strAux strAux2(1:min(3,prec)) '"' ]; 
+    
+    if( iMilliSeconds(ii) > 0 || isempty(strAux) || iSeconds(ii) > 0 )
+        
+        if(prec > 0 )
+            
+            if( iSeconds(ii) > 0 )
+                strAux = [  strAux sprintf( '%d.', iSeconds(ii) ) ]; 
+                strAux2 = sprintf( '%03d', round(iMilliSeconds(ii)) ); 
+                strAux = [  strAux strAux2(1:min(3,prec)) '"' ]; 
+            else
+                strAux2 = sprintf( [ '%3.' num2str(prec) 'f'  ], iMilliSeconds(ii) ); 
+                aux_idx = find(strAux2 == '.');
+                strAux = [  strAux strAux2(1:(aux_idx+prec)) ' ms' ]; 
+            end
+            
         else
-            strAux = [  strAux sprintf( [ '%d"' ] , iSeconds(ii)) ]; 
+            if( isempty(strAux) || iSeconds(ii) > 0 )
+                strAux = [  strAux sprintf( '%d"', iSeconds(ii)) ]; 
+            end
         end
+        
     end
     
     strRetVal{ii} = strAux;

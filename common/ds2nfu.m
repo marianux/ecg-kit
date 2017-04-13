@@ -52,7 +52,7 @@ function varargout = ds2nfu(varargin)
 % Copyright 2006 The MathWorks, Inc
 
 %% Process inputs
-error(nargchk(1, 3, nargin))
+narginchk(1, 3);
 
 % Determine if axes handle is specified
 if length(varargin{1})== 1 && ishandle(varargin{1}) && strcmp(get(varargin{1},'type'),'axes')	

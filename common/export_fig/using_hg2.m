@@ -12,7 +12,8 @@
 function tf = using_hg2(fig)
 try
     if nargin < 1,  fig = figure('visible','off');  end
-    tf = ~graphicsversion(fig, 'handlegraphics');
+    tf = ~verLessThan('matlab','8.4.0');
+
 catch
     tf = false;
 end

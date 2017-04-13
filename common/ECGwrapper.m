@@ -303,8 +303,13 @@ classdef ECGwrapper < handle
                     % The results is a signal for arbitrary tasks, so check
                     % the result signal instead
 
-                    MIT_filename = [ obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name ];
+                    if( strcmpi(obj.ECGtaskHandle.name, 'arbitrary_function' ) )
+                        task_name = 'af';
+                    else
+                        task_name = obj.ECGtaskHandle.name;
+                    end
 
+                    MIT_filename = [ obj.rec_filename '_' aux_user_prefix task_name ];
                     MIT_filename = regexprep(MIT_filename, '\W*(\w+)\W*', '$1');
                     MIT_filename = regexprep(MIT_filename, '\W', '_');
 
@@ -312,7 +317,13 @@ classdef ECGwrapper < handle
                     
                 else
                 
-                    files_this_pid = dir([obj.output_path obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name '*.mat']);
+                    if( strcmpi(obj.ECGtaskHandle.name, 'arbitrary_function' ) )
+                        task_name = 'af';
+                    else
+                        task_name = obj.ECGtaskHandle.name;
+                    end
+                    
+                    files_this_pid = dir([obj.output_path obj.rec_filename '_' aux_user_prefix task_name '*.mat']);
 
                 end
 
@@ -821,25 +832,26 @@ classdef ECGwrapper < handle
                                                 % signal, dump sequentialy
                                                 % to disk
 
-                                                    if( isempty(this_header) )
-
-                                                        % gain offset calculation to fit in destination class int16
-                                                        % offset/gain transform
+                                                    % gain offset calculation to fit in destination class int16
+                                                    % offset/gain transform
 %                                                         range_conversion_offset = mean(obj.ECGtaskHandle.range_min_max_tracking, 2);
 %                                                         range_conversion_gain = (2^15-1)./(diff(obj.ECGtaskHandle.range_min_max_tracking,1, 2)./2); 
 
-                                                        % gain transform
-                                                        range_conversion_offset = 0;
-                                                        range_conversion_gain = (2^15-1)./(max(abs(obj.ECGtaskHandle.range_min_max_tracking),[],2)); 
+                                                    % gain transform
+                                                    range_conversion_offset = 0;
+                                                    range_conversion_gain = (2^15-1)./(max(max(abs(obj.ECGtaskHandle.range_min_max_tracking)))); 
 
-                                                        result_signal = cast( round( bsxfun( @times, bsxfun( @minus, aux.result_signal, range_conversion_offset), range_conversion_gain) ) , 'int16');
+                                                    result_signal = cast( round( bsxfun( @times, bsxfun( @minus, aux.result_signal, range_conversion_offset), range_conversion_gain) ) , 'int16');
+                                                
+                                                    if( isempty(this_header) )
+
                                                         
                                                         this_header = obj.ECG_header;
 
                                                         % in ADCu / physical units
-                                                        this_header.gain = range_conversion_gain;
-                                                        this_header.offset = range_conversion_offset;
-                                                        this_header.nsig = size(aux.result_signal, 2);
+                                                        this_header.gain = repmat(range_conversion_gain, this_header.nsig, 1);
+                                                        this_header.offset = repmat(range_conversion_offset, this_header.nsig, 1) ;
+                                                        [this_header.nsamp, this_header.nsig] = size(result_signal);
 
                                                         if( obj.repetitions > 1)
                                                             aux_sufix = [ '_repetition_' num2str(repeat_idx)];
@@ -847,20 +859,26 @@ classdef ECGwrapper < handle
                                                             aux_sufix = [];                                                       
                                                         end
 
-                                                        MIT_filename = [ obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name aux_sufix ];
+                                                        if( strcmpi(obj.ECGtaskHandle.name, 'arbitrary_function' ) )
+                                                            MIT_filename = [ obj.rec_filename '_' aux_user_prefix 'af' aux_sufix ];
+                                                        else
+                                                            MIT_filename = [ obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name aux_sufix ];
+                                                        end
                                                         
                                                         MIT_filename = regexprep(MIT_filename, '\W*(\w+)\W*', '$1');
                                                         MIT_filename = regexprep(MIT_filename, '\W', '_');
 
                                                         this_header.recname = MIT_filename;
-
-                                                        writeheader(obj.output_path, this_header);   
+                                                        
+                                                        this_header.freq = round(obj.ECGtaskHandle.sampling_rate_out);
                                                         
                                                         result_files = [ result_files; cellstr([obj.output_path MIT_filename '.dat'])];
                                                         
                                                         fidECG = fopen([obj.output_path MIT_filename '.dat'], 'w');
                                                         
                                                     else
+                                                        this_header.nsamp = this_header.nsamp  + size(result_signal, 1);
+                                                        
                                                         fidECG = fopen([obj.output_path MIT_filename '.dat'], 'a');
                                                     end
                                                     
@@ -904,6 +922,11 @@ classdef ECGwrapper < handle
 
                                         end
 
+                                        % write finally the header info.
+                                        if( isprop(obj.ECGtaskHandle, 'signal_payload') && obj.ECGtaskHandle.signal_payload  )
+                                            writeheader(obj.output_path, this_header);   
+                                        end
+                                        
                                         % Update point
                                         pb.checkpoint('Generating final results');
 
@@ -927,6 +950,12 @@ classdef ECGwrapper < handle
                                             aux_user_prefix= [obj.user_string '_'];
                                         end
 
+                                        if( strcmpi(obj.ECGtaskHandle.name, 'arbitrary_function' ) )
+                                            task_name = 'af';
+                                        else
+                                            task_name = obj.ECGtaskHandle.name;
+                                        end
+
                                         for jj = 1:cant_iteraciones_this_pid
 
                                             if( cant_iteraciones_this_pid > 1 )
@@ -939,7 +968,7 @@ classdef ECGwrapper < handle
                                                 aux_sufix = [aux_sufix '_repetition_' num2str(repeat_idx)];
                                             end
 
-                                            auxStr = [obj.output_path obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name aux_sufix '.mat'];
+                                            auxStr = [obj.output_path obj.rec_filename '_' aux_user_prefix task_name aux_sufix '.mat'];
 
                                             movefile(   [obj.output_path 'payloads_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_' num2str(jj) '.mat'], ...
                                                         auxStr, 'f' );

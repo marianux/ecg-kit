@@ -82,7 +82,7 @@ function ann_output = QRScorrector(varargin)
 
     %argument definition
     p = inputParser;   % Create instance of inputParser class.
-    p.addParamValue('FilterSignals', true, @(x)( islogical(x)));
+    p.addParamValue('FilterSignals', [], @(x)( islogical(x)));
     p.addParamValue('BuildArtificial', false, @(x)( islogical(x)));
     p.addParamValue('recording', [], @(x)( ischar(x)));
     p.addParamValue('recording_path', [], @(x)( ischar(x)));
@@ -479,10 +479,24 @@ function ann_output = QRScorrector(varargin)
         
         bFirstLoad = true;
         
+        if( isempty(bFilter) )
+            
+            ECG_idx = get_ECG_idx_from_header(ECG_struct.header);
+
+            if( isempty(ECG_idx) )
+                bFilter = false;
+                cprintf('[1,0.5,0]', disp_option_enumeration( 'No filter was applied since no ECG leads found. Lead description found:', cellstr(ECG_struct.header.desc) ) )
+                fprintf(1, '\n')
+            else
+                bFilter = true;
+            end
+       
+        end
+
         if( bFilter && isempty(filtro) )
             filtro = bandpass_filter_design( ECG_struct.header.freq );
         end
-
+        
 %         if( isfield(ECG_struct, 'noise_power') )
 %             noise_power = ECG_struct.noise_power;
 %         else
@@ -716,7 +730,7 @@ function ann_output = QRScorrector(varargin)
 
     %     set(fig_hdl, 'Toolbar', 'none');
 
-        %% Axis de Poincaré
+        %% Axis de Poincarï¿½
 
         if( isempty(Scatter_axes_hdl) )
             if(size_y_RR_global > 0 )
@@ -759,7 +773,7 @@ function ann_output = QRScorrector(varargin)
 %     %         zoom reset
 %         end
 
-        title(Scatter_axes_hdl, ['Poincaré plot interval of ' Seconds2HMS((end_idx-start_idx+1)/ECG_struct.header.freq) ]);
+        title(Scatter_axes_hdl, ['Poincarï¿½ plot interval of ' Seconds2HMS((end_idx-start_idx+1)/ECG_struct.header.freq) ]);
         xlabel(Scatter_axes_hdl, 'Current value')
         ylabel(Scatter_axes_hdl, 'Next value')
 
@@ -827,7 +841,9 @@ function ann_output = QRScorrector(varargin)
             cant_ticks = 5;
             aux_idx = round(linspace(x_min, x_max, cant_ticks));
             set(RRserie_axes_hdl, 'XTick', rowvec(aux_idx) );
-            aux_str = cellstr(Seconds2HMS((aux_idx+base_start_time-1)*1/ECG_struct.header.freq));    
+            aux_str = cellstr(Seconds2HMS((aux_idx(1)+base_start_time-1)*1/ECG_struct.header.freq));    
+            aux_str = [aux_str; cellstr(Seconds2HMS((aux_idx(2:(end-1)))*1/ECG_struct.header.freq))];    
+            aux_str = [aux_str; cellstr(Seconds2HMS((aux_idx(end)+base_start_time-1)*1/ECG_struct.header.freq))];    
             set(RRserie_axes_hdl, 'XTickLabel', char(aux_str) );
         end
 %         xlabel(RRserie_axes_hdl, 'Time')
@@ -918,7 +934,9 @@ function ann_output = QRScorrector(varargin)
                     
                     aux_idx = round(1:major_tick:anns_under_edition(end));
                     set(RRserie_global_axes_hdl, 'XTick', rowvec(aux_idx) );
-                    aux_str = cellstr(Seconds2HMS((aux_idx+base_start_time-1)*1/ECG_struct.header.freq));    
+                    aux_str = cellstr(Seconds2HMS((aux_idx(1)+base_start_time-1)*1/ECG_struct.header.freq));    
+                    aux_str = [aux_str; cellstr(Seconds2HMS((aux_idx(2:(end-1)))*1/ECG_struct.header.freq))];    
+                    aux_str = [aux_str; cellstr(Seconds2HMS((aux_idx(end)+base_start_time-1)*1/ECG_struct.header.freq))];    
                     set(RRserie_global_axes_hdl, 'XTickLabel', char(aux_str) );
                 end
 %                 xlabel(RRserie_global_axes_hdl, 'Time')
@@ -1503,17 +1521,18 @@ function ann_output = QRScorrector(varargin)
                 bAnnsEdited = true;
                 bRecEdited = true;
                 PushUndoAction();
-                if( isempty(hb_idx) )
-                    hb_idx = 1;
-                else
-                    hb_idx = find(anns_under_edition < anns_under_edition(hb_idx), 1, 'first'  );
-                end
+
+                aux_idx = find(anns_under_edition < anns_under_edition(anns_under_edition_idx(selected_hb_idx(1))) | anns_under_edition > anns_under_edition(anns_under_edition_idx(selected_hb_idx(end))), 1, 'first'  );
+
+                aux_val = anns_under_edition(aux_idx);
                 
                 if( bSeries )
                     anns_under_edition(anns_under_edition_idx(selected_hb_idx)) = nan;
                 else
                     anns_under_edition(anns_under_edition_idx(selected_hb_idx)) = [];
                 end
+                
+                hb_idx = find(anns_under_edition == aux_val);
                 
                 selected_hb_idx = [];
                 Redraw();
@@ -1618,9 +1637,25 @@ function ann_output = QRScorrector(varargin)
         elseif (strcmp(event_obj.Key,'p') )
 
             update_title_efimero('Click and drag the time interval where the pattern is ...', 10 );
+            
+            set(fig_hdl, 'WindowButtonDownFcn', []);    
+            set(ECG_axes_hdl,'ButtonDownFcn', []);            
+            
             set(obj,'CurrentAxes', ECG_axes_hdl);
             waitforbuttonpress;
-            SearchPattern();
+            
+            try
+                SearchPattern();
+                set(fig_hdl, 'WindowButtonDownFcn', @WindowButtonDownCallback2D);            
+                set(ECG_axes_hdl,'ButtonDownFcn',@inspect_ECG);            
+                
+            catch ME
+                
+                set(fig_hdl, 'WindowButtonDownFcn', @WindowButtonDownCallback2D);            
+                set(ECG_axes_hdl,'ButtonDownFcn',@inspect_ECG);            
+                rethrow(ME);
+            end
+            
 
         elseif ( ~isempty(event_obj.Modifier) && strcmp(event_obj.Key,'g') && strcmp(event_obj.Modifier,'control'))
 
@@ -1744,7 +1779,7 @@ function ann_output = QRScorrector(varargin)
     function PushUndoAction()
 
         if( undo_buffer_idx < length(undo_buffer) )
-            %me cargo todo lo que está por rehacerse
+            %me cargo todo lo que estï¿½ por rehacerse
             undo_buffer = undo_buffer(1:undo_buffer_idx);
         end
 
@@ -1998,8 +2033,28 @@ function ann_output = QRScorrector(varargin)
         hold(ECG_axes_hdl, 'off')        
         drawnow;
 
-        pattern2detect = ECG_struct.signal(aux_seq,lead_idx);
-        pattern2detect = bsxfun( @minus, pattern2detect, mean(pattern2detect));
+        % decimation factor
+        if( isempty(ECG_w) )
+            ndown = 1;
+            pattern2detect = ECG_struct.signal(aux_seq,lead_idx);
+            pattern2detect = bsxfun( @minus, pattern2detect, mean(pattern2detect));
+            
+        else            
+            % resampling of the signal
+            Nqrs = round( .09 * 250); % samples of a normal QRS sampled at 250 Hz
+            fs_target = round(Nqrs / length(aux_seq) * ECG_struct.header.freq);
+            ndown = round( ECG_struct.header.freq / fs_target);
+            aux_pre = round(0.2*ECG_struct.header.freq);
+            pattern2detect_orig = ECG_struct.signal(aux_seq,lead_idx);
+            aux_seq = (xlims(1) - aux_pre ):(xlims(2) + aux_pre);
+            pattern2detect = ECG_struct.signal(aux_seq,lead_idx);
+            pattern2detect = decimate(pattern2detect, ndown, 'fir');
+            pattern2detect = pattern2detect(round(aux_pre/ndown):(end-round(aux_pre/ndown)));
+            pattern2detect = bsxfun( @minus, pattern2detect, mean(pattern2detect));
+            pattern2detect = pattern2detect .* hamming(length(pattern2detect));
+            
+        end
+        
 
 %         [nsamp_pattern nsig_pattern] = size(pattern2detect);
 %         max_idx = max_index(pattern2detect);
@@ -2012,7 +2067,7 @@ function ann_output = QRScorrector(varargin)
     %     similarity = arrayfun( @(a)( 1/sqrt(var(ECG(a-nsamp_pattern+1:a))* pattern2detect_var)*(rowvec(ECG(a-nsamp_pattern+1:a)-mean(ECG(a-nsamp_pattern+1:a))) * colvec(pattern2detect) ) ), colvec(nsamp_pattern:ECG_struct.header.nsamp));    
     %     similarity = [repmat(similarity(1,:),nsamp_pattern-1,1); similarity];
 
-    
+        
         if( isempty(ECG_w) )
             % short or easy memory handlable signals
             similarity = cellfun( @(a,b)( diff(conv( a, b, 'same' )) ), mat2cell(ECG_struct.signal(:,lead_idx), ECG_struct.header.nsamp, ones(1,llead_idx)), mat2cell(pattern2detect, diff(xlims)+1, ones(1,llead_idx)), 'UniformOutput', false);
@@ -2020,15 +2075,38 @@ function ann_output = QRScorrector(varargin)
         %     similarity = [repmat(similarity(1,:),round((nsamp_pattern-1)/2),1); similarity];
             similarity = abs(mean(similarity,2));
         else
-            aux_w = ECGwrapper('recording_name', ECG_w.recording_name);
+
+            if( ndown > 1 )
+                aux_w = ECGwrapper('recording_name', ECG_w.recording_name);
+                aux_w.output_path = tempdir;
+                aux_w.ECGtaskHandle = 'arbitrary_function';
+                aux_w.cacheResults = false;
+                aux_w.ECGtaskHandle.lead_idx = lead_idx;
+                aux_w.ECGtaskHandle.signal_payload = true;
+                aux_w.ECGtaskHandle.function_pointer = @(a)(decimate(a, ndown, 'fir'));
+                aux_w.ECGtaskHandle.sampling_rate_out = ECG_struct.header.freq / ndown;
+                aux_w.user_string = ['resample_to_' num2str(round(aux_w.ECGtaskHandle.sampling_rate_out)) '_for_leads_' num2str(sort(lead_idx)) ];
+                aux_w.Run
+                aux_ecg_filename = char(aux_w.Result_files);
+            else
+                aux_ecg_filename = ECG_w.recording_name;
+            end
+            
+            % similarity calculation
+            aux_w = ECGwrapper('recording_name', aux_ecg_filename);
+            aux_w.output_path = tempdir;
             aux_w.ECGtaskHandle = 'arbitrary_function';
             aux_w.cacheResults = false;
             aux_w.ECGtaskHandle.lead_idx = lead_idx;
             aux_w.ECGtaskHandle.signal_payload = true;
+            
             aux_w.user_string = ['similarity_calc_for_lead_' num2str(sort(lead_idx)) ];
+            aux_w.ECGtaskHandle.sampling_rate_out = ECG_struct.header.freq / ndown;
             aux_w.ECGtaskHandle.function_pointer = @similarity_calculation;
             aux_w.ECGtaskHandle.payload = pattern2detect;
             aux_w.Run
+            
+            aux_similarity_filename = char(aux_w.Result_files);
         end
         
         prev_fig = gcf();
@@ -2037,11 +2115,11 @@ function ann_output = QRScorrector(varargin)
         clf();
         set(fig2_hdl, 'Position', [ maximized_size(3:4) maximized_size(3:4) ] .* [ 0.05 0.13 0.95 0.9] );
         
-        win_sample = 3*ECG_struct.header.freq;
-        break_sample = round(1*ECG_struct.header.freq);
+        win_sample = round(3*ECG_struct.header.freq / ndown);
+        break_sample = round(1*ECG_struct.header.freq / ndown);
         n_excerpts = 5;
         aux_idx = 1:win_sample;
-        aux_windows = linspace(0, ECG_struct.header.nsamp-win_sample, n_excerpts);
+        aux_windows = randsample( 1:(ECG_struct.header.nsamp/ndown)-win_sample, n_excerpts);
         sig_breaks = nan(break_sample, llead_idx + 1 );
         
         if( isempty(ECG_w) )
@@ -2055,11 +2133,16 @@ function ann_output = QRScorrector(varargin)
             
         else
             
-            aux_w = ECGwrapper('recording_name', char(aux_w.Result_files));
+            aux_w = ECGwrapper('recording_name', aux_similarity_filename);
+            aux_w_ecg = ECGwrapper('recording_name', aux_ecg_filename);
+            
             aux_val = sig_breaks;
             for aux_start = (aux_windows+1)
-                aux_val1 = [ECG_w.read_signal( aux_start, aux_start + win_sample ) aux_w.read_signal( aux_start, aux_start + win_sample ) ];
-                aux_val1 = [aux_val1(:, lead_idx) aux_w.read_signal( aux_start, aux_start + win_sample ) ];
+%                 aux_val1 = [aux_w_ecg.read_signal( aux_start, aux_start + win_sample ) aux_w.read_signal( aux_start, aux_start + win_sample ) ];
+%                 aux_val1 = [aux_val1(:, lead_idx) aux_w.read_signal( aux_start, aux_start + win_sample ) ];
+                
+                aux_val1 = [aux_w_ecg.read_signal( aux_start, aux_start + win_sample ) aux_w.read_signal( aux_start, aux_start + win_sample ) ];
+                
                 aux_val = [aux_val; [bsxfun(@minus, aux_val1(:,1:end-1), mean(aux_val1(:,1:end-1)) ) aux_val1(:,end)]; sig_breaks ];
             end
         end
@@ -2071,20 +2154,6 @@ function ann_output = QRScorrector(varargin)
         axes_hdl = gca();
         set(axes_hdl, 'Position', [ 0.015 0.025 0.97 0.92] );
         title('Select the detection threshold to use in the similarity function')
-        
-        detection_threshold = 0.3; % seconds
-        dt_samples = round(detection_threshold*ECG_struct.header.freq);
-        
-        xlims = get(axes_hdl, 'xlim');
-        ylims = get(axes_hdl, 'ylim');
-        
-        dt_yloc = ylims(1) + 0.05*diff(ylims);
-        dt_xloc = xlims(1) + 0.1*diff(xlims);
-        
-        hold(axes_hdl, 'on');
-        arrow( [dt_xloc; dt_yloc], [dt_xloc + dt_samples; dt_yloc], 2, 0.5, [0 0 0], axes_hdl )
-        text( dt_xloc, dt_yloc+0.01*diff(ylims), ['Min QRS sep '  Seconds2HMS(detection_threshold,2) ])
-        hold(axes_hdl, 'off');
         
         set(axes_hdl, 'Ytick', []);
         
@@ -2102,6 +2171,28 @@ function ann_output = QRScorrector(varargin)
 
         thr = thr * aux_thr_scale(2);
         
+        key = input( 'Enter the minimum time in seconds between heartbeats (Default 0.3 s):\n' , 's');
+
+        if( isempty(key) )
+            detection_threshold = 0.3; % seconds
+        else
+            detection_threshold = str2double(key);
+        end
+
+        dt_samples = round(detection_threshold*ECG_struct.header.freq / ndown);
+        
+        xlims = get(axes_hdl, 'xlim');
+        ylims = get(axes_hdl, 'ylim');
+        
+        dt_yloc = ylims(1) + 0.05*diff(ylims);
+        dt_xloc = xlims(1) + 0.1*diff(xlims);
+        
+        hold(axes_hdl, 'on');
+        arrow( [dt_xloc; dt_yloc], [dt_xloc + dt_samples; dt_yloc], 2, 0.5, [0 0 0], axes_hdl );
+        text( dt_xloc, dt_yloc+0.01*diff(ylims), ['Min QRS sep '  Seconds2HMS(detection_threshold,2) ]);
+        hold(axes_hdl, 'off');
+        
+        % limits to perform pattern match. Default whole recording.
         QRSxlims = 1;
         bContinue = true;
 
@@ -2118,12 +2209,17 @@ function ann_output = QRScorrector(varargin)
                 % generate QRS detections
                 aux_w.ECGtaskHandle.signal_payload = false;
                 aux_w.user_string = ['modmax_calc_for_leads_' num2str(sort(lead_idx)) ];
-                aux_w.ECGtaskHandle.function_pointer = @(a)(modmax(a,QRSxlims, thr, 1, round(detection_threshold*ECG_struct.header.freq)));
+                aux_w.ECGtaskHandle.function_pointer = @arb_modmax;
+                
+                aux_payload.thr = thr;
+                aux_payload.detection_threshold = detection_threshold;
+                aux_w.ECGtaskHandle.payload = aux_payload;
                 aux_w.Run
                 
                 % asume that the whole series keep in mem.
                 aux_val = load(aux_w.Result_files{1});  
-                ECG_struct.pattern_match.time = aux_val.result;
+                ECG_struct.pattern_match.time = round(aux_val.result * ndown);
+                
             end
 
     %         aux_idx = 1;
@@ -2205,9 +2301,13 @@ function ann_output = QRScorrector(varargin)
                 
             elseif( strcmp(key, 'rh') )
 
-                key = input( 'Enter the minimum time between heartbeats:\n' , 's');
+                key = input( ['Enter the minimum time in seconds between heartbeats (Current ' sprintf('%3.3f', detection_threshold) ' s):\n'] , 's');
 
-                detection_threshold = str2double(key);
+                if( isempty(key) )
+                    detection_threshold = 0.3; % seconds
+                else
+                    detection_threshold = str2double(key);
+                end
 
             elseif( strcmp(key, 'rx') )
                 fig_hdl = figure(1);
@@ -2340,7 +2440,7 @@ function ann_output = QRScorrector(varargin)
                 set(RRserie_zoom_axes_hdl, 'XTick', rowvec(anns_under_edition(anns_under_edition_idx(aux_idx))) );
                 aux_str = cellstr(num2str(colvec(anns_under_edition_idx(aux_idx))));
                 if( ~isempty(anns_under_edition) && ~isnan(anns_under_edition(anns_under_edition_idx(hb_idx))) && hb_idx <= length(anns_under_edition_idx) )
-                    aux_str{aux_hb_idx} = [aux_str{aux_hb_idx} ' (' Seconds2HMS((anns_under_edition(anns_under_edition_idx(hb_idx)) + base_start_time - 1)*1/ECG_struct.header.freq) ')'];
+                    aux_str{aux_hb_idx} = [aux_str{aux_hb_idx} ' (' Seconds2HMS((anns_under_edition(anns_under_edition_idx(hb_idx)) + base_start_time - 1)*1/ECG_struct.header.freq) ' - ' Seconds2HMS((anns_under_edition(anns_under_edition_idx(hb_idx)))*1/ECG_struct.header.freq) ')'];
                     set(RRserie_zoom_axes_hdl, 'XTickLabel', char(aux_str) );
                 end
             end

@@ -28,7 +28,7 @@ classdef ECGtask_arbitrary_function < ECGtask
         started = false;
 
 % to track the signal range over the whole signal.         
-        range_min_max_tracking = [ realmax realmin ];
+        range_min_max_tracking = [];
         
     end
     
@@ -48,7 +48,9 @@ classdef ECGtask_arbitrary_function < ECGtask
         payload
         lead_idx = [];
         signal_payload = false;
+        sampling_rate_out = [];
         function_pointer
+        start_func_pointer = @default_start_function;
         finish_func_pointer = @default_finish_function;
         concate_func_pointer = @default_concatenate_function;
         
@@ -76,9 +78,13 @@ classdef ECGtask_arbitrary_function < ECGtask
                 return
             end
             
-            obj.range_min_max_tracking = [ realmax realmin ];
+            obj.range_min_max_tracking = [ repmat(realmax, 1, length(obj.lead_idx)); repmat(realmin, 1, length(obj.lead_idx)) ];
 
-            obj.started = true;
+            if( isempty(obj.sampling_rate_out) )
+                obj.sampling_rate_out = ECG_header.freq;
+            end
+            
+            obj.started = obj.start_func_pointer(obj, ECG_header);
             
         end
         
@@ -98,14 +104,29 @@ classdef ECGtask_arbitrary_function < ECGtask
                 aux_payload = obj.function_pointer( double(ECG(:,obj.lead_idx)) );
             else
                 ECG_header_aux = trim_ECG_header(ECG_header, obj.lead_idx);
-                aux_payload = obj.function_pointer( ECG(:,obj.lead_idx), ECG_header_aux, ECG_start_offset, obj.progress_handle, obj.payload);
+                
+                if( nargout(obj.function_pointer) == 2 )
+                    [aux_payload, aux_interproc_data ] = obj.function_pointer( ECG(:,obj.lead_idx), ECG_header_aux, ECG_start_offset, obj.progress_handle, obj.payload);
+                    obj.payload.interproc_data = aux_interproc_data;
+                else
+                    aux_payload = obj.function_pointer( ECG(:,obj.lead_idx), ECG_header_aux, ECG_start_offset, obj.progress_handle, obj.payload);
+                end                
             end
             
             if( obj.signal_payload )
                 % trim the signal
-                payload.result_signal = aux_payload(ECG_sample_start_end_idx(1):ECG_sample_start_end_idx(2),:);
                 
-                obj.range_min_max_tracking = [ min(obj.range_min_max_tracking(1), min(payload.result_signal) ) max(obj.range_min_max_tracking(2), max(payload.result_signal)) ];
+                if( obj.sampling_rate_out ~= ECG_header.freq )
+                    % freq change
+                    kmultirate = obj.sampling_rate_out / ECG_header.freq;
+                else
+                    % no freq change
+                    kmultirate = 1;
+                end
+                
+                payload.result_signal = aux_payload(max(1,round(ECG_sample_start_end_idx(1)*kmultirate)):min(end, round(ECG_sample_start_end_idx(2)*kmultirate) ),:);
+                
+                obj.range_min_max_tracking = [ min( [obj.range_min_max_tracking(1,:); min(payload.result_signal) ] ); max([obj.range_min_max_tracking(2,:); max(payload.result_signal)]) ];
                 
             else
                 payload.result = aux_payload;
@@ -134,6 +155,21 @@ classdef ECGtask_arbitrary_function < ECGtask
             
             if( ischar(x) && exist(x) == 2 )
                 obj.function_pointer = str2func(x);
+            else
+                warning('ECGtask_arbitrary_function:BadArg', 'Invalid function pointer.');
+            end
+            
+        end
+        
+        function set.start_func_pointer(obj,x)
+            
+            if( strcmpi( class(x), 'function_handle' ) )
+                obj.start_func_pointer = x;
+                return
+            end
+            
+            if( ischar(x) && exist(x) == 2 )
+                obj.start_func_pointer = str2func(x);
             else
                 warning('ECGtask_arbitrary_function:BadArg', 'Invalid function pointer.');
             end

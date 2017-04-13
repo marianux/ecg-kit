@@ -71,9 +71,7 @@ classdef ECGtask_QRS_detection < ECGtask
         tmp_path_local
         WFDB_bin_path
         WFDB_cmd_prefix_str 
-        lead_idx = [];
         lead_names = [];
-        
         wavedet_config
         
     end
@@ -81,6 +79,7 @@ classdef ECGtask_QRS_detection < ECGtask
     properties
         progress_handle
         tmp_path
+        lead_idx = [];
         detectors = 'all-detectors';
         only_ECG_leads = false;
         gqrs_config_filename = [];
@@ -102,11 +101,18 @@ classdef ECGtask_QRS_detection < ECGtask
         
         function Start(obj, ECG_header, ECG_annotations)
 
-            if( obj.only_ECG_leads )
-                obj.lead_idx = get_ECG_idx_from_header(ECG_header);
+            if( isempty(obj.lead_idx) )
+                
+                if( obj.only_ECG_leads )
+                    obj.lead_idx = get_ECG_idx_from_header(ECG_header);
+                else
+    %                 'all-leads'
+                    obj.lead_idx = 1:ECG_header.nsig;
+                end
+                
             else
-%                 'all-leads'
-                obj.lead_idx = 1:ECG_header.nsig;
+                obj.lead_idx( obj.lead_idx > ECG_header.nsig ) = ECG_header.nsig;
+                obj.lead_idx = unique(obj.lead_idx);
             end
             
             if( isempty(obj.lead_idx) )
@@ -613,6 +619,15 @@ classdef ECGtask_QRS_detection < ECGtask
                 warning('ECGtask_QRS_detection:BadArg', 'Invalid lead configuration.');
             end
         end
+        
+        function set.lead_idx(obj,x)
+            if( isnumeric(x) && all(x) > 0 )
+                obj.lead_idx = x;
+            else
+                warning('ECGtask_QRS_detection:BadArg', 'Invalid lead indexes.');
+            end
+        end
+        
         
         function set.gqrs_config_filename(obj,x)
             if( ischar(x) )
