@@ -1482,10 +1482,11 @@ function ann_output = QRScorrector(varargin)
                 figure(side_plot);
             end
 
-            plot_ecg_strip(ECG_struct.signal, ...
+            side_plot = plot_ecg_strip(ECG_struct.signal, ...
                             'ECG_header', ECG_struct.header, ...
                             'QRS_locations', anns_under_edition, ...
                             'Start_time', aux_val/ECG_struct.header.freq - 1 , ...
+                            'Figure_handle', side_plot , ...
                             'End_time', aux_val/ECG_struct.header.freq + 1 );
 
             figure(fig_hdl);
@@ -2164,7 +2165,9 @@ function ann_output = QRScorrector(varargin)
         set(axes_hdl, 'XtickLabel', Seconds2HMS( aux_val ./ ECG_struct.header.freq ));
         
         legend(aux_hdls, {'ECG'; 'Similarity'} );
-        
+
+        figure(fig2_hdl);
+
         update_title_efimero('Select the threshold to use.', 5 );        
         
         [~, thr] = ginput(1);
@@ -2280,12 +2283,16 @@ function ann_output = QRScorrector(varargin)
             
             figure(prev_fig);
             Redraw();
-            figure(2);
+%             figure(fig2_hdl);
 
             ocurrences = length(ECG_struct.pattern_match.time);
+            
             update_title_efimero(['Threshold: ' num2str(thr) ' - found ' num2str(ocurrences) ' heartbeats with quality ' num2str(ratios(end)) ], 5 );        
             
-
+            disp_string_framed('*[1,0.5,0]', ['Threshold: ' num2str(thr) ' - found ' num2str(ocurrences) ' heartbeats with quality ' num2str(ratios(end)) ] );        
+            
+            commandwindow;
+            
             key = input(['[rt] to refine the QRS detection threshold.\n' ...
                          '[rx] to refine the time window to perform QRS detection.\n' ...
                          '[rh] to refine the minimum time between heartbeats.\n' ...
@@ -2293,7 +2300,7 @@ function ann_output = QRScorrector(varargin)
                          ], 's');
 
             if( strcmp(key, 'rt') )
-                figure(2)
+                figure(fig2_hdl);
                 update_title_efimero('Select the threshold to use.', 5 );        
                 
                 [~, thr] = ginput(1);
@@ -2326,6 +2333,7 @@ function ann_output = QRScorrector(varargin)
 
         end
 
+        figure(prev_fig);
         update_title_efimero('Search pattern finished.', 5 );        
 
         cant_anns = size(AnnNames,1);
@@ -2340,7 +2348,7 @@ function ann_output = QRScorrector(varargin)
         set(annotation_under_edition_label, 'string', [ 'Annotation under edition: ' char(AnnNames( AnnNames_idx ,1)) ' (' num2str(ratios(AnnNames_idx)) ')' ])
         set(annotation_list_control, 'Value', AnnNames_idx);    
 
-        close(2)
+        close(fig2_hdl);
 
     end
     

@@ -29,7 +29,7 @@
 % Last update: 17/12/2010
 % Copyright 2008-2015
 % 
-function similarity = similarity_calculation(signal, ECG_header_aux, ECG_start_offset, progress_handle, pattern2detect, payload_in )
+function similarity = similarity_calculation(signal, ECG_header_aux, ECG_start_offset, progress_handle, pattern2detect )
 
     [nsamples_signal, nsig_signal] = size(signal);
     [nsamples_pattern2detect, nsig_pattern2detect] = size(pattern2detect);

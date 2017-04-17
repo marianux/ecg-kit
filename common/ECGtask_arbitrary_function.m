@@ -37,7 +37,7 @@ classdef ECGtask_arbitrary_function < ECGtask
     end
     
     properties( Access = private )
-        
+        interproc_data        
     end
     
     properties
@@ -106,8 +106,7 @@ classdef ECGtask_arbitrary_function < ECGtask
                 ECG_header_aux = trim_ECG_header(ECG_header, obj.lead_idx);
                 
                 if( nargout(obj.function_pointer) == 2 )
-                    [aux_payload, aux_interproc_data ] = obj.function_pointer( ECG(:,obj.lead_idx), ECG_header_aux, ECG_start_offset, obj.progress_handle, obj.payload);
-                    obj.payload.interproc_data = aux_interproc_data;
+                    [aux_payload, obj.interproc_data ] = obj.function_pointer( ECG(:,obj.lead_idx), ECG_header_aux, ECG_start_offset, obj.progress_handle, obj.payload, obj.interproc_data);
                 else
                     aux_payload = obj.function_pointer( ECG(:,obj.lead_idx), ECG_header_aux, ECG_start_offset, obj.progress_handle, obj.payload);
                 end                

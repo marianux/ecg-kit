@@ -15,9 +15,5 @@
 % 
 function bStarted = default_start_function(obj, ECG_header)
 
-% data used to share initial/previous conditions among data segments or
-% iterations.
-obj.payload.interproc_data = [];
-
 % Flag to indicate correct initialization.
 bStarted = true;
