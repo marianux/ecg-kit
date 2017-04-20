@@ -1273,6 +1273,63 @@ classdef ECGwrapper < handle
             end            
         end
         
+        function horzcat(obj, ECGwB)
+        % this method allows signal concatenation .
+            
+        
+        end
+            
+        function vertcat(obj, ECGwB)
+        % this method allows signal concatenation .
+            
+            if( obj.ECG_header.freq == ECGwB.ECG_header.freq && ...
+                obj.ECG_header.nsig == ECGwB.ECG_header.nsig    ...
+              )
+                % Allow signal concatenation
+
+                this_header = obj.ECG_header;
+
+                % vertical concatenation
+                this_header.nsamp = this_header.nsamp + ECGwB.ECG_header.nsamp;
+                
+                % ADCu / physical units compagination
+                
+                aux_gain = [ colvec(this_header.gain) colvec(ECGwB.ECG_header.gain) ];
+                
+                this_header.gain = max(aux_gain,[], 2);
+
+                aux_offset = [ colvec(this_header.offset) colvec(ECGwB.ECG_header.offset) ];
+
+                this_header.offset = min(aux_offset,[], 2);
+
+                MIT_filename = [ 'concat_' this_header.recname '__' ECGwB.ECG_header.recname ];
+                MIT_filename = regexprep(MIT_filename, '\W*(\w+)\W*', '$1');
+                MIT_filename = regexprep(MIT_filename, '\W', '_');
+                
+                result_files = [ result_files; cellstr([obj.output_path MIT_filename '.dat'])];
+
+                % gain transform
+                x = ADC2realunits(x, zero, gain)
+
+                result_signal = cast( round( bsxfun( @times, bsxfun( @minus, aux.result_signal, range_conversion_offset), range_conversion_gain) ) , 'int16');
+                
+                fidECG = fopen([obj.output_path MIT_filename '.dat'], 'w');
+
+                try
+                    fwrite(fidECG, result_signal', 'int16', 0 );
+                    fclose(fidECG);
+                catch MEE
+                    fclose(fidECG);
+                    rethrow(MEE);
+                end                
+                
+                
+            else
+                
+            end
+        
+        end
+            
         function disp(obj)
         % this method produces a pretty-printed description about the
         % information stored in the object

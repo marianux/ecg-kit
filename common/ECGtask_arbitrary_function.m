@@ -84,6 +84,8 @@ classdef ECGtask_arbitrary_function < ECGtask
                 obj.sampling_rate_out = ECG_header.freq;
             end
             
+            obj.interproc_data = [];
+            
             obj.started = obj.start_func_pointer(obj, ECG_header);
             
         end

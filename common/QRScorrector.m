@@ -353,7 +353,7 @@ function ann_output = QRScorrector(varargin)
     ColorOrder = my_colormap( 12 );
     all_markers = {'+','o','*','.','x','s','d','^','v','<','>','p','h'};
 
-    side_plot = [];
+    side_plot_hdl = [];
 
     fIsDragTimeAllowed = false;
     x_timeScroll_units = [];
@@ -1475,20 +1475,22 @@ function ann_output = QRScorrector(varargin)
 
             aux_val = aux_val + start_idx - 1;
             
-            if( isempty(side_plot) || ~ishandle(side_plot) )
-                side_plot = figure();
-                set(side_plot, 'Position', [ maximized_size(3:4) maximized_size(3:4) ] .* [ 0 0 0.95 0.9] );
+            if( isempty(side_plot_hdl) || ~ishandle(side_plot_hdl) )
+                side_plot_hdl = figure();
+                set(side_plot_hdl, 'Position', [ maximized_size(3:4) maximized_size(3:4) ] .* [ 0 0 0.95 0.9] );
             else
-                figure(side_plot);
+                figure(side_plot_hdl);
             end
 
-            side_plot = plot_ecg_strip(ECG_struct.signal, ...
+            plot_ecg_strip(ECG_struct.signal, ...
                             'ECG_header', ECG_struct.header, ...
                             'QRS_locations', anns_under_edition, ...
-                            'Start_time', aux_val/ECG_struct.header.freq - 1 , ...
-                            'Figure_handle', side_plot , ...
-                            'End_time', aux_val/ECG_struct.header.freq + 1 );
+                            'Start_time', aux_val/ECG_struct.header.freq - win_size_zoom/2 -  1 , ...
+                            'Figure_handle', side_plot_hdl , ...
+                            'End_time', aux_val/ECG_struct.header.freq + win_size_zoom/2 + 1 );
 
+            side_plot_hdl = gcf();
+            
             figure(fig_hdl);
 
         end

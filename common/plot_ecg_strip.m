@@ -1017,7 +1017,7 @@ set(axes_hdl, 'Position', [ 0.005 0.01 0.99 0.98 ] );
 user_data.linked_hdl = linked_hdl;
 
 % global variables
-report_format = 'pdf';
+report_format = 'png';
 report_format_idx = find(strcmpi(report_format,cKnownReportFormats),1);
 
 lead_selected_idx = 1:cant_leads;
@@ -1062,7 +1062,7 @@ YlabelLeftPosition = nan;
 scroll_mode = 'zoom';
 gain_offset_mode = 'gain';
 % 1V maximum
-min_gain = 1e-10 / plotYrange;
+min_gain = 1e-12 / plotYrange;
 % 1 nV maximum
 max_gain = 1e15 / plotYrange;
 
@@ -2544,9 +2544,9 @@ end
             end
 
             if( isfield(heasig, 'recname') )
-                report_filename = [report_path heasig.recname '.' report_format];
+                report_filename = [report_path heasig.recname '_captured_' datestr(now, 'dd_mm_yy-HH_MM_SS' )  '.' report_format];
             else
-                report_filename = [report_path 'ECG_strip_capture_' datestr(now, 'dd_mm_yy-HH_MM_SS' ) '.' report_format];
+                report_filename = [report_path 'ECG_strip_captured_' datestr(now, 'dd_mm_yy-HH_MM_SS' ) '.' report_format];
             end
 
         else
