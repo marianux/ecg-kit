@@ -70,6 +70,8 @@ classdef ECGtask_arbitrary_function < ECGtask
                 if( isempty(obj.lead_idx) )
     %               'all-signals'
                     obj.lead_idx = 1:ECG_header.nsig;
+                else
+                    obj.lead_idx = obj.lead_idx( obj.lead_idx >= 1 & obj.lead_idx <= ECG_header.nsig);
                 end
             end
             
@@ -127,7 +129,9 @@ classdef ECGtask_arbitrary_function < ECGtask
                 
                 payload.result_signal = aux_payload(max(1,round(ECG_sample_start_end_idx(1)*kmultirate)):min(end, round(ECG_sample_start_end_idx(2)*kmultirate) ),:);
                 
-                obj.range_min_max_tracking = [ min( [obj.range_min_max_tracking(1,:); min(payload.result_signal) ] ); max([obj.range_min_max_tracking(2,:); max(payload.result_signal)]) ];
+                cant_out_signals = size( payload.result_signal, 2 );
+                
+                obj.range_min_max_tracking = [ min( [obj.range_min_max_tracking(1,1:cant_out_signals); min(payload.result_signal) ] ); max([obj.range_min_max_tracking(2,1:cant_out_signals); max(payload.result_signal)]) ];
                 
             else
                 payload.result = aux_payload;

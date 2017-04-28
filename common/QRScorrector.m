@@ -687,7 +687,9 @@ function ann_output = QRScorrector(varargin)
                 this_all_anns = [];
             else
                 aux_RR = colvec(diff(anns_under_edition));
-                aux_RR = [aux_RR(1); aux_RR] * 1/ECG_struct.header.freq;          
+                
+                aux_RR = RR_calculation(anns_under_edition, ECG_struct.header.freq);               
+                aux_RR = aux_RR * 1/ECG_struct.header.freq;          
                 
                 all_annotations_selected(1) = {anns_under_edition};
                 this_all_anns = all_annotations_selected;
@@ -1075,6 +1077,12 @@ function ann_output = QRScorrector(varargin)
                             'position', [0.93 0.07 0.063 0.03], ...
                             'callback', @update_q_ratios);
 
+            uicontrol( ... 
+                            'style','pushbutton', ...
+                            'string', 'Merge Annotations', ...
+                            'units','normalized', ...
+                            'position', [0.865 0.04 0.063 0.03], ...
+                            'callback', @MergeAnnotations);
 
         end
 
@@ -2051,10 +2059,10 @@ function ann_output = QRScorrector(varargin)
             pattern2detect_orig = ECG_struct.signal(aux_seq,lead_idx);
             aux_seq = (xlims(1) - aux_pre ):(xlims(2) + aux_pre);
             pattern2detect = ECG_struct.signal(aux_seq,lead_idx);
-            pattern2detect = decimate(pattern2detect, ndown, 'fir');
-            pattern2detect = pattern2detect(round(aux_pre/ndown):(end-round(aux_pre/ndown)));
+            pattern2detect = resample(pattern2detect, 1, ndown, 4);
+            pattern2detect = pattern2detect(round(aux_pre/ndown):(end-round(aux_pre/ndown)),:);
             pattern2detect = bsxfun( @minus, pattern2detect, mean(pattern2detect));
-            pattern2detect = pattern2detect .* hamming(length(pattern2detect));
+            pattern2detect = pattern2detect .* repmat(hamming(length(pattern2detect)), 1, llead_idx);
             
         end
         
@@ -2086,7 +2094,7 @@ function ann_output = QRScorrector(varargin)
                 aux_w.cacheResults = false;
                 aux_w.ECGtaskHandle.lead_idx = lead_idx;
                 aux_w.ECGtaskHandle.signal_payload = true;
-                aux_w.ECGtaskHandle.function_pointer = @(a)(decimate(a, ndown, 'fir'));
+                aux_w.ECGtaskHandle.function_pointer = @(a)(resample(a, 1, ndown, 4));
                 aux_w.ECGtaskHandle.sampling_rate_out = ECG_struct.header.freq / ndown;
                 aux_w.user_string = ['resample_to_' num2str(round(aux_w.ECGtaskHandle.sampling_rate_out)) '_for_leads_' num2str(sort(lead_idx)) ];
                 aux_w.Run
@@ -2144,7 +2152,11 @@ function ann_output = QRScorrector(varargin)
 %                 aux_val1 = [aux_w_ecg.read_signal( aux_start, aux_start + win_sample ) aux_w.read_signal( aux_start, aux_start + win_sample ) ];
 %                 aux_val1 = [aux_val1(:, lead_idx) aux_w.read_signal( aux_start, aux_start + win_sample ) ];
                 
-                aux_val1 = [aux_w_ecg.read_signal( aux_start, aux_start + win_sample ) aux_w.read_signal( aux_start, aux_start + win_sample ) ];
+                aux_val1 = aux_w_ecg.read_signal( aux_start, aux_start + win_sample );
+                
+                aux_val1 = aux_val1(:,lead_idx);
+                
+                aux_val1 = [aux_val1 aux_w.read_signal( aux_start, aux_start + win_sample ) ];
                 
                 aux_val = [aux_val; [bsxfun(@minus, aux_val1(:,1:end-1), mean(aux_val1(:,1:end-1)) ) aux_val1(:,end)]; sig_breaks ];
             end
@@ -2210,7 +2222,7 @@ function ann_output = QRScorrector(varargin)
             else
                 aux_w.ECGtaskHandle = 'arbitrary_function';
                 aux_w.cacheResults = false;
-                aux_w.ECGtaskHandle.lead_idx = lead_idx;
+                aux_w.ECGtaskHandle.lead_idx = 1;
                 % generate QRS detections
                 aux_w.ECGtaskHandle.signal_payload = false;
                 aux_w.user_string = ['modmax_calc_for_leads_' num2str(sort(lead_idx)) ];
@@ -2275,8 +2287,10 @@ function ann_output = QRScorrector(varargin)
                 serie_location_mask = [];
             else
                 anns_under_edition = unique(round(colvec( aux_val )));
-                RRserie = colvec(diff(anns_under_edition));
-                RRserie = {[RRserie(1); RRserie] * 1/ECG_struct.header.freq};
+                
+                RRserie = RR_calculation(anns_under_edition, ECG_struct.header.freq);               
+                RRserie = {RRserie * 1/ECG_struct.header.freq};          
+                
             end
             all_annotations_selected = {anns_under_edition};
             RR_idx = { find( anns_under_edition >= start_idx &  anns_under_edition <= end_idx ) };
@@ -2515,6 +2529,96 @@ function ann_output = QRScorrector(varargin)
 
         end
         
+    end
+
+    function MergeAnnotations(obj,event_obj) 
+
+
+        ann_idx = get(annotation_list_control, 'Value');
+        
+        if( length(ann_idx) > 1 )
+        
+            merged_detections = unique(round(colvec( ECG_struct.(AnnNames{ann_idx(1),1}).(AnnNames{ann_idx(1),2}) )));
+
+            for ii = 2:length(ann_idx)
+
+                detB = unique(round(colvec( ECG_struct.(AnnNames{ann_idx(ii),1}).(AnnNames{ann_idx(ii),2}) )));
+
+                merged_detections = merge_QRS_detections(merged_detections, detB, ECG_struct.header);
+
+            end
+        
+            aux_val = sum(~cellfun( @isempty, strfind( AnnNames(:,1), 'merged' )));
+            
+            aux_str = [ 'merged_' num2str(aux_val+1)];
+            
+            ECG_struct.(aux_str).time = merged_detections;
+            
+            AnnNames = [AnnNames; cellstr(aux_str) cellstr('time')];
+            aux_all_anns = [all_annotations; {merged_detections}];
+
+            if( isempty(ECG_w) )
+                % only for short signals
+                [ ratios, estimated_labs ] = CalcRRserieRatio(aux_all_anns, ECG_struct.header);
+            else
+                % ignore ratios and q measurements in long recordings.
+                ratios = zeros(size(AnnNames,1),1);
+                estimated_labs = cell(size(AnnNames,1),1);
+            end
+
+            [ratios, best_detections_idx] = sort(ratios, 'descend');
+
+            aux_val = 1:length(ratios);
+
+            [~, annotations_ranking] = sort(aux_val(best_detections_idx));
+            
+            all_annotations = aux_all_anns;
+
+            AnnNames_idx = size(AnnNames,1);
+            anns_under_edition = merged_detections;
+
+            cant_anns = size(AnnNames,1);
+            aux_str = repmat( ' - ',cant_anns,1);
+
+            set(annotation_list_control, 'string', [ char(cellstr(num2str((1:cant_anns)'))) aux_str char(AnnNames(:,1)) repmat( ' (',cant_anns,1) num2str(round(colvec(ratios * 1000))) aux_str num2str(colvec(annotations_ranking))  repmat( ')',cant_anns,1)  ] );
+            set(annotation_under_edition_label, 'string', [ 'Annotation under edition: ' char(AnnNames( AnnNames_idx ,1)) ' (' num2str(ratios(AnnNames_idx)) ')' ])
+
+            set(annotation_list_control, 'Value', AnnNames_idx);
+            
+            hb_idx = 1;
+            selected_hb_idx = [];
+
+            undo_buffer_idx = 1;
+
+            aux_val = anns_under_edition;
+
+            bAnnsEdited = false;
+
+            if( isempty(aux_val) )
+                anns_under_edition = [];
+                RRserie = {[]};
+                all_annotations_selected_serie_location = [];
+                serie_location_mask = [];
+            else
+                RRserie = RR_calculation(anns_under_edition, ECG_struct.header.freq);               
+                RRserie = {RRserie * 1/ECG_struct.header.freq};          
+            end
+            all_annotations_selected = {anns_under_edition};
+            RR_idx = { find( anns_under_edition >= start_idx &  anns_under_edition <= end_idx ) };
+
+            bSeriesChange = true;        
+
+            undo_buffer_idx = 1;
+
+            bRecEdited = true;
+            bAnnsEdited = false;
+
+            selected_hb_idx = [];   
+
+            Redraw();        
+
+        end
+            
     end
 
     function ChangeRecordingSelected(obj,event_obj) 
@@ -2818,9 +2922,9 @@ function ann_output = QRScorrector(varargin)
                         serie_location_mask = false(size(anns_under_edition));
                     else
                         anns_under_edition = unique(round(colvec( aux_val )));
-
-                        RRserie = colvec(diff(anns_under_edition));
-                        RRserie = {[RRserie(1); RRserie] * 1/ECG_struct.header.freq};
+                        RRserie = RR_calculation(anns_under_edition, ECG_struct.header.freq);               
+                        RRserie = {RRserie * 1/ECG_struct.header.freq};          
+                        
                     end
                 
                 end
@@ -2867,8 +2971,7 @@ function ann_output = QRScorrector(varargin)
                 if( bSeries )
                     RRserie = aux_anns2;
                 else
-                    RRserie = cellfun( @(this_anns)( colvec(diff(this_anns)) ), all_annotations_selected, 'UniformOutput', false);
-                    RRserie = cellfun( @(this_rr_serie)( [this_rr_serie(1); this_rr_serie] * 1/ECG_struct.header.freq ), RRserie, 'UniformOutput', false);
+                    RRserie = cellfun( @(this_anns)( RR_calculation(this_anns, ECG_struct.header.freq) * 1/ECG_struct.header.freq ), all_annotations_selected, 'UniformOutput', false);
                 end
                 
                 bSeriesChange = true;

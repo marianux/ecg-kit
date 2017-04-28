@@ -20,7 +20,7 @@
 % Example:
 % 
 % 
-% See also soft_set_difference
+% See also soft_set_difference, soft_set_union
 % 
 % Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta

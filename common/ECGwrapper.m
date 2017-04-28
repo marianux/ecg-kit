@@ -293,21 +293,28 @@ classdef ECGwrapper < handle
             if( isempty(obj.user_string) )
                 aux_user_prefix = [];
             else
-                aux_user_prefix= [obj.user_string '_'];
+                if(length(obj.rec_filename) > 30 )
+                    % shorter version
+                    aux_user_prefix = [ adjust_string(obj.user_string, 10, 'center', '_') '_'];
+                else
+                    aux_user_prefix = [obj.user_string '_'];
+                end
+
             end
             
             % check for cached results
             if( obj.cacheResults )
+
+                if(length(obj.rec_filename) > 30 )
+                    % shorter version
+                    task_name = adjust_string(obj.ECGtaskHandle.name, 10, 'center', '_');
+                else
+                    task_name = obj.ECGtaskHandle.name;
+                end
                 
                 if( isprop(obj.ECGtaskHandle, 'signal_payload') && obj.ECGtaskHandle.signal_payload )
                     % The results is a signal for arbitrary tasks, so check
                     % the result signal instead
-
-                    if( strcmpi(obj.ECGtaskHandle.name, 'arbitrary_function' ) )
-                        task_name = 'af';
-                    else
-                        task_name = obj.ECGtaskHandle.name;
-                    end
 
                     MIT_filename = [ obj.rec_filename '_' aux_user_prefix task_name ];
                     MIT_filename = regexprep(MIT_filename, '\W*(\w+)\W*', '$1');
@@ -316,12 +323,6 @@ classdef ECGwrapper < handle
                     files_this_pid = dir([obj.output_path MIT_filename '*.dat']);
                     
                 else
-                
-                    if( strcmpi(obj.ECGtaskHandle.name, 'arbitrary_function' ) )
-                        task_name = 'af';
-                    else
-                        task_name = obj.ECGtaskHandle.name;
-                    end
                     
                     files_this_pid = dir([obj.output_path obj.rec_filename '_' aux_user_prefix task_name '*.mat']);
 
@@ -537,12 +538,19 @@ classdef ECGwrapper < handle
                         start_iter = 1;
                         payload_files = [];
 
+                        if(length(obj.rec_filename) > 30 )
+                            % shorter version
+                            task_name = adjust_string(obj.ECGtaskHandle.name, 10, 'center', '_');
+                        else
+                            task_name = obj.ECGtaskHandle.name;
+                        end
+                        
                         %check for previous iterations already done, and try to restore.
                         if( cant_iter > 1 )
                             % look for the previous cached point to continue
                             for ii = 1:cant_iter
                                 
-                                aux_filename =  [obj.output_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(obj.this_pid) '_iteration_' num2str(ii) '_of_' num2str(cant_iter)  '.mat'];
+                                aux_filename =  [obj.output_path 'tmpfile_' aux_user_prefix task_name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(obj.this_pid) '_iteration_' num2str(ii) '_of_' num2str(cant_iter)  '.mat'];
                                 
                                 if( exist(aux_filename, 'file')  )
                                     payload_files = [ payload_files; cellstr(aux_filename)];
@@ -552,7 +560,7 @@ classdef ECGwrapper < handle
                                 end
                             end
                         else
-                            aux_filename =  [obj.output_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(obj.this_pid) '_iteration_1_of_1.mat'];
+                            aux_filename =  [obj.output_path 'tmpfile_' aux_user_prefix task_name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(obj.this_pid) '_iteration_1_of_1.mat'];
                             
                             if( exist(aux_filename, 'file')  )
                                 payload_files = [ payload_files; cellstr(aux_filename)];
@@ -700,13 +708,20 @@ classdef ECGwrapper < handle
                                     % Update point
                                     pb.checkpoint('Saving results');
 
+                                    if(length(obj.rec_filename) > 30 )
+                                        % shorter version
+                                        task_name = adjust_string(obj.ECGtaskHandle.name, 10, 'center', '_');
+                                    else
+                                        task_name = obj.ECGtaskHandle.name;
+                                    end
+                                    
                                     % save results
-                                    save([obj.tmp_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_' num2str(obj.this_pid) '_' num2str(this_iter) '_' num2str(cant_iter) '.mat'], '-struct', 'payload');
+                                    save([obj.tmp_path 'tmpfile_' aux_user_prefix task_name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_' num2str(obj.this_pid) '_' num2str(this_iter) '_' num2str(cant_iter) '.mat'], '-struct', 'payload');
 
                                     % rename results.
-                                    auxStr = [obj.tmp_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(obj.this_pid) '_iteration_' num2str(this_iter) '_of_' num2str(cant_iter)  '.mat'];
+                                    auxStr = [obj.tmp_path 'tmpfile_' aux_user_prefix task_name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(obj.this_pid) '_iteration_' num2str(this_iter) '_of_' num2str(cant_iter)  '.mat'];
 
-                                    movefile(   [obj.tmp_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_' num2str(obj.this_pid) '_' num2str(this_iter) '_' num2str(cant_iter)  '.mat'], ...
+                                    movefile(   [obj.tmp_path 'tmpfile_' aux_user_prefix task_name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_' num2str(obj.this_pid) '_' num2str(this_iter) '_' num2str(cant_iter)  '.mat'], ...
                                                 auxStr, 'f' );
 
                                     payload_files = [ payload_files; cellstr(auxStr)];
@@ -794,9 +809,16 @@ classdef ECGwrapper < handle
                                             start_iter_this_pid = resume_iter_this_pid;
                                         end
 
+                                        if(length(obj.rec_filename) > 30 )
+                                            % shorter version
+                                            task_name = adjust_string(obj.ECGtaskHandle.name, 10, 'center', '_');
+                                        else
+                                            task_name = obj.ECGtaskHandle.name;
+                                        end
+                                        
                                         for ii = start_pid:obj.cant_pids
 
-                                            files_this_pid = dir([obj.output_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(ii) '_*.mat' ]);
+                                            files_this_pid = dir([obj.output_path 'tmpfile_' aux_user_prefix task_name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(ii) '_*.mat' ]);
 
                                             if( isempty(files_this_pid) )
 
@@ -814,13 +836,20 @@ classdef ECGwrapper < handle
 
                                             % por q deberia saberlo ?
                                             %obj.ECGtaskHandle.cant_iteration = cant_iteraciones_this_pid;
-
+                                            
+                                            if(length(obj.rec_filename) > 30 )
+                                                % shorter version
+                                                task_name = adjust_string(obj.ECGtaskHandle.name, 10, 'center', '_');
+                                            else
+                                                task_name = obj.ECGtaskHandle.name;
+                                            end
+                                            
                                             for jj = start_iter_this_pid:cant_iteraciones_this_pid 
 
                                                 % por q deberia saberlo ?
                                                 %obj.ECGtaskHandle.this_iteration = jj;
 
-                                                aux_FM_filename = [obj.output_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(ii) '_iteration_' num2str(jj) '_of_' num2str(cant_iteraciones_this_pid) '.mat' ];
+                                                aux_FM_filename = [obj.output_path 'tmpfile_' aux_user_prefix task_name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(ii) '_iteration_' num2str(jj) '_of_' num2str(cant_iteraciones_this_pid) '.mat' ];
                                                 if( ~exist(aux_FM_filename, 'file'))
                                                     %Probably this PID not finished yet.
                                                     error('ECGwrapper:PIDnotFinished', 'Handled error');
@@ -859,12 +888,7 @@ classdef ECGwrapper < handle
                                                             aux_sufix = [];                                                       
                                                         end
 
-                                                        if( strcmpi(obj.ECGtaskHandle.name, 'arbitrary_function' ) )
-                                                            MIT_filename = [ obj.rec_filename '_' aux_user_prefix 'af' aux_sufix ];
-                                                        else
-                                                            MIT_filename = [ obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name aux_sufix ];
-                                                        end
-                                                        
+                                                        MIT_filename = [ obj.rec_filename '_' aux_user_prefix task_name aux_sufix ];
                                                         MIT_filename = regexprep(MIT_filename, '\W*(\w+)\W*', '$1');
                                                         MIT_filename = regexprep(MIT_filename, '\W', '_');
 
@@ -947,11 +971,17 @@ classdef ECGwrapper < handle
                                         if( isempty(obj.user_string) )
                                             aux_user_prefix = [];
                                         else
-                                            aux_user_prefix= [obj.user_string '_'];
+                                            if(length(obj.rec_filename) > 30 )
+                                                % shorter version
+                                                aux_user_prefix = [ adjust_string(obj.user_string, 10, 'center', '_') '_'];
+                                            else
+                                                aux_user_prefix = [obj.user_string '_'];
+                                            end
                                         end
 
-                                        if( strcmpi(obj.ECGtaskHandle.name, 'arbitrary_function' ) )
-                                            task_name = 'af';
+                                        if(length(obj.rec_filename) > 30 )
+                                            % shorter version
+                                            task_name = adjust_string(obj.ECGtaskHandle.name, 10, 'center', '_');
                                         else
                                             task_name = obj.ECGtaskHandle.name;
                                         end
@@ -981,7 +1011,7 @@ classdef ECGwrapper < handle
                                         pb.checkpoint('Deleting temporal files');
 
                                         %clean temporal files
-                                        delete([obj.output_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '*.mat' ]);
+                                        delete([obj.output_path 'tmpfile_' aux_user_prefix task_name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '*.mat' ]);
 
                                         bContinue = false;
 
@@ -1034,6 +1064,13 @@ classdef ECGwrapper < handle
                                 % other PIDS sync here after Master build the
                                 % results file/s.
 
+                                    if(length(obj.rec_filename) > 30 )
+                                        % shorter version
+                                        task_name = adjust_string(obj.ECGtaskHandle.name, 10, 'center', '_');
+                                    else
+                                        task_name = obj.ECGtaskHandle.name;
+                                    end
+                                
                                     bContinue = true;
                                     %Wait for Time2WaitPIDs seconds the finalization of all PIDs. Otherwise exit
                                     %with error.
@@ -1043,7 +1080,7 @@ classdef ECGwrapper < handle
 
                                         try
 
-                                            files_this_pid = dir([obj.tmp_path 'tmpfile_' aux_user_prefix obj.ECGtaskHandle.name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(obj.this_pid) '_*.mat' ]);
+                                            files_this_pid = dir([obj.tmp_path 'tmpfile_' aux_user_prefix task_name '_' obj.rec_filename '_payload_cantpids_' num2str(obj.cant_pids) '_thispid_' num2str(obj.this_pid) '_*.mat' ]);
 
                                             if( ~isempty(files_this_pid) )
                                                 error('ECGwrapper:MasterNotFinished', 'Handled error');
@@ -1233,7 +1270,12 @@ classdef ECGwrapper < handle
                 if( isempty(obj.user_string) )
                     aux_user_prefix = [];
                 else
-                    aux_user_prefix= [obj.user_string '_'];
+                    if(length(obj.rec_filename) > 30 )
+                        % shorter version
+                        aux_user_prefix = [ adjust_string(obj.user_string, 10, 'center', '_') '_'];
+                    else
+                        aux_user_prefix = [obj.user_string '_'];
+                    end
                 end
 
                 files_this_pid = dir([obj.output_path obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name '.mat']);
@@ -1273,59 +1315,82 @@ classdef ECGwrapper < handle
             end            
         end
         
-        function horzcat(obj, ECGwB)
+        function ECGw_out = horzcat(obj, varargin)
         % this method allows signal concatenation .
+
+            ECGw_out = obj;
             
-        
-        end
+            this_header = ECGw_out.ECG_header;
             
-        function vertcat(obj, ECGwB)
-        % this method allows signal concatenation .
+            for ii = 1:length(varargin)
             
-            if( obj.ECG_header.freq == ECGwB.ECG_header.freq && ...
-                obj.ECG_header.nsig == ECGwB.ECG_header.nsig    ...
-              )
-                % Allow signal concatenation
-
-                this_header = obj.ECG_header;
-
-                % vertical concatenation
-                this_header.nsamp = this_header.nsamp + ECGwB.ECG_header.nsamp;
+                this_header = concat_name( this_header, varargin{ii}, false );
                 
-                % ADCu / physical units compagination
+            end
+            
+            if( isempty(ECGw_out.output_path) )
+                ECGw_out.output_path = ECGw_out.rec_path;
+            end
+
+            if(ECGw_out.output_path(end) ~= filesep )
+                ECGw_out.output_path = [ECGw_out.output_path filesep];
+            end
+            
+            cached_filename = [obj.output_path this_header.recname '.dat'];
+            
+            if( obj.cacheResults && exist( cached_filename, 'file') )
                 
-                aux_gain = [ colvec(this_header.gain) colvec(ECGwB.ECG_header.gain) ];
+                cprintf('[1,0.5,0]','Cached results found in %s.\n', cached_filename);
                 
-                this_header.gain = max(aux_gain,[], 2);
-
-                aux_offset = [ colvec(this_header.offset) colvec(ECGwB.ECG_header.offset) ];
-
-                this_header.offset = min(aux_offset,[], 2);
-
-                MIT_filename = [ 'concat_' this_header.recname '__' ECGwB.ECG_header.recname ];
-                MIT_filename = regexprep(MIT_filename, '\W*(\w+)\W*', '$1');
-                MIT_filename = regexprep(MIT_filename, '\W', '_');
-                
-                result_files = [ result_files; cellstr([obj.output_path MIT_filename '.dat'])];
-
-                % gain transform
-                x = ADC2realunits(x, zero, gain)
-
-                result_signal = cast( round( bsxfun( @times, bsxfun( @minus, aux.result_signal, range_conversion_offset), range_conversion_gain) ) , 'int16');
-                
-                fidECG = fopen([obj.output_path MIT_filename '.dat'], 'w');
-
-                try
-                    fwrite(fidECG, result_signal', 'int16', 0 );
-                    fclose(fidECG);
-                catch MEE
-                    fclose(fidECG);
-                    rethrow(MEE);
-                end                
-                
+                ECGw_out = ECGwrapper( 'recording_name', [obj.output_path this_header.recname '.hea'] );
                 
             else
                 
+                for ii = 1:length(varargin)
+
+                    ECGw_out = horzcat_internal(ECGw_out, varargin{ii}, this_header.recname);
+
+                end
+            end
+        
+        end
+            
+        function ECGw_out = vertcat(obj, varargin)
+        % this method allows signal concatenation .
+            
+            ECGw_out = obj;
+
+            this_header = ECGw_out.ECG_header;
+            
+            for ii = 1:length(varargin)
+            
+                this_header = concat_name( this_header, varargin{ii}, true );
+                
+            end
+            
+            if( isempty(ECGw_out.output_path) )
+                ECGw_out.output_path = ECGw_out.rec_path;
+            end
+
+            if(ECGw_out.output_path(end) ~= filesep )
+                ECGw_out.output_path = [ECGw_out.output_path filesep];
+            end
+            
+            cached_filename = [obj.output_path this_header.recname '.dat'];
+            
+            if( obj.cacheResults && exist( cached_filename, 'file') )
+                
+                cprintf('[1,0.5,0]','Cached results found in %s.\n', cached_filename);
+                
+                ECGw_out = ECGwrapper( 'recording_name', [obj.output_path this_header.recname '.hea'] );
+                
+            else
+                
+                for ii = 1:length(varargin)
+
+                    ECGw_out = vertcat_internal(ECGw_out, varargin{ii});
+
+                end
             end
         
         end
@@ -1809,6 +1874,185 @@ classdef ECGwrapper < handle
             
         end
 
+        function bOk = AreWrappersHorzcatCompatible( ECGwA, ECGwB )
+        % internal method to dump signal to file in MIT format
+        
+            bOk = ECGwA.ECG_header.freq == ECGwB.ECG_header.freq & ...
+                  ECGwA.ECG_header.nsamp == ECGwB.ECG_header.nsamp;
+
+        end
+        
+        function bOk = AreWrappersVertcatCompatible( ECGwA, ECGwB )
+        % internal method to dump signal to file in MIT format
+        
+            bOk = ECGwA.ECG_header.freq == ECGwB.ECG_header.freq & ...
+                  ECGwA.ECG_header.nsig == ECGwB.ECG_header.nsig & ...
+                  all(ECGwA.ECG_header.gain == ECGwB.ECG_header.gain) & ...
+                  all(ECGwA.ECG_header.offset == ECGwB.ECG_header.offset);
+
+        end
+        
+        function dump_wrapper(fidECG, ECGwA )
+        % internal method to dump signal to file in MIT format
+        
+            MaxPossibleArrayBytes = 5e9;
+            
+            max_samples_iter = MaxPossibleArrayBytes/8/2; % double = 8 bytes
+        
+            aux_samples_process = ECGwA.ECG_header.nsamp * ECGwA.ECG_header.nsig;
+
+            cant_iter =  max(1, aux_samples_process / max_samples_iter);
+
+            cant_samples_iter = round(ECGwA.ECG_header.nsamp / cant_iter);
+
+            all_start_idx = 1:cant_samples_iter:ECGwA.ECG_header.nsamp;
+
+            for start_idx = all_start_idx
+
+                % gain transform
+                aux_sig = ECGwA.read_signal(start_idx, start_idx + cant_samples_iter - 1);
+
+                fwrite(fidECG, aux_sig', 'int16', 0 );
+
+            end
+            
+        end
+        
+        function this_header = concat_name( this_header, ECGwB, bVertConcat )
+        % internal method to dump signal to file in MIT format
+        
+            if(bVertConcat)
+                str_aux = 'vconcat_';
+            else
+                str_aux = 'hconcat_';
+            end
+
+            if( isempty( strfind(str_aux, this_header.recname ) ) )
+                MIT_filename = [ str_aux adjust_string(this_header.recname, 20, 'center', '_')  '__' adjust_string(ECGwB.ECG_header.recname, 20, 'center', '_') ];
+            else
+                MIT_filename = [ this_header.recname '__' adjust_string(ECGwB.ECG_header.recname, 20, 'center', '_') ];
+            end
+
+            MIT_filename = regexprep(MIT_filename, '\W*(\w+)\W*', '$1');
+            MIT_filename = regexprep(MIT_filename, '\W', '_');
+
+            this_header.recname = MIT_filename;
+        
+        end
+        
+        function ECGwC = vertcat_internal( ECGwA, ECGwB, MIT_filename )
+        % internal method to dump signal to file in MIT format
+            
+            ECGwC = [];
+            
+            if( ~AreWrappersVertcatCompatible( ECGwA, ECGwB) )
+                cprintf('[1,0.5,0]', 'Wrappers are not compatible for vertical concatenation. Same gain/offset and sampling freq is necessary.\n');
+            else
+                % Allow signal concatenation
+
+                this_header = ECGwA.ECG_header;
+                
+                % vertical concatenation
+                this_header.nsamp = this_header.nsamp + ECGwB.ECG_header.nsamp;
+                
+                fidECG = fopen([ECGwA.output_path MIT_filename '.dat'], 'w+');
+
+                try
+
+                    dump_wrapper(fidECG, ECGwA );
+
+                    dump_wrapper(fidECG, ECGwB );
+
+                    fclose(fidECG);
+
+                catch MEE
+                    fclose(fidECG);
+                    rethrow(MEE);
+                end                             
+                
+                this_header.recname = MIT_filename;
+                writeheader(ECGwA.output_path, this_header);   
+                
+                ECGwC = ECGwrapper( 'recording_name', [ECGwA.output_path MIT_filename '.hea'] );
+                
+            end
+        
+            
+        end
+        
+        function ECGwC = horzcat_internal( ECGwA, ECGwB, MIT_filename )
+        % internal method to dump signal to file in MIT format
+            
+            ECGwC = [];
+            
+            if( ~AreWrappersHorzcatCompatible( ECGwA, ECGwB) )
+                cprintf('[1,0.5,0]', 'Wrappers are not compatible for vertical concatenation. Same gain/offset and sampling freq is necessary.\n');
+            else
+                % Allow signal concatenation
+
+                this_header = ECGwA.ECG_header;
+                
+                aux_fnames = setdiff(fieldnames(this_header), {'recname' 'nsig' 'nsamp' 'bdate' 'btime' 'freq'} );
+                
+                for fname = rowvec(aux_fnames)
+                    fname = fname{1};
+                    if( ischar( this_header.(fname) ) )
+                        this_header.(fname) = char([ cellstr(this_header.(fname)); cellstr(ECGwB.ECG_header.(fname))]);
+                    else
+                        this_header.(fname) = [this_header.(fname); ECGwB.ECG_header.(fname)];
+                    end
+                end
+
+                % horizontal concatenation
+                this_header.nsig = this_header.nsig + ECGwB.ECG_header.nsig;
+
+                MaxPossibleArrayBytes = 5e9;
+
+                max_samples_iter = MaxPossibleArrayBytes/8/2; % double = 8 bytes
+
+                aux_samples_process = ECGwA.ECG_header.nsamp * ECGwA.ECG_header.nsig + ECGwB.ECG_header.nsamp * ECGwB.ECG_header.nsig;
+
+                cant_iter =  max(1, aux_samples_process / max_samples_iter);
+
+                cant_samples_iter = round(ECGwA.ECG_header.nsamp / cant_iter);
+
+                all_start_idx = 1:cant_samples_iter:ECGwA.ECG_header.nsamp;
+                
+                fidECG = fopen([ECGwA.output_path MIT_filename '.dat'], 'w+');
+
+                try
+
+                    for start_idx = all_start_idx
+
+                        aux_sig = ECGwA.read_signal(start_idx, start_idx + cant_samples_iter - 1);
+                        
+                        aux_sig = [ aux_sig ECGwB.read_signal(start_idx, start_idx + cant_samples_iter - 1) ];
+
+                        fwrite(fidECG, aux_sig', 'int16', 0 );
+
+                    end
+
+                    fclose(fidECG);
+
+                catch MEE
+                    fclose(fidECG);
+                    rethrow(MEE);
+                end                             
+                
+                this_header.recname = MIT_filename;
+                this_header.fname = repmat( [ECGwA.output_path MIT_filename '.dat'], this_header.nsig, 1);
+                
+                writeheader(ECGwA.output_path, this_header);   
+                
+                ECGwC = ECGwrapper( 'recording_name', [ECGwA.output_path MIT_filename '.hea'] );
+                
+            end
+        
+            
+        end
+        
+        
+        
     end
    
     

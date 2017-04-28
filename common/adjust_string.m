@@ -24,7 +24,11 @@
 % Birthdate  : 21/4/2015
 % Copyright 2008-2015
 % 
-function adjusted_str = adjust_string(str2trimm, target_width, where2trimm )
+function adjusted_str = adjust_string(str2trimm, target_width, where2trimm, missing_chars_symbol )
+
+    if( nargin < 4 || isempty(missing_chars_symbol) )
+        missing_chars_symbol = ' ... ';
+    end
 
     if( nargin < 3 || isempty(where2trimm) )
        where2trimm = 'center';
@@ -35,7 +39,6 @@ function adjusted_str = adjust_string(str2trimm, target_width, where2trimm )
        target_width = 20;
     end
 
-    missing_chars_symbol = ' ... ';
     lmissing_chars_symbol =length(missing_chars_symbol);
     
     lstr2trimm = length(str2trimm);

@@ -30,7 +30,7 @@
 % 
 % See also writeannot, read_ECG, ECGwrapper
 % 
-% Author: Salvador Olmos, Juan Pablo Martínez and/or Juan Bolea
+% Author: Salvador Olmos, Juan Pablo Martï¿½nez and/or Juan Bolea
 % adapted to ecg-kit by: Mariano Llamedo Soria
 % <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
 % Version: 0.1 beta
@@ -60,7 +60,7 @@ end
 try
 
     % writing first line of record_name, # signals and so on
-    fprintf(fid,'%s %d %d %d\n',header.recname,header.nsig);
+    fprintf(fid,'%s %d %d %d\n',header.recname, header.nsig);
     if isfield(header,'freq')
         fprintf(fid,'%d ',header.freq);
     end

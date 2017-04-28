@@ -12,14 +12,14 @@
 % 
 % Output:
 % 
-%   + sft_set_difference: the elements which are in val1, but not in soft_intersect( val1, val2, win_size )
+%   + sft_set_difference: the elements which are in val1, but not in soft_set_intersect( val1, val2, win_size )
 % 
 %   + idx: the indexes of val1(idx) which are in the sft_set_difference
 % 
 % Example:
 % 
 % 
-% See also soft_intersect
+% See also soft_set_intersect, soft_set_union
 % 
 % Author: Mariano Llamedo Soria (llamedom at frba.utn.edu.ar)
 % Version: 0.1 beta
@@ -32,6 +32,6 @@ function [sft_set_difference, idx]= soft_set_difference( val1, val2, win_size )
 % Find the set difference between index sequence val1-2 within a windows
 % win_size.
 
-sft_intersect = soft_intersect( val1, val2, win_size );
+sft_intersect = soft_set_intersect( val1, val2, win_size );
 
 [sft_set_difference, idx] = setdiff(val1, sft_intersect);

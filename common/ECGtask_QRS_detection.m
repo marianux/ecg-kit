@@ -38,7 +38,8 @@ classdef ECGtask_QRS_detection < ECGtask
 % Version: 0.1 beta
 % Birthdate  : 18/2/2013
 % Last update: 18/2/2013
-       
+% Copyright 2008-2017
+      
     properties(GetAccess = public, Constant)
         name = 'QRS_detection';
         target_units = 'ADCu';

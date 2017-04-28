@@ -35,7 +35,7 @@
 % 
 % Example:
 % 
-% Author: Juan Pablo Martínez, Rute Almeida
+% Author: Juan Pablo Martï¿½nez, Rute Almeida
 % adapted by Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
 % Version: 0.1 beta
 % Last update: 14/5/2014
@@ -92,6 +92,8 @@ if( lx > first_samp(1) )
     indexes = find(iAux);
     max_mod = x(indexes) .* s(indexes);
 
+else
+    return
 end
 
 if( nargin < 5 || isempty(t_restriction) )

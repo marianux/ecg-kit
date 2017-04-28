@@ -41,7 +41,7 @@ if(nargin < 3 || isempty(bRobust) )
 end
 
 if(bRobust)
-    mean_ptr_func = @nanmean;
+    mean_ptr_func = @nanmedian;
 else
     mean_ptr_func = @nanmean;
 end

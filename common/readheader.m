@@ -201,6 +201,7 @@ else
     heasig.fname = cell(heasig.nsig,1);
     heasig.group = nan(heasig.nsig,1);
     heasig.fmt = nan(heasig.nsig,1);
+    heasig.offset = nan(heasig.nsig,1);
     heasig.gain = nan(heasig.nsig,1);
     heasig.adcres = nan(heasig.nsig,1);
     heasig.adczero = nan(heasig.nsig,1);
