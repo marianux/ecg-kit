@@ -15,7 +15,7 @@
 % <matlab:web('mailto:llamedom@electron.frba.utn.edu.ar','-browser') (email)> 
 % Version: 0.1 beta
 % Birthdate: 01/09/2012
-% Last update: 18/10/2014
+% Last update: 03/05/2017
 % Copyright 2008-2015
 
 function UnInstallECGkit( bIgnoreAdminPrivs )
@@ -29,6 +29,23 @@ function UnInstallECGkit( bIgnoreAdminPrivs )
         bIgnoreAdminPrivs = true;
     end        
 
+    %path related constants.
+    root_path = [fileparts(mfilename('fullpath')) filesep ];
+    
+    try
+        
+        ECGw = ECGwrapper();
+        
+    catch ME
+        
+        fprintf(1, 'done !\n' );
+
+        fprintf(1, 'Thanks for trying the kit.\n\nNow you can safely delete %s\n', root_path );
+        
+        return
+        
+    end
+    
     release_str = 'v0.1.0 beta - 05/05/2015';
     backup_string = 'ECGkit_backup';
 
@@ -89,11 +106,9 @@ function UnInstallECGkit( bIgnoreAdminPrivs )
         
     end
     
-    %path related constants.
-    root_path = [fileparts(mfilename('fullpath')) filesep ];
 
     if( bUseDesktop || bOctave )
-        fprintf(1, 'Removing paths. ' );    
+        fprintf(1, 'Removing paths.\n' );    
     end
 
     %path related constants.
