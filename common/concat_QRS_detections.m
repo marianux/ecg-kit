@@ -31,11 +31,13 @@ function detC = concat_QRS_detections(detA, varargin)
         detection_namesA = setdiff(fieldnames(detC), {'series_quality' 'series_performance'} );
         detection_namesB = setdiff(fieldnames(detB), {'series_quality' 'series_performance'} );
 
-        same_names = intersect(detection_namesB, detection_namesA);
+        [same_names, aux_idx ] = intersect(detection_namesB, detection_namesA);
 
         % name disambiguation
-        for fname = rowvec(same_names)
-            detC.([fname{1} '_' ]) = detB.(fname{1});
+        for jj = 1:length(same_names)
+            new_name = [same_names{jj} '_' ];
+            detB.series_quality.AnnNames(aux_idx(jj),1) = {new_name};
+            detC.(new_name) = detB.(same_names{jj});
         end
 
         diff_names = setdiff(detection_namesB, detection_namesA);

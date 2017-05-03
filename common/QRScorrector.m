@@ -1533,8 +1533,14 @@ function ann_output = QRScorrector(varargin)
                 bRecEdited = true;
                 PushUndoAction();
 
-                aux_idx = find(anns_under_edition < anns_under_edition(anns_under_edition_idx(selected_hb_idx(1))) | anns_under_edition > anns_under_edition(anns_under_edition_idx(selected_hb_idx(end))), 1, 'first'  );
+                aux_idx = [find(anns_under_edition < anns_under_edition(anns_under_edition_idx(selected_hb_idx(1))),1, 'last') find( anns_under_edition > anns_under_edition(anns_under_edition_idx(selected_hb_idx(end))), 1, 'first') ];
 
+                if( isempty(aux_idx) ) 
+                    aux_idx = 1;
+                else
+                    aux_idx = aux_idx(1);
+                end
+                
                 aux_val = anns_under_edition(aux_idx);
                 
                 if( bSeries )
