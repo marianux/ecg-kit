@@ -89,7 +89,7 @@ while( loop_count < MAX_LOOPS && crit(max(loop_count-1,1)) > 0.001 )
         esemble_avg_initial = esemble_avg;
     end
 
-    realizations = cellfun(@(a)( cell2mat(arrayfun( @(aa)( conv(signal(a,aa), esemble_avg(:,aa) ) ), 1:nsig, 'UniformOutput', false )) ), aux_idx, 'UniformOutput', false);
+    realizations = cellfun(@(a)( cell2mat(arrayfun( @(aa)( conv(double(signal(a,aa)), esemble_avg(:,aa) ) ), 1:nsig, 'UniformOutput', false )) ), aux_idx, 'UniformOutput', false);
     
     cross_corr_idx = cellfun(@(a)( arrayfun( @(aa)( max_index( a(:,aa) ) ), 1:nsig)), realizations, 'UniformOutput', false);
     cross_corr_idx = cell2mat( cross_corr_idx(:) ) ;

@@ -2194,6 +2194,8 @@ function ann_output = QRScorrector(varargin)
 
         thr = thr * aux_thr_scale(2);
         
+        commandwindow;
+        
         key = input( 'Enter the minimum time in seconds between heartbeats (Default 0.3 s):\n' , 's');
 
         if( isempty(key) )

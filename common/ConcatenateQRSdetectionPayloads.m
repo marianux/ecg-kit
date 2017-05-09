@@ -47,7 +47,7 @@ function payload = ConcatenateQRSdetectionPayloads(obj, plA, plB)
         aux_idx = find(strcmpi(fields, 'series_quality' ));
 
         if( isempty(aux_idx) )
-            if( obj.CalculateArtificialDetections )
+            if( ~isempty(obj) && obj.CalculateArtificialDetections )
                 disp_string_framed(2, '"series_quality" field not found in tmp files. Wrong configuration ? Try cleanning tmp files and run again.' )
             end
         else                    
@@ -69,7 +69,7 @@ function payload = ConcatenateQRSdetectionPayloads(obj, plA, plB)
 
                 [~, aux_idxA, aux_idxB] = intersect(plA.series_quality.AnnNames(:,1), plB.series_quality.AnnNames(:,1));
 
-                if( obj.CalculatePerformance && size(plA.series_quality.AnnNames,1) ~= length(aux_idxA) ) 
+                if( ~isempty(obj) && obj.CalculatePerformance && size(plA.series_quality.AnnNames,1) ~= length(aux_idxA) ) 
                     aux_valDiff = setdiff(plA.series_quality.AnnNames(:,1), plB.series_quality.AnnNames(:,1));
                     disp_string_framed(2, 'WARNING!! Performance not completely calculated ' );
                     fprintf(2, disp_option_enumeration('Performance not calculated for leads:', aux_valDiff ) );
@@ -88,7 +88,7 @@ function payload = ConcatenateQRSdetectionPayloads(obj, plA, plB)
                     plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),4) = cellfun(@(a,b)(a + b + 1), plB.series_performance.conf_mat_details(aux_idxB(aux_not_empty_idx),4), aux_max_detetctor_idx, 'UniformOutput', false );
                     payload.series_performance.conf_mat_details = cellfun(@(a,b)([colvec(a);colvec(b)]), plA.series_performance.conf_mat_details(aux_idxA,:), plB.series_performance.conf_mat_details(aux_idxB,:), 'UniformOutput', false );
                 else
-                    if( obj.CalculatePerformance )
+                    if( ~isempty(obj) && obj.CalculatePerformance )
                         disp_string_framed(2, 'WARNING!! Performance not calculated ' );
                         disp_string_framed(2, '"series_performance" field not found in both tmp files. Different configuration options ? Try cleanning tmp files and run again.' )
                     end

@@ -1410,7 +1410,7 @@ classdef ECGwrapper < handle
                     fprintf(1, '+ECG recording: ');
                     
                     if( isempty(this_obj.recording_name) )
-                        cprintf('*Red', 'None selected\n', this_obj.recording_name, this_obj.recording_format);                    
+                        cprintf('*Red', 'None selected\n');                    
                     else
                         cprintf('*Blue', '%s (%s)\n', this_obj.recording_name, this_obj.recording_format);                    
                     end
