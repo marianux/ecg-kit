@@ -2513,9 +2513,9 @@ function ann_output = QRScorrector(varargin)
                 aux_str = repmat( ' - ',cant_anns,1);
 
                 set(annotation_list_control, 'string', [ char(cellstr(num2str((1:cant_anns)'))) aux_str char(AnnNames(:,1)) repmat( ' (',cant_anns,1) num2str(round(colvec(ratios * 1000))) aux_str num2str(colvec(annotations_ranking))  repmat( ')',cant_anns,1)  ] );
-                set(annotation_under_edition_label, 'string', [ 'Annotation under edition: ' char(AnnNames( AnnNames_idx ,1)) ' (' num2str(ratios(AnnNames_idx)) ')' ])
 
                 AnnNames_idx = 1;
+                set(annotation_under_edition_label, 'string', [ 'Annotation under edition: ' char(AnnNames( AnnNames_idx ,1)) ' (' num2str(ratios(AnnNames_idx)) ')' ])
                 set(annotation_list_control, 'Value', AnnNames_idx);
                 anns_under_edition = unique(round(colvec( ECG_struct.(AnnNames{AnnNames_idx,1}).(AnnNames{AnnNames_idx,2}) )));
 

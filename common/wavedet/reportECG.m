@@ -128,7 +128,7 @@ for win_length = win_lengths
     end
     
     cant_figs = min(max_cant_figs, ceil(heasig.nsamp / win_length / heasig.freq));
-    starts = linspace(0, round(heasig.nsamp / heasig.freq) - 1.5*win_length, cant_figs);
+    starts = linspace(0, max(0, round(heasig.nsamp / heasig.freq) - 1.5*win_length), cant_figs);
 
     str_aux = ['Reporting for window size: ' Seconds2HMS(win_length) ];
     pb1 = pb.AddInerLoop( str_aux );

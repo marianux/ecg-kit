@@ -1278,7 +1278,14 @@ classdef ECGwrapper < handle
                     end
                 end
 
-                files_this_pid = dir([obj.output_path obj.rec_filename '_' aux_user_prefix obj.ECGtaskHandle.name '.mat']);
+                % shorter version
+                task_name = adjust_string(obj.ECGtaskHandle.name, 10, 'center', '_');
+
+                files_this_pid = dir([obj.output_path obj.rec_filename '_' aux_user_prefix task_name '.mat']);
+                
+                task_name = obj.ECGtaskHandle.name;
+                
+                files_this_pid = [files_this_pid; dir([obj.output_path obj.rec_filename '_' aux_user_prefix task_name '.mat'])];
 
                 if( ~isempty(files_this_pid) )
                     result_files = [ result_files; strcat(obj.output_path, colvec({files_this_pid(:).name})) ];

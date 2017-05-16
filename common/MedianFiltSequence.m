@@ -24,7 +24,7 @@
 function y_filt = MedianFiltSequence(x, y, filter_win)
 
 % oversample the original sequence
-oversampling_ratio = median(diff(x))/4;
+oversampling_ratio = round(median(diff(x))/4);
 
 x_interp = colvec(1:oversampling_ratio:max(x));
 y_interp = spline(x, y, x_interp);
