@@ -21,13 +21,15 @@
 % Last update: 25/4/2017
 % Copyright 2008-2017
 % 
-function RR = RR_calculation(QRS_detections, sampling_rate)
+function [ RR, RR_filt] = RR_calculation(QRS_detections, sampling_rate, RR_filt)
 
     RR = diff(QRS_detections);
     RR = [ RR(1,:); RR ];
-    
-    % resample the RR sequence.
-    RR_filt = MedianFiltSequence(QRS_detections, RR, 2*sampling_rate);
+
+    if( nargin < 3 || length(RR_filt) ~= length(QRS_detections) )
+        % resample the RR sequence. Heavy in computation
+        RR_filt = MedianFiltSequence(QRS_detections, RR, 2*sampling_rate);
+    end
     
     % remove gaps using next heartbeats
     gap_relative_time = 3; % times the median RR interval

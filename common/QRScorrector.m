@@ -339,6 +339,7 @@ function ann_output = QRScorrector(varargin)
     Pattern_hdl = [];
     
     anns_under_edition = [];
+    RRserie_filt = {};
     RRserie = {};
     RR_idx = {};
     anns_under_edition_idx = [];
@@ -455,6 +456,8 @@ function ann_output = QRScorrector(varargin)
         bAnnsEdited = false;
         bRecEdited = false;
 
+        RRserie_filt = {[]};
+        
         hb_idx = 1;
         lead_idx = 1;
         selected_hb_idx = [];
@@ -686,9 +689,9 @@ function ann_output = QRScorrector(varargin)
                 aux_RR = [];
                 this_all_anns = [];
             else
-                aux_RR = colvec(diff(anns_under_edition));
-                
-                aux_RR = RR_calculation(anns_under_edition, ECG_struct.header.freq);               
+%                 aux_RR = colvec(diff(anns_under_edition));
+
+                [aux_RR, aux_RR_filt ] = RR_calculation(anns_under_edition, ECG_struct.header.freq, RRserie_filt{1});               
                 aux_RR = aux_RR * 1/ECG_struct.header.freq;          
                 
                 all_annotations_selected(1) = {anns_under_edition};
@@ -700,6 +703,8 @@ function ann_output = QRScorrector(varargin)
         end
         
         RRserie(1) = {aux_RR};
+        RRserie_filt(1) = {aux_RR_filt};
+        
         anns_under_edition_idx = RR_idx{1};
         
         if( isempty(aux_RR) || all(isnan(aux_RR)) )
@@ -1272,6 +1277,10 @@ function ann_output = QRScorrector(varargin)
                 anns_under_edition(hb_idx) = nan;
             else
                 anns_under_edition(hb_idx) = [];
+                aux_rr_filt = RRserie_filt{1};
+                aux_rr_filt(hb_idx) = [];
+                RRserie_filt{1} = aux_rr_filt;
+                
             end
 
             selected_hb_idx = [];
@@ -1422,6 +1431,9 @@ function ann_output = QRScorrector(varargin)
                 serie_location_mask(anns_under_edition_idx(hb_idx)) = true;
             else
                 anns_under_edition(anns_under_edition_idx(hb_idx)) = [];
+                aux_rr_filt = RRserie_filt{1};
+                aux_rr_filt(anns_under_edition_idx(hb_idx)) = [];
+                RRserie_filt{1} = aux_rr_filt;
             end
             
             selected_hb_idx( selected_hb_idx > length(anns_under_edition_idx) | selected_hb_idx == hb_idx ) = [];
@@ -1466,6 +1478,10 @@ function ann_output = QRScorrector(varargin)
                 anns_under_edition = sort([anns_under_edition; aux_val ]);
                 selected_hb_idx = find(aux_val == anns_under_edition(anns_under_edition_idx), 1);
                 hb_idx = selected_hb_idx;
+                aux_rr_filt = RRserie_filt{1};
+                aux_rr_filt = aux_rr_filt([1:hb_idx hb_idx:end]);
+                RRserie_filt{1} = aux_rr_filt;
+                
             end
             
             Redraw();
@@ -1523,6 +1539,8 @@ function ann_output = QRScorrector(varargin)
                 PushUndoAction();
                 anns_under_edition = sort( unique([anns_under_edition; colvec(copy_paste_buffer) ]) );
                 selected_hb_idx = [];
+                RRserie_filt = {[]};
+
                 Redraw();
             end
 
@@ -1549,9 +1567,14 @@ function ann_output = QRScorrector(varargin)
                     anns_under_edition(anns_under_edition_idx(selected_hb_idx)) = [];
                 end
                 
-                hb_idx = find(anns_under_edition == aux_val);
-                
+                anns_under_edition_idx(selected_hb_idx) = [];
                 selected_hb_idx = [];
+                hb_idx = find(anns_under_edition(anns_under_edition_idx) == aux_val);
+                
+                aux_rr_filt = RRserie_filt{1};
+                aux_rr_filt(anns_under_edition_idx(selected_hb_idx)) = [];
+                RRserie_filt{1} = aux_rr_filt;
+                
                 Redraw();
             end
 
@@ -1561,6 +1584,7 @@ function ann_output = QRScorrector(varargin)
                 undo_buffer_idx = undo_buffer_idx + 1;
                 anns_under_edition = undo_buffer{undo_buffer_idx};
                 selected_hb_idx = [];
+                RRserie_filt = {[]};
                 Redraw();
             end
 
@@ -1570,6 +1594,8 @@ function ann_output = QRScorrector(varargin)
                 undo_buffer_idx = undo_buffer_idx - 1;
                 anns_under_edition = undo_buffer{undo_buffer_idx};
                 selected_hb_idx = [];
+                RRserie_filt = {[]};
+                
                 Redraw();
             end
 
@@ -2291,13 +2317,15 @@ function ann_output = QRScorrector(varargin)
             if( isempty(aux_val) )
                 anns_under_edition = [];
                 RRserie = {[]};
+                RRserie_filt = {[]};
                 all_annotations_selected_serie_location = [];
                 serie_location_mask = [];
             else
                 anns_under_edition = unique(round(colvec( aux_val )));
                 
-                RRserie = RR_calculation(anns_under_edition, ECG_struct.header.freq);               
+                [RRserie, RRserie_filt ] = RR_calculation(anns_under_edition, ECG_struct.header.freq, RRserie_filt{1});               
                 RRserie = {RRserie * 1/ECG_struct.header.freq};          
+                RRserie_filt = {RRserie_filt};
                 
             end
             all_annotations_selected = {anns_under_edition};
@@ -2605,11 +2633,13 @@ function ann_output = QRScorrector(varargin)
             if( isempty(aux_val) )
                 anns_under_edition = [];
                 RRserie = {[]};
+                RRserie_filt = {[]};
                 all_annotations_selected_serie_location = [];
                 serie_location_mask = [];
             else
-                RRserie = RR_calculation(anns_under_edition, ECG_struct.header.freq);               
+                [RRserie, RRserie_filt ] = RR_calculation(anns_under_edition, ECG_struct.header.freq, RRserie_filt{1});               
                 RRserie = {RRserie * 1/ECG_struct.header.freq};          
+                RRserie_filt = {RRserie_filt};
             end
             all_annotations_selected = {anns_under_edition};
             RR_idx = { find( anns_under_edition >= start_idx &  anns_under_edition <= end_idx ) };
@@ -2916,6 +2946,7 @@ function ann_output = QRScorrector(varargin)
 
                     anns_under_edition = [];
                     RRserie = {[]};
+                    RRserie_filt = {[]};
                     all_annotations_selected_serie_location = [];
                     serie_location_mask = [];
                     
@@ -2930,8 +2961,9 @@ function ann_output = QRScorrector(varargin)
                         serie_location_mask = false(size(anns_under_edition));
                     else
                         anns_under_edition = unique(round(colvec( aux_val )));
-                        RRserie = RR_calculation(anns_under_edition, ECG_struct.header.freq);               
+                        [RRserie, RRserie_filt ] = RR_calculation(anns_under_edition, ECG_struct.header.freq, RRserie_filt{1});               
                         RRserie = {RRserie * 1/ECG_struct.header.freq};          
+                        RRserie_filt = {RRserie_filt};
                         
                     end
                 
@@ -2979,7 +3011,8 @@ function ann_output = QRScorrector(varargin)
                 if( bSeries )
                     RRserie = aux_anns2;
                 else
-                    RRserie = cellfun( @(this_anns)( RR_calculation(this_anns, ECG_struct.header.freq) * 1/ECG_struct.header.freq ), all_annotations_selected, 'UniformOutput', false);
+                    [RRserie, RRserie_filt ]= cellfun( @(this_anns)( RR_calculation(this_anns, ECG_struct.header.freq) * 1/ECG_struct.header.freq ), all_annotations_selected, 'UniformOutput', false);
+                    RRserie_filt = RRserie_filt * ECG_struct.header.freq;
                 end
                 
                 bSeriesChange = true;
