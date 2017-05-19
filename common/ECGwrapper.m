@@ -293,7 +293,7 @@ classdef ECGwrapper < handle
             if( isempty(obj.user_string) )
                 aux_user_prefix = [];
             else
-                if(length(obj.rec_filename) > 30 )
+                if(length(obj.rec_filename) > 30 && length(obj.user_string) > 10 )
                     % shorter version
                     aux_user_prefix = [ adjust_string(obj.user_string, 10, 'center', '_') '_'];
                 else
@@ -305,7 +305,7 @@ classdef ECGwrapper < handle
             % check for cached results
             if( obj.cacheResults )
 
-                if(length(obj.rec_filename) > 30 )
+                if(length(obj.rec_filename) > 30 && length(obj.ECGtaskHandle.name) > 10 )
                     % shorter version
                     task_name = adjust_string(obj.ECGtaskHandle.name, 10, 'center', '_');
                 else
@@ -538,7 +538,7 @@ classdef ECGwrapper < handle
                         start_iter = 1;
                         payload_files = [];
 
-                        if(length(obj.rec_filename) > 30 )
+                        if(length(obj.rec_filename) > 30 && length(obj.ECGtaskHandle.name) > 10 )
                             % shorter version
                             task_name = adjust_string(obj.ECGtaskHandle.name, 10, 'center', '_');
                         else
@@ -708,7 +708,7 @@ classdef ECGwrapper < handle
                                     % Update point
                                     pb.checkpoint('Saving results');
 
-                                    if(length(obj.rec_filename) > 30 )
+                                    if(length(obj.rec_filename) > 30 && length(obj.ECGtaskHandle.name) > 10 )
                                         % shorter version
                                         task_name = adjust_string(obj.ECGtaskHandle.name, 10, 'center', '_');
                                     else
@@ -809,7 +809,7 @@ classdef ECGwrapper < handle
                                             start_iter_this_pid = resume_iter_this_pid;
                                         end
 
-                                        if(length(obj.rec_filename) > 30 )
+                                        if(length(obj.rec_filename) > 30 && length(obj.ECGtaskHandle.name) > 10 )
                                             % shorter version
                                             task_name = adjust_string(obj.ECGtaskHandle.name, 10, 'center', '_');
                                         else
@@ -837,7 +837,7 @@ classdef ECGwrapper < handle
                                             % por q deberia saberlo ?
                                             %obj.ECGtaskHandle.cant_iteration = cant_iteraciones_this_pid;
                                             
-                                            if(length(obj.rec_filename) > 30 )
+                                            if(length(obj.rec_filename) > 30 && length(obj.ECGtaskHandle.name) > 10 )
                                                 % shorter version
                                                 task_name = adjust_string(obj.ECGtaskHandle.name, 10, 'center', '_');
                                             else
@@ -971,7 +971,7 @@ classdef ECGwrapper < handle
                                         if( isempty(obj.user_string) )
                                             aux_user_prefix = [];
                                         else
-                                            if(length(obj.rec_filename) > 30 )
+                                            if(length(obj.rec_filename) > 30 && length(obj.user_string) > 10 )
                                                 % shorter version
                                                 aux_user_prefix = [ adjust_string(obj.user_string, 10, 'center', '_') '_'];
                                             else
@@ -979,7 +979,7 @@ classdef ECGwrapper < handle
                                             end
                                         end
 
-                                        if(length(obj.rec_filename) > 30 )
+                                        if(length(obj.rec_filename) > 30 && length(obj.ECGtaskHandle.name) > 10 )
                                             % shorter version
                                             task_name = adjust_string(obj.ECGtaskHandle.name, 10, 'center', '_');
                                         else
@@ -1064,7 +1064,7 @@ classdef ECGwrapper < handle
                                 % other PIDS sync here after Master build the
                                 % results file/s.
 
-                                    if(length(obj.rec_filename) > 30 )
+                                    if(length(obj.rec_filename) > 30 && length(obj.ECGtaskHandle.name) > 10 )
                                         % shorter version
                                         task_name = adjust_string(obj.ECGtaskHandle.name, 10, 'center', '_');
                                     else
@@ -1270,7 +1270,7 @@ classdef ECGwrapper < handle
                 if( isempty(obj.user_string) )
                     aux_user_prefix = [];
                 else
-                    if(length(obj.rec_filename) > 30 )
+                    if(length(obj.rec_filename) > 30 && length(obj.user_string) > 10 )
                         % shorter version
                         aux_user_prefix = [ adjust_string(obj.user_string, 10, 'center', '_') '_'];
                     else

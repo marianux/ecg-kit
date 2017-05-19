@@ -67,17 +67,17 @@ function adjusted_str = adjust_string(str2trimm, target_width, where2trimm, miss
         
         switch(lower(where2trimm))
             case 'pad'
-                adjusted_str = [str2trimm repmat(' ', 1, target_width - lstr2trimm)];
+                adjusted_str = [str2trimm repmat(missing_chars_symbol, 1, target_width - lstr2trimm)];
                 
             case 'center'
                 aux_val = floor((target_width - lstr2trimm)/2);
-                adjusted_str = [repmat(' ', 1, aux_val ) str2trimm repmat(' ', 1, target_width - lstr2trimm - aux_val )];
+                adjusted_str = [repmat(missing_chars_symbol, 1, aux_val ) str2trimm repmat(missing_chars_symbol, 1, target_width - lstr2trimm - aux_val )];
                 
             case 'right'
-                adjusted_str = [repmat(' ', 1, target_width - lstr2trimm) str2trimm ];
+                adjusted_str = [repmat(missing_chars_symbol, 1, target_width - lstr2trimm) str2trimm ];
                 
             case 'left'
-                adjusted_str = [str2trimm repmat(' ', 1, target_width - lstr2trimm) ];
+                adjusted_str = [str2trimm repmat(missing_chars_symbol, 1, target_width - lstr2trimm) ];
                 
             otherwise
                 adjusted_str = str2trimm;
