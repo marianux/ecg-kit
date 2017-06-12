@@ -15,7 +15,17 @@
 % Birthdate  : 23/4/2013
 % Copyright 2008-2015
 
-function ECG_hdl = plot_ecg_heartbeat(ECG, lead_idx, QRS_locations, ECG_start_idx, QRS_start_idx, cant_qrs, heasig, filtro, axes_hdl )
+function [ECG_hdl, ECG_limits] = plot_ecg_heartbeat(ECG, lead_idx, QRS_locations, ECG_start_idx, QRS_start_idx, cant_qrs, heasig, filtro, axes_hdl, limits )
+
+ECG_hdl = [];
+ECG_limits = [];
+
+if( nargin < 8 || isempty(limits) )
+    bFixAxes = false;
+else
+    bFixAxes = true;
+end
+
 
 if( nargin < 7 )
     filtro = [];
@@ -24,9 +34,6 @@ end
 if( nargin < 8 || isempty(axes_hdl) )
     axes_hdl = gca;
 end
-
-ECG_hdl = [];
-
 
 % cla(axes_hdl);
 % axes(axes_hdl);
@@ -184,7 +191,17 @@ ColorOrder = my_colormap( 12 );
 
 set(axes_hdl, 'ColorOrder', ColorOrder);
 
-set(axes_hdl, 'Ylim', ecg_lims );
+if( ~bFixAxes )
+    limits = prctile(colvec(aux_sig), [5 95]);
+
+    aux_val = diff(limits);
+    aux_val = 1.1*aux_val;
+    limits(1) = max(min(colvec(aux_sig)), limits(1) - aux_val);
+    limits(2) = min(max(colvec(aux_sig)), limits(2) + aux_val);
+end
+
+set(axes_hdl, 'Ylim', limits );
+ECG_limits = limits;
 
 hold(axes_hdl, 'on')
 

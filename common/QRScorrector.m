@@ -337,6 +337,8 @@ function ann_output = QRScorrector(varargin)
     undo_buffer = [];
     undo_buffer_idx = 1;
     Pattern_hdl = [];
+    ECG_limits = [];
+    bLockECG = false;
     
     anns_under_edition = [];
     RRserie_filt = {};
@@ -666,7 +668,7 @@ function ann_output = QRScorrector(varargin)
     end
 
     function Redraw()
-
+        
         % update only the one that can be edited
 
         if( bSeries )
@@ -710,13 +712,13 @@ function ann_output = QRScorrector(varargin)
         if( isempty(aux_RR) || all(isnan(aux_RR)) )
             limits = [0.6 0.7];
         else        
-            limits = prctile(aux_RR(anns_under_edition_idx), [1 99]);
+            limits = prctile(aux_RR(anns_under_edition_idx), [5 97]);
         end
         
         aux_val = diff(limits);
-        aux_val = max(0.01, 0.2*aux_val);
-        limits(1) = limits(1) - aux_val;
-        limits(2) = limits(2) + aux_val;
+        aux_val = max(0.01, 0.5*aux_val);
+        limits(1) = max(min(aux_RR(anns_under_edition_idx)), limits(1) - aux_val);
+        limits(2) = min(max(aux_RR(anns_under_edition_idx)), limits(2) + aux_val);
 
 %         if( bLockScatter )
 %             x_lims_scatter = get(Scatter_axes_hdl, 'Xlim');
@@ -878,9 +880,7 @@ function ann_output = QRScorrector(varargin)
 
         %% Axis de RR serie global
 
-        if( bSeriesChange && size_y_RR_global > 0 )
-            
-            bSeriesChange = false;
+        if( size_y_RR_global > 0 )
             
             if( isempty(RRserie_global_axes_hdl) )
                 RRserie_global_axes_hdl = axes('Position', [aux_val_RR(1) aux_val_sc(2)+1.13*aux_val_sc(4) aux_val_sc(1)+aux_val_sc(3)-aux_val_RR(1) size_y_RR_global ], 'ColorOrder', ColorOrder, 'ButtonDownFcn', @TimeOffsetClick );
@@ -968,10 +968,14 @@ function ann_output = QRScorrector(varargin)
             end
         end
 
+        if( ~bLockECG )
+            ECG_limits = [];
+        end            
+        
         if( isempty(anns_under_edition_idx) )
-            ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, [] , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);    
+            [ECG_hdl, ECG_limits ] = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, [] , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl, ECG_limits);    
         else
-            ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);    
+            [ECG_hdl, ECG_limits ] = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl, ECG_limits);    
         end
         
         if( length(lead_idx) > 1 )
@@ -1135,18 +1139,24 @@ function ann_output = QRScorrector(varargin)
 
             if ( ~fIsDragTimeAllowed )
 
-                if( bSeries )
-                    this_all_anns = all_annotations_selected_serie_location;
-                    aux_val = this_all_anns{1};
-                    aux_val(serie_location_mask) = nan;
-                    this_all_anns{1} = aux_val;
-                else
-                    this_all_anns = all_annotations_selected;
-                end
-                
-                ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);
-
-                cellfun(@(a)( set(a,'ButtonDownFcn',@inspect_ECG)), ECG_hdl);            
+% esto lo comenté porque generaba una doble entrada a      plot_ecg_heartbeat que no entendí para que estaba puesto           
+% 
+%                 if( bSeries )
+%                     this_all_anns = all_annotations_selected_serie_location;
+%                     aux_val = this_all_anns{1};
+%                     aux_val(serie_location_mask) = nan;
+%                     this_all_anns{1} = aux_val;
+%                 else
+%                     this_all_anns = all_annotations_selected;
+%                 end
+%                 
+%                 if( ~bLockECG )
+%                     ECG_limits = [];
+%                 end            
+%                 
+%                 [ECG_hdl, ECG_limits ] = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl, ECG_limits);
+% 
+%                 cellfun(@(a)( set(a,'ButtonDownFcn',@inspect_ECG)), ECG_hdl);            
 
             end
         end
@@ -1211,7 +1221,7 @@ function ann_output = QRScorrector(varargin)
                 set(RRserie_hb_idx_hdl, 'Xdata', anns_under_edition(anns_under_edition_idx(hb_idx)) );
                 set(RRserie_hb_idx_hdl, 'Ydata', aux_RR(anns_under_edition_idx(hb_idx)) );
                 
-%                 ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, all_annotations_selected, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);    
+%                 [ECG_hdl, ECG_limits ] = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, all_annotations_selected, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);    
             
             end
             
@@ -1335,7 +1345,11 @@ function ann_output = QRScorrector(varargin)
                         this_all_anns = all_annotations_selected;
                     end
 
-                    ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);
+                    if( ~bLockECG )
+                        ECG_limits = [];
+                    end            
+                    
+                    [ECG_hdl, ECG_limits ] = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl, ECG_limits);
                     cellfun(@(a)( set(a,'ButtonDownFcn',@inspect_ECG)), ECG_hdl);            
                 end
                 
@@ -1386,7 +1400,11 @@ function ann_output = QRScorrector(varargin)
                     this_all_anns = all_annotations_selected;
                 end
                 
-                ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);
+                if( ~bLockECG )
+                    ECG_limits = [];
+                end            
+                
+                [ECG_hdl, ECG_limits ] = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl, ECG_limits);
 
                 if( length(lead_idx) > 1 )
                     aux_str = rowvec(colvec([repmat(',', length(lead_idx), 1) ECG_struct.header.desc(lead_idx,:) ]'));
@@ -1475,7 +1493,12 @@ function ann_output = QRScorrector(varargin)
             else
                 % add a regular event when the anns are not series.
                 aux_val = round(point(1));
+                if( aux_val < start_idx || aux_val > end_idx )
+                    update_title_efimero('Annotation out of red box bounds', 5 );
+                    return
+                end
                 anns_under_edition = sort([anns_under_edition; aux_val ]);
+                anns_under_edition_idx = find( anns_under_edition >= start_idx &  anns_under_edition <= end_idx );
                 selected_hb_idx = find(aux_val == anns_under_edition(anns_under_edition_idx), 1);
                 hb_idx = selected_hb_idx;
                 aux_rr_filt = RRserie_filt{1};
@@ -1483,7 +1506,7 @@ function ann_output = QRScorrector(varargin)
                 RRserie_filt{1} = aux_rr_filt;
                 
             end
-            
+    
             Redraw();
 
             bAnnsEdited = true;
@@ -1566,10 +1589,10 @@ function ann_output = QRScorrector(varargin)
                 else
                     anns_under_edition(anns_under_edition_idx(selected_hb_idx)) = [];
                 end
-                
-                anns_under_edition_idx(selected_hb_idx) = [];
-                selected_hb_idx = [];
+
+                anns_under_edition_idx = find( anns_under_edition >= start_idx &  anns_under_edition <= end_idx );
                 hb_idx = find(anns_under_edition(anns_under_edition_idx) == aux_val);
+                selected_hb_idx = [];
                 
                 aux_rr_filt = RRserie_filt{1};
                 aux_rr_filt(anns_under_edition_idx(selected_hb_idx)) = [];
@@ -1676,6 +1699,16 @@ function ann_output = QRScorrector(varargin)
                 end
             end
 
+        elseif (strcmp(event_obj.Key, 'l') )
+            % lock ECG Y axis
+            
+            bLockECG = ~bLockECG;
+            
+            if( bLockECG )
+                update_title_efimero('ECG Y axis locked', 5 );
+            else
+                update_title_efimero('ECG Y axis unlocked', 5 );
+            end            
 
         elseif (strcmp(event_obj.Key,'p') )
 
@@ -1749,7 +1782,11 @@ function ann_output = QRScorrector(varargin)
                 this_all_anns = all_annotations_selected;
             end
 
-            ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);
+            if( ~bLockECG )
+                ECG_limits = [];
+            end            
+            
+            [ECG_hdl, ECG_limits ] = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl, ECG_limits);
             
             if( length(lead_idx) > 1 )
                 aux_str = rowvec(colvec([repmat(',', length(lead_idx), 1) ECG_struct.header.desc(lead_idx,:) ]'));
@@ -1943,7 +1980,11 @@ function ann_output = QRScorrector(varargin)
                         this_all_anns = all_annotations_selected;
                     end
 
-                    ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);
+                    if( ~bLockECG )
+                        ECG_limits = [];
+                    end            
+                    
+                    [ECG_hdl, ECG_limits ] = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl, ECG_limits);
                     cellfun(@(a)( set(a,'ButtonDownFcn',@inspect_ECG)), ECG_hdl);            
                     
                 end
@@ -2012,11 +2053,15 @@ function ann_output = QRScorrector(varargin)
             else
                 this_all_anns = all_annotations_selected;
             end
+
+            if( ~bLockECG )
+                ECG_limits = [];
+            end            
             
             if( isempty(anns_under_edition_idx) )
-                ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, [] , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);    
+                [ECG_hdl, ECG_limits ] = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, [] , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl, ECG_limits);    
             else
-                ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);    
+                [ECG_hdl, ECG_limits ] = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl, ECG_limits);    
             end
 
             if( length(lead_idx) > 1 )
@@ -2062,6 +2107,8 @@ function ann_output = QRScorrector(varargin)
         end
         
         update_title_efimero('Filtering ECG ...', 5 );
+        % restrict only to the first signal
+        lead_idx = lead_idx(1);
         llead_idx = length(lead_idx);
         
         if( isempty(filtro) )
@@ -2140,7 +2187,8 @@ function ann_output = QRScorrector(varargin)
             aux_w.output_path = tempdir;
             aux_w.ECGtaskHandle = 'arbitrary_function';
             aux_w.cacheResults = false;
-            aux_w.ECGtaskHandle.lead_idx = lead_idx;
+            % always one leaded signal
+            aux_w.ECGtaskHandle.lead_idx = 1;
             aux_w.ECGtaskHandle.signal_payload = true;
             
             aux_w.user_string = ['similarity_calc_for_lead_' num2str(sort(lead_idx)) ];
@@ -2737,10 +2785,15 @@ function ann_output = QRScorrector(varargin)
                     this_all_anns = all_annotations_selected;
                 end
                 
+                if( ~bLockECG )
+                    ECG_limits = [];
+                end            
+                
+                
                 if( isempty(anns_under_edition_idx) )
-                    ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, [] , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);    
+                    [ECG_hdl, ECG_limits ] = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, [] , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl, ECG_limits);    
                 else
-                    ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window , ECG_struct.header, filtro, ECG_axes_hdl);    
+                    [ECG_hdl, ECG_limits ] = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window , ECG_struct.header, filtro, ECG_axes_hdl, ECG_limits);    
                 end
 
                 title(ECG_axes_hdl, ['Heartbeat ' num2str(hb_idx) ' : Lead ' ECG_struct.header.desc(lead_idx,:)] )
@@ -2764,10 +2817,14 @@ function ann_output = QRScorrector(varargin)
                     this_all_anns = all_annotations_selected;
                 end
                 
+                if( ~bLockECG )
+                    ECG_limits = [];
+                end            
+                
                 if( isempty(anns_under_edition_idx) )
-                    ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, [] , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl);    
+                    [ECG_hdl, ECG_limits ] = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, [] , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl, ECG_limits);    
                 else
-                    ECG_hdl = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window , ECG_struct.header, filtro, ECG_axes_hdl);    
+                    [ECG_hdl, ECG_limits ] = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window , ECG_struct.header, filtro, ECG_axes_hdl, ECG_limits);    
                 end
                 
 

@@ -26,10 +26,6 @@
 % 
 function adjusted_str = adjust_string(str2trimm, target_width, where2trimm, missing_chars_symbol )
 
-    if( nargin < 4 || isempty(missing_chars_symbol) )
-        missing_chars_symbol = ' ... ';
-    end
-
     if( nargin < 3 || isempty(where2trimm) )
        where2trimm = 'center';
     end
@@ -39,11 +35,16 @@ function adjusted_str = adjust_string(str2trimm, target_width, where2trimm, miss
        target_width = 20;
     end
 
-    lmissing_chars_symbol =length(missing_chars_symbol);
-    
     lstr2trimm = length(str2trimm);
 
     if( lstr2trimm > target_width )
+        
+        if( nargin < 4 || isempty(missing_chars_symbol) )
+            % default trimming simbol
+            missing_chars_symbol = ' ... ';
+        end
+        
+        lmissing_chars_symbol =length(missing_chars_symbol);
         
         sample_length = target_width - lmissing_chars_symbol;
         
@@ -64,6 +65,11 @@ function adjusted_str = adjust_string(str2trimm, target_width, where2trimm, miss
                 error('Dont understand "casewhere2trimm". "left" "right" "center" ')
         end
     else
+        
+        if( nargin < 4 || isempty(missing_chars_symbol) )
+            % default padding simbol
+            missing_chars_symbol = ' ';
+        end
         
         switch(lower(where2trimm))
             case 'pad'
