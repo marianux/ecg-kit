@@ -32,6 +32,7 @@ str_delineation_chosen = [];
 aux_fn = fieldnames(payload);
 % prefer manually reviewed annotations corrected 
 aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'corrected_'))), aux_fn, 'UniformOutput', false)));
+aux_idx = [ colvec(aux_idx); colvec(find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'manual'))), aux_fn, 'UniformOutput', false))))];
 
 if( isempty(aux_idx) )
 

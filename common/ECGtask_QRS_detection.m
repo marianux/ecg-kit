@@ -247,12 +247,24 @@ classdef ECGtask_QRS_detection < ECGtask
 
                     aux_struct = obj.payload;
                     
+                    if( isfield(aux_struct, 'series_quality') && isfield(aux_struct.series_quality, 'sampfreq' ) )
+                        ann_sampfreq = aux_struct.series_quality.sampfreq;
+                    else
+                        % assumed in the same sampling rate
+                        ann_sampfreq = ECG_header.freq;
+                    end
+                                        
+                    payload_out.series_quality.sampfreq = ECG_header.freq;
+                
+                    % ratio to convert annotations @ ann_sampfreq to ECG_header.freq
+                    aux_sampfreq_ratio = ECG_header.freq / ann_sampfreq;
+
                     if( isfield(aux_struct, 'series_quality') )
                         
                         detectors_calculated = aux_struct.series_quality.AnnNames(:,1);
                         
                         for ii = 1:size(aux_struct.series_quality.AnnNames,1)
-                            aux_val = aux_struct.(aux_struct.series_quality.AnnNames{ii,1}).(aux_struct.series_quality.AnnNames{ii,2}) - ECG_start_offset + 1;
+                            aux_val = unique( round(aux_struct.(aux_struct.series_quality.AnnNames{ii,1}).(aux_struct.series_quality.AnnNames{ii,2}) * aux_sampfreq_ratio ) ) - ECG_start_offset + 1;
                             aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val <= ECG_sample_start_end_idx(2) );
                             aux_val = aux_val + ECG_start_offset - 1;
                             payload_out.(aux_struct.series_quality.AnnNames{ii,1}).(aux_struct.series_quality.AnnNames{ii,2}) = aux_val;
@@ -262,7 +274,7 @@ classdef ECGtask_QRS_detection < ECGtask
                         fnames = fieldnames(obj.payload);
                         for fname = rowvec(fnames)
                             if( isfield(aux_struct.(fname{1}), 'time') )
-                                aux_val = aux_struct.(fname{1}).time - ECG_start_offset + 1;
+                                aux_val = unique( round( aux_struct.(fname{1}).time * aux_sampfreq_ratio ) ) - ECG_start_offset + 1;
                                 aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val <= ECG_sample_start_end_idx(2) );
                                 aux_val = aux_val + ECG_start_offset - 1;
                                 payload_out.(fname{1}).time = aux_val;

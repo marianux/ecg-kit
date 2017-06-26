@@ -26,6 +26,13 @@ function detC = merge_QRS_detections(detA, detB, ECG_header)
         
         bStruct = true;
         
+        if( isfield(detA, 'series_quality') && isfield(detA.series_quality, 'sampfreq' ) )
+            detA_sampfreq = detA.series_quality.sampfreq;
+        else
+            % assumed the same sampling rate
+            detA_sampfreq = [];
+        end
+        
         detection_namesA = setdiff(fieldnames(detA), {'series_quality' 'series_performance'} );
 
         aux_val = {};
@@ -38,12 +45,27 @@ function detC = merge_QRS_detections(detA, detB, ECG_header)
         aux_val = {detA};
     end
     
-    if( isstruct(detA) )
+    if( isstruct(detB) )
 
+        if( isfield(detB, 'series_quality') && isfield(detB.series_quality, 'sampfreq' ) )
+            detB_sampfreq = detB.series_quality.sampfreq;
+        else
+            % assumed the same sampling rate
+            detB_sampfreq = [];
+        end
+
+        if( ~isempty(detA_sampfreq) &&  ~isempty(detB_sampfreq) )
+            % ratio to convert detB @ detB_sampfreq to detA @ detA_sampfreq
+            aux_sampfreq_ratio = detA_sampfreq / detB_sampfreq ;
+        else
+            % assume the same samp freq
+            aux_sampfreq_ratio = 1;
+        end
+            
         detection_namesB = setdiff(fieldnames(detB), {'series_quality' 'series_performance'} );
 
         for fname = rowvec(detection_namesB)
-            aux_val = [aux_val; {colvec(detB.(fname{1}).time)} ];
+            aux_val = [aux_val; { unique( round( colvec(detB.(fname{1}).time) * aux_sampfreq_ratio )) } ];
         end
 
     else

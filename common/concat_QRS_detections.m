@@ -24,9 +24,24 @@ function detC = concat_QRS_detections(detA, varargin)
 
     detC = detA;
 
+    if( isfield(detC, 'series_quality') && isfield(detC.series_quality, 'sampfreq' ) )
+        detC_sampfreq = detC.series_quality.sampfreq;
+    else
+        % assumed the same sampling rate
+        detC_sampfreq = [];
+    end
+
     for ii = 1:length(varargin)
         
         detB = varargin{ii};
+
+        if( ~isempty(detC_sampfreq) && isfield(detB, 'series_quality') && isfield(detB.series_quality, 'sampfreq' ) )
+            % ratio to convert detB @ ann_sampfreq to detC @ detC_sampfreq
+            aux_sampfreq_ratio = detC_sampfreq / detB.series_quality.sampfreq;
+        else
+            % assumed the same sampling rate
+            aux_sampfreq_ratio = 1;
+        end
         
         detection_namesA = setdiff(fieldnames(detC), {'series_quality' 'series_performance'} );
         detection_namesB = setdiff(fieldnames(detB), {'series_quality' 'series_performance'} );
@@ -37,14 +52,16 @@ function detC = concat_QRS_detections(detA, varargin)
         for jj = 1:length(same_names)
             new_name = [same_names{jj} '_' ];
             detB.series_quality.AnnNames(aux_idx(jj),1) = {new_name};
-            detC.(new_name) = detB.(same_names{jj});
+            aux_val = unique( round( detB.(same_names{jj}).time * aux_sampfreq_ratio));
+            detC.(new_name).time = aux_val;
         end
 
         diff_names = setdiff(detection_namesB, detection_namesA);
 
         % discrepancies
         for fname = rowvec(diff_names)
-            detC.(fname{1}) = detB.(fname{1});
+            aux_val = unique( round( detB.(fname{1}).time * aux_sampfreq_ratio ));
+            detC.(fname{1}).time = aux_val;
         end
 
         if( isfield(detC, 'series_quality') ) 

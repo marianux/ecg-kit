@@ -315,8 +315,20 @@ if( ~isempty(QRS_locations_wrapper) )
         if( ~isempty(cached_filenames) )
         
             aux_annotations = load(cached_filenames{1});
+            
+            if( isfield(aux_annotations, 'series_quality') && isfield(ECG_struct.series_quality, 'sampfreq' ) )
+                ann_sampfreq = ECG_struct.series_quality.sampfreq;
+            else
+                % assumed in the same sampling rate
+                ann_sampfreq = heasig.freq;
+            end
+            
+            % ratio to convert annotations @ ann_sampfreq to heasig.freq
+            aux_sampfreq_ratio = heasig.freq / ann_sampfreq;
+            
             fnames = fieldnames(aux_annotations);
             aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'corrected_'))), fnames, 'UniformOutput', false)));
+            aux_idx = [colvec(aux_idx); colvec(find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'manual'))), fnames, 'UniformOutput', false))))];
             if( isempty(aux_idx) )
                 % no corrected annotations
                 if( isfield(aux_annotations, 'series_quality') )
@@ -325,14 +337,14 @@ if( ~isempty(QRS_locations_wrapper) )
                     aux_idx2 = 1:min(QRS_locations_found, 3);
                     QRS_locations_names = [QRS_locations_names aux_annotations.series_quality.AnnNames{aux_idx(aux_idx2),1} ];
                     for kk = rowvec(aux_idx(aux_idx2))
-                        QRS_locations = [QRS_locations {aux_annotations.(aux_annotations.series_quality.AnnNames{kk,1}).(aux_annotations.series_quality.AnnNames{kk,2})}];
+                        QRS_locations = [QRS_locations { unique(round(aux_annotations.(aux_annotations.series_quality.AnnNames{kk,1}).(aux_annotations.series_quality.AnnNames{kk,2}) * aux_sampfreq_ratio)) }];
                     end
                 end
             else
                 aux_val = length(aux_idx);
                 for kk = 1:aux_val
                     QRS_locations_names = [QRS_locations_names fnames(aux_idx(kk)) ];
-                    QRS_locations = [QRS_locations {aux_annotations.(fnames{aux_idx(kk)}).time}];
+                    QRS_locations = [QRS_locations {unique(round( aux_annotations.(fnames{aux_idx(kk)}).time * aux_sampfreq_ratio)) }];
                 end
             end
 

@@ -459,10 +459,12 @@ function [ ECG_hdl, axes_hdl, fig_hdl, all_yranges ] = plot_ecg_mosaic( ECG, var
         axes_hdl(cant_sig+1) = axes('Position', [h_space 1-title_height-(v_space/2) title_width title_height], 'Visible','on', 'Units', 'normalized');
 
         set(axes_hdl(cant_sig+1), 'Box', 'off' );
+        set(axes_hdl(cant_sig+1), 'Xcolor', [1 1 1] );
+        set(axes_hdl(cant_sig+1), 'Ycolor', [1 1 1] );
         set(axes_hdl(cant_sig+1), 'Xtick', [] );
         set(axes_hdl(cant_sig+1), 'Ytick', [] );
 
-        text(0.1,0.5, strTitle, 'Interpreter', 'none');
+        text(mean(ylim),mean(xlim), strTitle, 'Interpreter', 'none', 'HorizontalAlignment', 'center');
 
     end
     

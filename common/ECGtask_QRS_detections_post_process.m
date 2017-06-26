@@ -125,8 +125,21 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
                     
                     if( isstruct(post_proc_struct) && isstruct(QRSdet_struct) )
                     
+                        if( isfield(QRSdet_struct, 'series_quality') && isfield(QRSdet_struct.series_quality, 'sampfreq' ) )
+                            ann_sampfreq = QRSdet_struct.series_quality.sampfreq;
+                        else
+                            % assumed in the same sampling rate
+                            ann_sampfreq = ECG_header.freq;
+                        end
+
+                        payload_out.series_quality.sampfreq = ECG_header.freq;
+
+                        % ratio to convert annotations @ ann_sampfreq to ECG_header.freq
+                        aux_sampfreq_ratio = ECG_header.freq / ann_sampfreq;
+                        
+                        
                         for ii = 1:size(post_proc_struct.series_quality.AnnNames,1)
-                            aux_val = post_proc_struct.(post_proc_struct.series_quality.AnnNames{ii,1}).(post_proc_struct.series_quality.AnnNames{ii,2}) - ECG_start_offset + 1;
+                            aux_val = unique( round( post_proc_struct.(post_proc_struct.series_quality.AnnNames{ii,1}).(post_proc_struct.series_quality.AnnNames{ii,2}) * aux_sampfreq_ratio )) - ECG_start_offset + 1;
                             aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val <= ECG_sample_start_end_idx(2) );
                             % the previous detections must be shifted in
                             % order to mantain the references
@@ -140,7 +153,7 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
                         AnnNames = QRSdet_struct.series_quality.AnnNames(:,1);
 
                         for fn = rowvec(AnnNames)
-                            aux_val = QRSdet_struct.(fn{1}).time - ECG_start_offset + 1;
+                            aux_val = unique( round( QRSdet_struct.(fn{1}).time * aux_sampfreq_ratio ) ) - ECG_start_offset + 1;
                             aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val <= ECG_sample_start_end_idx(2) );
                             QRSdet_struct.(fn{1}).time = aux_val;
                         end
@@ -163,10 +176,21 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
                 if( isstruct(obj.payload) )
 
                     QRSdet_struct = obj.payload;
+                    
+                    if( isfield(QRSdet_struct, 'series_quality') && isfield(QRSdet_struct.series_quality, 'sampfreq' ) )
+                        ann_sampfreq = QRSdet_struct.series_quality.sampfreq;
+                    else
+                        % assumed in the same sampling rate
+                        ann_sampfreq = ECG_header.freq;
+                    end
+
+                    % ratio to convert annotations @ ann_sampfreq to ECG_header.freq
+                    aux_sampfreq_ratio = ECG_header.freq / ann_sampfreq;
+                    
                     AnnNames = QRSdet_struct.series_quality.AnnNames(:,1);
 
                     for fn = rowvec(AnnNames)
-                        aux_val = QRSdet_struct.(fn{1}).time - ECG_start_offset + 1;
+                        aux_val = unique( round( QRSdet_struct.(fn{1}).time * aux_sampfreq_ratio ) ) - ECG_start_offset + 1;
                         aux_val = aux_val( aux_val >= ECG_sample_start_end_idx(1) & aux_val <= ECG_sample_start_end_idx(2) );
                         QRSdet_struct.(fn{1}).time = aux_val;
                     end

@@ -46,3 +46,4 @@ function payload_out = calculateSeriesQuality(payload_out, ECG_header, start_end
     payload_out.series_quality.ratios = ratios;
     payload_out.series_quality.estimated_labs = estimated_labs(best_detections_idx);
     payload_out.series_quality.AnnNames = AnnNames;
+    payload_out.series_quality.sampfreq = ECG_header.freq;
