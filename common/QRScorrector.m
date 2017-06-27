@@ -146,10 +146,16 @@ function ann_output = QRScorrector(varargin)
     min_win_size = 1; % minutes
     max_win_size = 60; % minutes
     
+    prev_val_drag = nan; % seconds
     win_size_zoom = 5; % seconds
     min_win_size_zoom = 0.5; % seconds
     max_win_size_zoom = 30; % seconds
     
+    max_proximity_win_size = 5; % seconds
+    min_proximity_win_size = 0.01; % seconds
+    
+    max_pattern_match_win_size = 1; % seconds
+    min_pattern_match_win_size = 0.001; % seconds
     
     if( ~isempty(ECG) )
         %% ECG already read
@@ -850,7 +856,9 @@ function ann_output = QRScorrector(varargin)
             prev_units = get(RRserie_axes_hdl, 'Units');
             set(RRserie_axes_hdl, 'Units', 'pixels');
             this_pos = get(RRserie_axes_hdl, 'Position');
-            aux_val = (anns_under_edition(anns_under_edition_idx(end)) - anns_under_edition(anns_under_edition_idx(1))) / this_pos(3);
+%             aux_val = (anns_under_edition(anns_under_edition_idx(end)) - anns_under_edition(anns_under_edition_idx(1))) / this_pos(3);
+            aux_val = max_win_size_zoom / (this_pos(3) / 2);
+            
             axes_hdl( RRserie_axes_k, 3) = aux_val; 
             set(RRserie_axes_hdl, 'Units', prev_units);
         end
@@ -922,7 +930,7 @@ function ann_output = QRScorrector(varargin)
         if( size_y_RR_global > 0 )
             
             if( isempty(RRserie_global_axes_hdl) )
-                RRserie_global_axes_hdl = axes('Position', [aux_val_RR(1) aux_val_sc(2)+1.13*aux_val_sc(4) aux_val_sc(1)+aux_val_sc(3)-aux_val_RR(1) size_y_RR_global ], 'ColorOrder', ColorOrder, 'ButtonDownFcn', @ButtonDownCallbackDefault , 'ButtonUpFcn', @ButtonUpCallbackDefault );
+                RRserie_global_axes_hdl = axes('Position', [aux_val_RR(1) aux_val_sc(2)+1.13*aux_val_sc(4) aux_val_sc(1)+aux_val_sc(3)-aux_val_RR(1) size_y_RR_global ], 'ColorOrder', ColorOrder, 'ButtonDownFcn', @ButtonDownCallbackDefault  );
             end
             
             set(fig_hdl, 'CurrentAxes', RRserie_global_axes_hdl);
@@ -945,7 +953,8 @@ function ann_output = QRScorrector(varargin)
                 set(RRserie_global_axes_hdl, 'Units', prev_units);
 
                 % store scale constant 
-                axes_hdl( RRserie_global_axes_k, 3) = (anns_under_edition(end) - anns_under_edition(1)) / axes_size(3); 
+%                 axes_hdl( RRserie_global_axes_k, 3) = (anns_under_edition(end) - anns_under_edition(1)) / axes_size(3); 
+                axes_hdl( RRserie_global_axes_k, 3) = max_win_size / (axes_size(3) / 2);
                 
                 max_length = max(cellfun( @(this_rr_serie)( length(this_rr_serie)  ), RRserie ));
                 
@@ -957,14 +966,14 @@ function ann_output = QRScorrector(varargin)
                 % downsample this way to deal with NaN values.
                 not_nan_idx = cellfun( @(this_rr_serie)( ~isnan(this_rr_serie) ), RRserie, 'UniformOutput', false );
                 RRserie_aux = cellfun( @(this_anns, this_rr_serie, this_non_nan_idx)( interp1(this_anns(this_non_nan_idx), this_rr_serie(this_non_nan_idx), this_anns( round(linspace(1,length(this_anns), ceil(sum(this_non_nan_idx)/down_factor) ))), 'pchip')  ), all_annotations_selected, RRserie, not_nan_idx, 'UniformOutput', false );
-                cellfun( @(this_anns, this_rr_serie, ii)( plot(RRserie_global_axes_hdl, this_anns( round(linspace(1,length(this_anns),length(this_rr_serie))) )  , this_rr_serie, 'Marker', all_markers{ii}, 'LineStyle', ':', 'MarkerEdgeColor', ColorOrder(ii,:), 'Color', ColorOrder(ii,:), 'ButtonDownFcn', @ButtonDownCallbackDefault, 'ButtonUpFcn', @ButtonUpCallbackDefault )  ), all_annotations_selected, RRserie_aux, num2cell((1:length(RRserie))') );
+                cellfun( @(this_anns, this_rr_serie, ii)( plot(RRserie_global_axes_hdl, this_anns( round(linspace(1,length(this_anns),length(this_rr_serie))) )  , this_rr_serie, 'Marker', all_markers{ii}, 'LineStyle', ':', 'MarkerEdgeColor', ColorOrder(ii,:), 'Color', ColorOrder(ii,:), 'ButtonDownFcn', @ButtonDownCallbackDefault)  ), all_annotations_selected, RRserie_aux, num2cell((1:length(RRserie))') );
                 
                 
                 limits = prctile(aux_RR, [1 99]);
                 ylim(RRserie_global_axes_hdl, limits);
                 
 %                 RRserie_zoombars_hdl = plot(RRserie_global_axes_hdl, repmat([ start_idx end_idx], 2, 1), repmat(limits,2,1)', 'LineWidth', 3, 'Color', 'r', 'ButtonDownFcn', @ButtonDownCallbackDefault, 'ButtonUpFcn', @ButtonUpCallbackDefault );
-                RRserie_zoombars_hdl = patch([start_idx start_idx end_idx end_idx start_idx ], [limits(1) limits(2) limits(2) limits(1) limits(1)], [241 183 171]/255, 'EdgeColor', [1 0 0], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'ButtonUpFcn', @ButtonUpCallbackDefault , 'LineWidth', 0.5);
+                RRserie_zoombars_hdl = patch([start_idx start_idx end_idx end_idx start_idx ], [limits(1) limits(2) limits(2) limits(1) limits(1)], [241 183 171]/255, 'EdgeColor', [1 0 0], 'ButtonDownFcn', @ButtonDownCallbackDefault , 'LineWidth', 0.5);
                 uistack(RRserie_zoombars_hdl, 'bottom');
                 
                 hold(RRserie_global_axes_hdl, 'off')
@@ -1159,63 +1168,66 @@ function ann_output = QRScorrector(varargin)
 
     end
 
-    function DragMouseBegin()
-        %DragMouseBegin begin draging
-        
-        if ( ~fIsDragAllowed )
-            
-            [drag_start_x, drag_start_y] = GetCursorCoordOnWindow();
-           
-            fIsDragAllowed = true;
-            PrevStateWindowButtonMotionFcn = get(fig_hdl, 'WindowButtonMotionFcn');
-            set(fig_hdl, 'WindowButtonMotionFcn', @WindowButtonMotionCallback2D);
-            
-%             fprintf(1, 'on\n');
-            
-        end
-    end
-
-    function DragMouseEnd()
-        %DragMouseEnd end draging
-
-        if fIsDragAllowed
-            fIsDragAllowed = false;
-            
-            
-            ECG_struct.signal = ECG_w.read_signal(start_idx, end_idx + 10 * ECG_struct.header.freq );
-
-%             hb_idx = 1;
-            
-            Redraw();
-            
-            set(fig_hdl, 'WindowButtonMotionFcn', PrevStateWindowButtonMotionFcn);
-            
-%             fprintf(1, 'off\n');
-
-%             if ( ~fIsDragTimeAllowed )
+% Obsolete
 % 
-% esto lo comenté porque generaba una doble entrada a      plot_ecg_heartbeat que no entendí para que estaba puesto           
+%     function DragMouseBegin()
+%         %DragMouseBegin begin draging
+%         
+%         if ( ~fIsDragAllowed )
+%             
+%             [drag_start_x, drag_start_y] = GetCursorCoordOnWindow();
+%            
+%             fIsDragAllowed = true;
+%             PrevStateWindowButtonMotionFcn = get(fig_hdl, 'WindowButtonMotionFcn');
+%             set(fig_hdl, 'WindowButtonMotionFcn', @WindowButtonMotionCallback2D);
+%             
+% %             fprintf(1, 'on\n');
+%             
+%         end
+%     end
 % 
-%                 if( bSeries )
-%                     this_all_anns = all_annotations_selected_serie_location;
-%                     aux_val = this_all_anns{1};
-%                     aux_val(serie_location_mask) = nan;
-%                     this_all_anns{1} = aux_val;
-%                 else
-%                     this_all_anns = all_annotations_selected;
-%                 end
-%                 
-%                 if( ~bLockECG )
-%                     ECG_limits = [];
-%                 end            
-%                 
-%                 [ECG_hdl, ECG_limits ] = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl, ECG_limits);
+%     function DragMouseEnd()
+%         %DragMouseEnd end draging
 % 
-%                 cellfun(@(a)( set(a,'ButtonDownFcn',@inspect_ECG)), ECG_hdl);            
+%         if fIsDragAllowed
+%             fIsDragAllowed = false;
+%             
+%             
+%             ECG_struct.signal = ECG_w.read_signal(start_idx, end_idx + 10 * ECG_struct.header.freq );
 % 
-%             end
-        end
-    end
+% %             hb_idx = 1;
+%             
+%             Redraw();
+%             
+%             set(fig_hdl, 'WindowButtonMotionFcn', PrevStateWindowButtonMotionFcn);
+%             
+% %             fprintf(1, 'off\n');
+% 
+% %             if ( ~fIsDragTimeAllowed )
+% % 
+% % esto lo comenté porque generaba una doble entrada a      plot_ecg_heartbeat que no entendí para que estaba puesto           
+% % 
+% %                 if( bSeries )
+% %                     this_all_anns = all_annotations_selected_serie_location;
+% %                     aux_val = this_all_anns{1};
+% %                     aux_val(serie_location_mask) = nan;
+% %                     this_all_anns{1} = aux_val;
+% %                 else
+% %                     this_all_anns = all_annotations_selected;
+% %                 end
+% %                 
+% %                 if( ~bLockECG )
+% %                     ECG_limits = [];
+% %                 end            
+% %                 
+% %                 [ECG_hdl, ECG_limits ] = plot_ecg_heartbeat(ECG_struct.signal, lead_idx, this_all_anns, start_idx, anns_under_edition_idx(hb_idx) , hb_detail_window, ECG_struct.header, filtro, ECG_axes_hdl, ECG_limits);
+% % 
+% %                 cellfun(@(a)( set(a,'ButtonDownFcn',@inspect_ECG)), ECG_hdl);            
+% % 
+% %             end
+%         end
+%     end
+% 
 
     function [xp, yp ] = GetCursorCoordOnWindow()
         %GetCursorCoordOnWindow
@@ -1243,16 +1255,21 @@ function ann_output = QRScorrector(varargin)
             
             if( bChangeWin )
                 
-                win_size_zoom = min(max_win_size_zoom, max( min_win_size_zoom, win_size_zoom + (( deltax * 0.1 ) * axes_hdl( RRserie_axes_k, 3) / ECG_struct.header.freq ) ));
+                if( isnan(prev_val_drag) )
+                    prev_val_drag = win_size_zoom;
+                end
+                
+                win_size_zoom = min(max_win_size_zoom, max( min_win_size_zoom, prev_val_drag + ( deltax * axes_hdl( RRserie_axes_k, 3) ) ));
                 
 %                 set(RRserie_zoombars_hdl, 'Xdata', [start_idx start_idx end_idx end_idx start_idx ]);
             
                 update_title_efimero( sprintf('%s', Seconds2HMS(win_size_zoom)), 5 );
+%                 update_title_efimero( num2str(deltax) );                
 
                 UpdateRRserieZoom();
                 
             else
-            
+                
                 this_x_units = x_timeScroll_units + ( deltax * 0.1 ) * axes_hdl( RRserie_axes_k, 3);
 
                 [~, aux_val] = sort( abs( this_x_units - anns_under_edition(anns_under_edition_idx)) );
@@ -1305,7 +1322,13 @@ function ann_output = QRScorrector(varargin)
     function UpdateStartX(deltax)
 
         if( bChangeWin )
-            win_size = min(max_win_size, max( min_win_size, win_size + (( deltax * 0.1 ) * axes_hdl( RRserie_global_axes_k, 3) * 1/ECG_struct.header.freq/60 ) ));
+            
+            if( isnan(prev_val_drag) )
+                prev_val_drag = win_size;
+            end
+
+            win_size = min(max_win_size, max( min_win_size, prev_val_drag + ( deltax * axes_hdl( RRserie_global_axes_k, 3) ) ));
+            
             update_title_efimero( sprintf('%s', Seconds2HMS(win_size*60)), 5);
         else
             start_idx = max(1, round(min( ECG_struct.header.nsamp - (win_size * 60 * ECG_struct.header.freq), x_timeScroll_units + ( deltax ) * axes_hdl( RRserie_global_axes_k, 3))) );
@@ -1968,6 +1991,7 @@ function ann_output = QRScorrector(varargin)
             
     end
 
+
     function inspect_RRserie(obj,event_obj)
 
         if (strcmp(get(fig_hdl,'SelectionType'),'extend'))
@@ -2292,6 +2316,10 @@ function ann_output = QRScorrector(varargin)
         
         figPatternMatch_hdl = figure(figPatternMatch_hdl);
         clf();
+    
+        set(figPatternMatch_hdl, 'WindowButtonDownFcn', @SrchPattButtonDownCallback);            
+        set(figPatternMatch_hdl, 'WindowButtonUpFcn',   @SrchPattButtonUpCallback);            
+        
         set(figPatternMatch_hdl, 'Position', [ maximized_size(3:4) maximized_size(3:4) ] .* [ 0.05 0.13 0.95 0.9] );
         
         win_sample = round(3*ECG_struct.header.freq / ndown);
@@ -2382,7 +2410,7 @@ function ann_output = QRScorrector(varargin)
         limits = ylim();
         
         aux_box_lim = [limits(1) + 0.1*abs(diff(limits)) limits(2) - 0.1*abs(diff(limits)) ];
-        QRSxlims_hdl = patch([xlims(1) xlims(1) xlims(2) xlims(2) xlims(1)], [aux_box_lim(1) aux_box_lim(2) aux_box_lim(2) aux_box_lim(1) aux_box_lim(1)], [220 220 240]/255, 'EdgeColor', [0 0 1], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'ButtonUpFcn', @ButtonUpCallbackDefault, 'LineWidth', 0.5);
+        QRSxlims_hdl = patch([xlims(1) xlims(1) xlims(2) xlims(2) xlims(1)], [aux_box_lim(1) aux_box_lim(2) aux_box_lim(2) aux_box_lim(1) aux_box_lim(1)], [220 220 240]/255, 'EdgeColor', [0 0 1], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'LineWidth', 0.5);
         uistack(QRSxlims_hdl, 'bottom');
         
         title(pattMatch_hdl, 'Pattern to match');
@@ -2390,8 +2418,7 @@ function ann_output = QRScorrector(varargin)
         prev_units = get(pattMatch_hdl, 'Units');
         set(pattMatch_hdl, 'Units', 'pixels');
         this_pos = get(pattMatch_hdl, 'Position');
-        aux_val = (aux_seq(2) - aux_seq(1)) / this_pos(3);
-        axes_hdl( pattMatch_hdl_k, 3) = aux_val; 
+        axes_hdl( pattMatch_hdl_k, 3) = max_pattern_match_win_size / (this_pos(3) / 2);
         set(pattMatch_hdl, 'Units', prev_units);
         
         %% axes de Similarity
@@ -2424,7 +2451,7 @@ function ann_output = QRScorrector(varargin)
         limits = ylim();
         
         aux_box_lim = [limits(1) + 0.1*abs(diff(limits)) limits(2) - 0.1*abs(diff(limits)) ];
-        QRSxlims_hdl = patch([prex_win_start prex_win_start repmat(dt_samp - prex_win_start + 1,1,2) prex_win_start ], [aux_box_lim(1) aux_box_lim(2) aux_box_lim(2) aux_box_lim(1) aux_box_lim(1)], [183 241 171]/255, 'EdgeColor', [0 1 0], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'ButtonUpFcn', @ButtonUpCallbackDefault, 'LineWidth', 0.5);
+        QRSxlims_hdl = patch([prex_win_start prex_win_start repmat(dt_samp - prex_win_start + 1,1,2) prex_win_start ], [aux_box_lim(1) aux_box_lim(2) aux_box_lim(2) aux_box_lim(1) aux_box_lim(1)], [183 241 171]/255, 'EdgeColor', [0 1 0], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'LineWidth', 0.5);
         uistack(QRSxlims_hdl, 'bottom');
         
         title(proximity_hdl, 'Click and drag the green box to select the min interval between QRS');
@@ -2432,8 +2459,7 @@ function ann_output = QRScorrector(varargin)
         prev_units = get(proximity_hdl, 'Units');
         set(proximity_hdl, 'Units', 'pixels');
         this_pos = get(proximity_hdl, 'Position');
-        aux_val = (aux_seq(2) - aux_seq(1)) / this_pos(3);
-        axes_hdl( proximity_k, 3) = aux_val; 
+        axes_hdl( proximity_k, 3) = max_proximity_win_size / (this_pos(3) / 2);
         set(proximity_hdl, 'Units', prev_units);
         
         %% axes de RR serie global
@@ -2460,7 +2486,7 @@ function ann_output = QRScorrector(varargin)
             set(RR_global_PM_hdl, 'Units', prev_units);
 
             % store scale constant 
-            axes_hdl( RR_global_PM_k, 3) = (anns_under_edition(end) - anns_under_edition(1)) / axes_size(3); 
+            axes_hdl( RR_global_PM_k, 3) = max_win_size / (axes_size(3) / 2);
             
             max_length = max(cellfun( @(this_rr_serie)( length(this_rr_serie)  ), RRserie ));
 
@@ -2472,14 +2498,14 @@ function ann_output = QRScorrector(varargin)
             % downsample this way to deal with NaN values.
             not_nan_idx = cellfun( @(this_rr_serie)( ~isnan(this_rr_serie) ), RRserie, 'UniformOutput', false );
             RRserie_aux = cellfun( @(this_anns, this_rr_serie, this_non_nan_idx)( interp1(this_anns(this_non_nan_idx), this_rr_serie(this_non_nan_idx), this_anns( round(linspace(1,length(this_anns), ceil(sum(this_non_nan_idx)/down_factor) ))), 'pchip')  ), all_annotations_selected, RRserie, not_nan_idx, 'UniformOutput', false );
-            cellfun( @(this_anns, this_rr_serie, ii)( plot(RR_global_PM_hdl, this_anns( round(linspace(1,length(this_anns),length(this_rr_serie))) )  , this_rr_serie, 'Marker', all_markers{ii}, 'LineStyle', ':', 'MarkerEdgeColor', ColorOrder(ii,:), 'Color', ColorOrder(ii,:), 'ButtonDownFcn', @ButtonDownCallbackDefault, 'ButtonUpFcn', @ButtonUpCallbackDefault )  ), all_annotations_selected, RRserie_aux, num2cell((1:length(RRserie))') );
+            cellfun( @(this_anns, this_rr_serie, ii)( plot(RR_global_PM_hdl, this_anns( round(linspace(1,length(this_anns),length(this_rr_serie))) )  , this_rr_serie, 'Marker', all_markers{ii}, 'LineStyle', ':', 'MarkerEdgeColor', ColorOrder(ii,:), 'Color', ColorOrder(ii,:), 'ButtonDownFcn', @ButtonDownCallbackDefault )  ), all_annotations_selected, RRserie_aux, num2cell((1:length(RRserie))') );
 
 
             limits = prctile(aux_RR, [1 99]);
             ylim(RR_global_PM_hdl, limits);
 
 %                 RRserie_zoombars_hdl = plot(RR_global_PM_hdl, repmat([ start_idx end_idx], 2, 1), repmat(limits,2,1)', 'LineWidth', 3, 'Color', 'r', 'ButtonDownFcn', @ButtonDownCallbackDefault, 'ButtonUpFcn', @ButtonUpCallbackDefault );
-            QRSxlims_hdl = patch([QRSxlims(1) QRSxlims(1) QRSxlims(2) QRSxlims(2) QRSxlims(1) ], [limits(1) limits(2) limits(2) limits(1) limits(1)], [241 183 171]/255, 'EdgeColor', [1 0 0], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'ButtonUpFcn', @ButtonUpCallbackDefault, 'LineWidth', 0.5);
+            QRSxlims_hdl = patch([QRSxlims(1) QRSxlims(1) QRSxlims(2) QRSxlims(2) QRSxlims(1) ], [limits(1) limits(2) limits(2) limits(1) limits(1)], [241 183 171]/255, 'EdgeColor', [1 0 0], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'LineWidth', 0.5);
             uistack(QRSxlims_hdl, 'bottom');
 
             hold(RR_global_PM_hdl, 'off')
@@ -2802,7 +2828,8 @@ function ann_output = QRScorrector(varargin)
                 prev_units = get(RRserie_zoom_axes_hdl, 'Units');
                 set(RRserie_zoom_axes_hdl, 'Units', 'pixels');
                 this_pos = get(RRserie_zoom_axes_hdl, 'Position');
-                aux_val = abs(diff(this_xlims_orig)) / this_pos(3);
+%                 aux_val = abs(diff(this_xlims_orig)) / this_pos(3);
+                aux_val = max_win_size_zoom / (this_pos(3) / 2);
                 axes_hdl( RRserie_zoom_axes_k, 3) = aux_val; 
                 set(RRserie_zoom_axes_hdl, 'Units', prev_units);
                 
@@ -3213,32 +3240,18 @@ function ann_output = QRScorrector(varargin)
         
     end
 
-    function ButtonUpCallbackDefault(obj,event_obj) 
-
-        if fIsDragAllowed
-            
-            fIsDragAllowed = false;
-            
-            axes_hdl_selector_idx = nan;
-
-            set(axes_hdl(axes_hdl_selector_idx,2), 'WindowButtonMotionFcn', PrevStateWindowButtonMotionFcn);
-            
-        end
-
-    end
-
-    function ButtonDownCallbackDefault(obj,event_obj) 
-
+    function DragMouseBegin()
+        
         if ( ~fIsDragAllowed )
 
-            drag_start_x = GetCursorCoordOnWindow();
+            [drag_start_x, drag_start_y ]= GetCursorCoordOnWindow();
                 
             curr_fig = gcf;
             axes_hdl_selector_idx = nan;
             
             for ii = 1:size(axes_hdl,1)
                 
-                if( curr_fig == axes_hdl(ii,2) && ishandle(axes_hdl(ii,1)) && IsClicked(axes_hdl(ii,1), [drag_start_x, drag_timeScroll_start_y ]) )
+                if( curr_fig == axes_hdl(ii,2) && ishandle(axes_hdl(ii,1)) && IsClicked(axes_hdl(ii,1), [drag_start_x, drag_start_y ]) )
                     axes_hdl_selector_idx = ii;
                     break
                 end
@@ -3255,16 +3268,77 @@ function ann_output = QRScorrector(varargin)
             
             if (strcmp(get(axes_hdl(axes_hdl_selector_idx,2),'SelectionType'),'alt'))
                 bChangeWin = true;
-                fIsDragAllowed = true;
             else
                 bChangeWin = false;
             end
             
             PrevStateWindowButtonMotionFcn = get(axes_hdl(axes_hdl_selector_idx,2), 'WindowButtonMotionFcn');
             set(axes_hdl(axes_hdl_selector_idx,2), 'WindowButtonMotionFcn', @WindowButtonMotionCallback2D);
+
+            fIsDragAllowed = true;
+            
+        end        
+        
+    end
+
+    function DragMouseEnd()
+
+        if fIsDragAllowed
+            
+            if( axes_hdl(axes_hdl_selector_idx,2) == fig_hdl )
+                % Main figure 1 
+                ECG_struct.signal = ECG_w.read_signal(start_idx, end_idx + 10 * ECG_struct.header.freq );
+
+    %             hb_idx = 1;
+
+                Redraw();
+            
+            else
+                % figure Search Pattern
+                
+            end
+            
+            prev_val_drag = nan;
+            
+            set(axes_hdl(axes_hdl_selector_idx,2), 'WindowButtonMotionFcn', PrevStateWindowButtonMotionFcn);
+            
+            fIsDragAllowed = false;
+            
+            axes_hdl_selector_idx = nan;
             
         end
         
+    end
+
+
+    function ButtonDownCallbackDefault(obj,event_obj) 
+
+        DragMouseBegin();
+        
+    end
+
+    function SrchPattButtonDownCallback(obj,event_obj)
+        
+        if (strcmp(get(fig_hdl,'SelectionType'),'alt'))
+
+%             prev_u = get(fig_hdl, 'units');
+%             set(fig_hdl, 'units','normalized');
+%             crd = get(fig_hdl, 'CurrentPoint');
+%             xp = crd(1); 
+%             yp = crd(2);
+%             set(fig_hdl, 'units', prev_u);
+% 
+%             if( ~isempty([min_y_drag max_x_drag min_y_drag]) && xp <= max_x_drag && yp <= max_y_drag && yp >= min_y_drag)
+                DragMouseBegin();
+%             end
+        end
+        
+    end
+
+    function SrchPattButtonUpCallback(obj,event_obj)
+
+        DragMouseEnd();
+            
     end
 
 
