@@ -127,9 +127,17 @@ function ann_output = QRScorrector(varargin)
     copy_paste_buffer = [];
     
     RR_global_PM_hdl = [];
+    RR_global_PM_patch_hdl = [];
     proximity_hdl = [];
+    proximity_patch_hdl = [];
     similarity_hdl = [];
+    similarity_thr_hdl = [];
     pattMatch_hdl = [];
+    pattMatch_patch_hdl = [];
+    
+    similarity_thr = nan;
+    similarity_scale_thr = nan;
+    similarity_min = nan;
     
     
     % Dont know why this variable uses a lot of bytes to store at disk.
@@ -145,12 +153,17 @@ function ann_output = QRScorrector(varargin)
     win_size = 30; % minutes
     min_win_size = 1; % minutes
     max_win_size = 60; % minutes
+
+    start_idx_PM = 1;
+    win_size_PM = 30; % minutes
+    min_win_size_PM = 0.15; % minutes
     
     prev_val_drag = nan; % seconds
     win_size_zoom = 5; % seconds
     min_win_size_zoom = 0.5; % seconds
     max_win_size_zoom = 30; % seconds
     
+    proximity_thr_PM = 0.3; % seconds
     max_proximity_win_size = 5; % seconds
     min_proximity_win_size = 0.01; % seconds
     
@@ -313,6 +326,7 @@ function ann_output = QRScorrector(varargin)
     end
 
     end_idx = start_idx + round((win_size * 60)*ECG_struct.header.freq);
+    end_idx_PM = end_idx;
     
     if( isempty(tmp_path) )
         tmp_path = [ tempdir 'QRS_corrector' filesep ];
@@ -951,10 +965,6 @@ function ann_output = QRScorrector(varargin)
                 axes_size = get(RRserie_global_axes_hdl, 'Position');
                 nsamp_target = axes_size(3) * target_res;
                 set(RRserie_global_axes_hdl, 'Units', prev_units);
-
-                % store scale constant 
-%                 axes_hdl( RRserie_global_axes_k, 3) = (anns_under_edition(end) - anns_under_edition(1)) / axes_size(3); 
-                axes_hdl( RRserie_global_axes_k, 3) = max_win_size / (axes_size(3) / 2);
                 
                 max_length = max(cellfun( @(this_rr_serie)( length(this_rr_serie)  ), RRserie ));
                 
@@ -978,11 +988,15 @@ function ann_output = QRScorrector(varargin)
                 
                 hold(RRserie_global_axes_hdl, 'off')
 
-                max_end = min(cellfun( @(this_ann)( this_ann(end)  ), all_annotations_selected ));
+                max_end = max(cellfun( @(this_ann)( this_ann(end)  ), all_annotations_selected ));
                 min_start = min(cellfun( @(this_ann)( this_ann(1)  ), all_annotations_selected ));
                 max_range = max_end - min_start;
                 
                 xlim(RRserie_global_axes_hdl, [ min_start - 0.02*max_range max_end + 0.02*max_range ]);
+                
+                % store scale constant 
+%                 axes_hdl( RRserie_global_axes_k, 3) = (anns_under_edition(end) - anns_under_edition(1)) / axes_size(3); 
+                axes_hdl( RRserie_global_axes_k, 3) = max_range / (axes_size(3) / 2);
                 
                 if( length(aux_RR) > 5 )
                     cant_ticks = 8;
@@ -1232,15 +1246,17 @@ function ann_output = QRScorrector(varargin)
     function [xp, yp ] = GetCursorCoordOnWindow()
         %GetCursorCoordOnWindow
         
-        dfltUnits = get(fig_hdl, 'Units');
+        this_fig_hdl = gcf;
         
-        set(fig_hdl, 'Units', 'pixels');
+        dfltUnits = get(this_fig_hdl, 'Units');
         
-        crd = get(fig_hdl, 'CurrentPoint');
+        set(this_fig_hdl, 'Units', 'pixels');
+        
+        crd = get(this_fig_hdl, 'CurrentPoint');
         xp = crd(1); 
         yp = crd(2);
         
-        set(fig_hdl, 'Units', dfltUnits);
+        set(this_fig_hdl, 'Units', dfltUnits);
     end
 
     function WindowButtonMotionCallback2D(src, evnt)  %#ok
@@ -1304,11 +1320,81 @@ function ann_output = QRScorrector(varargin)
             
             deltax = drag_x - drag_start_x;
             
-            UpdateStartX(deltax);
+            if( bChangeWin )
+
+                if( isnan(prev_val_drag) )
+                    prev_val_drag = win_size;
+                end
+
+                win_size = min(max_win_size, max( min_win_size, prev_val_drag + ( deltax * axes_hdl( RRserie_global_axes_k, 3) ) ));
+
+                update_title_efimero( sprintf('%s', Seconds2HMS(win_size*60)), 5);
+            else
+                start_idx = max(1, round(min( ECG_struct.header.nsamp - (win_size * 60 * ECG_struct.header.freq), x_timeScroll_units + ( deltax ) * axes_hdl( RRserie_global_axes_k, 3))) );
+            end
+
+            end_idx = max((min_win_size * 60 * ECG_struct.header.freq), min( ECG_struct.header.nsamp, start_idx + round((win_size * 60)*ECG_struct.header.freq)));
+
+            set(RRserie_zoombars_hdl, 'Xdata', [start_idx start_idx end_idx end_idx start_idx ]);
+
+            aux_idx = get(RRserie_axes_hdl, 'XTick' );
+            aux_str = repmat({''},length(aux_idx),1);
+            aux_str(1) = {Seconds2HMS((start_idx+base_start_time-1)*1/ECG_struct.header.freq)};  
+            aux_str(end) = {Seconds2HMS((end_idx+base_start_time-1)*1/ECG_struct.header.freq)};  
+            set(RRserie_axes_hdl, 'XTickLabel', char(aux_str) );                   
             
             
-%     RR_global_PM_k = 3;
-%     proximity_k = 4;
+        % RR global Pattern Match part
+        elseif( fIsDragAllowed && axes_hdl_selector_idx ==  RR_global_PM_k )
+            
+            [drag_x, drag_y] = GetCursorCoordOnWindow();
+            
+            deltax = drag_x - drag_start_x;
+            
+            if( bChangeWin )
+
+                if( isnan(prev_val_drag) )
+                    prev_val_drag = win_size_PM;
+                end
+
+                win_size_PM = max( min_win_size_PM, prev_val_drag + ( deltax * axes_hdl( RR_global_PM_k, 3) ) );
+
+                update_title_efimero( sprintf('%s', Seconds2HMS(win_size_PM*60)), 5);
+            else
+                start_idx_PM = max(1, round(min( ECG_struct.header.nsamp - (win_size_PM * 60 * ECG_struct.header.freq), x_timeScroll_units + ( deltax ) * axes_hdl( RR_global_PM_k, 3))) );
+            end
+
+            end_idx_PM = max((min_win_size * 60 * ECG_struct.header.freq), min( ECG_struct.header.nsamp, start_idx + round((win_size_PM * 60)*ECG_struct.header.freq)));
+
+            set(RR_global_PM_patch_hdl, 'Xdata', [start_idx_PM start_idx_PM end_idx_PM end_idx_PM start_idx_PM ]);
+
+            
+        % Proximity Pattern Match 
+        elseif( fIsDragAllowed && axes_hdl_selector_idx ==  proximity_k )
+            
+            [drag_x, drag_y] = GetCursorCoordOnWindow();
+            
+            deltax = drag_x - drag_start_x;
+            
+            if( bChangeWin )
+                
+                if( isnan(prev_val_drag) )
+                    prev_val_drag = proximity_thr_PM;
+                end
+
+                proximity_thr_PM = min(max_proximity_win_size, max( min_proximity_win_size, prev_val_drag + ( deltax * axes_hdl( proximity_k, 3) ) ));
+                
+%                 set(RRserie_zoombars_hdl, 'Xdata', [start_idx start_idx end_idx end_idx start_idx ]);
+            
+                update_title_efimero( sprintf('%s', Seconds2HMS(proximity_thr_PM)), 5 );
+            
+                dt_samp = round(proximity_thr_PM*ECG_struct.header.freq);
+                prex_win_start = round(0.2*dt_samp);
+                        
+                set(proximity_patch_hdl, 'Xdata', [prex_win_start prex_win_start repmat(dt_samp - prex_win_start + 1,1,2) prex_win_start ]);
+                
+            end
+            
 %     similarity_hdl_k = 5;
 %     pattMatch_hdl_k = 6;
             
@@ -1317,33 +1403,6 @@ function ann_output = QRScorrector(varargin)
         
         
     
-    end
-
-    function UpdateStartX(deltax)
-
-        if( bChangeWin )
-            
-            if( isnan(prev_val_drag) )
-                prev_val_drag = win_size;
-            end
-
-            win_size = min(max_win_size, max( min_win_size, prev_val_drag + ( deltax * axes_hdl( RRserie_global_axes_k, 3) ) ));
-            
-            update_title_efimero( sprintf('%s', Seconds2HMS(win_size*60)), 5);
-        else
-            start_idx = max(1, round(min( ECG_struct.header.nsamp - (win_size * 60 * ECG_struct.header.freq), x_timeScroll_units + ( deltax ) * axes_hdl( RRserie_global_axes_k, 3))) );
-        end
-
-        end_idx = max((min_win_size * 60 * ECG_struct.header.freq), min( ECG_struct.header.nsamp, start_idx + round((win_size * 60)*ECG_struct.header.freq)));
-
-        set(RRserie_zoombars_hdl, 'Xdata', [start_idx start_idx end_idx end_idx start_idx ]);
-
-        aux_idx = get(RRserie_axes_hdl, 'XTick' );
-        aux_str = repmat({''},length(aux_idx),1);
-        aux_str(1) = {Seconds2HMS((start_idx+base_start_time-1)*1/ECG_struct.header.freq)};  
-        aux_str(end) = {Seconds2HMS((end_idx+base_start_time-1)*1/ECG_struct.header.freq)};  
-        set(RRserie_axes_hdl, 'XTickLabel', char(aux_str) );       
-        
     end
 
 
@@ -1812,10 +1871,10 @@ function ann_output = QRScorrector(varargin)
             end
             
             % store the axes_hdl created in SearchPattern();
-            axes_hdl( RR_global_PM_k, :) = [RR_global_PM_hdl, figPatternMatch_hdl]; 
-            axes_hdl( proximity_k, :) = [proximity_hdl, figPatternMatch_hdl]; 
-            axes_hdl( similarity_hdl_k, :) = [similarity_hdl, figPatternMatch_hdl]; 
-            axes_hdl( pattMatch_hdl_k, :) = [pattMatch_hdl, figPatternMatch_hdl]; 
+            axes_hdl( RR_global_PM_k, 1:2) = [RR_global_PM_hdl, figPatternMatch_hdl]; 
+            axes_hdl( proximity_k, 1:2) = [proximity_hdl, figPatternMatch_hdl]; 
+            axes_hdl( similarity_hdl_k, 1:2) = [similarity_hdl, figPatternMatch_hdl]; 
+            axes_hdl( pattMatch_hdl_k, 1:2) = [pattMatch_hdl, figPatternMatch_hdl]; 
             
 
         elseif ( ~isempty(event_obj.Modifier) && strcmp(event_obj.Key,'g') && strcmp(event_obj.Modifier,'control'))
@@ -2314,7 +2373,11 @@ function ann_output = QRScorrector(varargin)
         
         prev_fig = gcf();
         
-        figPatternMatch_hdl = figure(figPatternMatch_hdl);
+        if( ishandle(figPatternMatch_hdl) )
+            figure(figPatternMatch_hdl);
+        else
+            figPatternMatch_hdl = figure();
+        end
         clf();
     
         set(figPatternMatch_hdl, 'WindowButtonDownFcn', @SrchPattButtonDownCallback);            
@@ -2329,12 +2392,12 @@ function ann_output = QRScorrector(varargin)
         aux_windows = randsample( 1:(ECG_struct.header.nsamp/ndown)-win_sample, n_excerpts);
         sig_breaks = nan(break_sample, llead_idx + 1 );
         
-        detection_threshold = 0.3; % seconds
-        
-        dt_samp = round(detection_threshold*ECG_struct.header.freq);
+        dt_samp = round(proximity_thr_PM*ECG_struct.header.freq);
         prex_win_start = round(0.2*dt_samp);
         prex_win_end = round(1.5*dt_samp);
         aux_pack = [];
+        
+        similarity_min = realmax;
         
         if( isempty(ECG_w) )
             
@@ -2342,6 +2405,9 @@ function ann_output = QRScorrector(varargin)
             for aux_start = (aux_windows+1)
 %                 aux_val1 = [bsxfun( @minus, ECG(aux_start:(aux_start+win_sample),:), mean(ECG(aux_idx))) similarity(aux_start:(aux_start+win_sample))-mean(similarity(aux_start:(aux_start+win_sample))) ];
                 aux_val1 = [bsxfun( @minus, ECG(aux_start:(aux_start+win_sample),:), mean(ECG(aux_idx))) similarity(aux_start:(aux_start+win_sample)) ];
+                
+                similarity_min = min([ similarity_min; colvec(aux_val1( aux_val1(:,end) > 0, end)) ]);
+                
                 aux_val = [aux_val; aux_val1; sig_breaks ];
                 
                 aux_pack = [aux_pack; pack_signal(ECG(:,lead_idx), anns_under_edition( anns_under_edition >= aux_start &  anns_under_edition <= (aux_start+win_sample) ), [ prex_win_start prex_win_end ], true) ];
@@ -2354,7 +2420,6 @@ function ann_output = QRScorrector(varargin)
             aux_w_ecg = ECGwrapper('recording_name', aux_ecg_filename);
             
             aux_val = sig_breaks;
-            aux_min = realmax;
             
             for aux_start = (aux_windows+1)
 %                 aux_val1 = [aux_w_ecg.read_signal( aux_start, aux_start + win_sample ) aux_w.read_signal( aux_start, aux_start + win_sample ) ];
@@ -2368,18 +2433,42 @@ function ann_output = QRScorrector(varargin)
                 
                 aux_val1 = [aux_val1 aux_w.read_signal( aux_start, aux_start + win_sample ) ];
                 
-                aux_min = min([ aux_min; colvec(aux_val1( aux_val1(:,end) > 0, end)) ]);
+                similarity_min = min([ similarity_min; colvec(aux_val1( aux_val1(:,end) > 0, end)) ]);
                 
                 aux_val = [aux_val; [bsxfun(@minus, aux_val1(:,1:end-1), mean(aux_val1(:,1:end-1)) ) aux_val1(:,end) ]; sig_breaks ];
             end
         end
         
         % compress dynamic range of detection signal
-        aux_val(:, end) = log10( aux_min +  aux_val(:, end) );
+        aux_val(:, end) = log10( similarity_min +  aux_val(:, end) );
         
-        aux_thr_scale = max(abs(aux_val));
-        aux_val = bsxfun(@times, aux_val, 1./aux_thr_scale);
+        similarity_scale_thr = max(abs(aux_val));
+        aux_val = bsxfun(@times, aux_val, 1./similarity_scale_thr);
         aux_val(:,1:llead_idx) = (aux_val(:,1:llead_idx)*0.5) - 0.5;
+
+        similarity_thr = mean([ min(aux_val(:,end)) max(aux_val(:,end)) ]);
+        
+        %% axes de Similarity
+        similarity_hdl = axes('Position', [ 0.015 0.025 0.8 0.605]);
+        aux_hdls = plot(aux_val, 'ButtonDownFcn', @ButtonDownSimilarity);
+
+        hold(similarity_hdl, 'on')
+        similarity_thr_hdl = plot(similarity_hdl, get(similarity_hdl, 'Xlim'), [similarity_thr similarity_thr], '--r', 'ButtonDownFcn', @ButtonDownSimilarity);
+        hold(similarity_hdl, 'off')
+            
+        title('Select the detection threshold to use in the similarity function')
+        
+        set(similarity_hdl, 'Ytick', []);
+        
+        aux_val = sort([ break_sample+(0:(win_sample+break_sample):(n_excerpts-1)*(win_sample+break_sample)) break_sample+win_sample+(0:(win_sample+break_sample):(n_excerpts-1)*(win_sample+break_sample)) length(aux_val) ]);
+        set(similarity_hdl, 'Xtick', aux_val );
+        
+        aux_val = sort([ aux_windows (aux_windows + win_sample) ECG_struct.header.nsamp]);
+        set(similarity_hdl, 'XtickLabel', Seconds2HMS( aux_val ./ ECG_struct.header.freq ));
+        
+        legend(aux_hdls, {'ECG'; 'Similarity'} );
+        
+        set(similarity_hdl, 'ButtonDownFcn', @ButtonDownSimilarity);
         
         %% proceed button
         
@@ -2390,7 +2479,7 @@ function ann_output = QRScorrector(varargin)
                 'FontWeight', 'bold', ...
                 'units','normalized', ...
                 'position', [0.83 0.025 0.14 0.05], ...
-                'callback', @DeleteAnnotations);
+                'callback', @ButtonDownProceed);
 
         %% axes de pattern to match
         pattMatch_hdl = axes('Position', [ 0.83 0.14 0.14 0.49]);
@@ -2410,8 +2499,8 @@ function ann_output = QRScorrector(varargin)
         limits = ylim();
         
         aux_box_lim = [limits(1) + 0.1*abs(diff(limits)) limits(2) - 0.1*abs(diff(limits)) ];
-        QRSxlims_hdl = patch([xlims(1) xlims(1) xlims(2) xlims(2) xlims(1)], [aux_box_lim(1) aux_box_lim(2) aux_box_lim(2) aux_box_lim(1) aux_box_lim(1)], [220 220 240]/255, 'EdgeColor', [0 0 1], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'LineWidth', 0.5);
-        uistack(QRSxlims_hdl, 'bottom');
+        pattMatch_patch_hdl = patch([xlims(1) xlims(1) xlims(2) xlims(2) xlims(1)], [aux_box_lim(1) aux_box_lim(2) aux_box_lim(2) aux_box_lim(1) aux_box_lim(1)], [220 220 240]/255, 'EdgeColor', [0 0 1], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'LineWidth', 0.5);
+        uistack(pattMatch_patch_hdl, 'bottom');
         
         title(pattMatch_hdl, 'Pattern to match');
 
@@ -2420,23 +2509,10 @@ function ann_output = QRScorrector(varargin)
         this_pos = get(pattMatch_hdl, 'Position');
         axes_hdl( pattMatch_hdl_k, 3) = max_pattern_match_win_size / (this_pos(3) / 2);
         set(pattMatch_hdl, 'Units', prev_units);
-        
-        %% axes de Similarity
-        similarity_hdl = axes('Position', [ 0.015 0.025 0.8 0.605]);
-        aux_hdls = plot(aux_val);
-        
-        title('Select the detection threshold to use in the similarity function')
-        
-        set(similarity_hdl, 'Ytick', []);
-        
-        aux_val = sort([ break_sample+(0:(win_sample+break_sample):(n_excerpts-1)*(win_sample+break_sample)) break_sample+win_sample+(0:(win_sample+break_sample):(n_excerpts-1)*(win_sample+break_sample)) length(aux_val) ]);
-        set(similarity_hdl, 'Xtick', aux_val );
-        
-        aux_val = sort([ aux_windows (aux_windows + win_sample) ECG_struct.header.nsamp]);
-        set(similarity_hdl, 'XtickLabel', Seconds2HMS( aux_val ./ ECG_struct.header.freq ));
-        
-        legend(aux_hdls, {'ECG'; 'Similarity'} );
 
+        set(pattMatch_hdl, 'ButtonDownFcn', @ButtonDownCallbackDefault);
+
+        
         %% axes de Proximity
         proximity_hdl = axes('Position', [ 0.63 0.7 0.35 0.25]);
 
@@ -2451,8 +2527,8 @@ function ann_output = QRScorrector(varargin)
         limits = ylim();
         
         aux_box_lim = [limits(1) + 0.1*abs(diff(limits)) limits(2) - 0.1*abs(diff(limits)) ];
-        QRSxlims_hdl = patch([prex_win_start prex_win_start repmat(dt_samp - prex_win_start + 1,1,2) prex_win_start ], [aux_box_lim(1) aux_box_lim(2) aux_box_lim(2) aux_box_lim(1) aux_box_lim(1)], [183 241 171]/255, 'EdgeColor', [0 1 0], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'LineWidth', 0.5);
-        uistack(QRSxlims_hdl, 'bottom');
+        proximity_patch_hdl = patch([prex_win_start prex_win_start repmat(dt_samp - prex_win_start + 1,1,2) prex_win_start ], [aux_box_lim(1) aux_box_lim(2) aux_box_lim(2) aux_box_lim(1) aux_box_lim(1)], [183 241 171]/255, 'EdgeColor', [0 1 0], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'LineWidth', 0.5);
+        uistack(proximity_patch_hdl, 'bottom');
         
         title(proximity_hdl, 'Click and drag the green box to select the min interval between QRS');
         
@@ -2461,6 +2537,8 @@ function ann_output = QRScorrector(varargin)
         this_pos = get(proximity_hdl, 'Position');
         axes_hdl( proximity_k, 3) = max_proximity_win_size / (this_pos(3) / 2);
         set(proximity_hdl, 'Units', prev_units);
+        
+        set(proximity_hdl, 'ButtonDownFcn', @ButtonDownCallbackDefault);
         
         %% axes de RR serie global
         
@@ -2484,9 +2562,6 @@ function ann_output = QRScorrector(varargin)
             axes_size = get(RR_global_PM_hdl, 'Position');
             nsamp_target = axes_size(3) * target_res;
             set(RR_global_PM_hdl, 'Units', prev_units);
-
-            % store scale constant 
-            axes_hdl( RR_global_PM_k, 3) = max_win_size / (axes_size(3) / 2);
             
             max_length = max(cellfun( @(this_rr_serie)( length(this_rr_serie)  ), RRserie ));
 
@@ -2499,23 +2574,26 @@ function ann_output = QRScorrector(varargin)
             not_nan_idx = cellfun( @(this_rr_serie)( ~isnan(this_rr_serie) ), RRserie, 'UniformOutput', false );
             RRserie_aux = cellfun( @(this_anns, this_rr_serie, this_non_nan_idx)( interp1(this_anns(this_non_nan_idx), this_rr_serie(this_non_nan_idx), this_anns( round(linspace(1,length(this_anns), ceil(sum(this_non_nan_idx)/down_factor) ))), 'pchip')  ), all_annotations_selected, RRserie, not_nan_idx, 'UniformOutput', false );
             cellfun( @(this_anns, this_rr_serie, ii)( plot(RR_global_PM_hdl, this_anns( round(linspace(1,length(this_anns),length(this_rr_serie))) )  , this_rr_serie, 'Marker', all_markers{ii}, 'LineStyle', ':', 'MarkerEdgeColor', ColorOrder(ii,:), 'Color', ColorOrder(ii,:), 'ButtonDownFcn', @ButtonDownCallbackDefault )  ), all_annotations_selected, RRserie_aux, num2cell((1:length(RRserie))') );
-
-
+            
             limits = prctile(aux_RR, [1 99]);
             ylim(RR_global_PM_hdl, limits);
 
 %                 RRserie_zoombars_hdl = plot(RR_global_PM_hdl, repmat([ start_idx end_idx], 2, 1), repmat(limits,2,1)', 'LineWidth', 3, 'Color', 'r', 'ButtonDownFcn', @ButtonDownCallbackDefault, 'ButtonUpFcn', @ButtonUpCallbackDefault );
-            QRSxlims_hdl = patch([QRSxlims(1) QRSxlims(1) QRSxlims(2) QRSxlims(2) QRSxlims(1) ], [limits(1) limits(2) limits(2) limits(1) limits(1)], [241 183 171]/255, 'EdgeColor', [1 0 0], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'LineWidth', 0.5);
-            uistack(QRSxlims_hdl, 'bottom');
+            RR_global_PM_patch_hdl = patch([QRSxlims(1) QRSxlims(1) QRSxlims(2) QRSxlims(2) QRSxlims(1) ], [limits(1) limits(2) limits(2) limits(1) limits(1)], [241 183 171]/255, 'EdgeColor', [1 0 0], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'LineWidth', 0.5);
+            uistack(RR_global_PM_patch_hdl, 'bottom');
 
             hold(RR_global_PM_hdl, 'off')
 
-            max_end = min(cellfun( @(this_ann)( this_ann(end)  ), all_annotations_selected ));
+            max_end = max(cellfun( @(this_ann)( this_ann(end)  ), all_annotations_selected ));
             min_start = min(cellfun( @(this_ann)( this_ann(1)  ), all_annotations_selected ));
             max_range = max_end - min_start;
 
             xlim(RR_global_PM_hdl, [ min_start - 0.02*max_range max_end + 0.02*max_range ]);
 
+            % store scale constant (min/px)
+            axes_hdl( RR_global_PM_k, 3) = max_range / ECG_struct.header.freq / 60 / (axes_size(3) / 2);
+            
+            
             if( length(aux_RR) > 5 )
                 cant_ticks = 8;
 
@@ -2536,179 +2614,185 @@ function ann_output = QRScorrector(varargin)
 
         end
         
-        update_title_efimero('Click and drag the time interval to perform QRS detection in the RR series interval ...', 5 );
+        set(RR_global_PM_hdl, 'ButtonDownFcn', @ButtonDownCallbackDefault);
+        
+%         update_title_efimero('Click and drag the time interval to perform QRS detection in the RR series interval ...', 5 );
 
         %% select amp threshold
         
-        figure(figPatternMatch_hdl);
+%         figure(figPatternMatch_hdl);
+% 
+%         
+%         
+%         
+%         
+%         
+%         set(fig_hdl, 'CurrentAxes', RRserie_axes_hdl);
+%         waitforbuttonpress;
+%         point1 = get(RRserie_axes_hdl,'CurrentPoint');    % button down detected
+%         rbbox;
+%         point2 = get(RRserie_axes_hdl,'CurrentPoint');    % button up detected            
+%         QRSxlims = round(sort([ point1(1,1) point2(1,1) ]));
+%         QRSxlims = [ QRSxlims(1) QRSxlims(1) + max(diff(QRSxlims), 10 * ECG_struct.header.freq )];
+%         
+%         
+%         
+%         
+%         
+%         
+%         % limits to perform pattern match. Default whole recording.
+%         bContinue = true;
+% 
+%         
+%         while(bContinue)
+%             
+%             commandwindow;
+%             
+%             key = input(['[rt] to refine the QRS detection threshold.\n' ...
+%                          '[rx] to refine the time window to perform QRS detection.\n' ...
+%                          '[rh] to refine the minimum time between heartbeats.\n' ...
+%                          'any key to continue.\n' ...
+%                          ], 's');
+% 
+%             if( strcmp(key, 'rt') )
+%                 figure(figPatternMatch_hdl);
+%                 update_title_efimero('Select the threshold to use.', 5 );        
+%                 
+%                 [~, thr] = ginput(1);
+%                 thr = thr * similarity_scale_thr(2);
+%                 
+%             elseif( strcmp(key, 'rh') )
+% 
+%                 key = input( ['Enter the minimum time in seconds between heartbeats (Current ' sprintf('%3.3f', proximity_thr_PM) ' s):\n'] , 's');
+% 
+%                 if( isempty(key) )
+%                     proximity_thr_PM = 0.3; % seconds
+%                 else
+%                     proximity_thr_PM = str2double(key);
+%                 end
+% 
+%             elseif( strcmp(key, 'rx') )
+%                 fig_hdl = figure(1);
+%                 update_title_efimero('Click and drag the time interval to perform QRS detection in the RR series interval ...', 5 );        
+%                 
+%                 set(fig_hdl, 'CurrentAxes', RRserie_axes_hdl);
+%                 waitforbuttonpress;
+%                 point1 = get(RRserie_axes_hdl,'CurrentPoint');    % button down detected
+%                 rbbox;
+%                 point2 = get(RRserie_axes_hdl,'CurrentPoint');    % button up detected            
+%                 QRSxlims = round(sort([ point1(1,1) point2(1,1) ]));
+%                 QRSxlims = [ QRSxlims(1) QRSxlims(1) + max(diff(QRSxlims), 10 * ECG_struct.header.freq )];
+%             else
+%                 bContinue = false;
+%             end
+% 
+%         end
+% 
+%         figure(prev_fig);
+%         update_title_efimero('Search pattern finished.', 5 );        
+% 
+% 
+%         close(figPatternMatch_hdl);
 
-        update_title_efimero('Select the threshold to use.', 5 );        
-        
-        [~, thr] = ginput(1);
-
-        thr = 10^(thr * aux_thr_scale(llead_idx + 1))-aux_min;
-        
-        
-        
-        
-        
-        set(fig_hdl, 'CurrentAxes', RRserie_axes_hdl);
-        waitforbuttonpress;
-        point1 = get(RRserie_axes_hdl,'CurrentPoint');    % button down detected
-        rbbox;
-        point2 = get(RRserie_axes_hdl,'CurrentPoint');    % button up detected            
-        QRSxlims = round(sort([ point1(1,1) point2(1,1) ]));
-        QRSxlims = [ QRSxlims(1) QRSxlims(1) + max(diff(QRSxlims), 10 * ECG_struct.header.freq )];
-        
-        
-        
-        
-        
-        
-        % limits to perform pattern match. Default whole recording.
-        bContinue = true;
-
-        
-        while(bContinue)
-
-            if( isempty(ECG_w) )
-                % short or easy memory handlable signals
-                ECG_struct.pattern_match.time = modmax(similarity, QRSxlims, thr, 1, round(detection_threshold*ECG_struct.header.freq) );
-            else
-                aux_w.ECGtaskHandle = 'arbitrary_function';
-                aux_w.cacheResults = false;
-                aux_w.ECGtaskHandle.lead_idx = 1;
-                % generate QRS detections
-                aux_w.ECGtaskHandle.signal_payload = false;
-                aux_w.user_string = ['modmax_calc_for_leads_' num2str(sort(lead_idx)) ];
-                aux_w.ECGtaskHandle.function_pointer = @arb_modmax;
-                
-                aux_payload.thr = thr;
-                aux_payload.detection_threshold = detection_threshold;
-                aux_w.ECGtaskHandle.payload = aux_payload;
-                aux_w.Run
-                
-                % asume that the whole series keep in mem.
-                aux_val = load(aux_w.Result_files{1});  
-                ECG_struct.pattern_match.time = round(aux_val.result * ndown);
-                
-            end
-
-    %         aux_idx = 1;
-    %         while( ~isempty(aux_idx) )
-    %             aux_idx = find(diff(ECG_struct.pattern_match.time) < round(0.15 * ECG_struct.header.freq));
-    %             aux_idx2 = setdiff(1:length(ECG_struct.pattern_match.time), [colvec(aux_idx); colvec(aux_idx+1)]);
-    %             [~, merged_times] = max([similarity(ECG_struct.pattern_match.time(aux_idx)) similarity(ECG_struct.pattern_match.time(aux_idx+1))],[],2);
-    %             ECG_struct.pattern_match.time = sort([colvec(ECG_struct.pattern_match.time(aux_idx2)); colvec(ECG_struct.pattern_match.time(aux_idx( find(merged_times == 1) ))); colvec(ECG_struct.pattern_match.time(aux_idx( find(merged_times == 2) )+1 )) ]);
-    %         end
-
+    end
     
-            if( strcmp(AnnNames(end,1), cellstr('pattern_match') ) )
-                aux_all_anns = all_annotations;
-                aux_all_anns{end} = ECG_struct.pattern_match.time;
-            else
-                AnnNames = [AnnNames; cellstr('pattern_match') cellstr('time')];
-                aux_all_anns = [all_annotations; {ECG_struct.pattern_match.time}];
-            end
+    function ButtonDownProceed(obj,event_obj)
+        
+        if( isempty(ECG_w) )
+            % short or easy memory handlable signals
+            ECG_struct.pattern_match.time = modmax(similarity, [start_idx_PM end_idx_PM], similarity_thr, 1, round(proximity_thr_PM*ECG_struct.header.freq) );
+        else
+            aux_w.ECGtaskHandle = 'arbitrary_function';
+            aux_w.cacheResults = false;
+            aux_w.ECGtaskHandle.lead_idx = 1;
+            % generate QRS detections
+            aux_w.ECGtaskHandle.signal_payload = false;
+            aux_w.user_string = ['modmax_calc_for_leads_' num2str(sort(lead_idx)) ];
+            aux_w.ECGtaskHandle.function_pointer = @arb_modmax;
 
-            if( isempty(ECG_w) )
-                % only for short signals
-                [ ratios, estimated_labs ] = CalcRRserieRatio(aux_all_anns, ECG_struct.header);
-            else
-                % ignore ratios and q measurements in long recordings.
-                ratios = zeros(size(AnnNames,1),1);
-                estimated_labs = cell(size(AnnNames,1),1);
-                
-            end
-            
-            all_annotations = aux_all_anns;
-            
-            AnnNames_idx = size(AnnNames,1);
-            anns_under_edition = unique(round(colvec( ECG_struct.pattern_match.time )));
+            aux_payload.xlims = [start_idx_PM end_idx_PM];
+            aux_payload.thr = similarity_thr;
+            aux_payload.proximity_thr_PM = proximity_thr_PM;
+            aux_w.ECGtaskHandle.payload = aux_payload;
+            aux_w.Run
 
-            hb_idx = 1;
-            selected_hb_idx = [];
-
-            undo_buffer_idx = 1;
-
-            aux_val = anns_under_edition;
-
-            bAnnsEdited = false;
-
-            if( isempty(aux_val) )
-                anns_under_edition = [];
-                RRserie = {[]};
-                RRserie_filt = {[]};
-                all_annotations_selected_serie_location = [];
-                serie_location_mask = [];
-            else
-                anns_under_edition = unique(round(colvec( aux_val )));
-                
-                [RRserie, RRserie_filt ] = RR_calculation(anns_under_edition, ECG_struct.header.freq, RRserie_filt{1});               
-                RRserie = {RRserie * 1/ECG_struct.header.freq};          
-                RRserie_filt = {RRserie_filt};
-                
-            end
-            all_annotations_selected = {anns_under_edition};
-            RR_idx = { find( anns_under_edition >= start_idx &  anns_under_edition <= end_idx ) };
-
-            bSeriesChange = true;
-            
-            figure(prev_fig);
-            Redraw();
-%             figure(figPatternMatch_hdl);
-
-            ocurrences = length(ECG_struct.pattern_match.time);
-            
-            update_title_efimero(['Threshold: ' num2str(thr) ' - found ' num2str(ocurrences) ' heartbeats with quality ' num2str(ratios(end)) ], 5 );        
-            
-            disp_string_framed('*[1,0.5,0]', ['Threshold: ' num2str(thr) ' - found ' num2str(ocurrences) ' heartbeats with quality ' num2str(ratios(end)) ] );        
-            
-            commandwindow;
-            
-            key = input(['[rt] to refine the QRS detection threshold.\n' ...
-                         '[rx] to refine the time window to perform QRS detection.\n' ...
-                         '[rh] to refine the minimum time between heartbeats.\n' ...
-                         'any key to continue.\n' ...
-                         ], 's');
-
-            if( strcmp(key, 'rt') )
-                figure(figPatternMatch_hdl);
-                update_title_efimero('Select the threshold to use.', 5 );        
-                
-                [~, thr] = ginput(1);
-                thr = thr * aux_thr_scale(2);
-                
-            elseif( strcmp(key, 'rh') )
-
-                key = input( ['Enter the minimum time in seconds between heartbeats (Current ' sprintf('%3.3f', detection_threshold) ' s):\n'] , 's');
-
-                if( isempty(key) )
-                    detection_threshold = 0.3; % seconds
-                else
-                    detection_threshold = str2double(key);
-                end
-
-            elseif( strcmp(key, 'rx') )
-                fig_hdl = figure(1);
-                update_title_efimero('Click and drag the time interval to perform QRS detection in the RR series interval ...', 5 );        
-                
-                set(fig_hdl, 'CurrentAxes', RRserie_axes_hdl);
-                waitforbuttonpress;
-                point1 = get(RRserie_axes_hdl,'CurrentPoint');    % button down detected
-                rbbox;
-                point2 = get(RRserie_axes_hdl,'CurrentPoint');    % button up detected            
-                QRSxlims = round(sort([ point1(1,1) point2(1,1) ]));
-                QRSxlims = [ QRSxlims(1) QRSxlims(1) + max(diff(QRSxlims), 10 * ECG_struct.header.freq )];
-            else
-                bContinue = false;
-            end
+            % asume that the whole series keep in mem.
+            aux_val = load(aux_w.Result_files{1});  
+            ECG_struct.pattern_match.time = round(aux_val.result * ndown);
 
         end
 
-        figure(prev_fig);
-        update_title_efimero('Search pattern finished.', 5 );        
+%         aux_idx = 1;
+%         while( ~isempty(aux_idx) )
+%             aux_idx = find(diff(ECG_struct.pattern_match.time) < round(0.15 * ECG_struct.header.freq));
+%             aux_idx2 = setdiff(1:length(ECG_struct.pattern_match.time), [colvec(aux_idx); colvec(aux_idx+1)]);
+%             [~, merged_times] = max([similarity(ECG_struct.pattern_match.time(aux_idx)) similarity(ECG_struct.pattern_match.time(aux_idx+1))],[],2);
+%             ECG_struct.pattern_match.time = sort([colvec(ECG_struct.pattern_match.time(aux_idx2)); colvec(ECG_struct.pattern_match.time(aux_idx( find(merged_times == 1) ))); colvec(ECG_struct.pattern_match.time(aux_idx( find(merged_times == 2) )+1 )) ]);
+%         end
 
+
+        if( strcmp(AnnNames(end,1), cellstr('pattern_match') ) )
+            aux_all_anns = all_annotations;
+            aux_all_anns{end} = ECG_struct.pattern_match.time;
+        else
+            AnnNames = [AnnNames; cellstr('pattern_match') cellstr('time')];
+            aux_all_anns = [all_annotations; {ECG_struct.pattern_match.time}];
+        end
+
+        if( isempty(ECG_w) )
+            % only for short signals
+            [ ratios, estimated_labs ] = CalcRRserieRatio(aux_all_anns, ECG_struct.header);
+        else
+            % ignore ratios and q measurements in long recordings.
+            ratios = zeros(size(AnnNames,1),1);
+            estimated_labs = cell(size(AnnNames,1),1);
+
+        end
+
+        all_annotations = aux_all_anns;
+
+        AnnNames_idx = size(AnnNames,1);
+        anns_under_edition = unique(round(colvec( ECG_struct.pattern_match.time )));
+
+        hb_idx = 1;
+        selected_hb_idx = [];
+
+        undo_buffer_idx = 1;
+
+        aux_val = anns_under_edition;
+
+        bAnnsEdited = false;
+
+        if( isempty(aux_val) )
+            anns_under_edition = [];
+            RRserie = {[]};
+            RRserie_filt = {[]};
+            all_annotations_selected_serie_location = [];
+            serie_location_mask = [];
+        else
+            anns_under_edition = unique(round(colvec( aux_val )));
+
+            [RRserie, RRserie_filt ] = RR_calculation(anns_under_edition, ECG_struct.header.freq, RRserie_filt{1});               
+            RRserie = {RRserie * 1/ECG_struct.header.freq};          
+            RRserie_filt = {RRserie_filt};
+
+        end
+        all_annotations_selected = {anns_under_edition};
+        RR_idx = { find( anns_under_edition >= start_idx &  anns_under_edition <= end_idx ) };
+
+        bSeriesChange = true;
+
+        figure(prev_fig);
+        Redraw();
+%             figure(figPatternMatch_hdl);
+
+        ocurrences = length(ECG_struct.pattern_match.time);
+
+        update_title_efimero(['Threshold: ' num2str(thr) ' - found ' num2str(ocurrences) ' heartbeats with quality ' num2str(ratios(end)) ], 5 );        
+
+        disp_string_framed('*[1,0.5,0]', ['Threshold: ' num2str(thr) ' - found ' num2str(ocurrences) ' heartbeats with quality ' num2str(ratios(end)) ] );        
+
+        
         cant_anns = size(AnnNames,1);
         aux_str = repmat( ' - ',cant_anns,1);
 
@@ -2720,11 +2804,24 @@ function ann_output = QRScorrector(varargin)
         set(annotation_list_control, 'string', [ char(cellstr(num2str((1:cant_anns)'))) aux_str char(AnnNames(:,1)) repmat( ' (',cant_anns,1) num2str(round(colvec(ratios * 1000))) aux_str num2str(colvec(annotations_ranking))  repmat( ')',cant_anns,1)  ] );
         set(annotation_under_edition_label, 'string', [ 'Annotation under edition: ' char(AnnNames( AnnNames_idx ,1)) ' (' num2str(ratios(AnnNames_idx)) ')' ])
         set(annotation_list_control, 'Value', AnnNames_idx);    
-
-        close(figPatternMatch_hdl);
-
+        
     end
-    
+
+    function ButtonDownSimilarity(obj,event_obj)
+        
+        point = get(similarity_hdl, 'CurrentPoint');
+
+        aux_val = max(0, min(1, point(1,2)));
+        
+        similarity_thr = 10^(aux_val * similarity_scale_thr(end))-similarity_min;
+
+        set(similarity_thr_hdl, 'Ydata', [aux_val aux_val] );
+
+        update_title_efimero( sprintf('THR: %3.2f', aux_val), 5 );        
+        
+    end
+
+
     function UpdateRRserieZoom()
 
         if( isempty(hb_idx) )
@@ -3486,7 +3583,7 @@ function ann_output = QRScorrector(varargin)
 
     function update_title_efimero( strTitle, delay )
        
-        if( ishandle(title_efimero_hdl) )
+        if( ~isempty(title_efimero_hdl) && gcf == ancestor(title_efimero_hdl,'figure') && ishandle(title_efimero_hdl) )
             set(title_efimero_hdl, 'String',strTitle )
             set(title_efimero_hdl, 'Visible', 'on');
         else

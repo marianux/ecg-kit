@@ -14,7 +14,7 @@
 % 
 function payload = arb_modmax( ECG_matrix, ECG_header, ECG_start_offset, progress_handle, payload_in)
 
-aux_modmax = modmax(ECG_matrix, 1, payload_in.thr, 1, round(payload_in.detection_threshold*ECG_header.freq) );
+aux_modmax = modmax(ECG_matrix, payload_in.xlims, payload_in.thr, 1, round(payload_in.detection_threshold*ECG_header.freq) );
 
 payload = colvec(aux_modmax + ECG_start_offset - 1);
 
