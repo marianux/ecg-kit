@@ -170,6 +170,8 @@ function ann_output = QRScorrector(varargin)
     max_pattern_match_win_size = 1; % seconds
     min_pattern_match_win_size = 0.001; % seconds
     
+    pattern_match_xlims = [];
+
     if( ~isempty(ECG) )
         %% ECG already read
 
@@ -1386,17 +1388,46 @@ function ann_output = QRScorrector(varargin)
                 
 %                 set(RRserie_zoombars_hdl, 'Xdata', [start_idx start_idx end_idx end_idx start_idx ]);
             
-                update_title_efimero( sprintf('%s', Seconds2HMS(proximity_thr_PM)), 5 );
+                update_title_efimero( sprintf('%s', Seconds2HMS(proximity_thr_PM, 3)), 5 );
             
                 dt_samp = round(proximity_thr_PM*ECG_struct.header.freq);
-                prex_win_start = round(0.2*dt_samp);
                         
-                set(proximity_patch_hdl, 'Xdata', [prex_win_start prex_win_start repmat(dt_samp - prex_win_start + 1,1,2) prex_win_start ]);
+                aux_val = get(proximity_patch_hdl, 'Xdata');
+                set(proximity_patch_hdl, 'Xdata', [aux_val(1) aux_val(1) repmat(dt_samp + aux_val(1),1,2) aux_val(1) ]);
                 
             end
             
-%     similarity_hdl_k = 5;
-%     pattMatch_hdl_k = 6;
+        elseif( fIsDragAllowed && axes_hdl_selector_idx ==  pattMatch_hdl_k )
+            
+            [drag_x, drag_y] = GetCursorCoordOnWindow();
+            
+            deltax = drag_x - drag_start_x;
+            
+            if( bChangeWin )
+                
+                if( isnan(prev_val_drag) )
+                    prev_val_drag = abs(diff(pattern_match_xlims));
+                end
+
+                aux_win_sz = min(max_pattern_match_win_size, max( min_pattern_match_win_size, prev_val_drag + ( deltax * axes_hdl( pattMatch_hdl_k, 3) ) ));
+                
+                aux_val = get(pattMatch_patch_hdl, 'Xdata');
+
+                aux_val2 = abs( aux_val - drag_x );
+                
+                if( aux_val2(1) < aux_val2(3) )
+                    start_val = aux_val(3) - aux_win_sz;
+                    end_val  = aux_val(3) ;
+                else
+                    end_val = aux_val(1) + aux_win_sz;
+                    start_val  = aux_val(1) ;
+                end
+            
+                update_title_efimero( sprintf('%s', Seconds2HMS(aux_win_sz, 3)), 5 );
+                        
+                set(pattMatch_patch_hdl, 'Xdata', [start_val start_val end_val end_val start_val ]);
+                
+            end
             
         end
     
@@ -2484,22 +2515,22 @@ function ann_output = QRScorrector(varargin)
         %% axes de pattern to match
         pattMatch_hdl = axes('Position', [ 0.83 0.14 0.14 0.49]);
         
-        xlims = round(sort([ point1(1,1) point2(1,1) ]));
-        aux_seq = [ max(1, xlims(1) - abs(diff(xlims))) min(ECG_struct.header.nsamp, xlims(2) + abs(diff(xlims))) ];
+        pattern_match_xlims = round(sort([ point1(1,1) point2(1,1) ]));
+        aux_seq = [ max(1, pattern_match_xlims(1) - abs(diff(pattern_match_xlims))) min(ECG_struct.header.nsamp, pattern_match_xlims(2) + abs(diff(pattern_match_xlims))) ];
         aux_seq = aux_seq(1):aux_seq(2);
         
         plot(aux_seq, ECG(aux_seq,:) )        
 
         set(pattMatch_hdl, 'Ytick', []);
         
-        aux_Xtick = round(linspace(xlims(1), xlims(2), 2));
+        aux_Xtick = round(linspace(pattern_match_xlims(1), pattern_match_xlims(2), 2));
         set(pattMatch_hdl, 'Xtick', aux_Xtick);
         set(pattMatch_hdl, 'XtickLabel', ['0'; {Seconds2HMS((abs(diff(aux_Xtick)))*1/ECG_struct.header.freq,1)}] );
         
         limits = ylim();
         
         aux_box_lim = [limits(1) + 0.1*abs(diff(limits)) limits(2) - 0.1*abs(diff(limits)) ];
-        pattMatch_patch_hdl = patch([xlims(1) xlims(1) xlims(2) xlims(2) xlims(1)], [aux_box_lim(1) aux_box_lim(2) aux_box_lim(2) aux_box_lim(1) aux_box_lim(1)], [220 220 240]/255, 'EdgeColor', [0 0 1], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'LineWidth', 0.5);
+        pattMatch_patch_hdl = patch([pattern_match_xlims(1) pattern_match_xlims(1) pattern_match_xlims(2) pattern_match_xlims(2) pattern_match_xlims(1)], [aux_box_lim(1) aux_box_lim(2) aux_box_lim(2) aux_box_lim(1) aux_box_lim(1)], [220 220 240]/255, 'EdgeColor', [0 0 1], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'LineWidth', 0.5);
         uistack(pattMatch_patch_hdl, 'bottom');
         
         title(pattMatch_hdl, 'Pattern to match');
@@ -2507,7 +2538,7 @@ function ann_output = QRScorrector(varargin)
         prev_units = get(pattMatch_hdl, 'Units');
         set(pattMatch_hdl, 'Units', 'pixels');
         this_pos = get(pattMatch_hdl, 'Position');
-        axes_hdl( pattMatch_hdl_k, 3) = max_pattern_match_win_size / (this_pos(3) / 2);
+        axes_hdl( pattMatch_hdl_k, 3) = max_pattern_match_win_size / (this_pos(3));
         set(pattMatch_hdl, 'Units', prev_units);
 
         set(pattMatch_hdl, 'ButtonDownFcn', @ButtonDownCallbackDefault);
@@ -2527,7 +2558,7 @@ function ann_output = QRScorrector(varargin)
         limits = ylim();
         
         aux_box_lim = [limits(1) + 0.1*abs(diff(limits)) limits(2) - 0.1*abs(diff(limits)) ];
-        proximity_patch_hdl = patch([prex_win_start prex_win_start repmat(dt_samp - prex_win_start + 1,1,2) prex_win_start ], [aux_box_lim(1) aux_box_lim(2) aux_box_lim(2) aux_box_lim(1) aux_box_lim(1)], [183 241 171]/255, 'EdgeColor', [0 1 0], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'LineWidth', 0.5);
+        proximity_patch_hdl = patch([prex_win_start prex_win_start repmat(dt_samp + prex_win_start,1,2) prex_win_start ], [aux_box_lim(1) aux_box_lim(2) aux_box_lim(2) aux_box_lim(1) aux_box_lim(1)], [183 241 171]/255, 'EdgeColor', [0 1 0], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'LineWidth', 0.5);
         uistack(proximity_patch_hdl, 'bottom');
         
         title(proximity_hdl, 'Click and drag the green box to select the min interval between QRS');
@@ -2535,7 +2566,7 @@ function ann_output = QRScorrector(varargin)
         prev_units = get(proximity_hdl, 'Units');
         set(proximity_hdl, 'Units', 'pixels');
         this_pos = get(proximity_hdl, 'Position');
-        axes_hdl( proximity_k, 3) = max_proximity_win_size / (this_pos(3) / 2);
+        axes_hdl( proximity_k, 3) = max_proximity_win_size / (this_pos(3));
         set(proximity_hdl, 'Units', prev_units);
         
         set(proximity_hdl, 'ButtonDownFcn', @ButtonDownCallbackDefault);
@@ -3583,7 +3614,7 @@ function ann_output = QRScorrector(varargin)
 
     function update_title_efimero( strTitle, delay )
        
-        if( ~isempty(title_efimero_hdl) && gcf == ancestor(title_efimero_hdl,'figure') && ishandle(title_efimero_hdl) )
+        if( ~isempty(title_efimero_hdl) && ~isempty(ancestor(title_efimero_hdl,'figure')) && gcf == ancestor(title_efimero_hdl,'figure') && ishandle(title_efimero_hdl) )
             set(title_efimero_hdl, 'String',strTitle )
             set(title_efimero_hdl, 'Visible', 'on');
         else
