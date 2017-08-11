@@ -44,8 +44,8 @@
 % 
 function [indexes max_mod] = modmax(x, first_samp, threshold, signo, t_restriction, n_greater)
 lx = size(x,1);
-indexes = nan;
-max_mod = nan;
+indexes = [];
+max_mod = [];
 
 if( nargin < 2 || isempty(first_samp) )
     first_samp = [2 lx];
@@ -171,8 +171,5 @@ if( n_greater < lindexes )
     [indexes, aux_idx] = sort(indexes);
     max_mod = max_mod(aux_idx);
     
-elseif(lindexes == 0)
-    indexes = nan;
-    max_mod = nan;
 end
 
