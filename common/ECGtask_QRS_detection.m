@@ -563,7 +563,7 @@ classdef ECGtask_QRS_detection < ECGtask
 
                         catch aux_ME
 
-                            disp_string_framed(2, sprintf('Detector "%s" failed in recording %s lead %s', this_detector_name, ECG_header.recname, ECG_header.desc(jj,:) ) );                                
+                            disp_string_framed(2, sprintf('Detector "%s" failed in recording %s', this_detector_name, ECG_header.recname ) );                                
 
                             report = getReport(aux_ME);
                             fprintf(2, 'Error report:\n%s', report);
