@@ -28,6 +28,10 @@
 % Copyright 2008-2015
 function payload_out = CalculatePerformanceECGtaskQRSdet(payload_out, ECG_annotations, ECG_header, ECG_start_offset)
 
+    if( isempty(payload_out) || isempty(ECG_annotations) )
+        return
+    end
+
     AnnNames = payload_out.series_quality.AnnNames(:,1);
     cant_lead_name = size(AnnNames,1);
     payload_out.series_performance.conf_mat = zeros(2,2,cant_lead_name);

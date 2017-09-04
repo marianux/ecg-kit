@@ -36,6 +36,10 @@
 % Copyright 2008-2015
 function payload_out = calculateSeriesQuality(payload_out, ECG_header, start_end_this_segment)
 
+    if( isempty(payload_out) )
+        return
+    end
+
     % estimate quality of QRS detections performed
     [AnnNames, all_annotations] = getAnnNames(payload_out);
 
