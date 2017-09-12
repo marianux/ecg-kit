@@ -176,6 +176,9 @@ classdef ECGwrapper < handle
         cant_pids
         % identification of this pid
         this_pid
+        % Force a fixed amount of samples per iter. If <1 it is a fraction
+        % of the total amount of samples.
+        max_samples_per_iter = [];
         % number of times to repeat the ECGtask
         repetitions
         % handle to the ECGtask object
@@ -437,7 +440,16 @@ classdef ECGwrapper < handle
                             end
                             
                             cant_samples= obj.QRS_locations(QRS_end_idx) - obj.QRS_locations(QRS_start_idx);
-                            cant_iter = ceil(cant_samples * obj.ECG_header.nsig / obj.maxECGxIter);
+                            
+                            if( isempty(obj.max_samples_per_iter) )
+                                cant_iter = ceil(cant_samples * obj.ECG_header.nsig / obj.maxECGxIter);
+                            else
+                                if( obj.max_samples_per_iter <= 1 )
+                                    cant_iter = round(1/obj.max_samples_per_iter);
+                                else
+                                    cant_iter = ceil(cant_samples * obj.ECG_header.nsig / obj.max_samples_per_iter);
+                                end
+                            end
                             %calculate iters.
                             [iter_starts, iter_ends] = TaskPartition( cant_QRS2do, cant_iter);                        
 
@@ -515,7 +527,17 @@ classdef ECGwrapper < handle
 
                             % calculate iterations 
                             cant_samples2do = ECG_end_idx - ECG_start_idx + 1;
-                            cant_iter = max(1, ceil(cant_samples2do * obj.ECG_header.nsig / obj.maxECGxIter ));
+                            
+                            if( isempty(obj.max_samples_per_iter) )
+                                cant_iter = max(1, ceil(cant_samples2do * obj.ECG_header.nsig / obj.maxECGxIter ));
+                            else
+                                if( obj.max_samples_per_iter <= 1 )
+                                    cant_iter = round(1/obj.max_samples_per_iter);
+                                else
+                                    cant_iter = ceil(cant_samples2do * obj.ECG_header.nsig / obj.max_samples_per_iter);
+                                end
+                            end
+                            
                             [iter_starts, iter_ends] = TaskPartition( cant_samples2do, cant_iter);
 
                         end
@@ -690,7 +712,7 @@ classdef ECGwrapper < handle
                             %% User defined function calculation
 
                             % Update point
-                            pb.checkpoint('User function');
+                            pb.checkpoint([ 'User function @ ' Seconds2HMS(this_iter_ECG_start_idx/this_header.freq) ]);
 
     %                         if( strcmpi(obj.partition_mode, 'QRS') )
     %                             fprintf(1, 'ECG from: %d - %d\n', obj.QRS_locations(this_iter_QRS_start_idx) , obj.QRS_locations(this_iter_QRS_end_idx) );
@@ -1618,6 +1640,17 @@ classdef ECGwrapper < handle
             else
                 warning('ECGwrapper:BadArg', 'Incorrect format, use ''1/3'' or [1 3]');
             end
+        end
+
+        function set.max_samples_per_iter(obj,value)
+
+            if( value > 0 )
+                obj.max_samples_per_iter = value;
+                obj.bArgChanged = true;
+            else
+                warning('ECGwrapper:BadArg', 'max_samples_per_iter must be > 0 and <= 1.');
+            end
+            
         end
 
         function set.repetitions(obj,value)

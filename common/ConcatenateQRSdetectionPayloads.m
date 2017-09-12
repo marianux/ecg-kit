@@ -56,10 +56,9 @@ function payload = ConcatenateQRSdetectionPayloads(obj, plA, plB)
                     payload.series_quality.ratios = [plA.series_quality.ratios plB.series_quality.ratios];
                     payload.series_quality.estimated_labs = cellfun(@(a,b)( [colvec(a);colvec(b)] ) , plA.series_quality.estimated_labs, plB.series_quality.estimated_labs, 'UniformOutput', false);
                     payload.series_quality.AnnNames = plA.series_quality.AnnNames;
+                    payload.series_quality.sampfreq = plA.series_quality.sampfreq;
                 else
-                    payload.series_quality.ratios = plA.series_quality.ratios;
-                    payload.series_quality.estimated_labs = plA.series_quality.estimated_labs;
-                    payload.series_quality.AnnNames = plA.series_quality.AnnNames;
+                    payload.series_quality = plA.series_quality;
                 end
             end
 

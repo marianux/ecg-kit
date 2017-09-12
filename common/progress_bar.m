@@ -92,7 +92,7 @@ classdef progress_bar < handle
     properties(GetAccess = private, Constant)
 
         %constant for the waitbar
-        bar_position = [0.05    0.3    0.9    0.25];
+        bar_position = [0.15    0.3    0.4    0.12];
         default_evolution = 0.1;
         long_loop_in_sec = 10; % seconds
         update_msg_time = 10; % seconds
@@ -151,9 +151,11 @@ classdef progress_bar < handle
                     obj.wb_handle = wb_handle;
                 end
                 set(obj.wb_handle, 'Tag', 'progress_bar_class');
-                obj.wb_axes_hdl = findobj(obj.wb_handle,'Type','Axes');
-                set(obj.wb_axes_hdl, 'units','normalized' );
-                set(obj.wb_axes_hdl, 'position',  obj.bar_position);
+%                 obj.wb_axes_hdl = findobj(obj.wb_handle,'Type','Axes');
+%                 set(obj.wb_handle, 'units','normalized' );
+%                 aux_val = get(obj.wb_handle, 'position');
+%                 aux_val([1 3]) = [ aux_val(1) - (obj.bar_position(3) - aux_val(3))/2  obj.bar_position(3) ];
+%                 set(obj.wb_handle, 'position',  aux_val);
                 
             else
                 % TODO:log to stdout
@@ -218,9 +220,11 @@ classdef progress_bar < handle
             if( obj.bUIpresent && ~ishandle(obj.wb_handle) )
                 obj.wb_handle = waitbar(0);
                 set(obj.wb_handle, 'Tag', 'progress_bar');
-                obj.wb_axes_hdl = findobj(obj.wb_handle,'Type','Axes');
-                set(obj.wb_axes_hdl, 'units','normalized' );
-                set(obj.wb_axes_hdl, 'position', obj.bar_position );
+%                 obj.wb_axes_hdl = findobj(obj.wb_handle,'Type','Axes');
+%                 set(obj.wb_handle, 'units','normalized' );
+%                 aux_val = get(obj.wb_handle, 'position');
+%                 aux_val([1 3]) = [ aux_val(1) - (obj.bar_position(3) - aux_val(3))/2  obj.bar_position(3) ];
+%                 set(obj.wb_handle, 'position',  aux_val);
             end
 
             if( obj.bUIpresent )
@@ -253,9 +257,9 @@ classdef progress_bar < handle
                     if( obj.update_counter > obj.update_msg_time )
                         obj.update_counter = 0;
                         if( isempty(obj.Loops2Do) )
-                            set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 30) ' - [' Seconds2HMS( aux_LoopMeanTime ) ' s/loop]']);
+                            set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 10) ' - [' Seconds2HMS( aux_LoopMeanTime ) ' s/loop]']);
                         else
-                            set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 30) ' - Finishing in ' Seconds2HMS(aux_Time2Finish) ]);
+                            set(obj.wb_handle, 'Name', [ adjust_string(obj.Title, 10) ' - Finishing in ' Seconds2HMS(aux_Time2Finish) ]);
                         end
                     end
                     

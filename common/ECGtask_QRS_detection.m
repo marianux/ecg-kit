@@ -312,7 +312,7 @@ classdef ECGtask_QRS_detection < ECGtask
                     this_detector_name = this_detector_name(2:end);
                 end
 
-                cprintf( 'Blue', [ 'Processing QRS detector ' this_detector_name '\n' ] );
+                cprintf( 'Blue', [ 'Processing QRS detector ' this_detector_name ' @ ' Seconds2HMS(ECG_start_offset/ECG_header.freq) '\n' ] );
 
                 %% perform QRS detection
 
@@ -350,8 +350,6 @@ classdef ECGtask_QRS_detection < ECGtask
                         %% Pan-Tompkins detector
 
                         for jj = rowvec(obj.lead_idx)
-
-                            obj.progress_handle.checkpoint(['Lead ' ECG_header.desc(jj,:)])
 
                             try
 
@@ -533,7 +531,7 @@ classdef ECGtask_QRS_detection < ECGtask
 %                                 ud_func_pointer = eval(['@' this_detector_name]);
                                 ud_func_pointer = str2func(this_detector_name);
 
-                                obj.progress_handle.checkpoint([ 'User defined function: ' this_detector_name])
+                                obj.progress_handle.checkpoint([ 'User defined function: ' this_detector_name ' @ ' Seconds2HMS(ECG_start_offset/ECG_header.freq) ])
 
                                 ECG_header_aux = trim_ECG_header(ECG_header, obj.lead_idx);
 
