@@ -317,7 +317,7 @@ if( ~isempty(QRS_locations_wrapper) )
             aux_annotations = load(cached_filenames{1});
             
             if( isfield(aux_annotations, 'series_quality') && isfield(aux_annotations.series_quality, 'sampfreq' ) )
-                ann_sampfreq = ECG_struct.series_quality.sampfreq;
+                ann_sampfreq = aux_annotations.series_quality.sampfreq;
             else
                 % assumed in the same sampling rate
                 ann_sampfreq = heasig.freq;

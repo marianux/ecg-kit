@@ -32,7 +32,7 @@ int32_T I;
 double *timeabs, *time, *timedata;
 int32_T timelim[2];
 int32_T nbytes, nevents, i, pos,k;
-int dims[2];
+size_t dims[2];
 mxChar *anntyp;
 mxChar *subtyp;
 mxChar *chan, *num;

@@ -754,6 +754,7 @@ function ann_output = QRScorrector(varargin)
             
             if( length(anns_under_edition) < 2 )
                 aux_RR = [];
+                aux_RR_filt = [];
                 this_all_anns = [];
             else
 %                 aux_RR = colvec(diff(anns_under_edition));
