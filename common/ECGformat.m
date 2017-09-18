@@ -84,7 +84,7 @@ function recording_format = ECGformat(recording_filename)
             header_fn = [rec_filepath filesep rec_filename '.hea'];
             if( exist( header_fn, 'file' ) )
                 aux_header = readheader(header_fn);
-                if( strcmp(aux_header.recname, rec_filename) )
+                if( ~isempty(aux_header) && strcmp(aux_header.recname, rec_filename) )
                     recording_format = cKnownFormats{ii};
                     return
                 end

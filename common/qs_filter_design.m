@@ -55,7 +55,7 @@ if( nargin < 2 || isempty(fs) )
 end
 
 if( nargin < 3 || isempty(N) )
-    %valor empírico obtenido de varios diseños.
+    %valor empï¿½rico obtenido de varios diseï¿½os.
     N = max(10, round(fs*4/30 + 16+2/3)); 
 end
 
@@ -65,13 +65,13 @@ if( abs(N - recommended_N) > 0.1*N )
     warning(['Check the transfer functions of the differentiator filters designed. Recommended order N = ' num2str(recommended_N) ]);
 end
 
-%frecuencia a la que está diseñado el delineador, y que se toma para
+%frecuencia a la que estï¿½ diseï¿½ado el delineador, y que se toma para
 %referencia para que las escalas signifiquen lo mismo a cualquier Fs.
 f_ref = 250; %Hz
 f_ratio = f_ref/fs;
 
 
-% Funciones de transferencia correctas para el diseño de los filtros utilizadas 
+% Funciones de transferencia correctas para el diseï¿½o de los filtros utilizadas 
 % por el wavedet a 250 Hz.
 empirical_tf = { ...
     [2;-2] ... 
@@ -96,25 +96,26 @@ for ii = rowvec(scales)
     F = F * f_ratio / pi;
     g_amp = abs(g_amp);
 
-    %averiguo hasta qué muestra se comporta como un derivador, ya que será
-    %un parámetro de diseño.
+    %averiguo hasta quï¿½ muestra se comporta como un derivador, ya que serï¿½
+    %un parï¿½metro de diseï¿½o.
     slope_aux = diff( log10(g_amp) );
     end_diff_idx = find(slope_aux < 0.95*slope_aux(1), 1, 'first');
     
 
-    %diseño un derivador hasta dicha frecuencia, con una banda de
-    %transición dada por la expresion , cuando sea posible.
+    %diseï¿½o un derivador hasta dicha frecuencia, con una banda de
+    %transiciï¿½n dada por la expresion , cuando sea posible.
     ftrans = min(70, 251 * exp(-0.63*ii));
     diff_order = round(N*1.8.^((ii*0.4 -0.6))); 
-    %Los N tienen que ser necesariamente pares para el diseño del derivador.
+    %Los N tienen que ser necesariamente pares para el diseï¿½o del derivador.
     if( rem(diff_order,2) ~= 0 )
         diff_order = diff_order + 1;
     end
     
     [msgstr, msgid] = lastwarn;
-    %itero hasta que se diseña correctamente.
+    %itero hasta que se diseï¿½a correctamente.
     jj = 0;
     effective_order = diff_order;
+    aux_seq = linspace(0.5,1.1,design_iter_attemps);
     while( jj < design_iter_attemps )
         d = fdesign.differentiator('n,fp,fst', effective_order, F(end_diff_idx), min( 0.95, F(end_diff_idx)+(ftrans*2/fs) ) );
         try
@@ -127,8 +128,8 @@ for ii = rowvec(scales)
         if(strcmpi(msgid,'signal:firpm:DidNotConverge'))
             %fallo en la convergencia, iteramos de nuevo.
             %recorro linealmente por el rango +10:-50% 
-            effective_order = round(diff_order * (jj*(0.5-1.1)/design_iter_attemps+1.1));
-            %Los effective_order tienen que ser necesariamente pares para el diseño del derivador.
+            effective_order = round(diff_order * aux_seq(jj+1));
+            %Los effective_order tienen que ser necesariamente pares para el diseï¿½o del derivador.
             if( rem(effective_order,2) ~= 0 )
                 effective_order = effective_order + 1;
             end            
@@ -143,7 +144,7 @@ for ii = rowvec(scales)
         error('qs_filter_design:Impossible2Design', 'Impossible to design the differentiator filter. Please try another N value, or check the filters transfer functions manually.')
     end
     
-    %Vuelvo a ver la transferencia real del derivador diseñado y del filtro
+    %Vuelvo a ver la transferencia real del derivador diseï¿½ado y del filtro
     %a emular para que tengan una respuesta similar en la zona en que se
     %comporta como derivador. Averiguo el factor de escala entre ambas
     %transferencias.
@@ -161,8 +162,8 @@ for ii = rowvec(scales)
     g_amp_real = g_amp_real * aux_scale;
     
 
-    %ahora diseño un filtro de compensación para que la zona en que no se
-    %deriva sea similar al filtro de referencia. Esta irá desde el máximo
+    %ahora diseï¿½o un filtro de compensaciï¿½n para que la zona en que no se
+    %deriva sea similar al filtro de referencia. Esta irï¿½ desde el mï¿½ximo
     %de la transferencia pasobanda hasta donde haya una amplitud mayor a
     %0.5 veces.
     [~, max_idx] = max(g_amp);
@@ -174,17 +175,17 @@ for ii = rowvec(scales)
     end
     aux_idx = max_idx:aux_3db_unique; 
 
-    %Creo una grilla de frecuencia - magnitud arbitraria para el diseño del
-    %filtro. Esta transferencia no deberá afectar la zona derivadora (H(w)
+    %Creo una grilla de frecuencia - magnitud arbitraria para el diseï¿½o del
+    %filtro. Esta transferencia no deberï¿½ afectar la zona derivadora (H(w)
     %= 1) y compensar la zona indicada por aux_idx, emulando la
-    %transferencia de referencia y teniendo un valor de atenuación
+    %transferencia de referencia y teniendo un valor de atenuaciï¿½n
     %considerable en Nyquist (H(w) = 1e-3)
     F_comp = [0 max(0.9*F(end_diff_idx), (F(max_idx)-F(end_diff_idx))/2) F(aux_idx) 1];
     g_amp_comp = [1 1 g_amp(aux_idx)./g_amp_real(aux_idx) 1e-3];
     W = ones(1, length(F_comp));
     W(3:end-1) = 10;
 
-    %Se diseña el filtro 
+    %Se diseï¿½a el filtro 
     d = fdesign.arbmag('N,F,A', diff_order, F_comp, g_amp_comp);
     Hd_comp = design(d,'firls', 'weights', W, 'FilterStructure', 'dfsymfir');     
 

@@ -1354,7 +1354,7 @@ function ann_output = QRScorrector(varargin)
                 point = get(axes_hdl( RRserie_global_axes_k, 1), 'CurrentPoint');
                 point = point(1,1);
                 
-                start_idx = max(1, min( ECG_struct.header.nsamp - (win_size_PM * 60 * ECG_struct.header.freq), round(point) ) );
+                start_idx = max(1, min( ECG_struct.header.nsamp - (min_win_size * 60 * ECG_struct.header.freq), round(point) ) );
             end
 
             end_idx = max((min_win_size * 60 * ECG_struct.header.freq), min( ECG_struct.header.nsamp, start_idx + round((win_size * 60)*ECG_struct.header.freq)));
@@ -1724,12 +1724,15 @@ function ann_output = QRScorrector(varargin)
                 figure(side_plot_hdl);
             end
 
+            aux_val2 = (anns_under_edition - start_idx + 1);
+            aux_val2 = aux_val2(aux_val2 > 0);
+            
             plot_ecg_strip(ECG_struct.signal, ...
                             'ECG_header', ECG_struct.header, ...
-                            'QRS_locations', anns_under_edition, ...
-                            'Start_time', aux_val/ECG_struct.header.freq - win_size_zoom/2 -  1 , ...
+                            'QRS_locations', aux_val2, ...
+                            'Start_time', max(0, (aux_val - start_idx + 1)/ECG_struct.header.freq - win_size_zoom/2 -  1) , ...
                             'Figure_handle', side_plot_hdl , ...
-                            'End_time', aux_val/ECG_struct.header.freq + win_size_zoom/2 + 1 );
+                            'End_time', min(ECG_struct.header.nsamp, (aux_val - start_idx + 1)/ECG_struct.header.freq + win_size_zoom/2 + 1) );
 
             side_plot_hdl = gcf();
             
@@ -3401,8 +3404,8 @@ function ann_output = QRScorrector(varargin)
                 % Main figure 1 
                 ECG_struct.signal = ECG_w.read_signal(start_idx, end_idx + 10 * ECG_struct.header.freq );
 
-%                 hb_idx = 1;
-% 
+                hb_idx = 1;
+
 %     dbstop if caught error
 %     dbstop if error
     
