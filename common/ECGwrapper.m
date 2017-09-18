@@ -1898,10 +1898,7 @@ classdef ECGwrapper < handle
 
             obj.ECG_delineation = single_lead_positions;
             
-            if(isempty(ann_aux))
-                obj.ECG_annotations = [];
-                obj.QRS_locations = [];
-            else
+            if(~isempty(ann_aux) && isempty(obj.ECG_annotations) )
                 % discard non-beats and finish annotations parsing.
                 if( isfield(ann_aux, 'anntyp') )
                     ann_aux = AnnotationFilterConvert(ann_aux, obj.recording_format, obj.class_labeling);
