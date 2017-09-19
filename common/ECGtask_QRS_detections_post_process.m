@@ -221,10 +221,12 @@ classdef ECGtask_QRS_detections_post_process < ECGtask
 
                     this_payload = this_func_ptr( QRSdet_struct, ECG_header, ECG_sample_start_end_idx );
 
-                    for fn = rowvec(fieldnames(this_payload))
-                        payload_out.(fn{1}) = this_payload.(fn{1});
-                        aux_val = payload_out.(fn{1}).time + ECG_start_offset - 1;
-                        payload_out.(fn{1}).time = aux_val;
+                    if( ~isempty(this_payload) )
+                        for fn = rowvec(fieldnames(this_payload))
+                            payload_out.(fn{1}) = this_payload.(fn{1});
+                            aux_val = payload_out.(fn{1}).time + ECG_start_offset - 1;
+                            payload_out.(fn{1}).time = aux_val;
+                        end
                     end
                     
                 catch aux_ME

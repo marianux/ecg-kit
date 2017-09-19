@@ -61,6 +61,10 @@ function all_detections = wavedetMix(struct_in, ECG_header, start_end_this_segme
     
     aux_idx = find(strcmpi(detector_name, 'wavedet'));
     
+    if( isempty(aux_idx) )
+        return
+    end
+    
     all_annotations = {};
     for ii = rowvec(aux_idx)
         all_annotations = [all_annotations; {struct_in.(struct_in.series_quality.AnnNames{ii,1}).time}];

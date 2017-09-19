@@ -1896,6 +1896,8 @@ classdef ECGwrapper < handle
 
             end
 
+            obj.bECG_rec_changed = false;
+            
             obj.ECG_delineation = single_lead_positions;
             
             if(~isempty(ann_aux) && isempty(obj.ECG_annotations) )
@@ -1906,8 +1908,6 @@ classdef ECGwrapper < handle
                 obj.QRS_locations = ann_aux.time;
                 obj.ECG_annotations = ann_aux;
             end
-            
-            obj.bECG_rec_changed = false;
             
         end
 
