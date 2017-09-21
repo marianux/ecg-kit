@@ -42,10 +42,14 @@ function selected_segments = get_segments_from_sequence(xx, yy, x_thr, y_thr )
     below_idx = xx(bAux);
     above_idx = xx(~bAux);
 
+% figure(3); plot(xx, yy ); xlims = xlim(); ylims = ylim(); ylims = ylims + [0.1 -0.1] * diff(ylims); hold on; plot(xlims, [y_thr y_thr] , '--r' ); hold off;
+
     for jj = 1:length(aux_idx3) 
         start_idx = xx(aux_idx(aux_idx3(jj))+1);
         end_idx = below_idx( find( below_idx < above_idx(find( above_idx > start_idx, 1,'first')) ,1, 'last') );
         
-        selected_segments = [selected_segments; [start_idx end_idx]];
+        if( ~isempty(start_idx) && ~isempty(end_idx) )
+            selected_segments = [selected_segments; [start_idx end_idx]];
+        end
     end
     

@@ -321,7 +321,7 @@ function ann_output = QRScorrector(varargin)
                 save(filename, 'ratios')
             end
 
-            [ratios, worst_detections_idx] = sort(ratios);
+            [~, worst_detections_idx] = sort(ratios);
 
             recording_indexes = recording_indexes(worst_detections_idx);
 
@@ -592,7 +592,7 @@ function ann_output = QRScorrector(varargin)
             annotations_ranking = [];
         else
             
-            [ratios, best_detections_idx] = sort(ratios, 'descend');
+            [~, best_detections_idx] = sort(ratios, 'descend');
 
             aux_idx = find(cell2mat( cellfun(@(a)(~isempty(strfind(a, 'artificial'))), AnnNames(:,1), 'UniformOutput', false)));
 
@@ -610,7 +610,7 @@ function ann_output = QRScorrector(varargin)
 
                     calc_ratios();
 
-                    [ratios, best_detections_idx] = sort(ratios, 'descend');
+                    [~, best_detections_idx] = sort(ratios, 'descend');
                 end
             end
 
