@@ -194,7 +194,7 @@ set(axes_hdl, 'ColorOrder', ColorOrder);
 if( ~bFixAxes )
     limits = prctile(colvec(aux_sig), [5 95]);
 
-    aux_val = diff(limits);
+    aux_val = max(diff(limits), 0.05*limits(1) );
     aux_val = 1.1*aux_val;
     limits(1) = max(min(colvec(aux_sig)), limits(1) - aux_val);
     limits(2) = min(max(colvec(aux_sig)), limits(2) + aux_val);

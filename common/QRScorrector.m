@@ -999,7 +999,7 @@ function ann_output = QRScorrector(varargin)
                 cellfun( @(this_anns, this_rr_serie, ii)( plot(RRserie_global_axes_hdl, this_anns( round(linspace(1,length(this_anns),length(this_rr_serie))) )  , this_rr_serie, 'Marker', all_markers{ii}, 'LineStyle', ':', 'MarkerEdgeColor', ColorOrder(ii,:), 'Color', ColorOrder(ii,:), 'ButtonDownFcn', @ButtonDownCallbackDefault)  ), all_annotations_selected, RRserie_aux, num2cell((1:length(RRserie))') );
                 
                 
-                limits = prctile(aux_RR, [1 99]);
+%                 limits = prctile(aux_RR, [1 99]);
                 ylim(RRserie_global_axes_hdl, limits);
                 
 %                 RRserie_zoombars_hdl = plot(RRserie_global_axes_hdl, repmat([ start_idx end_idx], 2, 1), repmat(limits,2,1)', 'LineWidth', 3, 'Color', 'r', 'ButtonDownFcn', @ButtonDownCallbackDefault, 'ButtonUpFcn', @ButtonUpCallbackDefault );
@@ -3403,8 +3403,6 @@ function ann_output = QRScorrector(varargin)
             if( axes_hdl(axes_hdl_selector_idx,2) == fig_hdl )
                 % Main figure 1 
                 ECG_struct.signal = ECG_w.read_signal(start_idx, end_idx + 10 * ECG_struct.header.freq );
-
-                hb_idx = 1;
 
 %     dbstop if caught error
 %     dbstop if error
