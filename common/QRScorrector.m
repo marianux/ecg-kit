@@ -131,7 +131,9 @@ function ann_output = QRScorrector(varargin)
     proximity_hdl = [];
     proximity_patch_hdl = [];
     similarity_hdl = [];
+    similarity_hist_hdl = [];
     similarity_thr_hdl = [];
+    similarity_hist_thr_hdl = [];
     pattMatch_hdl = [];
     pattMatch_patch_hdl = [];
     
@@ -404,8 +406,9 @@ function ann_output = QRScorrector(varargin)
     proximity_k = 5;
     similarity_hdl_k = 6;
     pattMatch_hdl_k = 7;
+    similarity_hist_hdl_k = 8;
     
-    axes_cant = 7; % amount of indexes to responde to the move callback
+    axes_cant = 8; % amount of indexes to responde to the move callback
     
     axes_hdl = nan(axes_cant,3);
     axes_hdl_selector_idx = nan;
@@ -1959,6 +1962,7 @@ function ann_output = QRScorrector(varargin)
             axes_hdl( RR_global_PM_k, 1:2) = [RR_global_PM_hdl, figPatternMatch_hdl]; 
             axes_hdl( proximity_k, 1:2) = [proximity_hdl, figPatternMatch_hdl]; 
             axes_hdl( similarity_hdl_k, 1:2) = [similarity_hdl, figPatternMatch_hdl]; 
+            axes_hdl( similarity_hist_hdl_k, 1:2) = [similarity_hist_hdl, figPatternMatch_hdl]; 
             axes_hdl( pattMatch_hdl_k, 1:2) = [pattMatch_hdl, figPatternMatch_hdl]; 
             
 
@@ -2444,6 +2448,9 @@ function ann_output = QRScorrector(varargin)
                 aux_val = [aux_val; [bsxfun(@minus, aux_val1(:,1:end-1), mean(aux_val1(:,1:end-1)) ) aux_val1(:,end) ]; sig_breaks ];
             end
         end
+
+        aux_similarity_max = aux_w.read_signal( 1, aux_w.ECG_header.nsamp );
+        similarity_thr = median( aux_similarity_max );
         
         % compress dynamic range of detection signal
         aux_val(:, end) = log10( similarity_min +  aux_val(:, end) );
@@ -2452,14 +2459,34 @@ function ann_output = QRScorrector(varargin)
         aux_val = bsxfun(@times, aux_val, 1./similarity_scale_thr);
         aux_val(:,1:llead_idx) = (aux_val(:,1:llead_idx)*0.5) - 0.5;
 
-        similarity_thr = mean([ min(aux_val(:,end)) max(aux_val(:,end)) ]);
+        
+        % modmax calculation 
+        
+        aux_w.ECGtaskHandle = 'arbitrary_function';
+        aux_w.cacheResults = false;
+        aux_w.ECGtaskHandle.lead_idx = 1;
+        % generate QRS detections
+        aux_w.ECGtaskHandle.signal_payload = false;
+        aux_w.user_string = ['modmax_calc_for_leads_' num2str(sort(lead_idx)) ];
+        aux_w.ECGtaskHandle.function_pointer = @arb_modmax;
+
+        aux_payload.xlims = [start_idx_PM end_idx_PM];
+        aux_payload.thr = similarity_thr;
+        aux_payload.detection_threshold = proximity_thr_PM;
+        aux_w.ECGtaskHandle.payload = aux_payload;
+        aux_w.Run
+
+        % asume that the whole series keep in mem.
+        aux_max_idx = load(aux_w.Result_files{1});  
+        aux_max_idx = aux_max_idx.result;
+        aux_similarity_max = aux_similarity_max(aux_max_idx);
         
         %% axes de Similarity
-        similarity_hdl = axes('Position', [ 0.015 0.025 0.8 0.605]);
+        similarity_hdl = axes('Position', [ 0.015 0.025 0.5 0.605]);
         aux_hdls = plot(aux_val, 'ButtonDownFcn', @ButtonDownSimilarity);
 
         hold(similarity_hdl, 'on')
-        similarity_thr_hdl = plot(similarity_hdl, get(similarity_hdl, 'Xlim'), [similarity_thr similarity_thr], '--r', 'ButtonDownFcn', @ButtonDownSimilarity);
+        similarity_thr_hdl = plot(similarity_hdl, get(similarity_hdl, 'Xlim'), log10( similarity_min +  [similarity_thr similarity_thr] )*1/similarity_scale_thr(end), '--r', 'ButtonDownFcn', @ButtonDownSimilarity);
         hold(similarity_hdl, 'off')
             
         title('Select the detection threshold to use in the similarity function')
@@ -2475,6 +2502,25 @@ function ann_output = QRScorrector(varargin)
         legend(aux_hdls, {'ECG'; 'Similarity'} );
         
         set(similarity_hdl, 'ButtonDownFcn', @ButtonDownSimilarity);
+        
+        %% Histograma de similaridad
+
+        
+        similarity_hist_hdl = axes('Position', [ 0.52 0.025 0.29 0.605]);
+        histogram(similarity_hist_hdl, aux_similarity_max, 'ButtonDownFcn', @ButtonDownSimilarity_Hist);
+
+        hold(similarity_hist_hdl, 'on')
+        similarity_hist_thr_hdl = plot(similarity_hist_hdl, [similarity_thr similarity_thr], get(similarity_hist_hdl, 'Ylim') , '--r', 'ButtonDownFcn', @ButtonDownSimilarity_Hist);
+        hold(similarity_hist_hdl, 'off')
+            
+        title('Detection threshold hist view')
+        
+        set(similarity_hist_hdl, 'Ytick', []);
+        
+        set(similarity_hist_hdl, 'Xtick', []);
+        
+        set(similarity_hist_hdl, 'ButtonDownFcn', @ButtonDownSimilarity_Hist);
+        
         
         %% proceed button
         
@@ -2834,8 +2880,24 @@ function ann_output = QRScorrector(varargin)
         similarity_thr = 10^(aux_val * similarity_scale_thr(end))-similarity_min;
 
         set(similarity_thr_hdl, 'Ydata', [aux_val aux_val] );
+        set(similarity_hist_thr_hdl, 'Xdata', [similarity_thr similarity_thr] );
 
-        update_title_efimero( sprintf('THR: %3.2f', aux_val), 5 );        
+        update_title_efimero( sprintf('THR: %3.2f', similarity_thr), 5 );        
+        
+    end
+
+    function ButtonDownSimilarity_Hist(obj,event_obj)
+        
+        point = get(similarity_hist_hdl, 'CurrentPoint');
+
+        similarity_thr = point(1,1);
+
+        aux_val = log10(similarity_thr + similarity_min)/similarity_scale_thr(end);
+        
+        set(similarity_thr_hdl, 'Ydata', [aux_val aux_val] );
+        set(similarity_hist_thr_hdl, 'Xdata', [similarity_thr similarity_thr] );
+
+        update_title_efimero( sprintf('THR: %3.2f', similarity_thr), 5 );        
         
     end
 

@@ -58,7 +58,7 @@ function payload_out = CalculatePerformanceECGtaskQRSdet(payload_out, ECG_annota
             
             % meadian/mad of the error wrt the gold standard
             if( ~isempty(TP_det_idx) )
-                aux_val = (this_lead_det(TP_det_idx) - ECG_annotations.time(TP_gs_idx));
+                aux_val = (colvec(this_lead_det(TP_det_idx)) - colvec(ECG_annotations.time(TP_gs_idx)));
                 payload_out.series_performance.error(kk,:) = [ median(aux_val) mad(aux_val) ] /ECG_header.freq;
             end
         end            
