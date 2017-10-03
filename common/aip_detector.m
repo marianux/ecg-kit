@@ -173,12 +173,17 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
         [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 0, [], 10);
 
+        % mass center of the distribution, probably the value where the
+        % patterns under search are located.
         thr_idx_expected = floor(rowvec(thr_idx) * colvec(thr_max) *1/sum(thr_max));
 
         aux_seq = 1:length(thr_grid);
 
         min_hist_max_values = min( hist_max_values( aux_seq >= first_bin_idx & aux_seq < thr_idx_expected) );
 
+        % in case several indexes match the boolean condition, the mean
+        % index is the center of all those indexes. Other criteria such as
+        % min or max can be explored
         thr_min_idx = round(mean(find(aux_seq >= first_bin_idx & aux_seq < thr_idx_expected & [hist_max_values 0] == min_hist_max_values)));
 
         actual_thr = thr_grid(thr_min_idx );
