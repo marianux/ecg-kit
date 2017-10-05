@@ -291,26 +291,30 @@ classdef progress_bar < handle
         
         function end_loop(obj)
             %end of loop. Calculate averages.
-            obj.LoopTimes = [obj.LoopTimes; toc(obj.obj_tic)];
-            obj.LoopsDone = obj.LoopsDone + 1;
-            if( length(obj.loops2weight) >= obj.loops2weight )
-                % last loop is the most weighted
-                obj.LoopMeanTime = mean([ (rowvec(obj.LoopTimes((end-obj.loops2weight+1):end))*flipud(colvec(obj.time_weighting))) (obj.time_elapsed / obj.LoopsDone) ]);
-            else
-                obj.LoopMeanTime = mean(obj.LoopTimes);
-            end
+            if( ~isempty(obj.obj_tic) )
             
-            obj.time_elapsed = obj.time_elapsed + obj.LoopTimes(end);
-            
-            if( obj.bUIpresent )
-
-                if( obj.LoopMeanTime > obj.long_loop_in_sec )
-                    % long process: progress within a loop.
-                    waitbar( 1, obj.wb_handle, 'End of loop.' );
-    %             else
-                    % short process: total progress                 
+                obj.LoopTimes = [obj.LoopTimes; toc(obj.obj_tic)];
+                obj.LoopsDone = obj.LoopsDone + 1;
+                if( length(obj.loops2weight) >= obj.loops2weight )
+                    % last loop is the most weighted
+                    obj.LoopMeanTime = mean([ (rowvec(obj.LoopTimes((end-obj.loops2weight+1):end))*flipud(colvec(obj.time_weighting))) (obj.time_elapsed / obj.LoopsDone) ]);
+                else
+                    obj.LoopMeanTime = mean(obj.LoopTimes);
                 end
-                
+
+                obj.time_elapsed = obj.time_elapsed + obj.LoopTimes(end);
+
+                if( obj.bUIpresent )
+
+                    if( obj.LoopMeanTime > obj.long_loop_in_sec )
+                        % long process: progress within a loop.
+                        waitbar( 1, obj.wb_handle, 'End of loop.' );
+        %             else
+                        % short process: total progress                 
+                    end
+
+                end
+
             end
             
         end

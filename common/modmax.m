@@ -42,7 +42,7 @@
 % Birthdate  : 21/4/2015
 % Copyright 2008-2015
 % 
-function [indexes max_mod] = modmax(x, first_samp, threshold, signo, t_restriction, n_greater)
+function [indexes max_mod] = modmax(x, first_samp, threshold, signo, t_restriction, n_greater, arg_pb)
 lx = size(x,1);
 indexes = [];
 max_mod = [];
@@ -69,7 +69,11 @@ end
 bWithPB = false;
 if( lx > 10e5 )
     bWithPB = true;
-    pb = progress_bar('Modmax function');
+    if( nargin < 7 || isempty(arg_pb) )
+        pb = progress_bar('Modmax function');
+    else
+        pb = arg_pb;
+    end
 end
 
 
@@ -111,17 +115,18 @@ if( t_restriction > 0 )
     end
 
     lindexes = length(indexes);
-    if( bWithPB )
-        pb.Loops2Do = lindexes;
-    end
+%     if( bWithPB )
+%         pb.Loops2Do = lindexes;
+%     end
 
     [~, aux_sorted_mod_idx] = sort(x(indexes), 'descend');
 
     while( ii < lindexes )
 
-        if( bWithPB )
-            pb.start_loop();
-        end
+% too expensive computationally, check it !!
+%         if( bWithPB )
+%             pb.start_loop();
+%         end
         
         if( ~isnan(indexes(aux_sorted_mod_idx(ii))) )
 
@@ -135,12 +140,12 @@ if( t_restriction > 0 )
 
         ii = ii+1;
 
-        if( bWithPB )
-            pb.LoopsDone = ii;
-            pb.checkpoint('');
-
-            pb.end_loop();
-        end
+%         if( bWithPB )
+%             pb.LoopsDone = ii;
+%             pb.checkpoint('');
+% 
+%             pb.end_loop();
+%         end
         
     end
 
@@ -155,11 +160,11 @@ if( bWithPB )
 end
 
 
-if( nargin < 6 || isempty(n_greater) )
-    n_greater = realmax;
-end
-
 lindexes = length(indexes);
+
+if( nargin < 6 || isempty(n_greater) )
+    n_greater = lindexes;
+end
 
 if( n_greater < lindexes )
     

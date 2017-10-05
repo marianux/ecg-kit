@@ -1416,16 +1416,17 @@ function ann_output = QRScorrector(varargin)
 
             update_title_efimero( sprintf('%s', Seconds2HMS(proximity_thr_PM, 1)), 5 );
 
-            dt_samp = round(proximity_thr_PM*ECG_struct.header.freq);
+            dt_samp = round(proximity_thr_PM*ECG_struct.header.freq/ndown_similarity);
 
             aux_val = get(proximity_patch_hdl, 'Xdata');
             set(proximity_patch_hdl, 'Xdata', [aux_val(1) aux_val(1) repmat(dt_samp + aux_val(1),1,2) aux_val(1) ]);
 
-            aux_lims = [ 1 1.2 * (dt_samp + aux_val(1)) ];
+            aux_lims = [ 1 round(1.2 * (dt_samp + aux_val(1))) ];
             
             xlim(proximity_hdl, aux_lims )
             
-            aux_Xtick = round(linspace(aux_val(1), round(aux_lims(2)*10/ECG_struct.header.freq)/10*ECG_struct.header.freq , 4));
+            aux_Xtick = round(linspace(aux_val(1), dt_samp + aux_val(1), 4));
+            
             set(proximity_hdl, 'Xtick', aux_Xtick);
             set(proximity_hdl, 'XtickLabel', Seconds2HMS((aux_Xtick-aux_val(1))*1/ECG_struct.header.freq,1));
             
@@ -2341,7 +2342,7 @@ function ann_output = QRScorrector(varargin)
         else            
             % resampling of the signal
             Nqrs = round( .09 * 250); % samples of a normal QRS sampled at 250 Hz
-            fs_target = round(Nqrs / length(aux_seq) * ECG_struct.header.freq);
+            fs_target = min( ECG_struct.header.freq, round(  Nqrs / length(aux_seq)* ECG_struct.header.freq) );
             ndown_similarity = round( ECG_struct.header.freq / fs_target);
         end
         
@@ -2384,14 +2385,12 @@ function ann_output = QRScorrector(varargin)
         anns_under_edition_idx = RR_idx{1};        
 
         
-        prev_fig = gcf();
-        
-        if( ishandle(figPatternMatch_hdl) )
+        if( ~isempty(figPatternMatch_hdl) && ishandle(figPatternMatch_hdl) && figPatternMatch_hdl ~= fig_hdl )
             figure(figPatternMatch_hdl);
+            clf();
         else
             figPatternMatch_hdl = figure();
         end
-        clf();
     
         set(figPatternMatch_hdl, 'WindowButtonDownFcn', @SrchPattButtonDownCallback);            
         set(figPatternMatch_hdl, 'WindowButtonUpFcn',   @SrchPattButtonUpCallback);            
@@ -2442,10 +2441,12 @@ function ann_output = QRScorrector(varargin)
                 aux_val1 = aux_w_ecg.read_signal( aux_start, aux_start + win_sample );
 
                 aux_anns = round((anns_under_edition( anns_under_edition >= ndown_similarity*aux_start &  anns_under_edition <= ndown_similarity*(aux_start+win_sample) ) - ndown_similarity*aux_start + 1) / ndown_similarity );
+
+                aux_val1 = aux_val1(:,lead_idx);
                 
                 aux_pack = [aux_pack squeeze(pack_signal(aux_val1, aux_anns, [ prex_win_start prex_win_end ], true)) ];
                 
-                aux_val1 = aux_val1(1:(win_sample_2+1),lead_idx);
+                aux_val1 = aux_val1(1:(win_sample_2+1),:);
                 
                 aux_val1 = [aux_val1 aux_w.read_signal( aux_start, aux_start + win_sample_2 ) ];
                 
@@ -2456,15 +2457,6 @@ function ann_output = QRScorrector(varargin)
         end
 
         aux_similarity_max = aux_w.read_signal( 1, aux_w.ECG_header.nsamp );
-        similarity_thr = median( aux_similarity_max );
-        
-        % compress dynamic range of detection signal
-        aux_val(:, end) = log10( similarity_min +  aux_val(:, end) );
-        
-        similarity_scale_thr = max(abs(aux_val));
-        aux_val = bsxfun(@times, aux_val, 1./similarity_scale_thr);
-        aux_val(:,1:llead_idx) = (aux_val(:,1:llead_idx)*0.5) - 0.5;
-
         
         % modmax calculation 
         
@@ -2477,8 +2469,11 @@ function ann_output = QRScorrector(varargin)
         aux_w.ECGtaskHandle.function_pointer = @arb_modmax;
 
         aux_payload.xlims = [start_idx_PM end_idx_PM];
-        aux_payload.thr = similarity_thr;
+        aux_payload.thr = median( aux_similarity_max );
+        % for faster computation avoid time restriction in the first pass
         aux_payload.detection_threshold = proximity_thr_PM;
+        % get only the first n_greater matches of the pattern
+%         aux_payload.n_greater = round((end_idx_PM - start_idx_PM + 1 ) / round(1.5 * proximity_thr_PM * aux_w.ECG_header.freq) );
         aux_w.ECGtaskHandle.payload = aux_payload;
         aux_w.Run
 
@@ -2497,7 +2492,7 @@ function ann_output = QRScorrector(varargin)
 
         grid_step = median(diff(prctile_grid));
 
-        thr_grid = similarity_thr: grid_step:max(aux_similarity_max);
+        thr_grid = prctile(aux_similarity_max,5): grid_step:prctile(aux_similarity_max,95);
 
         hist_max_values = histcounts(aux_similarity_max, thr_grid);
 
@@ -2521,8 +2516,16 @@ function ann_output = QRScorrector(varargin)
         similarity_thr = thr_grid(thr_min_idx );
         
         
+        % compress dynamic range of detection signal
+        aux_val(:, end) = log10( similarity_min +  aux_val(:, end) );
+        
+        similarity_scale_thr = max(abs(aux_val));
+        similarity_scale_thr(end) = log10( similarity_min + max(thr_grid));
+        aux_val = bsxfun(@times, aux_val, 1./similarity_scale_thr);
+        aux_val(:,1:llead_idx) = (aux_val(:,1:llead_idx)*0.5) - 0.5;        
+        
         %% axes de Similarity
-        similarity_hdl = axes('Position', [ 0.015 0.025 0.5 0.605]);
+        similarity_hdl = axes(figPatternMatch_hdl, 'Position', [ 0.015 0.025 0.5 0.605]);
         aux_hdls = plot(aux_val, 'ButtonDownFcn', @ButtonDownSimilarity);
 
         hold(similarity_hdl, 'on')
@@ -2545,12 +2548,13 @@ function ann_output = QRScorrector(varargin)
         
         %% Histograma de similaridad
 
+        aux_grid = linspace(thr_grid(1), thr_grid(end), min(60, length(thr_grid)) );
         
-        similarity_hist_hdl = axes('Position', [ 0.52 0.025 0.29 0.605]);
-        histogram(similarity_hist_hdl, aux_similarity_max(aux_similarity_max < similarity_thr),  'ButtonDownFcn', @ButtonDownSimilarity_Hist);
+        similarity_hist_hdl = axes(figPatternMatch_hdl, 'Position', [ 0.52 0.025 0.29 0.605]);
+        histogram(similarity_hist_hdl, aux_similarity_max(aux_similarity_max < similarity_thr), aux_grid,  'ButtonDownFcn', @ButtonDownSimilarity_Hist);
 
         hold(similarity_hist_hdl, 'on')
-        histogram(similarity_hist_hdl, aux_similarity_max(aux_similarity_max >= similarity_thr),  'ButtonDownFcn', @ButtonDownSimilarity_Hist);
+        histogram(similarity_hist_hdl, aux_similarity_max(aux_similarity_max >= similarity_thr), aux_grid, 'ButtonDownFcn', @ButtonDownSimilarity_Hist);
         similarity_hist_thr_hdl = plot(similarity_hist_hdl, [similarity_thr similarity_thr], get(similarity_hist_hdl, 'Ylim') , '--r', 'ButtonDownFcn', @ButtonDownSimilarity_Hist);
         hold(similarity_hist_hdl, 'off')
             
@@ -2566,7 +2570,7 @@ function ann_output = QRScorrector(varargin)
         
         %% proceed button
         
-        uicontrol( ... 
+        uicontrol( figPatternMatch_hdl, ... 
                 'style','pushbutton', ...
                 'string', 'Run !', ...
                 'ForegroundColor', [1 0 0], ...
@@ -2576,7 +2580,7 @@ function ann_output = QRScorrector(varargin)
                 'callback', @ButtonDownProceed);
 
         %% axes de pattern to match
-        pattMatch_hdl = axes('Position', [ 0.83 0.14 0.14 0.49]);
+        pattMatch_hdl = axes(figPatternMatch_hdl, 'Position', [ 0.83 0.14 0.14 0.49]);
         
         aux_seq = [ max(1, pattern_match_xlims(1) - abs(diff(pattern_match_xlims))) min(ECG_struct.header.nsamp, pattern_match_xlims(2) + abs(diff(pattern_match_xlims))) ];
         aux_seq = aux_seq(1):aux_seq(2);
@@ -2607,23 +2611,23 @@ function ann_output = QRScorrector(varargin)
 
         
         %% axes de Proximity
-        proximity_hdl = axes('Position', [ 0.63 0.7 0.35 0.25]);
+        proximity_hdl = axes(figPatternMatch_hdl, 'Position', [ 0.63 0.7 0.35 0.25]);
 
-        plot( aux_pack, 'ButtonDownFcn', @ButtonDownCallbackDefault )
+        plot(proximity_hdl, aux_pack, 'ButtonDownFcn', @ButtonDownCallbackDefault )
 
         set(proximity_hdl, 'Ytick', []);
         
         aux_Xtick = round(linspace(prex_win_start, prex_win_end, 4));
         set(proximity_hdl, 'Xtick', aux_Xtick);
-        set(proximity_hdl, 'XtickLabel', Seconds2HMS((aux_Xtick-prex_win_start)*1/ECG_struct.header.freq,1));
+        set(proximity_hdl, 'XtickLabel', Seconds2HMS((aux_Xtick-prex_win_start)*ndown_similarity/ECG_struct.header.freq,1));
         
         limits = ylim();
         
         aux_box_lim = [limits(1) + 0.1*abs(diff(limits)) limits(2) - 0.1*abs(diff(limits)) ];
-        proximity_patch_hdl = patch([prex_win_start prex_win_start repmat(dt_samp + prex_win_start,1,2) prex_win_start ], [aux_box_lim(1) aux_box_lim(2) aux_box_lim(2) aux_box_lim(1) aux_box_lim(1)], [183 241 171]/255, 'EdgeColor', [0 1 0], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'LineWidth', 0.5);
+        proximity_patch_hdl = patch(proximity_hdl, [prex_win_start prex_win_start repmat(dt_samp + prex_win_start,1,2) prex_win_start ], [aux_box_lim(1) aux_box_lim(2) aux_box_lim(2) aux_box_lim(1) aux_box_lim(1)], [183 241 171]/255, 'EdgeColor', [0 1 0], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'LineWidth', 0.5);
         uistack(proximity_patch_hdl, 'bottom');
         
-        xlim(proximity_hdl, [ 1 1.2 * (prex_win_start + dt_samp) ] )
+        xlim(proximity_hdl, [ 1 round(1.2 * (prex_win_start + dt_samp)) ] )
         
         title(proximity_hdl, 'Click and drag the green box to select the min interval between QRS');
         
@@ -2641,7 +2645,7 @@ function ann_output = QRScorrector(varargin)
 
         QRSxlims = [1 ECG_struct.header.nsamp];
 
-        RR_global_PM_hdl = axes('Position', [ 0.015 0.7 0.6 0.25]);
+        RR_global_PM_hdl = axes(figPatternMatch_hdl, 'Position', [ 0.015 0.7 0.6 0.25]);
         
         if( isempty(aux_RR) )
             hold(RR_global_PM_hdl, 'on')
@@ -2738,7 +2742,7 @@ function ann_output = QRScorrector(varargin)
         else            
             % resampling of the signal
             Nqrs = round( .09 * 250); % samples of a normal QRS sampled at 250 Hz
-            fs_target = round(Nqrs / length(aux_seq) * ECG_struct.header.freq);
+            fs_target = min( ECG_struct.header.freq, round(  Nqrs / length(aux_seq)* ECG_struct.header.freq) );
             ndown_similarity = round( ECG_struct.header.freq / fs_target);
             aux_pre = round(0.2*ECG_struct.header.freq);
             pattern2detect_orig = ECG_struct.signal(aux_seq,lead_idx);
@@ -2813,7 +2817,7 @@ function ann_output = QRScorrector(varargin)
             
             % resampling of the signal
             Nqrs = round( .09 * 250); % samples of a normal QRS sampled at 250 Hz
-            fs_target = round(Nqrs / length(aux_seq) * ECG_struct.header.freq);
+            fs_target = min( ECG_struct.header.freq, round(  Nqrs / length(aux_seq)* ECG_struct.header.freq) );
             ndown_similarity = round( ECG_struct.header.freq / fs_target);
             
             aux_w = ECGwrapper('recording_name', similarity);
@@ -3505,6 +3509,8 @@ function ann_output = QRScorrector(varargin)
     function DragMouseEnd()
 
         if fIsDragAllowed
+
+            fIsDragAllowed = false;
             
             if( axes_hdl(axes_hdl_selector_idx,2) == fig_hdl )
                 % Main figure 1 
@@ -3523,7 +3529,9 @@ function ann_output = QRScorrector(varargin)
 
                     llead_idx = length(lead_idx);
 
-                    win_sample = round(3*ECG_struct.header.freq / ndown_similarity);
+                    
+                    win_sample = round(20*ECG_struct.header.freq / ndown_similarity);
+                    win_sample_2 = round(3*ECG_struct.header.freq / ndown_similarity);
                     break_sample = round(1*ECG_struct.header.freq / ndown_similarity);
                     n_excerpts = 5;
                     aux_idx = 1:win_sample;
@@ -3567,9 +3575,11 @@ function ann_output = QRScorrector(varargin)
 
                             aux_anns = round((anns_under_edition( anns_under_edition >= ndown_similarity*aux_start &  anns_under_edition <= ndown_similarity*(aux_start+win_sample) ) - ndown_similarity*aux_start + 1) / ndown_similarity );
 
+                            aux_val1 = aux_val1(:,lead_idx);
+
                             aux_pack = [aux_pack squeeze(pack_signal(aux_val1, aux_anns, [ prex_win_start prex_win_end ], true)) ];
 
-                            aux_val1 = aux_val1(1:(win_sample_2+1),lead_idx);
+                            aux_val1 = aux_val1(1:(win_sample_2+1),:);
 
                             aux_val1 = [aux_val1 aux_w.read_signal( aux_start, aux_start + win_sample_2 ) ];
 
@@ -3579,23 +3589,82 @@ function ann_output = QRScorrector(varargin)
                         end
                     end                    
                     
+                    aux_similarity_max = aux_w.read_signal( 1, aux_w.ECG_header.nsamp );
+                    
+                    aux_w.ECGtaskHandle = 'arbitrary_function';
+                    aux_w.cacheResults = false;
+                    aux_w.ECGtaskHandle.lead_idx = 1;
+                    % generate QRS detections
+                    aux_w.ECGtaskHandle.signal_payload = false;
+                    aux_w.user_string = ['modmax_calc_for_leads_' num2str(sort(lead_idx)) ];
+                    aux_w.ECGtaskHandle.function_pointer = @arb_modmax;
+
+                    aux_payload.xlims = [start_idx_PM end_idx_PM];
+                    aux_payload.thr = median( aux_similarity_max );
+                    % for faster computation avoid time restriction in the first pass
+                    aux_payload.detection_threshold = proximity_thr_PM;
+                    % get only the first n_greater matches of the pattern
+%                     aux_payload.n_greater = round((end_idx_PM - start_idx_PM + 1 ) / round(1.0 * proximity_thr_PM * aux_w.ECG_header.freq) );
+                    aux_w.ECGtaskHandle.payload = aux_payload;
+                    aux_w.Run
+
+                    if( isempty(aux_w.Result_files) )
+                        close(figPatternMatch_hdl)
+                        update_title_efimero('Pattern match failed: ModMax fcn failed.', 10 );
+                        return
+                    end
+
+                    % asume that the whole series keep in mem.
+                    aux_max_idx = load(aux_w.Result_files{1});  
+                    aux_max_idx = aux_max_idx.result;
+                    aux_similarity_max = aux_similarity_max(aux_max_idx);
+
+                    prctile_grid = prctile( aux_similarity_max, 1:100 );
+
+                    grid_step = median(diff(prctile_grid));
+
+                    thr_grid = min(aux_similarity_max): grid_step:prctile(aux_similarity_max,95);
+
+                    hist_max_values = histcounts(aux_similarity_max, thr_grid);
+
+                    first_bin_idx = 2;
+
+                    [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 0, [], 10);
+
+                    % mass center of the distribution, probably the value where the
+                    % patterns under search are located.
+                    thr_idx_expected = floor(rowvec(thr_idx) * colvec(thr_max) *1/sum(thr_max));
+
+                    aux_seq = 1:length(thr_grid);
+
+                    min_hist_max_values = min( hist_max_values( aux_seq >= first_bin_idx & aux_seq < thr_idx_expected) );
+
+                    % in case several indexes match the boolean condition, the mean
+                    % index is the center of all those indexes. Other criteria such as
+                    % min or max can be explored
+                    thr_min_idx = round(mean(find(aux_seq >= first_bin_idx & aux_seq < thr_idx_expected & [hist_max_values 0] == min_hist_max_values)));
+
+                    similarity_thr = thr_grid(thr_min_idx );
+                    
                     % compress dynamic range of detection signal
                     aux_val(:, end) = log10( similarity_min +  aux_val(:, end) );
 
                     similarity_scale_thr = max(abs(aux_val));
+                    similarity_scale_thr(end) = log10( similarity_min + max(thr_grid));
                     aux_val = bsxfun(@times, aux_val, 1./similarity_scale_thr);
                     aux_val(:,1:llead_idx) = (aux_val(:,1:llead_idx)*0.5) - 0.5;
-
-                    similarity_thr = mean([ min(aux_val(:,end)) max(aux_val(:,end)) ]);                    
+                    
                     
                     %% similarity update
+                    
+                    figPatternMatch_hdl.CurrentAxes = similarity_hdl;
                     
                     cla(similarity_hdl);
                     
                     aux_hdls = plot(similarity_hdl, aux_val, 'ButtonDownFcn', @ButtonDownSimilarity);
-
+                    
                     hold(similarity_hdl, 'on')
-                    similarity_thr_hdl = plot(similarity_hdl, get(similarity_hdl, 'Xlim'), [similarity_thr similarity_thr], '--r', 'ButtonDownFcn', @ButtonDownSimilarity);
+                    similarity_thr_hdl = plot(similarity_hdl, get(similarity_hdl, 'Xlim'), log10( similarity_min +  [similarity_thr similarity_thr] )*1/similarity_scale_thr(end), '--r', 'ButtonDownFcn', @ButtonDownSimilarity);
                     hold(similarity_hdl, 'off')
 
                     title('Select the detection threshold to use in the similarity function')
@@ -3612,29 +3681,56 @@ function ann_output = QRScorrector(varargin)
 
                     set(similarity_hdl, 'ButtonDownFcn', @ButtonDownSimilarity);
 
+                    %% Histograma de similaridad update
+                    
+                    figPatternMatch_hdl.CurrentAxes = similarity_hist_hdl;
+                    
+                    aux_grid = linspace(thr_grid(1), thr_grid(end), min(60, length(thr_grid)) );
+
+                    cla(similarity_hist_hdl);
+                    
+                    histogram(similarity_hist_hdl, aux_similarity_max(aux_similarity_max < similarity_thr), aux_grid,  'ButtonDownFcn', @ButtonDownSimilarity_Hist);
+
+                    hold(similarity_hist_hdl, 'on')
+                    histogram(similarity_hist_hdl, aux_similarity_max(aux_similarity_max >= similarity_thr), aux_grid, 'ButtonDownFcn', @ButtonDownSimilarity_Hist);
+                    similarity_hist_thr_hdl = plot(similarity_hist_hdl, [similarity_thr similarity_thr], get(similarity_hist_hdl, 'Ylim') , '--r', 'ButtonDownFcn', @ButtonDownSimilarity_Hist);
+                    hold(similarity_hist_hdl, 'off')
+
+                    legend( {'probably NOT pattern' 'probably pattern MATCH' 'threshold' } )
+                    title('Detection threshold histogram view')
+
+                    set(similarity_hist_hdl, 'Ytick', []);
+
+                    set(similarity_hist_hdl, 'Xtick', []);
+
+                    set(similarity_hist_hdl, 'ButtonDownFcn', @ButtonDownSimilarity_Hist);
+
+                    
                     %% proximity update
                     
-                    dt_samp = round(proximity_thr_PM*ECG_struct.header.freq);
-                    prex_win_start = round(0.2*dt_samp);
-                    prex_win_end = round(1.5*dt_samp);
+                    figPatternMatch_hdl.CurrentAxes = proximity_hdl;
+                    
+                    dt_samp = round(proximity_thr_PM*ECG_struct.header.freq/ndown_similarity);
+                    prex_win_start = round(0.2*ECG_struct.header.freq/ ndown_similarity);
+                    prex_win_end = round(1.5*ECG_struct.header.freq/ ndown_similarity);
                     
                     cla(proximity_hdl);
                     
-                    plot(proximity_hdl, aux_pack );
+                    plot(proximity_hdl, aux_pack, 'ButtonDownFcn', @ButtonDownCallbackDefault )
 
                     set(proximity_hdl, 'Ytick', []);
 
                     aux_Xtick = round(linspace(prex_win_start, prex_win_end, 4));
                     set(proximity_hdl, 'Xtick', aux_Xtick);
-                    set(proximity_hdl, 'XtickLabel', Seconds2HMS((aux_Xtick-prex_win_start)*1/ECG_struct.header.freq,1));
+                    set(proximity_hdl, 'XtickLabel', Seconds2HMS((aux_Xtick-prex_win_start)*ndown_similarity/ECG_struct.header.freq,1));
 
-                    axes(proximity_hdl);
-                    
                     limits = ylim();
-                    
+
                     aux_box_lim = [limits(1) + 0.1*abs(diff(limits)) limits(2) - 0.1*abs(diff(limits)) ];
-                    proximity_patch_hdl = patch([prex_win_start prex_win_start repmat(dt_samp + prex_win_start,1,2) prex_win_start ], [aux_box_lim(1) aux_box_lim(2) aux_box_lim(2) aux_box_lim(1) aux_box_lim(1)], [183 241 171]/255, 'EdgeColor', [0 1 0], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'LineWidth', 0.5);
+                    proximity_patch_hdl = patch(proximity_hdl, [prex_win_start prex_win_start repmat(dt_samp + prex_win_start,1,2) prex_win_start ], [aux_box_lim(1) aux_box_lim(2) aux_box_lim(2) aux_box_lim(1) aux_box_lim(1)], [183 241 171]/255, 'EdgeColor', [0 1 0], 'ButtonDownFcn', @ButtonDownCallbackDefault, 'LineWidth', 0.5);
                     uistack(proximity_patch_hdl, 'bottom');
+
+                    xlim(proximity_hdl, [ 1 round(1.2 * (prex_win_start + dt_samp)) ] )
 
                     title(proximity_hdl, 'Click and drag the green box to select the min interval between QRS');
 
@@ -3646,6 +3742,7 @@ function ann_output = QRScorrector(varargin)
 
                     set(proximity_hdl, 'ButtonDownFcn', @ButtonDownCallbackDefault);
 
+
                     
                 end
 
@@ -3654,8 +3751,6 @@ function ann_output = QRScorrector(varargin)
             prev_val_drag = nan;
             
             set(axes_hdl(axes_hdl_selector_idx,2), 'WindowButtonMotionFcn', PrevStateWindowButtonMotionFcn);
-            
-            fIsDragAllowed = false;
             
             axes_hdl_selector_idx = nan;
             

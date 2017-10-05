@@ -14,7 +14,23 @@
 % 
 function payload = arb_modmax( ECG_matrix, ECG_header, ECG_start_offset, progress_handle, payload_in)
 
-aux_modmax = modmax(ECG_matrix, payload_in.xlims, payload_in.thr, 1, round(payload_in.detection_threshold*ECG_header.freq) );
+if( ~isfield(payload_in, 'n_greater') )
+    payload_in.n_greater = []; % seconds
+end
+
+if( ~isfield(payload_in, 'detection_threshold') )
+    payload_in.detection_threshold = []; % seconds
+end
+
+if( ~isfield(payload_in, 'thr') )
+    payload_in.thr = []; % seconds
+end
+
+if( ~isfield(payload_in, 'xlims') )
+    payload_in.xlims = []; % seconds
+end
+
+aux_modmax = modmax(ECG_matrix, payload_in.xlims, payload_in.thr, 1, round(payload_in.detection_threshold*ECG_header.freq), payload_in.n_greater, progress_handle );
 
 payload = colvec(aux_modmax + ECG_start_offset - 1);
 
