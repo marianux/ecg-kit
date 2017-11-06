@@ -1792,6 +1792,10 @@ classdef ECGwrapper < handle
                 % ECG to be read
                 [obj.rec_path, obj.rec_filename] = fileparts(obj.recording_name);
                 
+                if( isempty(obj.rec_path) )
+                    obj.rec_path = ['.' filesep];
+                end
+                
                 aux_filename = fullfile(obj.rec_path, obj.rec_filename);
 
                 if( exist(obj.recording_name, 'file') )

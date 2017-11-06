@@ -2552,7 +2552,17 @@ end
                 report_path = [pwd filesep];
             else
                 report_path = fileparts(ECG_w.recording_name);
-                report_path = [report_path filesep];
+                if( isempty(report_path) )
+                    report_path = ECG_w.output_path;
+                    if( isempty(report_path) )
+                        report_path = ['.' filesep];
+                    else
+                        report_path = [report_path filesep];
+                    end                    
+                else
+                    report_path = [report_path filesep];
+                end
+                
             end
 
             if( isfield(heasig, 'recname') )

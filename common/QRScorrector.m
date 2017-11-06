@@ -334,7 +334,7 @@ function ann_output = QRScorrector(varargin)
         error( 'QRScorrector:ArgCheck:InvalidECGarg', 'Please provide an ECG recording as described in the documentation, help(''QRScorrector'') maybe could help you.\n' );
     end
 
-    end_idx = start_idx + round((win_size * 60)*ECG_struct.header.freq);
+    end_idx = min(ECG_struct.header.nsamp, start_idx + round((win_size * 60)*ECG_struct.header.freq));
     end_idx_PM = end_idx;
     
     if( isempty(tmp_path) )
@@ -439,6 +439,8 @@ function ann_output = QRScorrector(varargin)
         size_y_RR_global = 0.13;
     else
         size_y_RR_global = 0;
+        win_size = ceil(ECG_struct.header.nsamp / 60 / ECG_struct.header.freq);
+        win_size_PM = win_size;
     end
     
     annotation_list_control = [];
@@ -776,7 +778,21 @@ function ann_output = QRScorrector(varargin)
         RRserie(1) = {aux_RR};
         RRserie_filt(1) = {aux_RR_filt};
         
+        if( ~isempty(selected_hb_idx) )
+            aux_val = anns_under_edition(anns_under_edition_idx(selected_hb_idx));
+        end
+%         aux_val1 = anns_under_edition(anns_under_edition_idx(hb_idx));
+        
         anns_under_edition_idx = RR_idx{1};
+        
+        if( ~isempty(selected_hb_idx) )
+            [~, selected_hb_idx] = intersect(anns_under_edition(anns_under_edition_idx), aux_val);
+        end
+%         hb_idx = find( aux_val1 == anns_under_edition(anns_under_edition_idx) );
+%         
+%         if( isempty(hb_idx) )
+%             hb_idx = 1;
+%         end
         
         if( isempty(aux_RR) || all(isnan(aux_RR)) || isempty(anns_under_edition_idx) )
             limits = [0.6 0.7];
@@ -1339,7 +1355,6 @@ function ann_output = QRScorrector(varargin)
         % RR global part
         elseif( fIsDragAllowed && axes_hdl_selector_idx ==  RRserie_global_axes_k )
             
-            
             if( bChangeWin )
 
                 [drag_x, drag_y] = GetCursorCoordOnWindow();
@@ -1362,6 +1377,15 @@ function ann_output = QRScorrector(varargin)
 
             end_idx = max((min_win_size * 60 * ECG_struct.header.freq), min( ECG_struct.header.nsamp, start_idx + round((win_size * 60)*ECG_struct.header.freq)));
 
+%             update_title_efimero( sprintf('%s', Seconds2HMS(start_idx / ECG_struct.header.freq) ), 5);
+            
+
+%             aux_val = round(point(1));
+%             if( aux_val < start_idx || aux_val > end_idx )
+%                 update_title_efimero('Annotation out of red box bounds', 5 );
+%                 return
+%             end
+                
             set(RRserie_zoombars_hdl, 'Xdata', [start_idx start_idx end_idx end_idx start_idx ]);
 
             aux_idx = get(RRserie_axes_hdl, 'XTick' );
@@ -1414,7 +1438,7 @@ function ann_output = QRScorrector(varargin)
 
 %                 set(RRserie_zoombars_hdl, 'Xdata', [start_idx start_idx end_idx end_idx start_idx ]);
 
-            update_title_efimero( sprintf('%s', Seconds2HMS(proximity_thr_PM, 1)), 5 );
+%             update_title_efimero( sprintf('%s', Seconds2HMS(proximity_thr_PM, 1)), 5 );
 
             dt_samp = round(proximity_thr_PM*ECG_struct.header.freq/ndown_similarity);
 
@@ -1428,7 +1452,7 @@ function ann_output = QRScorrector(varargin)
             aux_Xtick = round(linspace(aux_val(1), dt_samp + aux_val(1), 4));
             
             set(proximity_hdl, 'Xtick', aux_Xtick);
-            set(proximity_hdl, 'XtickLabel', Seconds2HMS((aux_Xtick-aux_val(1))*1/ECG_struct.header.freq,1));
+            set(proximity_hdl, 'XtickLabel', Seconds2HMS((aux_Xtick-aux_val(1))*ndown_similarity/ECG_struct.header.freq,1));
             
             
         elseif( fIsDragAllowed && axes_hdl_selector_idx ==  pattMatch_hdl_k )
@@ -1525,7 +1549,7 @@ function ann_output = QRScorrector(varargin)
                 
                 hold(Scatter_axes_hdl, 'on')
                 RRnext = [RRserie(2:end); RRserie(end)];
-                RRscatter_selection_hdl = plot(Scatter_axes_hdl, aux_RRcurr(anns_under_edition_idx(selected_hb_idx)), aux_RRnext(anns_under_edition_idx(selected_hb_idx)), 'xg' );
+                RRscatter_selection_hdl = plot(Scatter_axes_hdl, aux_RRcurr((selected_hb_idx)), aux_RRnext((selected_hb_idx)), 'xg' );
                 hold(Scatter_axes_hdl, 'off')
 
                 hold(RRserie_axes_hdl, 'on')
@@ -2141,6 +2165,8 @@ function ann_output = QRScorrector(varargin)
 
     function WindowButtonUpCallback2D(obj,event_obj)
 
+%         update_title_efimero( 'BU', 5);
+        
         DragMouseEnd()
 
             
@@ -2344,6 +2370,11 @@ function ann_output = QRScorrector(varargin)
             Nqrs = round( .09 * 250); % samples of a normal QRS sampled at 250 Hz
             fs_target = min( ECG_struct.header.freq, round(  Nqrs / length(aux_seq)* ECG_struct.header.freq) );
             ndown_similarity = round( ECG_struct.header.freq / fs_target);
+            aux_factors = cumprod(sort(factor(ECG_struct.header.freq)));
+            ndown_similarity = aux_factors( find(aux_factors <= ndown_similarity, 1, 'last') );
+            if( isempty(ndown_similarity) )
+                ndown_similarity = 1;
+            end
         end
         
         if( bSeries )
@@ -2617,7 +2648,7 @@ function ann_output = QRScorrector(varargin)
 
         set(proximity_hdl, 'Ytick', []);
         
-        aux_Xtick = round(linspace(prex_win_start, prex_win_end, 4));
+        aux_Xtick = round(linspace(prex_win_start, dt_samp + prex_win_start, 4));
         set(proximity_hdl, 'Xtick', aux_Xtick);
         set(proximity_hdl, 'XtickLabel', Seconds2HMS((aux_Xtick-prex_win_start)*ndown_similarity/ECG_struct.header.freq,1));
         
@@ -2744,6 +2775,11 @@ function ann_output = QRScorrector(varargin)
             Nqrs = round( .09 * 250); % samples of a normal QRS sampled at 250 Hz
             fs_target = min( ECG_struct.header.freq, round(  Nqrs / length(aux_seq)* ECG_struct.header.freq) );
             ndown_similarity = round( ECG_struct.header.freq / fs_target);
+            aux_factors = cumprod(sort(factor(ECG_struct.header.freq)));
+            ndown_similarity = aux_factors( find(aux_factors <= ndown_similarity, 1, 'last') );
+            if( isempty(ndown_similarity) )
+                ndown_similarity = 1;
+            end
             aux_pre = round(0.2*ECG_struct.header.freq);
             pattern2detect_orig = ECG_struct.signal(aux_seq,lead_idx);
             aux_seq = (pattern_match_xlims(1) - aux_pre ):(pattern_match_xlims(2) + aux_pre);
@@ -2819,7 +2855,11 @@ function ann_output = QRScorrector(varargin)
             Nqrs = round( .09 * 250); % samples of a normal QRS sampled at 250 Hz
             fs_target = min( ECG_struct.header.freq, round(  Nqrs / length(aux_seq)* ECG_struct.header.freq) );
             ndown_similarity = round( ECG_struct.header.freq / fs_target);
-            
+            aux_factors = cumprod(sort(factor(ECG_struct.header.freq)));
+            ndown_similarity = aux_factors( find(aux_factors <= ndown_similarity, 1, 'last') );
+            if( isempty(ndown_similarity) )
+                ndown_similarity = 1;
+            end
             aux_w = ECGwrapper('recording_name', similarity);
             
             aux_w.ECGtaskHandle = 'arbitrary_function';
@@ -3129,33 +3169,38 @@ function ann_output = QRScorrector(varargin)
 
         ann_idx = get(annotation_list_control, 'Value');
         
-        if( length(ann_idx) > 0 )
+        lann_idx = length(ann_idx);
         
-            answer = inputdlg({'Exported filename', 'Annotations names (''ann_1'', ''ann_2'' ...)'}, ...
-                               'Export annotations', ... 
-                               [1 60;               1 60 ], ... 
-                               { ECG_struct.header.recname; rowvec(char(cellfun(@(a)(sprintf('''%s'' ',a)), AnnNames(ann_idx,1), 'UniformOutput',false))') }); 
-
-            if( isempty(answer) || any(cellfun(@(a)(isempty(a)), answer)) )
-                update_title_efimero('Exportation canceled ...', 5 );
-                return
-            end
-                           
-            exported_filename = [ recording_path filesep answer{1} ];
+        if( lann_idx > 0 )
+        
+%             answer = inputdlg({'Exported filename', 'Annotations names (''ann_1'', ''ann_2'' ...)'}, ...
+%                                'Export annotations', ... 
+%                                [1 60;               1 60 ], ... 
+%                                { ECG_struct.header.recname; rowvec(char(cellfun(@(a)(sprintf('''%s'' ',a)), AnnNames(ann_idx,1), 'UniformOutput',false))') }); 
+% 
+%             if( isempty(answer) || any(cellfun(@(a)(isempty(a)), answer)) )
+%                 update_title_efimero('Exportation canceled ...', 5 );
+%                 return
+%             end
+%                            
+%             exported_filename = [ recording_path filesep answer{1} ];
+%             [~, exported_AnnNames] = regexp( answer{2}, '\''(\S+)\'' ', 'match', 'tokens');
+%             exported_AnnNames = cellfun(@(a)(a{1}), exported_AnnNames, 'UniformOutput',false);
+            
+            exported_filename = [ recording_path filesep ECG_struct.header.recname '_reviewed_annotations' ];
             
             while( exist( [exported_filename '.mat'], 'file') )
-                exported_filename = [  exported_filename '_0' ];
+                exported_filename = [  exported_filename '_' datestr(datetime('now'), 'YYmmDDHHMMSS') ];
             end
 
-            [~, exported_AnnNames] = regexp( answer{2}, '\''(\S+)\'' ', 'match', 'tokens');
-            exported_AnnNames = cellfun(@(a)(a{1}), exported_AnnNames, 'UniformOutput',false);
+            exported_AnnNames = arrayfun(@(a)( [ 'manual_' num2str(a) ] ), colvec(1:lann_idx), 'UniformOutput',false);
             
             exported_struct.series_quality.AnnNames = {};
             exported_struct.series_quality.ratios = [];
             exported_struct.series_quality.estimated_labs = {};
             
             jj = 1;
-            for ii = 1:length(ann_idx)
+            for ii = 1:lann_idx
 
                 exported_struct.(exported_AnnNames{jj}).time = unique( colvec( ECG_struct.(AnnNames{ann_idx(ii),1}).(AnnNames{ann_idx(ii),2}) ) );
 
@@ -3473,10 +3518,13 @@ function ann_output = QRScorrector(varargin)
                 
             curr_fig = gcf;
             axes_hdl_selector_idx = nan;
+
+            update_title_efimero( sprintf( ' %d - %d', drag_start_x, drag_start_y), 5);
             
             for ii = 1:size(axes_hdl,1)
                 
                 if( curr_fig == axes_hdl(ii,2) && ishandle(axes_hdl(ii,1)) && IsClicked(axes_hdl(ii,1), [drag_start_x, drag_start_y ]) )
+                    
                     axes_hdl_selector_idx = ii;
                     break
                 end
@@ -3488,7 +3536,7 @@ function ann_output = QRScorrector(varargin)
             end
 
             point = get(axes_hdl(axes_hdl_selector_idx, 1),'CurrentPoint');
-            
+
             x_timeScroll_units = point(1,1);
             
             if (strcmp(get(axes_hdl(axes_hdl_selector_idx,2),'SelectionType'),'alt'))
@@ -3761,6 +3809,8 @@ function ann_output = QRScorrector(varargin)
 
     function ButtonDownCallbackDefault(obj,event_obj) 
 
+%         update_title_efimero( 'BD', 5);
+        
         DragMouseBegin();
         
         ProcessDrag();        
@@ -3920,8 +3970,8 @@ function ann_output = QRScorrector(varargin)
                 if( bSeries )
                     RRserie = aux_anns2;
                 else
-                    [RRserie, RRserie_filt ]= cellfun( @(this_anns)( RR_calculation(this_anns, ECG_struct.header.freq) * 1/ECG_struct.header.freq ), all_annotations_selected, 'UniformOutput', false);
-                    RRserie_filt = RRserie_filt * ECG_struct.header.freq;
+                    [RRserie, RRserie_filt ]= cellfun( @(this_anns)( RR_calculation(this_anns, ECG_struct.header.freq) ), all_annotations_selected, 'UniformOutput', false);
+                    RRserie = cellfun( @(a)( a * (1/ECG_struct.header.freq) ), RRserie , 'UniformOutput', false);
                 end
                 
                 bSeriesChange = true;

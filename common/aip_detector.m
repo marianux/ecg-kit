@@ -80,10 +80,15 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
     if( isnan(payload_in.powerline_interference) )
         f_armonic = 1:3;
-        f50_idx = round( f_armonic*50/ECG_header.freq * ECG_header.nsamp ) + 1;
+        f_armonic = f_armonic*50;
+        f_armonic = f_armonic( f_armonic < (ECG_header.freq / 2) );
+        f50_idx = round( f_armonic * ECG_header.nsamp / ECG_header.freq ) + 1;
         pwl50_e = abs(goertzel( ECG_matrix(:,payload_in.sig_idx), f50_idx ));
         
-        f60_idx = round( f_armonic*60/ECG_header.freq * ECG_header.nsamp) + 1;
+        f_armonic = 1:3;
+        f_armonic = f_armonic*60;
+        f_armonic = f_armonic( f_armonic < (ECG_header.freq / 2) );
+        f60_idx = round( f_armonic * ECG_header.nsamp /ECG_header.freq ) + 1;
         pwl60_e = abs(goertzel( ECG_matrix(:,payload_in.sig_idx), f60_idx ));
         
         if( sum(sum(pwl50_e)) > sum(sum(pwl60_e)) )

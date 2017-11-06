@@ -1,7 +1,9 @@
 function [multilead_positions single_lead_positions rhythm_parameters] = wavedet_interface(ECG_signal, ECG_header, beat_information, lead_to_delineate, wavedet_config, start_end, start_offset, progress_bar_hdl)
 
-    if( nargin < 3 )
+    if( nargin < 3 || ~(isstruct(beat_information) && isfield(beat_information, 'time')) )
         beat_information = [];
+    else
+        beat_information = beat_information.time;
     end
 
     if( nargin < 4 || isempty(lead_to_delineate))
