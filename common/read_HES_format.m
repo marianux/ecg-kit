@@ -55,7 +55,7 @@ if( fidECG > 0 )
     num_of_leads_simult = fread(fidECG, 1, 'uint8');
     
     if( num_of_leads ~= num_of_leads_simult)
-        error('Sampleo no simultáneo, revisar.')
+        error('Sampleo no simultï¿½neo, revisar.')
     end
     
     heasig.nsig = num_of_leads_simult;
@@ -107,7 +107,7 @@ if( fidECG > 0 )
     
     [~, heasig.recname] = fileparts(filename);
     heasig.btime = '00:00:00';
-    heasig.bdate = '01/01/2001';
+    heasig.bdate = '01/01/2000';
     
     if( nargout > 2 )
         ann = read_HES_ann([ filename(1:end-4) '.lst' ]);

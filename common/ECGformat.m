@@ -55,70 +55,70 @@ function recording_format = ECGformat(recording_filename)
     % first guess based on typical file extensions
     if( strcmpi(rec_fileExt, '.dat' ) )
         % MIT first
-        fg_idx = find(strcmp(cKnownFormats, 'MIT'));
+        fg_idx = find(strcmpi(cKnownFormats, 'MIT'));
         aux_idx = [fg_idx aux_idx(aux_idx~=fg_idx)];
     elseif( strcmpi(rec_fileExt, '.ecg' ) )
         % ISHNE and AHA 
-        fg_idx = find(strcmp(cKnownFormats, 'ISHNE'));
+        fg_idx = find(strcmpi(cKnownFormats, 'ISHNE'));
         aux_idx = [fg_idx aux_idx(aux_idx~=fg_idx)];
-        fg_idx = find(strcmp(cKnownFormats, 'AHA'));
+        fg_idx = find(strcmpi(cKnownFormats, 'AHA'));
         aux_idx = [fg_idx aux_idx(aux_idx~=fg_idx)];
     elseif( strcmpi(rec_fileExt, '.mat' ) )
         % Matlab 
-        fg_idx = find(strcmp(cKnownFormats, 'MAT'));
+        fg_idx = find(strcmpi(cKnownFormats, 'MAT'));
         aux_idx = [fg_idx aux_idx(aux_idx~=fg_idx)];
     elseif( strcmpi(rec_fileExt, '.xml' ) )
         % Matlab 
-        fg_idx = find(strcmp(cKnownFormats, 'HL7a'));
+        fg_idx = find(strcmpi(cKnownFormats, 'HL7a'));
         aux_idx = [fg_idx aux_idx(aux_idx~=fg_idx)];
     elseif( strcmpi(rec_fileExt, '.hes' ) )
         % HES 
-        fg_idx = find(strcmp(cKnownFormats, 'HES'));
+        fg_idx = find(strcmpi(cKnownFormats, 'HES'));
         aux_idx = [fg_idx aux_idx(aux_idx~=fg_idx)];
     end
     
     for ii = aux_idx
 
-        if( strcmp(cKnownFormats{ii}, 'MIT') )
+        if( strcmpi(cKnownFormats{ii}, 'MIT') )
             
             header_fn = [rec_filepath filesep rec_filename '.hea'];
             if( exist( header_fn, 'file' ) )
                 aux_header = readheader(header_fn);
-                if( ~isempty(aux_header) && strcmp(aux_header.recname, rec_filename) )
+                if( ~isempty(aux_header) && strcmpi(aux_header.recname, rec_filename) )
                     recording_format = cKnownFormats{ii};
                     return
                 end
             end
 
-        elseif( strcmp(cKnownFormats{ii}, 'ISHNE') )
+        elseif( strcmpi(cKnownFormats{ii}, 'ISHNE') )
             
             if(isISHNEformat(recording_filename))
                 recording_format = cKnownFormats{ii};
                 return
             end
 
-        elseif( strcmp(cKnownFormats{ii}, 'HL7a') )
+        elseif( strcmpi(cKnownFormats{ii}, 'HL7a') )
             
             if(isHL7aformat(recording_filename))
                 recording_format = cKnownFormats{ii};
                 return
             end
 
-        elseif( strcmp(cKnownFormats{ii}, 'AHA') )
+        elseif( strcmpi(cKnownFormats{ii}, 'AHA') )
             
             if(isAHAformat(recording_filename))
                 recording_format = cKnownFormats{ii};
                 return
             end
 
-        elseif( strcmp(cKnownFormats{ii}, 'HES') )
+        elseif( strcmpi(cKnownFormats{ii}, 'HES') )
 
             if(isHESformat(recording_filename))
                 recording_format = cKnownFormats{ii};
                 return
             end
             
-        elseif( strcmp(cKnownFormats{ii}, 'MAT') )
+        elseif( strcmpi(cKnownFormats{ii}, 'MAT') )
             
             try
                 

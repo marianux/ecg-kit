@@ -85,13 +85,13 @@ if( nargin < 3 || ~isnumeric(ECG_end_idx))
     ECG_end_idx = [];
 end
 
-if( strcmp(recording_format, 'ISHNE') )
+if( strcmpi(recording_format, 'ISHNE') )
     if( nargout > 1 )
         [ECG heasig ann end_sample] = read_ishne_format(recording_name, ECG_start_idx, ECG_end_idx );
     else
         ECG = read_ishne_format(recording_name, ECG_start_idx, ECG_end_idx );
     end        
-elseif( strcmp(recording_format, 'MAT') )
+elseif( strcmpi(recording_format, 'MAT') )
     
     aux_load = load(recording_name);
 
@@ -147,11 +147,11 @@ elseif( strcmp(recording_format, 'MAT') )
     
     clear aux_load
     
-elseif( strcmp(recording_format, 'Mortara') )
+elseif( strcmpi(recording_format, 'Mortara') )
     
     [ECG, heasig, end_sample] = read_Mortara_format(recording_name, ECG_start_idx, ECG_end_idx );
     
-elseif( strcmp(recording_format, 'HL7a') )
+elseif( strcmpi(recording_format, 'HL7a') )
     
     if( nargout == 1 )
         ECG = read_hl7a_format(recording_name, ECG_start_idx, ECG_end_idx );
@@ -163,19 +163,19 @@ elseif( strcmp(recording_format, 'HL7a') )
         [ECG, heasig] = read_hl7a_format(recording_name, ECG_start_idx, ECG_end_idx );
     end
     
-elseif( strcmp(recording_format, 'AHA') )
+elseif( strcmpi(recording_format, 'AHA') )
     if( nargout > 1 )
         [ECG, heasig, ann, end_sample] = read_AHA_format(recording_name, ECG_start_idx, ECG_end_idx );
     else
         ECG = read_AHA_format(recording_name, ECG_start_idx, ECG_end_idx );
     end
-elseif( strcmp(recording_format, 'HES') )
+elseif( strcmpi(recording_format, 'HES') )
     if( nargout > 1 )
         [ECG, heasig, ann, end_sample] = read_HES_format(recording_name, ECG_start_idx, ECG_end_idx );
     else
         ECG = read_HES_format(recording_name, ECG_start_idx, ECG_end_idx );
     end
-elseif( strcmp(recording_format, 'MIT') )
+elseif( strcmpi(recording_format, 'MIT') )
     %% MIT various data formats
 
     if( nargout > 2 )
@@ -251,7 +251,21 @@ elseif( strcmp(recording_format, 'MIT') )
     
 end
 
+if( ~isfield(heasig, 'recname') ) 
+    [ ~, rec_name ] = fileparts(recording_name);
+    heasig.recname = rec_name;
+end
+
+if( ~isfield(heasig, 'bdate') ) 
+    heasig.bdate = '01/01/2000';
+end
+
+if( ~isfield(heasig, 'btime') )
+    heasig.btime = '00:00:00';
+end
+
 heasig.ECG_format = recording_format;
+
 
 function ECG = read_MIT_ecg(recording_name, ECG_start_idx, ECG_end_idx, nsig2read, nsig_present, fmt, heasig)
     

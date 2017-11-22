@@ -81,7 +81,7 @@ classdef ECGwrapper < handle
         % all ECG formats that ecg-kit can handle
         cKnownFormats = {'MIT' 'ISHNE', 'AHA', 'HES', 'MAT', 'Mortara', 'auto'};
         % The fields required in the ECGheader property
-        cHeaderFieldNamesRequired = {'freq' 'nsamp' 'nsig' 'gain' 'adczero' };
+        cHeaderFieldNamesRequired = {'freq' 'nsamp' 'nsig' 'gain' 'adczero'};
         % Possible Partitions modes 
         cPartitionModes = {'ECG_contiguous' 'ECG_overlapped' 'QRS'};
         % The fields required in the ECGannotations property
@@ -90,7 +90,7 @@ classdef ECGwrapper < handle
         cObjMethodsRequired = {'Process' 'Start' 'Concatenate'};
         % The properties required for an ECGtask object
         cObjPropsRequired = {'progress_handle' 'name' 'tmp_path'};
-
+        
         % maxQRSxIter: Maximum amount of heartbeats in ECG recordings of 2 leads
         maxQRSxIter = 5e3;
         % Minimum amount of heartbeats to be processed by a PID
@@ -769,7 +769,7 @@ classdef ECGwrapper < handle
 
                                 tic_id = tic;
                                 
-                                if( ~strcmp(fileparts(payload_files{jj}), fileparts(obj.output_path)) )
+                                if( ~strcmpi(fileparts(payload_files{jj}), fileparts(obj.output_path)) )
                                     movefile( payload_files{jj}, obj.output_path, 'f' );
                                 end
 
@@ -1790,7 +1790,7 @@ classdef ECGwrapper < handle
             else
                 
                 % ECG to be read
-                [obj.rec_path, obj.rec_filename] = fileparts(obj.recording_name);
+                [obj.rec_path, obj.rec_filename, caca] = fileparts(obj.recording_name);
                 
                 if( isempty(obj.rec_path) )
                     obj.rec_path = ['.' filesep];
@@ -1825,7 +1825,7 @@ classdef ECGwrapper < handle
                 end
 
                 
-                if( strcmp(obj.recording_format, 'auto') )
+                if( strcmpi(obj.recording_format, 'auto') )
                     %Try guessing the ECG format
                     aux_fmt = ECGformat(obj.recording_name);
 
@@ -1838,7 +1838,7 @@ classdef ECGwrapper < handle
 
                 end
 
-                if( strcmp(obj.recording_format, 'MIT') )
+                if( strcmpi(obj.recording_format, 'MIT') )
                     strAnnExtension = {'ari' 'atr' 'ecg'};
                     annFileName = {};
                     bAnnotationFound = false;
@@ -1860,46 +1860,55 @@ classdef ECGwrapper < handle
                         end
                     end
 
-                    obj.ECG_header = readheader([aux_filename '.hea']);
+                    header_aux = readheader([aux_filename '.hea']);
 
-                elseif( strcmp(obj.recording_format, 'ISHNE') )
+                elseif( strcmpi(obj.recording_format, 'ISHNE') )
                     annFileName = [aux_filename '.ann'];
                     if( exist(annFileName, 'file') )
                         ann_aux = read_ishne_ann(annFileName);
                     else
                         ann_aux = [];
                     end        
-                    obj.ECG_header = read_ishne_header(obj.recording_name);
+                    header_aux = read_ishne_header(obj.recording_name);
 
-                elseif( strcmp(obj.recording_format, 'HL7a') )
+                elseif( strcmpi(obj.recording_format, 'HL7a') )
 
                     [~, obj.ECG_header, ann_aux, single_lead_positions ] = read_ECG(obj.recording_name, [], [], obj.recording_format);
                     
-                elseif( strcmp(obj.recording_format, 'Mortara') )
+                elseif( strcmpi(obj.recording_format, 'Mortara') )
                     ann_aux = [];
-                    obj.ECG_header = read_Mortara_header(obj.recording_name);
+                    header_aux = read_Mortara_header(obj.recording_name);
                     [obj.rec_path, obj.rec_filename] = fileparts(obj.recording_name);
                     obj.rec_path = [obj.rec_path filesep];
                     
 
-                elseif( strcmp(obj.recording_format, 'HES') )
+                elseif( strcmpi(obj.recording_format, 'HES') )
                     ann_aux = read_HES_ann([aux_filename '.lst']);
                     header_aux = read_HES_header(obj.recording_name);
                     ann_aux.time = round(ann_aux.time * header_aux.freq);
-                    obj.ECG_header = header_aux;
 
-                elseif( strcmp(obj.recording_format, 'AHA') )
+                elseif( strcmpi(obj.recording_format, 'AHA') )
                     ann_aux = read_AHA_ann(obj.recording_name);
-                    obj.ECG_header = read_AHA_header(obj.recording_name);
+                    header_aux = read_AHA_header(obj.recording_name);
 
-                elseif( strcmp(obj.recording_format, 'MAT') )
+                elseif( strcmpi(obj.recording_format, 'MAT') )
 
-                    [~, obj.ECG_header, ann_aux, single_lead_positions ] = read_ECG(obj.recording_name, [], [], obj.recording_format);
+                    [~, header_aux, ann_aux, single_lead_positions ] = read_ECG(obj.recording_name, [], [], obj.recording_format);
                     
                 end
 
             end
 
+            missing_fnames = setdiff(obj.cHeaderFieldNamesRequired, fieldnames(header_aux) );
+
+            if( ~isempty(missing_fnames) )
+                str_aux = disp_option_enumeration( '\nMissing fields in the header struct:', missing_fnames);
+                str_aux = sprintf('%s\nCheck the %s for details.\n', str_aux, '<a href = "matlab: web(''http://ecg-kit.readthedocs.io/en/master/header_format.html#id1'', ''-browser'' )">ecg-kit header documentation</a>');
+                error( 'ECGwrapper:ArgCheck:InvalidHeader', str_aux);
+            end
+            
+            obj.ECG_header = header_aux;
+            
             obj.bECG_rec_changed = false;
             
             obj.ECG_delineation = single_lead_positions;
@@ -2033,7 +2042,7 @@ classdef ECGwrapper < handle
 
                 this_header = ECGwA.ECG_header;
                 
-                aux_fnames = setdiff(fieldnames(this_header), {'recname' 'nsig' 'nsamp' 'bdate' 'btime' 'freq'} );
+                aux_fnames = setdiff(fieldnames(this_header), obj.cHeaderFieldNamesRequired );
                 
                 for fname = rowvec(aux_fnames)
                     fname = fname{1};
