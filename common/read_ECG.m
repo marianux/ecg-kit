@@ -264,7 +264,7 @@ if( ~isfield(heasig, 'btime') )
     heasig.btime = '00:00:00';
 end
 
-heasig.ECG_format = recording_format;
+% heasig.ECG_format = recording_format;
 
 
 function ECG = read_MIT_ecg(recording_name, ECG_start_idx, ECG_end_idx, nsig2read, nsig_present, fmt, heasig)
