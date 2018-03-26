@@ -4,9 +4,9 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
     payload = [];
     
-    payload.series_quality.AnnNames = {};
-    payload.series_quality.ratios = [];
-    payload.series_quality.estimated_labs = {};
+    series_quality.AnnNames = {};
+    series_quality.ratios = [];
+    series_quality.estimated_labs = {};
 
     %% config parsing
     
@@ -268,10 +268,10 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
         str_aux = [ 'aip_guess' '_' lead_names{this_sig_idx} ];
         payload.(str_aux).time = first_detection_idx + ECG_start_offset - 1;
-        payload.series_quality.AnnNames = [ payload.series_quality.AnnNames ; {str_aux} {'time'} ];
+        series_quality.AnnNames = [ series_quality.AnnNames ; {str_aux} {'time'} ];
         RRserie_mean_sq_error = mean((RRserie - RRserie_filt).^2);
-        payload.series_quality.ratios = [payload.series_quality.ratios; RRserie_mean_sq_error];
-        payload.series_quality.estimated_labs = [ payload.series_quality.estimated_labs; {[]} ];
+        series_quality.ratios = [series_quality.ratios; RRserie_mean_sq_error];
+        series_quality.estimated_labs = [ series_quality.estimated_labs; {[]} ];
 
 
         for ii = 1:size(stable_rhythm_regions,1)
@@ -332,9 +332,9 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
             % cargo la estructura de detecciones
             str_aux = [ 'aip_patt_' num2str(ii) '_' lead_names{this_sig_idx} ];
             payload.(str_aux).time = this_idx + ECG_start_offset - 1;
-            payload.series_quality.AnnNames = [ payload.series_quality.AnnNames ; {str_aux} {'time'} ];
-            payload.series_quality.ratios = [payload.series_quality.ratios; RRserie_mean_sq_error];
-            payload.series_quality.estimated_labs = [ payload.series_quality.estimated_labs; {[]} ];
+            series_quality.AnnNames = [ series_quality.AnnNames ; {str_aux} {'time'} ];
+            series_quality.ratios = [series_quality.ratios; RRserie_mean_sq_error];
+            series_quality.estimated_labs = [ series_quality.estimated_labs; {[]} ];
 
         end
 
@@ -351,8 +351,11 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
             
             payload = CalculatePerformanceECGtaskQRSdet(payload, payload_in.ECG_annotations, ECG_header, ECG_start_offset);
         end
+        
+        series_quality.ratios = 1-(series_quality.ratios * 1./max(series_quality.ratios));
 
         progress_handle.end_loop();    
 
     end
-    
+
+    payload.series_quality = series_quality;
