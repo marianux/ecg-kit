@@ -171,6 +171,16 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
         prctile_grid = prctile( max_values, 1:100 );
 
         grid_step = median(diff(prctile_grid));
+        
+        %%%%%%%
+        % En epoca de debug, agregado por Augusto Santini @ 20/3/2018
+        if grid_step == 0
+            cprintf('Red', '\nRecording %s, lead %s, low variability detected, possible lead desconnection or synthetic pattern\n\n', ECG_header.recname, lead_names{this_sig_idx}, payload_in.stable_RR_time_win);                    
+            continue
+            
+            %grid_step = (max(max_values) - actual_thr) / 100;
+        end
+        %%%%%%%
 
         thr_grid = actual_thr: grid_step:max(max_values);
 
@@ -213,8 +223,8 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
     % figure(3); plot(first_detection_idx, [RRserie RRserie_filt] ); xlims = xlim(); ylims = ylim(); ylims = ylims + [0.1 -0.1] * diff(ylims); aux_sc = 0.25*diff(ylims)/(max(RR_scatter)-min(RR_scatter));aux_off = ylims(1) + 0.65*diff(ylims); hold on; plot(first_detection_idx, (RR_scatter*aux_sc) +aux_off , ':xb' ); plot(xlims, ([RR_thr RR_thr]*aux_sc ) + aux_off, '--r'); plot( [ stable_rhythm_regions'; flipud(stable_rhythm_regions'); stable_rhythm_regions(:,1)' ],  repmat([ylims(1); ylims(1); ylims(2);ylims(2);ylims(1)],1, size(stable_rhythm_regions,1) ), 'b:' ); hold off;    
 
         if( isempty(stable_rhythm_regions) )
-            cprintf('Red', '\nNo stable rhythm segments found. Consider decreasing "stable_RR_time_win" (Current %f seconds)\n\n', payload_in.stable_RR_time_win);                    
-            return
+            cprintf('Red', '\nRecording %s, lead %s, no stable rhythm segments found. Consider decreasing "stable_RR_time_win" (Current %f seconds). \n\n',ECG_header.recname , lead_names{this_sig_idx}, payload_in.stable_RR_time_win);                    
+            continue
         end
 
         lstable_rhythm_regions = size(stable_rhythm_regions,1);
@@ -332,6 +342,15 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
         % ficticio para cada detección por el ranking de "parsimoniosidad" que
         % sacó  
         payload.series_quality.ratios = 1-(payload.series_quality.ratios * 1./max(payload.series_quality.ratios));
+        
+        % calculate performance
+        if( isfield(payload_in, 'ECG_annotations') && isfield(payload_in.ECG_annotations, 'time') && isnumeric(payload_in.ECG_annotations.time) )
+%             % Filtrado de anotaciones fuera del segmento de analisis
+%             anotacioens_reales = [];
+%             anotaciones_reales.time = payload_in.ECG_annotations.time(payload_in.ECG_annotations.time > ECG_start_offset);
+            
+            payload = CalculatePerformanceECGtaskQRSdet(payload, payload_in.ECG_annotations, ECG_header, ECG_start_offset);
+        end
 
         progress_handle.end_loop();    
 
