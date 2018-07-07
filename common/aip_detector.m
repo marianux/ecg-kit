@@ -234,7 +234,9 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
         larger_stable_rank = arrayfun(@(a)(find(a==aux_idx)), 1:lstable_rhythm_regions);
 
-        pattern_prewin = round(payload_in.trgt_width/2*ECG_header.freq); % force odd number
+%         pattern_prewin = round(payload_in.trgt_width/2*ECG_header.freq); % force odd number
+        % try a wider pattern to asses synchronization
+        pattern_prewin = round(payload_in.trgt_width*2*ECG_header.freq); % force odd number
 
         % get the segments with less change in morphology
         pack_variance = repmat(realmax,lstable_rhythm_regions,1);
