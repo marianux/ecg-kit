@@ -162,7 +162,7 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
         progress_handle.checkpoint([ pb_str_prefix 'Peak detection first guess' ]);
 
         initial_thr = 30; % percentil
-        first_bin_idx = 2; % bin donde comenzar a buscar el min en el histograma
+        first_bin_idx = 1; % bin donde comenzar a buscar el min en el histograma
 
         actual_thr = prctile(rise_detector, initial_thr);
 
@@ -172,21 +172,34 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
         grid_step = median(diff(prctile_grid));
         
-        %%%%%%%
-        % En epoca de debug, agregado por Augusto Santini @ 20/3/2018
         if grid_step == 0
             cprintf('Red', '\nRecording %s, lead %s, low variability detected, possible lead desconnection or synthetic pattern\n\n', ECG_header.recname, lead_names{this_sig_idx}, payload_in.stable_RR_time_win);                    
             continue
-            
-            %grid_step = (max(max_values) - actual_thr) / 100;
         end
-        %%%%%%%
 
         thr_grid = actual_thr: grid_step:max(max_values);
 
         hist_max_values = histcounts(max_values, thr_grid);
 
-        [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 0, [], 10);
+%         %%%%%%%
+%         % Etapa de debug @ 20/5/2018:
+%         
+%         % Suavizado del histograma
+%         % Generacion de un eje x de 100 valores        
+%         thr_grid = thr_grid(1:end-1) + (diff(thr_grid) / 2);
+%         smooth_axis = linspace(min(thr_grid),max(thr_grid),100);
+%         
+%         smoothed_max_values = spline(thr_grid,hist_max_values,smooth_axis);
+%         
+%         smoothed_max_values(smoothed_max_values < 0) = 0;
+%         
+%         hist_max_values = smoothed_max_values;
+%         
+%         thr_grid = smooth_axis;
+%         
+%         %%%%%%%
+
+        [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 0, [], []);
 
         % mass center of the distribution, probably the value where the
         % patterns under search are located.
@@ -200,6 +213,7 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
         % index is the center of all those indexes. Other criteria such as
         % min or max can be explored
         thr_min_idx = round(mean(find(aux_seq >= first_bin_idx & aux_seq < thr_idx_expected & [hist_max_values 0] == min_hist_max_values)));
+%         thr_min_idx = round(mean(find(aux_seq >= first_bin_idx & aux_seq < thr_idx_expected & hist_max_values == min_hist_max_values)));
 
         actual_thr = thr_grid(thr_min_idx );
 
@@ -218,9 +232,9 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
         stable_rhythm_regions = get_segments_from_sequence(first_detection_idx, RR_scatter, round(payload_in.stable_RR_time_win * ECG_header.freq), RR_thr );
 
-    % figure(3); plot(first_detection_idx, [RRserie RRserie_filt] ); ylims = ylim(); ylims = ylims + [0.1 -0.1] * diff(ylims); hold on; plot( [ stable_rhythm_regions'; flipud(stable_rhythm_regions'); stable_rhythm_regions(:,1)' ],  repmat([ylims(1); ylims(1); ylims(2);ylims(2);ylims(1)],1, size(stable_rhythm_regions,1) ), 'b:' ); hold off;
-    % figure(3); plot(first_detection_idx, [RR_scatter], ':xb' ); xlims = xlim(); ylims = ylim(); ylims = ylims + [0.01 -0.1] * diff(ylims); hold on; plot(xlims, [RR_thr RR_thr], '--r'); plot( [ stable_rhythm_regions'; flipud(stable_rhythm_regions'); stable_rhythm_regions(:,1)' ],  repmat([ylims(1); ylims(1); ylims(2);ylims(2);ylims(1)],1, size(stable_rhythm_regions,1) ), 'b:' ); hold off;
-    % figure(3); plot(first_detection_idx, [RRserie RRserie_filt] ); xlims = xlim(); ylims = ylim(); ylims = ylims + [0.1 -0.1] * diff(ylims); aux_sc = 0.25*diff(ylims)/(max(RR_scatter)-min(RR_scatter));aux_off = ylims(1) + 0.65*diff(ylims); hold on; plot(first_detection_idx, (RR_scatter*aux_sc) +aux_off , ':xb' ); plot(xlims, ([RR_thr RR_thr]*aux_sc ) + aux_off, '--r'); plot( [ stable_rhythm_regions'; flipud(stable_rhythm_regions'); stable_rhythm_regions(:,1)' ],  repmat([ylims(1); ylims(1); ylims(2);ylims(2);ylims(1)],1, size(stable_rhythm_regions,1) ), 'b:' ); hold off;    
+%     figure(3); plot(first_detection_idx, [RRserie RRserie_filt] ); ylims = ylim(); ylims = ylims + [0.1 -0.1] * diff(ylims); hold on; plot( [ stable_rhythm_regions'; flipud(stable_rhythm_regions'); stable_rhythm_regions(:,1)' ],  repmat([ylims(1); ylims(1); ylims(2);ylims(2);ylims(1)],1, size(stable_rhythm_regions,1) ), 'b:' ); hold off;
+%     figure(3); plot(first_detection_idx, [RR_scatter], ':xb' ); xlims = xlim(); ylims = ylim(); ylims = ylims + [0.01 -0.1] * diff(ylims); hold on; plot(xlims, [RR_thr RR_thr], '--r'); plot( [ stable_rhythm_regions'; flipud(stable_rhythm_regions'); stable_rhythm_regions(:,1)' ],  repmat([ylims(1); ylims(1); ylims(2);ylims(2);ylims(1)],1, size(stable_rhythm_regions,1) ), 'b:' ); hold off;
+%     figure(3); plot(first_detection_idx, [RRserie RRserie_filt] ); xlims = xlim(); ylims = ylim(); ylims = ylims + [0.1 -0.1] * diff(ylims); aux_sc = 0.25*diff(ylims)/(max(RR_scatter)-min(RR_scatter));aux_off = ylims(1) + 0.65*diff(ylims); hold on; plot(first_detection_idx, (RR_scatter*aux_sc) +aux_off , ':xb' ); plot(xlims, ([RR_thr RR_thr]*aux_sc ) + aux_off, '--r'); plot( [ stable_rhythm_regions'; flipud(stable_rhythm_regions'); stable_rhythm_regions(:,1)' ],  repmat([ylims(1); ylims(1); ylims(2);ylims(2);ylims(1)],1, size(stable_rhythm_regions,1) ), 'b:' ); hold off;    
 
         if( isempty(stable_rhythm_regions) )
             cprintf('Red', '\nRecording %s, lead %s, no stable rhythm segments found. Consider decreasing "stable_RR_time_win" (Current %f seconds). \n\n',ECG_header.recname , lead_names{this_sig_idx}, payload_in.stable_RR_time_win);                    
@@ -307,6 +321,23 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
             thr_grid = actual_thr: grid_step:max(max_values);
 
             hist_max_values = histcounts(max_values, thr_grid);
+            
+%             % Etapa de debug @ 20/5/2018:
+%         
+%             % Suavizado del histograma
+%             % Generacion de un eje x de 100 valores        
+%             thr_grid = thr_grid(1:end-1) + (diff(thr_grid) / 2);
+%             smooth_axis = linspace(min(thr_grid),max(thr_grid),100);
+% 
+%             smoothed_max_values = spline(thr_grid,hist_max_values,smooth_axis);
+%             
+%             smoothed_max_values(smoothed_max_values < 0) = 0;
+% 
+%             hist_max_values = smoothed_max_values;
+%             
+%             thr_grid = smooth_axis;
+% 
+%             %
 
             [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 0, [], 10);
 
@@ -317,6 +348,7 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
             min_hist_max_values = min( hist_max_values( aux_seq >= first_bin_idx & aux_seq < thr_idx_expected) );
 
             thr_min_idx = round(mean(find(aux_seq >= first_bin_idx & aux_seq < thr_idx_expected & [hist_max_values 0] == min_hist_max_values)));
+%             thr_min_idx = round(mean(find(aux_seq >= first_bin_idx & aux_seq < thr_idx_expected & hist_max_values == min_hist_max_values)));
 
             actual_thr = thr_grid(thr_min_idx );
 
