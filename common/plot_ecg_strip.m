@@ -972,7 +972,7 @@ if( isempty(lead_offset) )
     
     if( cant_leads > 1 )
         lead_offset = [0; 1.1*( (ecg_min(1:end-1) - ecg_median(1:end-1))  .* gains(1:end-1) - ( ecg_max(2:end) - ecg_median(2:end) ) .* gains(2:end) ) ];
-        offsets = ecg_median .* gains + abs(cumsum(lead_offset));
+        offsets = ecg_median .* gains + cumsum(lead_offset);
     else
         lead_offset = 0;
         offsets = 0;
@@ -984,6 +984,10 @@ else
         error('plot_ecg_strip:BadLeadOffset', ['Lead offset must be a single numeric value or a ' num2str(cant_leads) ' x 1 vector'] )
     end
 end
+
+original_offset = offsets;
+original_lead_offset = lead_offset;
+original_gains = gains;
 
 % signal margins, relative to the total height and width
 plot_left_margin_width = 0.03;
@@ -1032,7 +1036,7 @@ user_data.linked_hdl = linked_hdl;
 report_format = 'png';
 report_format_idx = find(strcmpi(report_format,cKnownReportFormats),1);
 
-lead_selected_idx = 1:cant_leads;
+lead_selected_idx = 1;
 
 bPaperModeOn = false;
 major_tick_values_time = round([0.1 0.2 0.5 1 2 5 10 30 60]*heasig.freq); % seconds
@@ -2147,7 +2151,9 @@ end
 
     function [ecg_range ecg_min ecg_max ecg_median] = CalcECG_range(ECG)
         
-    ecg_prctiles = cell2mat(arrayfun( @(a)(prctile( randsample(ECG(:,a), max( 100, round(cant_samp * cant_leads / 100) ) ), [ 2.5 50 97.5 ] )), (1:cant_leads)', 'UniformOutput', false) )';
+    cant_elements = min(cant_samp * cant_leads, numel(ECG) );
+
+    ecg_prctiles = cell2mat(arrayfun( @(a)(prctile( randsample(ECG(:,a), max( 100, round(cant_elements / 100) ) ), [ 2.5 50 97.5 ] )), (1:cant_leads)', 'UniformOutput', false) )';
     ecg_range = ecg_prctiles(3,:) - ecg_prctiles(1,:);
     ecg_max =  colvec(ecg_prctiles(3,:) + 0.7 * ecg_range);
     ecg_min =  colvec(ecg_prctiles(1,:) - 0.4 * ecg_range);
@@ -2208,20 +2214,35 @@ end
                     MagnifierReset();
                 else
                     
-                position_mouse = get(axes_hdl, 'CurrentPoint');
-                prev_lead_idx = lead_selected_idx;
-                lead_selected_idx = max(1,heasig.nsig) * abs(ecg_max(1) * gains(1) - position_mouse(1,2)) / (ecg_max(1) * gains(1) - (-offsets(cant_leads) + ecg_min(cant_leads)*gains(cant_leads)) );
-%                 update_title_efimero( num2str(lead_selected_idx), 5 );
-                
-                lead_selected_idx = min(cant_leads, max(1, 1+floor( lead_selected_idx ) ) );
-                
-                if( length(prev_lead_idx) == length(lead_selected_idx) )
-                    % disable lead selection
-                    lead_selected_idx = 1:cant_leads;
-                    update_title_efimero( 'All leads', 5 );
-                else
-                    update_title_efimero( heasig.desc(lead_selected_idx,:), 5 );
-                end
+%                 position_mouse = get(axes_hdl, 'CurrentPoint');
+%                 prev_lead_idx = lead_selected_idx;
+%                 lead_selected_idx = max(1,heasig.nsig) * abs(ecg_max(1) * gains(1) - position_mouse(1,2)) / (ecg_max(1) * gains(1) - (-offsets(cant_leads) + ecg_min(cant_leads)*gains(cant_leads)) );
+% %                 update_title_efimero( num2str(lead_selected_idx), 5 );
+%                 
+%                 lead_selected_idx = min(cant_leads, max(1, 1+floor( lead_selected_idx ) ) );
+%                 
+%                 if( length(prev_lead_idx) == length(lead_selected_idx) )
+%                     % disable lead selection
+%                     lead_selected_idx = 1:cant_leads;
+%                     update_title_efimero( 'All leads', 5 );
+%                 else
+%                     update_title_efimero( heasig.desc(lead_selected_idx,:), 5 );
+%                 end
+
+                    if( cant_leads > 1 )
+                        lead_selected_idx = lead_selected_idx + 1;
+
+                        if( length(lead_selected_idx) > 1 )
+                            lead_selected_idx = 1;
+                            update_title_efimero( heasig.desc(lead_selected_idx,:), 5 );
+                        elseif( lead_selected_idx > cant_leads )
+                            % select all leads
+                            lead_selected_idx = 1:cant_leads;
+                            update_title_efimero( 'All leads', 5 );
+                        else
+                            update_title_efimero( heasig.desc(lead_selected_idx,:), 5 );
+                        end
+                    end
                 
                     
                     %just measure on graph
@@ -2307,55 +2328,67 @@ end
 %--------------------------------------------------------------------------
 
     function changeGainOffset(verScrollCount)
+
         
-        prev_offset = lead_offset;
-        prev_gain = gains;
+        if( verScrollCount ~= 0 )
 
-        bLeadMask = false(heasig.nsig,1);
-        bLeadMask(lead_selected_idx) = true;
-        
-        if( strcmp(gain_offset_mode, 'offset' ) )
-            % offset
-            k_offset = verScrollCount * ecg_range .* gains * 0.05;
+            prev_offset = lead_offset;
+            prev_gain = gains;
 
-            this_lead_offset = lead_offset + k_offset;
-%             this_lead_offset = max( 0, lead_offset + k_offset);
+            bLeadMask = false(heasig.nsig,1);
+            bLeadMask(lead_selected_idx) = true;
 
-            if( all(prev_offset == this_lead_offset) )
-                return
+            this_aux_seq = max(1, round(plotXmin - original_plot_lims(1) + 1)):min(size(ECG,1), round(plotXmax - original_plot_lims(1) + 1));
+            [this_ecg_range, this_ecg_min, this_ecg_max, this_ecg_median] = CalcECG_range(ECG(this_aux_seq,:));
+            
+            if( strcmp(gain_offset_mode, 'offset' ) )
+                % offset
+                k_offset = plotYrange * verScrollCount * 0.05;
+
+    %             this_lead_offset = lead_offset + k_offset;
+    %             this_lead_offset = max( 0, lead_offset + k_offset);
+
+    %             if( all(prev_offset == this_lead_offset) )
+    %                 return
+    %             else
+    %                 lead_offset = this_lead_offset ;
+    %             end
+
+                lead_offset = lead_offset + k_offset;
+
+                % retain all not selected
+                lead_offset(~bLeadMask) = prev_offset(~bLeadMask);
+
+                aux_offsets = offsets; 
+                offsets = cumsum(lead_offset);
+                offsets(~bLeadMask) = aux_offsets(~bLeadMask);
+
             else
-                lead_offset = this_lead_offset ;
+                % gain
+                this_lead_gain = 1.5^(-verScrollCount) * gains;
+
+                bAux = this_lead_gain < min_gain | this_lead_gain > max_gain;
+
+                gains = this_lead_gain;
+                gains(bAux) = prev_gain(bAux);
+
+                % retain all not selected
+                gains(~bLeadMask) = prev_gain(~bLeadMask);
+
             end
-            
-            % retain all not selected
-            lead_offset(~bLeadMask) = prev_offset(~bLeadMask);
-            
-%             offsets = abs(cumsum(lead_offset));
-            offsets = cumsum(lead_offset);
-            
         else
-            % gain
-            this_lead_gain = 1.5^(-verScrollCount) * gains;
-
-            bAux = this_lead_gain < min_gain | this_lead_gain > max_gain;
-                
-            gains = this_lead_gain;
-            gains(bAux) = prev_gain(bAux);
-
-            % retain all not selected
-            gains(~bLeadMask) = prev_gain(~bLeadMask);
-            
+            this_ecg_median = zeros(cant_leads,1);
         end
+        
+%         [plotYrange, plotYmin, plotYmax] = CalcPlotYlimits(this_ecg_min, this_ecg_max, gains, offsets);
 
-
-        [plotYrange plotYmin plotYmax] = CalcPlotYlimits(ecg_min, ecg_max, gains, offsets);
-
+        hold(axes_hdl, 'off')
         cla(axes_hdl);
         set(axes_hdl, 'ColorOrder', ColorOrder);
 
         hold(axes_hdl, 'on')
         %plot ECG
-        ECG_hdl = plot(axes_hdl, start_sample:end_sample, bsxfun( @minus, bsxfun( @times, ECG, rowvec(gains)), rowvec(offsets) ), 'LineWidth', 1.3 );
+        ECG_hdl = plot(axes_hdl, start_sample:end_sample, bsxfun( @minus, bsxfun( @times, bsxfun( @minus, ECG, rowvec(this_ecg_median) ), rowvec(gains)), rowvec(offsets) ), 'LineWidth', 1.3 );
 
         set(axes_hdl, 'Box', 'off' );
         set(axes_hdl, 'Xtick', [] );
@@ -2363,7 +2396,7 @@ end
         set(axes_hdl, 'Xcolor', [1 1 1] );
         set(axes_hdl, 'Ycolor', [1 1 1] );
 
-        ylim([plotYmin plotYmax]);
+%         ylim([plotYmin plotYmax]);
 
         hold(axes_hdl, 'off')
 
@@ -2377,7 +2410,7 @@ end
         QRSfpFarHdls = [];
         
         if( strcmp(gain_offset_mode, 'offset' ) )
-            update_title_efimero( num2str(rowvec(offsets)), 5 );
+            update_title_efimero( num2str(rowvec(lead_offset)), 5 );
         else
             update_title_efimero( num2str(rowvec(gains)), 5 );
         end
@@ -3699,6 +3732,14 @@ end
             PaperModeOff();
         end
         
+        offsets = original_offset;
+        lead_offset = original_lead_offset;
+        gains = original_gains;
+        
+        lead_selected_idx = 1;
+        
+        changeGainOffset(0);
+
         SetAxesLimits(mDefaultXLim, mDefaultYLim);
         PointerCrossUpdate();
         
