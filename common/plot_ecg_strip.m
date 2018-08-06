@@ -2565,12 +2565,6 @@ end
                 
             end
 
-            if( isfield(heasig, 'recname') )
-                report_filename = [report_path heasig.recname '_captured_' datestr(now, 'dd_mm_yy-HH_MM_SS' )  '.' report_format];
-            else
-                report_filename = [report_path 'ECG_strip_captured_' datestr(now, 'dd_mm_yy-HH_MM_SS' ) '.' report_format];
-            end
-
         else
 
             report_path = fileparts(report_filename);
@@ -2582,6 +2576,12 @@ end
 
             init_ghostscript();
 
+            if( isfield(heasig, 'recname') )
+                report_filename = [report_path heasig.recname '_captured_' datestr(now, 'dd_mm_yy-HH_MM_SS' )  '.' report_format];
+            else
+                report_filename = [report_path 'ECG_strip_captured_' datestr(now, 'dd_mm_yy-HH_MM_SS' ) '.' report_format];
+            end
+            
             export_fig(report_filename, '-nocrop', ['-' report_format], fig_hdl);
 
             update_title_efimero( ['Exported to ' report_filename], 5 );
@@ -4406,6 +4406,7 @@ end
                 '      ''-''                         : Zoom minus\n' ... 
                 '      ''d''                         : Toggle the detail level of the annotations\n' ... 
                 '      ''a''                         : Toggle the annotations graph mode\n' ... 
+                '      ''b''                         : Toggle time measurement mode: absolute - relative from begining\n' ... 
                 '      ''0''                         : Set default axes (reset to original view)\n' ... 
                 '      ''c''                         : On/Off pointer in crosshair mode\n' ... 
                 '      ''g''                         : Change lead gain with scroll\n' ... 

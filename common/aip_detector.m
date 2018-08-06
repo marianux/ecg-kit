@@ -393,3 +393,4 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
     end
 
     payload.series_quality = series_quality;
+    

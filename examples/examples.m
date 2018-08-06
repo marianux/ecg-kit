@@ -368,68 +368,71 @@ function examples(pid_str, examples_path, user_str)
     
     %% Visual inspection of the detection/delineation
     
-    if( bUseDesktop )
-
-        % other task can be performed on the same objects
-        for ii = 1:lrecnames
-
-            % last worker is the responsible of the visual correction.
-            if( ECG_all_wrappers(ii).this_pid == ECG_all_wrappers(ii).cant_pids)
-
-                % if there are not any previous error.
-                if( ECG_all_wrappers(ii).Processed && ~ECG_all_wrappers(ii).Error ) 
-
-                    % this is to use previous saved results as starting point,
-                    % if any available
-                    cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName( {'ECG_delineation_corrector' 'ECG_delineation'} );
-
-                    % if no previous correction work, try the automatic
-                    % detection task
-                    
-                    % if any, do the correction
-                    if( ~isempty(cached_filenames) )
-
-                        % this is to use previous saved results as starting point,
-                        % if any available
-                        ECG_all_wrappers(ii).ECGtaskHandle = 'ECG_delineation_corrector';
-                        
-                        % This task is supposed to be supervised, so only one pid is enough.
-                        ECG_all_wrappers(ii).this_pid = '1/1';
-
-                        % to avoid loading cached results and exit, this flag
-                        % allows the re-editing of the current state of the
-                        % detections.
-                        ECG_all_wrappers(ii).cacheResults = false;
-
-                        % maybe in your application you should run this for
-                        % all files.
-                        ECG_all_wrappers(ii).ECGtaskHandle.payload = load(cached_filenames{1});
-
-                        % process the task
-                        ECG_all_wrappers(ii).Run;
-
-                        % restore the original pids configuration
-                        ECG_all_wrappers(ii).this_pid = pid_str;
-
-                        % As we changed for "QRS correction" task, we have to enable this
-                        % value again in order to avoid performing the following tasks every time.
-                        % If you want to recalculate any task, change it to false
-                        ECG_all_wrappers(ii).cacheResults = true;
-                        
-                    end
-
-                end
-
-            end
-
-        end
-
-        % at the end, report problems if happened.
-        for ii = 1:lrecnames
-            ECG_all_wrappers(ii).ReportErrors;
-        end
-
-    end
+% This task is deprecated and will be deleted in future releases. Check the
+% forum and ask for time-series analysis.
+%     
+%     if( bUseDesktop )
+% 
+%         % other task can be performed on the same objects
+%         for ii = 1:lrecnames
+% 
+%             % last worker is the responsible of the visual correction.
+%             if( ECG_all_wrappers(ii).this_pid == ECG_all_wrappers(ii).cant_pids)
+% 
+%                 % if there are not any previous error.
+%                 if( ECG_all_wrappers(ii).Processed && ~ECG_all_wrappers(ii).Error ) 
+% 
+%                     % this is to use previous saved results as starting point,
+%                     % if any available
+%                     cached_filenames = ECG_all_wrappers(ii).GetCahchedFileName( {'ECG_delineation_corrector' 'ECG_delineation'} );
+% 
+%                     % if no previous correction work, try the automatic
+%                     % detection task
+%                     
+%                     % if any, do the correction
+%                     if( ~isempty(cached_filenames) )
+% 
+%                         % this is to use previous saved results as starting point,
+%                         % if any available
+%                         ECG_all_wrappers(ii).ECGtaskHandle = 'ECG_delineation_corrector';
+%                         
+%                         % This task is supposed to be supervised, so only one pid is enough.
+%                         ECG_all_wrappers(ii).this_pid = '1/1';
+% 
+%                         % to avoid loading cached results and exit, this flag
+%                         % allows the re-editing of the current state of the
+%                         % detections.
+%                         ECG_all_wrappers(ii).cacheResults = false;
+% 
+%                         % maybe in your application you should run this for
+%                         % all files.
+%                         ECG_all_wrappers(ii).ECGtaskHandle.payload = load(cached_filenames{1});
+% 
+%                         % process the task
+%                         ECG_all_wrappers(ii).Run;
+% 
+%                         % restore the original pids configuration
+%                         ECG_all_wrappers(ii).this_pid = pid_str;
+% 
+%                         % As we changed for "QRS correction" task, we have to enable this
+%                         % value again in order to avoid performing the following tasks every time.
+%                         % If you want to recalculate any task, change it to false
+%                         ECG_all_wrappers(ii).cacheResults = true;
+%                         
+%                     end
+% 
+%                 end
+% 
+%             end
+% 
+%         end
+% 
+%         % at the end, report problems if happened.
+%         for ii = 1:lrecnames
+%             ECG_all_wrappers(ii).ReportErrors;
+%         end
+% 
+%     end
     
     %% Automatic Heartbeat classification
     
