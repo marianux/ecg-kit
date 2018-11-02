@@ -2522,15 +2522,23 @@ function ann_output = QRScorrector(varargin)
         prctile_grid = prctile( aux_similarity_max, 1:100 );
 
         grid_step = median(diff(prctile_grid));
-
-        thr_grid = prctile(aux_similarity_max,5): grid_step:prctile(aux_similarity_max,95);
-
-        hist_max_values = histcounts(aux_similarity_max, thr_grid);
-
-        first_bin_idx = 2;
         
-        [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 0, [], 10);
+        max2find_in_hist = 10;
+        thr_max = zeros(max2find_in_hist+1,1);
+        hist_max_values = zeros(2*max2find_in_hist+1,1);
 
+        while( length( thr_max ) > max2find_in_hist  && length(hist_max_values) > round(1.5*max2find_in_hist) )
+
+            thr_grid = prctile(aux_similarity_max,5): grid_step:prctile(aux_similarity_max,95);
+
+            hist_max_values = histcounts(aux_similarity_max, thr_grid);
+
+            first_bin_idx = 2;
+
+            [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx );
+
+        end
+        
         % mass center of the distribution, probably the value where the
         % patterns under search are located.
         thr_idx_expected = floor(rowvec(thr_idx) * colvec(thr_max) *1/sum(thr_max));

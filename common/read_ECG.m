@@ -195,13 +195,13 @@ elseif( strcmpi(recording_format, 'MIT') )
         ann = readannot(annFileName);
     end
 
-    [ recording_path rec_name ] = fileparts(recording_name);
+    [ recording_path, rec_name, rec_ext] = fileparts(recording_name);
     recording_path = [recording_path filesep];
     
     heasig = readheader([recording_name(1:end-3) 'hea']);    
     
     if( ~isfield(heasig, 'fname') ) 
-        heasig.fname = repmat(rec_name, heasig.nsig, 1);
+        heasig.fname = repmat([rec_name rec_ext], heasig.nsig, 1);
     end
     
     recording_files = unique(cellstr(heasig.fname));
@@ -244,7 +244,12 @@ elseif( strcmpi(recording_format, 'MIT') )
         nsig_present = length(sig_idx);
         sig2_idx = intersect(sig_idx, ECG_idx);
         nsig2read = length(sig2_idx);
-        fmt = heasig.fmt(sig2_idx(1));
+        if( isfield(heasig, 'fmt') ) 
+            fmt = heasig.fmt(sig2_idx(1));
+        else
+            fmt = 16;
+        end
+        
         ECG(:,sig2_idx) = read_MIT_ecg( [recording_path heasig.fname(sig2_idx(1),:)], ECG_start_idx, ECG_end_idx, nsig2read, nsig_present, fmt, heasig);
     end    
 %     ECG = int16(ECG);
