@@ -1873,7 +1873,7 @@ classdef ECGwrapper < handle
 
                 elseif( strcmpi(obj.recording_format, 'HL7a') )
 
-                    [~, obj.ECG_header, ann_aux, single_lead_positions ] = read_ECG(obj.recording_name, [], [], obj.recording_format);
+                    [~, header_aux, ann_aux, single_lead_positions ] = read_ECG(obj.recording_name, [], [], obj.recording_format);
                     
                 elseif( strcmpi(obj.recording_format, 'Mortara') )
                     ann_aux = [];

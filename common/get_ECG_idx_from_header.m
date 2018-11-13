@@ -36,13 +36,21 @@ function [ECG_idx, ECG_header ]= get_ECG_idx_from_header(ECG_header)
     % add ECG patterns to be matched in ECG_header.desc
     ECG_pattern_desc = {'ECG' 'BIPOLAR' 'LEAD'};
 
-    [~, ~, aux_idx ] = intersect(str_12_leads_desc, upper(strtrim(cellstr(ECG_header.desc))) );
-    
+    if( isfield(ECG_header, 'desc') )
+        [~, ~, aux_idx ] = intersect(str_12_leads_desc, upper(strtrim(cellstr(ECG_header.desc))) );
+    else
+        aux_idx = [];
+    end
+        
     if( ECG_header.nsig ~= length(aux_idx) )
         
         ECG_idx = colvec(aux_idx);
         
-        aux_idx = find(any(cell2mat(cellfun(@(b)(cell2mat(cellfun(@(a)(~isempty(strfind(a, b))), rowvec(upper(cellstr(ECG_header.desc))), 'UniformOutput', false))), colvec(ECG_pattern_desc), 'UniformOutput', false)),1));
+        if( isfield(ECG_header, 'desc') )
+            aux_idx = find(any(cell2mat(cellfun(@(b)(cell2mat(cellfun(@(a)(~isempty(strfind(a, b))), rowvec(upper(cellstr(ECG_header.desc))), 'UniformOutput', false))), colvec(ECG_pattern_desc), 'UniformOutput', false)),1));
+        else
+            aux_idx = [];
+        end
         
         if( ~(isempty(aux_idx) && isempty(ECG_idx)) )
             ECG_idx = [ECG_idx; colvec(aux_idx)];

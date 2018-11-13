@@ -20,6 +20,7 @@ void mexFunction(
    FILE   *fp;
    char   *nombre;
    unsigned char  buf[3];
+   unsigned int aux_ui;
 
    
    /* Compruebo el numero OK de los argumentos */
@@ -71,7 +72,7 @@ void mexFunction(
 
         if (flag2){
            fseek(fp, (int) (((nleads*n_inicio)-1)*1.5) , 0);
-	   fread(buf, sizeof(char), 3, fp);
+	   aux_ui = fread(buf, sizeof(char), 3, fp);
    	   low=buf[1]&0X0F;
            high=buf[1]&0XF0;
 	   flag=1;}
@@ -83,7 +84,7 @@ void mexFunction(
 	  for (j=0;j<nleads;j++){
  		switch (flag){
 		  case 0:
-		 	 fread(buf, sizeof(char), 3, fp);  
+		 	 aux_ui = fread(buf, sizeof(char), 3, fp);  
            		 low=buf[1]&0X0F;
           		 high=buf[1]&0XF0;
           		 if (low>7)

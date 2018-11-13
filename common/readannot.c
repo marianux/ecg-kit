@@ -39,7 +39,7 @@ mxChar *chan, *num;
 char **aux;
 char *nullstring = "";
 char *currauxfield;
-unsigned char currnumfield, currchanfield, currsubtyp, data[2], skip[4];
+unsigned char currnumfield, currchanfield, currsubtyp, data[2], skip[4], aux_ui;
 const char* typecode = "NLRaVFJASEj/Q~ | sT*D\"=pB^t+u?!{}en xf()r";
 const char* field_names[] ={"time","anntyp","subtyp","chan","num","aux"};
 FILE *fid;
@@ -112,7 +112,7 @@ rewind(fid);
 dim = nbytes / 2 ;           /* The maximum number of posible events */
 
 /**************** Reading of the two first bytes ************************/
-fread(data,sizeof(char),2,fid);
+aux_ui = fread(data,sizeof(char),2,fid);
 if (ferror(fid)) mexErrMsgTxt("Error reading annotation file");
 
 if( data[0] == 0 && data[1] == 0 )
@@ -156,13 +156,13 @@ else
             /* Skip samples */
             while (A==59)
             {
-                fread(skip,sizeof(char),4,fid);
+                aux_ui = fread(skip,sizeof(char),4,fid);
                 if (ferror(fid)) mexErrMsgTxt("Error reading annotation file");
                 if (feof(fid)) mexErrMsgTxt("Unexpected EOF");
                 I = skip[2]+( (skip[3]+ ( (skip[0]+ ( ( (int32_T) skip[1] )<<8 ) )<<8 ) )<<8);
                 /*printf ("Skip = %d\n", I);         */
                 pos += I;
-                fread(data,sizeof(char),2,fid);
+                aux_ui = fread(data,sizeof(char),2,fid);
                 if (ferror(fid)) mexErrMsgTxt("Error reading annotation file");
                 if (feof(fid)) mexErrMsgTxt("Unexpected EOF");
                 A = data[0] + (((int) data[1])<<8); /* A = data[0] + data[1]*256 */
@@ -181,7 +181,7 @@ else
                 break;
 
             /* Reading next 2 bytes */
-            fread(data,sizeof(char),2,fid);
+            aux_ui = fread(data,sizeof(char),2,fid);
             if (ferror(fid)) mexErrMsgTxt("Error reading annotation file");
             if (feof(fid)) 
             {
@@ -202,13 +202,13 @@ else
                 {
                     if (I & 0x0001) I++;
                     currauxfield = (char*) mxCalloc(I+1, sizeof(char));
-                    fread(currauxfield,sizeof(char),I,fid);
+                    aux_ui = fread(currauxfield,sizeof(char),I,fid);
                     currauxfield[I]='\0';  /* Chain delimitator */
                     if (ferror(fid)) mexErrMsgTxt("Error reading annotation file");
                     if (feof(fid)) mexErrMsgTxt("Unexpected EOF");
                     aux;
                 }
-                fread(data,sizeof(char),2,fid);
+                aux_ui = fread(data,sizeof(char),2,fid);
                 if (ferror(fid)) mexErrMsgTxt("Error reading annotation file");
                 if (feof(fid)) {break; /* del? */}
                 A = data[0] + (((int) data[1])<<8); /* A = data[0] + data[1]*256 */
@@ -245,32 +245,32 @@ else
     /****************** Fill the arrays for the fields ***/
     dims[0]=i; dims[1]= 1;
     /***** time field *****/
-    outtime = mxCreateNumericArray(2,dims,mxDOUBLE_CLASS,mxREAL);
+    outtime = mxCreateNumericArray(2, (const mwSize *) dims,mxDOUBLE_CLASS,mxREAL);
     timedata = (double*) mxGetData(outtime);
     memcpy(timedata, &time[k], i*sizeof(double));
     mxSetFieldByNumber(plhs[0], 0, 0, outtime);
 
     /***** anntyp field ****/
-    outanntyp = mxCreateCharArray(2,dims);
+    outanntyp = mxCreateCharArray(2, (const mwSize *) dims);
     char_array = (mxChar*) mxGetData(outanntyp);
     memcpy(char_array, &anntyp[k], i*sizeof(mxChar));
     /*printf(" %c %c ",char_array[45000],char_array[50000]);*/
     mxSetFieldByNumber(plhs[0], 0, 1, outanntyp); 
 
     /***** subtyp field ****/
-    outsubtyp = mxCreateCharArray(2,dims);
+    outsubtyp = mxCreateCharArray(2, (const mwSize *) dims);
     char_array = (mxChar*) mxGetData(outsubtyp);
     memcpy(char_array, &subtyp[k], i*sizeof(mxChar));
     mxSetFieldByNumber(plhs[0], 0, 2, outsubtyp); 
 
     /***** chan field ****/
-    outchan = mxCreateCharArray(2,dims);
+    outchan = mxCreateCharArray(2, (const mwSize *) dims);
     char_array = (mxChar*) mxGetData(outchan);
     memcpy(char_array, &chan[k], i*sizeof(mxChar));
     mxSetFieldByNumber(plhs[0], 0, 3, outchan); 
 
     /***** num field ****/
-    outnum = mxCreateCharArray(2,dims);
+    outnum = mxCreateCharArray(2, (const mwSize *) dims);
     char_array = (mxChar*) mxGetData(outnum);
     memcpy(char_array, &num[k], i*sizeof(mxChar));
     mxSetFieldByNumber(plhs[0], 0, 4, outnum);

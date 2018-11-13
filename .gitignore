@@ -14,3 +14,11 @@ video
 /common/export_fig/.ignore
 /docs
 todo
+
+common/rdsign212\.mexa64
+
+common/readannot\.mexa64
+
+common/writeannot\.mexa64
+
+*.m~

@@ -14,7 +14,11 @@
 % 
 % Output:
 % 
-%      + C: the confusion matrix.
+%      + C: the confusion matrix in the form:
+%           
+%            (  TP  FN  )
+%        C = (          )
+%            (  FP  0   )
 % 
 %      + TP_ann_idx, TP_det_idx, FN_idx, FP_idx: the indexes of the true
 %      positive (TP), false negative (FN) and FP within test_qrs_idx
@@ -25,9 +29,9 @@
 % 
 % Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
 % Version: 0.1 beta
-% Last update: 14/5/2014
+% Last update: 14/12/2017
 % Birthdate  : 21/4/2015
-% Copyright 2008-2015
+% Copyright 2008-2017
 % 
 function [C, TP_ann_idx, TP_det_idx, FN_idx, FP_idx] = bxb( ann, test_qrs_idx, heasig, strDBformat, bFilterAnnotations)
 
