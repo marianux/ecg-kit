@@ -41,13 +41,9 @@ function payload_out = CalculatePerformanceECGtaskQRSdet(payload_out, ECG_annota
         disp_string_framed(2, sprintf('Trusted references not found for %s', ECG_header.recname) );
     else
         % offset refs, produced anns were already shifted
-<<<<<<< HEAD
         %ECG_annotations.time = ECG_annotations.time + ECG_start_offset - 1;
         ECG_annotations.time = ECG_annotations.time(ECG_annotations.time >= ECG_start_offset & ...
             ECG_annotations.time <= ECG_header.nsamp + ECG_start_offset);
-=======
-        ECG_annotations.time = ECG_annotations.time + ECG_start_offset - 1; 
->>>>>>> d452e1b8ed4f5f7a5e1fc0fb20aa75b8429d2e70
         
         payload_out.series_performance.conf_mat_details = cell(cant_lead_name,4);
         
