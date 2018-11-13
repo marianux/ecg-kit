@@ -132,6 +132,7 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
     pattern_size = 2*round(payload_in.trgt_width/2*ECG_header.freq)+1; % force odd number
     
     pattern_coeffs = diff(gausswin(pattern_size+1)) .* gausswin(pattern_size);
+    first_pattern_coeffs = pattern_coeffs;
     
     progress_handle.Loops2Do = length(payload_in.sig_idx);
 
@@ -162,44 +163,21 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
         progress_handle.checkpoint([ pb_str_prefix 'Peak detection first guess' ]);
 
         initial_thr = 30; % percentil
-        first_bin_idx = 1; % bin donde comenzar a buscar el min en el histograma
 
         actual_thr = prctile(rise_detector, initial_thr);
-
+        
         [~, max_values ] = modmax(rise_detector, 1, actual_thr, 0, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
 
-        prctile_grid = prctile( max_values, 1:100 );
-
-        grid_step = median(diff(prctile_grid));
+        min_grid = prctile(max_values,5);
+        max_grid = prctile(max_values,95);
         
-        if grid_step == 0
-            cprintf('Red', '\nRecording %s, lead %s, low variability detected, possible lead desconnection or synthetic pattern\n\n', ECG_header.recname, lead_names{this_sig_idx}, payload_in.stable_RR_time_win);                    
-            continue
-        end
-
-        thr_grid = actual_thr: grid_step:max(max_values);
+        thr_grid = linspace(min_grid, max_grid, min(40, length(max_values) ) );
 
         hist_max_values = histcounts(max_values, thr_grid);
 
-%         %%%%%%%
-%         % Etapa de debug @ 20/5/2018:
-%         
-%         % Suavizado del histograma
-%         % Generacion de un eje x de 100 valores        
-%         thr_grid = thr_grid(1:end-1) + (diff(thr_grid) / 2);
-%         smooth_axis = linspace(min(thr_grid),max(thr_grid),100);
-%         
-%         smoothed_max_values = spline(thr_grid,hist_max_values,smooth_axis);
-%         
-%         smoothed_max_values(smoothed_max_values < 0) = 0;
-%         
-%         hist_max_values = smoothed_max_values;
-%         
-%         thr_grid = smooth_axis;
-%         
-%         %%%%%%%
-
-        [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 0, [], []);
+        first_bin_idx = 2;
+        
+        [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx );
 
         % mass center of the distribution, probably the value where the
         % patterns under search are located.
@@ -287,7 +265,7 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
         payload.series_quality.ratios = [payload.series_quality.ratios; RRserie_mean_sq_error];
         payload.series_quality.estimated_labs = [ payload.series_quality.estimated_labs; {[]} ];
 
-
+        aux_pat_coe = zeros(numel(pattern_coeffs),size(stable_rhythm_regions,1));
         for ii = 1:size(stable_rhythm_regions,1)
 
             % refinamos con el metodo de woody
@@ -296,6 +274,7 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
     % figure(3); avg_pack = pack_signal(ECG_matrix(:,1), first_detection_idx(aux_idx2), 10*[ pattern_prewin pattern_prewin ], true); plot_ecg_mosaic(avg_pack)
 
             pattern_coeffs = woody_method(ECG_matrix(:,1), first_detection_idx(aux_idx2), [ pattern_prewin (pattern_prewin+1) ], 0.95);
+            aux_pat_coe(:,ii) = pattern_coeffs;
 
             progress_handle.checkpoint([ pb_str_prefix 'Pattern match ' num2str(ii) ]);
 
@@ -312,32 +291,16 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
             [~, max_values ] = modmax(rise_detector, 1, actual_thr, 0, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
 
-            prctile_grid = prctile( max_values, 1:100 );
+            min_grid = prctile(max_values,5);
+            max_grid = prctile(max_values,95);
 
-            grid_step = median(diff(prctile_grid));
-
-            thr_grid = actual_thr: grid_step:max(max_values);
+            thr_grid = linspace(min_grid, max_grid, min(40, length(max_values) ) );
 
             hist_max_values = histcounts(max_values, thr_grid);
-            
-%             % Etapa de debug @ 20/5/2018:
-%         
-%             % Suavizado del histograma
-%             % Generacion de un eje x de 100 valores        
-%             thr_grid = thr_grid(1:end-1) + (diff(thr_grid) / 2);
-%             smooth_axis = linspace(min(thr_grid),max(thr_grid),100);
-% 
-%             smoothed_max_values = spline(thr_grid,hist_max_values,smooth_axis);
-%             
-%             smoothed_max_values(smoothed_max_values < 0) = 0;
-% 
-%             hist_max_values = smoothed_max_values;
-%             
-%             thr_grid = smooth_axis;
-% 
-%             %
 
-            [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 0, [], 10);
+            first_bin_idx = 2;
+
+            [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx );
 
             thr_idx_expected = floor(rowvec(thr_idx) * colvec(thr_max) *1/sum(thr_max));
 
@@ -375,14 +338,14 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
         % sacó  
         payload.series_quality.ratios = 1-(payload.series_quality.ratios * 1./max(payload.series_quality.ratios));
         
-        % calculate performance
-        if( isfield(payload_in, 'ECG_annotations') && isfield(payload_in.ECG_annotations, 'time') && isnumeric(payload_in.ECG_annotations.time) )
-%             % Filtrado de anotaciones fuera del segmento de analisis
-%             anotacioens_reales = [];
-%             anotaciones_reales.time = payload_in.ECG_annotations.time(payload_in.ECG_annotations.time > ECG_start_offset);
-            
-            payload = CalculatePerformanceECGtaskQRSdet(payload, payload_in.ECG_annotations, ECG_header, ECG_start_offset);
-        end
+%         % calculate performance
+%         if( isfield(payload_in, 'ECG_annotations') && isfield(payload_in.ECG_annotations, 'time') && isnumeric(payload_in.ECG_annotations.time) )
+% %             % Filtrado de anotaciones fuera del segmento de analisis
+% %             anotacioens_reales = [];
+% %             anotaciones_reales.time = payload_in.ECG_annotations.time(payload_in.ECG_annotations.time > ECG_start_offset);
+%             
+%             payload = CalculatePerformanceECGtaskQRSdet(payload, payload_in.ECG_annotations, ECG_header, ECG_start_offset);
+%         end
 
         progress_handle.end_loop();    
 
