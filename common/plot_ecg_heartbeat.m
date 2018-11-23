@@ -205,7 +205,7 @@ ECG_limits = limits;
 
 hold(axes_hdl, 'on')
 
-ECG_hdl = colvec(arrayfun(@(sig_idx, col_idx)(plot(axes_hdl, aux_idx, aux_sig(:,sig_idx), 'Color', ColorOrder(col_idx,:) )), 1:length(lead_idx), lead_idx, 'UniformOutput', false ));
+ECG_hdl = colvec(arrayfun(@(sig_idx, col_idx)(plot(axes_hdl, aux_idx, aux_sig(:,sig_idx), 'Color', ColorOrder(col_idx,:) )), 1:length(lead_idx), rowvec(lead_idx), 'UniformOutput', false ));
 
 % ECG_hdl = [ECG_hdl; colvec( arrayfun( @(a,b)( plot(axes_hdl, a, b , 'r--' )), repmat(rowvec(QRS_locations(qrs_ploted) - ECG_start_idx + 1 ),2,1), [ repmat(ecg_max, 1,length(qrs_ploted)) ; zeros(1,length(qrs_ploted)) ], 'UniformOutput', false ) ) ];
 ECG_hdl = [ECG_hdl; colvec( cellfun( @(a,b)( plot(axes_hdl, a, b, ':r' )), mat2cell( repmat(rowvec(QRS_locations(qrs_ploted) - ECG_start_idx + 1 ),2,1), 2, ones(length(qrs_ploted),1) ), mat2cell ( [ repmat(ecg_max, 1,length(qrs_ploted)) ; repmat(ecg_min, 1,length(qrs_ploted))], 2, ones(length(qrs_ploted),1) ), 'UniformOutput', false) ) ];

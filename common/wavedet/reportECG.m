@@ -197,7 +197,7 @@ for win_length = win_lengths
     
 end
 
-clear pb
+% clear pb
 
 
 function fig_hdl = prepare_fig_hdl( fig_hdl )

@@ -151,7 +151,7 @@ function [ ratio, estimated_labs ] = CalcRRserieRatio(time_serie, ECG_header, st
         pb.end_loop();
     end
 
-    clear pb
+%     clear pb
     
     function k = calc_k_gaps( time_serie )
 

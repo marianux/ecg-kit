@@ -86,6 +86,7 @@ function ann_output = QRScorrector(varargin)
     p.addParamValue('BuildArtificial', false, @(x)( islogical(x)));
     p.addParamValue('recording', [], @(x)( ischar(x)));
     p.addParamValue('recording_path', [], @(x)( ischar(x)));
+    p.addParamValue('leads', 1, @(x)( isnumeric(x) && all(x > 0) || ischar(x) || iscellstr(x) ) );
     p.addParamValue('recording_indexes', [], @(x)( isnumeric(x) && all(x > 0) ) );
     p.addParamValue('ECG', [], @(x)(isnumeric(x) || isa(x, 'ECGwrapper') ) );
     p.addParamValue('ECG_header', [], @(x)(isstruct(x)) );
@@ -113,6 +114,7 @@ function ann_output = QRScorrector(varargin)
     tmp_path = p.Results.tmp_path;
     OutputVarName = p.Results.OutputVarName;
     fig_hdl = p.Results.Figure;
+    lead_idx = p.Results.leads;
 
     title_efimero_hdl = [];
     RRserie_zoombars_hdl = [];
@@ -178,6 +180,7 @@ function ann_output = QRScorrector(varargin)
     resampled_ECG_similarity = [];
     similarity = [];
     ndown_similarity = nan;
+   
     
     if( ~isempty(ECG) )
         %% ECG already read
@@ -318,7 +321,7 @@ function ann_output = QRScorrector(varargin)
 
                     pb.end_loop();
                 end
-                clear pb
+%                 clear pb
 
                 save(filename, 'ratios')
             end
@@ -334,6 +337,15 @@ function ann_output = QRScorrector(varargin)
         error( 'QRScorrector:ArgCheck:InvalidECGarg', 'Please provide an ECG recording as described in the documentation, help(''QRScorrector'') maybe could help you.\n' );
     end
 
+    if( ischar(lead_idx) )
+        lead_idx = cellstr(lead_idx);
+    end
+        
+    if( iscellstr(lead_idx) )
+        [~, lead_idx] = intersect(upper(strtrim(cellstr(ECG_struct.header.desc))), upper(strtrim(lead_idx)) );
+    end
+    
+    
     end_idx = min(ECG_struct.header.nsamp, start_idx + round((win_size * 60)*ECG_struct.header.freq));
     end_idx_PM = end_idx;
     
@@ -369,7 +381,6 @@ function ann_output = QRScorrector(varargin)
     estimated_labs = [];
     
     hb_idx = 1;
-    lead_idx = 1;
     selected_hb_idx = [];
     RRscatter_hb_idx_hdl = [];   
     RRserie_hb_idx_hdl = [];   
@@ -515,7 +526,7 @@ function ann_output = QRScorrector(varargin)
         RRserie_filt = {[]};
         
         hb_idx = 1;
-        lead_idx = 1;
+        lead_idx = lead_idx( lead_idx <= ECG_struct.header.nsig );
         selected_hb_idx = [];
         RRscatter_hb_idx_hdl = [];   
         RRserie_hb_idx_hdl = [];   
@@ -1521,6 +1532,10 @@ function ann_output = QRScorrector(varargin)
 
             selected_hb_idx = [];
 
+            if(~bAnnsEdited)
+                update_annotations();            
+            end
+            
             Redraw();
 
             bAnnsEdited = true;
@@ -1688,6 +1703,10 @@ function ann_output = QRScorrector(varargin)
                 hb_idx = max(1, hb_idx - 1); 
             end
 
+            if(~bAnnsEdited)
+                update_annotations();            
+            end
+            
             Redraw();
 
             bAnnsEdited = true;
@@ -1733,6 +1752,10 @@ function ann_output = QRScorrector(varargin)
                 
             end
     
+            if(~bAnnsEdited)
+                update_annotations();            
+            end
+            
             Redraw();
 
             bAnnsEdited = true;
@@ -1786,21 +1809,26 @@ function ann_output = QRScorrector(varargin)
         elseif (strcmp(event_obj.Key,'v') && strcmp(event_obj.Modifier,'control'))
             % paste selection
             if( ~isempty(copy_paste_buffer) )
-                bAnnsEdited = true;
-                bRecEdited = true;
+                
                 PushUndoAction();
                 anns_under_edition = sort( unique([anns_under_edition; colvec(copy_paste_buffer) ]) );
                 selected_hb_idx = [];
                 RRserie_filt = {[]};
 
+                if(~bAnnsEdited)
+                    update_annotations();            
+                end
+                
                 Redraw();
+                
+                bAnnsEdited = true;
+                bRecEdited = true;
+                
             end
 
         elseif (strcmp(event_obj.Key,'delete'))
             % delete selection
             if( ~isempty(selected_hb_idx) )
-                bAnnsEdited = true;
-                bRecEdited = true;
                 PushUndoAction();
 
                 aux_idx = [find(anns_under_edition < anns_under_edition(anns_under_edition_idx(selected_hb_idx(1))),1, 'last') find( anns_under_edition > anns_under_edition(anns_under_edition_idx(selected_hb_idx(end))), 1, 'first') ];
@@ -1827,7 +1855,15 @@ function ann_output = QRScorrector(varargin)
                 aux_rr_filt(anns_under_edition_idx(selected_hb_idx)) = [];
                 RRserie_filt{1} = aux_rr_filt;
                 
+                if(~bAnnsEdited)
+                    update_annotations();            
+                end
+                
                 Redraw();
+                
+                bAnnsEdited = true;
+                bRecEdited = true;
+                
             end
 
         elseif (strcmp(event_obj.Key,'y') && ~isempty(event_obj.Modifier) && strcmp(event_obj.Modifier,'control'))
@@ -2473,7 +2509,8 @@ function ann_output = QRScorrector(varargin)
 
                 aux_anns = round((anns_under_edition( anns_under_edition >= ndown_similarity*aux_start &  anns_under_edition <= ndown_similarity*(aux_start+win_sample) ) - ndown_similarity*aux_start + 1) / ndown_similarity );
 
-                aux_val1 = aux_val1(:,lead_idx);
+%                 aux_val1 = aux_val1(:,lead_idx);
+                aux_val1 = aux_val1(:,1);
                 
                 aux_pack = [aux_pack squeeze(pack_signal(aux_val1, aux_anns, [ prex_win_start prex_win_end ], true)) ];
                 
@@ -3211,6 +3248,13 @@ function ann_output = QRScorrector(varargin)
 %             [~, exported_AnnNames] = regexp( answer{2}, '\''(\S+)\'' ', 'match', 'tokens');
 %             exported_AnnNames = cellfun(@(a)(a{1}), exported_AnnNames, 'UniformOutput',false);
             
+            if(bAnnsEdited)
+                % flush updates before saving.
+                update_annotations();            
+                bAnnsEdited = false;
+                bRecEdited = false;   
+            end
+
             exported_filename = [ recording_path filesep ECG_struct.header.recname '_reviewed_annotations' ];
             
             while( exist( [exported_filename '.mat'], 'file') )
@@ -3239,6 +3283,9 @@ function ann_output = QRScorrector(varargin)
 
             save(exported_filename, '-struct', 'exported_struct');
             update_title_efimero( sprintf('Exporting %s', exported_filename), 10 );
+            
+            % changes already saved
+            bRecEdited = false;
             
         end
             
@@ -3647,7 +3694,8 @@ function ann_output = QRScorrector(varargin)
 
                             aux_anns = round((anns_under_edition( anns_under_edition >= ndown_similarity*aux_start &  anns_under_edition <= ndown_similarity*(aux_start+win_sample) ) - ndown_similarity*aux_start + 1) / ndown_similarity );
 
-                            aux_val1 = aux_val1(:,lead_idx);
+%                             aux_val1 = aux_val1(:,lead_idx);
+                            aux_val1 = aux_val1(:,1);
 
                             aux_pack = [aux_pack squeeze(pack_signal(aux_val1, aux_anns, [ prex_win_start prex_win_end ], true)) ];
 
@@ -3890,6 +3938,10 @@ function ann_output = QRScorrector(varargin)
                 else
                     set(annotation_list_control, 'string', [ char(cellstr(num2str((1:cant_anns)'))) aux_str char(AnnNames(:,1)) repmat( ' (',cant_anns,1) num2str(round(colvec(ratios * 1000))) aux_str num2str(colvec(annotations_ranking))  repmat( ')',cant_anns,1)  ] );
                     set(annotation_under_edition_label, 'string', [ 'Annotation under edition: ' char(AnnNames( AnnNames_idx ,1)) ' (' num2str(ratios(AnnNames_idx)) ')' ])
+                end
+                
+                if(~bAnnsEdited)
+                    update_annotations();            
                 end
                 
                 bAnnsEdited = true;

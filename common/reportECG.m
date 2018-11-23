@@ -209,7 +209,7 @@ try
         close(fig_hdl)
     end
     
-    clear pb
+%     clear pb
 
 catch MException
     %% Error handling

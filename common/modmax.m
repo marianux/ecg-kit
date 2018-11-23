@@ -155,9 +155,9 @@ if( t_restriction > 0 )
     
 end
 
-if( bWithPB )
-    clear pb
-end
+% if( bWithPB )
+%     clear pb
+% end
 
 
 lindexes = length(indexes);

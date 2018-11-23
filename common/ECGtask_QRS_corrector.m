@@ -79,7 +79,7 @@ classdef ECGtask_QRS_corrector < ECGtask
         caller_variable = 'payload';
         tmp_path
         payload
-        
+        leads
         
     end
     
@@ -159,7 +159,7 @@ classdef ECGtask_QRS_corrector < ECGtask
                  ECG_header.btime = datestr([2014,1,1,iHours, iMins,iSeconds], 'HH:MM:SS');
             end
 
-            QRScorrector('ECG', ECG, 'QRS_annotations', Ann_struct, 'Figure', figure(obj.fig_hdl) );
+            QRScorrector('ECG', ECG, 'QRS_annotations', Ann_struct, 'Figure', figure(obj.fig_hdl), 'leads', obj.leads );
 
             disp_string_framed('*Blue', 'User interaction required' );
 

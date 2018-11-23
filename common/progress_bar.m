@@ -146,11 +146,20 @@ classdef progress_bar < handle
                 obj.time_elapsed = 0;
                 
                 if( nargin < 3 || ~ishandle(wb_handle) )
-                    obj.wb_handle = waitbar(0, obj.Message, 'name', obj.Title );
+                    
+                    all_hdl = findall(0, 'Tag', 'progress_bar');
+                    if(isempty(all_hdl))
+                        obj.wb_handle = waitbar(0, obj.Message, 'name', obj.Title );
+                        set(obj.wb_handle, 'Tag', 'progress_bar');
+                    else
+                        obj.wb_handle = all_hdl(1);
+                        obj.show();
+                    end            
+                    
                 else
                     obj.wb_handle = wb_handle;
                 end
-                set(obj.wb_handle, 'Tag', 'progress_bar_class');
+                
 %                 obj.wb_axes_hdl = findobj(obj.wb_handle,'Type','Axes');
 %                 set(obj.wb_handle, 'units','normalized' );
 %                 aux_val = get(obj.wb_handle, 'position');
@@ -218,8 +227,14 @@ classdef progress_bar < handle
 
             % take care always a waitbar to draw.
             if( obj.bUIpresent && ~ishandle(obj.wb_handle) )
-                obj.wb_handle = waitbar(0);
-                set(obj.wb_handle, 'Tag', 'progress_bar');
+                all_hdl = findall(0, 'Tag', 'progress_bar');
+                if(isempty(all_hdl))
+                    obj.wb_handle = waitbar(0);
+                    set(obj.wb_handle, 'Tag', 'progress_bar');
+                else
+                    obj.wb_handle = all_hdl(1);
+                    obj.show();
+                end
 %                 obj.wb_axes_hdl = findobj(obj.wb_handle,'Type','Axes');
 %                 set(obj.wb_handle, 'units','normalized' );
 %                 aux_val = get(obj.wb_handle, 'position');
@@ -380,7 +395,7 @@ classdef progress_bar < handle
             if( obj.bUIpresent )
                 if( ishandle(obj.wb_handle) ) 
                     % waitbar close
-                    delete(obj.wb_handle)
+%                     delete(obj.wb_handle)
                 end
             else
 

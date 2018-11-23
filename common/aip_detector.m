@@ -185,12 +185,17 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
         aux_seq = 1:length(thr_grid);
 
-        min_hist_max_values = min( hist_max_values( aux_seq >= first_bin_idx & aux_seq < thr_idx_expected) );
+        % MPS0018 recording from Basel VIII database forced to add the
+        % lesser or equal to aux_seq <= thr_idx_expected. Probably a
+        % recording where no clear maximum above the noise threshold were
+        % found.
+        bAux = aux_seq >= first_bin_idx & aux_seq <= thr_idx_expected;
+        min_hist_max_values = min( hist_max_values( bAux ) );
 
         % in case several indexes match the boolean condition, the mean
         % index is the center of all those indexes. Other criteria such as
         % min or max can be explored
-        thr_min_idx = round(mean(find(aux_seq >= first_bin_idx & aux_seq < thr_idx_expected & [hist_max_values 0] == min_hist_max_values)));
+        thr_min_idx = round(mean(find(bAux & [hist_max_values 0] == min_hist_max_values)));
 %         thr_min_idx = round(mean(find(aux_seq >= first_bin_idx & aux_seq < thr_idx_expected & hist_max_values == min_hist_max_values)));
 
         actual_thr = thr_grid(thr_min_idx );
@@ -306,9 +311,10 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
             aux_seq = 1:length(thr_grid);
 
-            min_hist_max_values = min( hist_max_values( aux_seq >= first_bin_idx & aux_seq < thr_idx_expected) );
-
-            thr_min_idx = round(mean(find(aux_seq >= first_bin_idx & aux_seq < thr_idx_expected & [hist_max_values 0] == min_hist_max_values)));
+            bAux = aux_seq >= first_bin_idx & aux_seq <= thr_idx_expected;
+            min_hist_max_values = min( hist_max_values( bAux ) );
+ 
+            thr_min_idx = round(mean(find( bAux & [hist_max_values 0] == min_hist_max_values)));
 %             thr_min_idx = round(mean(find(aux_seq >= first_bin_idx & aux_seq < thr_idx_expected & hist_max_values == min_hist_max_values)));
 
             actual_thr = thr_grid(thr_min_idx );
