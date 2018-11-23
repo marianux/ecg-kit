@@ -2519,18 +2519,42 @@ function ann_output = QRScorrector(varargin)
         aux_max_idx = aux_max_idx.result;
         aux_similarity_max = aux_similarity_max(aux_max_idx);
         
-        prctile_grid = prctile( aux_similarity_max, 1:100 );
+%         prctile_grid = prctile( aux_similarity_max, 1:100 );
+% 
+%         grid_step = median(diff(prctile_grid));
+%         
+%         max2find_in_hist = 10;
+%         thr_max = zeros(max2find_in_hist+1,1);
+%         hist_max_values = zeros(2*max2find_in_hist+1,1);
+% 
+%         min_grid = prctile(aux_similarity_max,5);
+%         max_grid = prctile(aux_similarity_max,95);
+%         grid_N = round((max_grid-min_grid)/grid_step);
+%         thr_grid = linspace(min_grid, max_grid, grid_N);
+%         
+%         while( length( thr_max ) > max2find_in_hist  && grid_N > round(1.5*max2find_in_hist) )
+% 
+%             thr_grid = linspace(min_grid, max_grid, grid_N);
+% 
+%             hist_max_values = histcounts(aux_similarity_max, thr_grid);
+% 
+%             [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx );
+%             
+%             grid_N = round(grid_N * 0.7);
+% 
+%         end
 
-        grid_step = median(diff(prctile_grid));
-
-        thr_grid = prctile(aux_similarity_max,5): grid_step:prctile(aux_similarity_max,95);
+        min_grid = prctile(aux_similarity_max,5);
+        max_grid = prctile(aux_similarity_max,95);
+        
+        thr_grid = linspace(min_grid, max_grid, min(40, length(aux_similarity_max) ) );
 
         hist_max_values = histcounts(aux_similarity_max, thr_grid);
 
         first_bin_idx = 2;
         
-        [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 0, [], 10);
-
+        [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx );
+        
         % mass center of the distribution, probably the value where the
         % patterns under search are located.
         thr_idx_expected = floor(rowvec(thr_idx) * colvec(thr_max) *1/sum(thr_max));
