@@ -22,3 +22,5 @@ common/readannot\.mexa64
 common/writeannot\.mexa64
 
 *.m~
+
+recordings/qrs_test/

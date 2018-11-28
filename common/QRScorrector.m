@@ -343,6 +343,9 @@ function ann_output = QRScorrector(varargin)
         
     if( iscellstr(lead_idx) )
         [~, lead_idx] = intersect(upper(strtrim(cellstr(ECG_struct.header.desc))), upper(strtrim(lead_idx)) );
+        if( isempty(lead_idx) )
+            lead_idx = 1;
+        end
     end
     
     

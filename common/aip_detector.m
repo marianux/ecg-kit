@@ -173,6 +173,8 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
         
         thr_grid = linspace(min_grid, max_grid, min(40, length(max_values) ) );
 
+        thr_grid = [ min(max_values) thr_grid  max(max_values)];
+        
         hist_max_values = histcounts(max_values, thr_grid);
 
         first_bin_idx = 2;
@@ -300,6 +302,7 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
             max_grid = prctile(max_values,95);
 
             thr_grid = linspace(min_grid, max_grid, min(40, length(max_values) ) );
+            thr_grid = [ min(max_values) thr_grid  max(max_values)];
 
             hist_max_values = histcounts(max_values, thr_grid);
 
