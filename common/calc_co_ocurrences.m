@@ -63,15 +63,19 @@ if( isempty(aux_min) )
     return;
 end
 aux_size = max(cell2mat(cellfun(@(a)(max(a)),hb_idx_matrix, 'UniformOutput', false))) - aux_min + 1;
-aux_mat = zeros( aux_size, cant_leads);
-aux_idx = cell2mat(cellfun(@(a,b)(colvec( (round(a) - aux_min + 1) + (b * aux_size)  ) ), colvec(hb_idx_matrix), num2cell((0:cant_leads-1)'), 'UniformOutput', false));
 
+% build a binary matrix where 1 means "in the vicinity of a heartbeat"
+aux_mat = zeros( aux_size, cant_leads);
+% build the linear indexes for the heartbeats in the matrix aux_mat
+aux_idx = cell2mat(cellfun(@(a,b)(colvec( (round(a) - aux_min + 1) + (b * aux_size)  ) ), colvec(hb_idx_matrix), num2cell((0:cant_leads-1)'), 'UniformOutput', false));
 aux_idx = aux_idx(aux_idx > half_win & aux_idx < (numel(aux_mat) - half_win) );
 
+% for each sample in the vicinity set to "1"
 for ii = -half_win:half_win
     aux_mat(aux_idx+ii) = 1;
 end
 
+% then count the co-ocurrences through all the leads available
 co_ocurrence = cellfun( @(a)( colvec(sum(aux_mat(round(a) - aux_min + 1,:),2)+1) ), hb_idx_matrix, 'UniformOutput', false );
 
 co_ocurrence = cellfun( @(a)( round(soft_range_conversion( a, [ 0 cant_leads-1 ], range_out, 0.25 ) ) ), co_ocurrence, 'UniformOutput', false);

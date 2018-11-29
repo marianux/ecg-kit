@@ -2435,6 +2435,8 @@ function ann_output = QRScorrector(varargin)
             if( length(anns_under_edition) < 2 )
                 aux_RR = [];
                 this_all_anns = [];
+                aux_RR_filt = [];
+                
             else
 %                 aux_RR = colvec(diff(anns_under_edition));
 
@@ -2467,12 +2469,19 @@ function ann_output = QRScorrector(varargin)
         
         set(figPatternMatch_hdl, 'Position', [ maximized_size(3:4) maximized_size(3:4) ] .* [ 0.05 0.13 0.95 0.9] );
         
-        win_sample = round(20*ECG_struct.header.freq / ndown_similarity);
-        win_sample_2 = round(3*ECG_struct.header.freq / ndown_similarity);
+        win_sample = min(ECG_struct.header.nsamp, round(20*ECG_struct.header.freq / ndown_similarity));
+        win_sample_2 = min(ECG_struct.header.nsamp, round(3*ECG_struct.header.freq / ndown_similarity));
         break_sample = round(1*ECG_struct.header.freq / ndown_similarity);
         n_excerpts = 5;
         aux_idx = 1:win_sample;
-        aux_windows = randsample( round((start_idx:end_idx)*1/ndown_similarity), n_excerpts);
+        
+        aux_val = (start_idx:(end_idx-win_sample));
+        if( isempty(aux_val) )
+            aux_windows = ones(1,n_excerpts);
+        else
+            aux_windows = randsample( round(aux_val*1/ndown_similarity), n_excerpts);
+        end
+        
         sig_breaks = nan(break_sample, llead_idx + 1 );
         
         dt_samp = round(proximity_thr_PM*ECG_struct.header.freq/ ndown_similarity);

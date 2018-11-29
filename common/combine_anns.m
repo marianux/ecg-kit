@@ -30,7 +30,7 @@
 % 
 function artificial_annotations = combine_anns(time_serie, estimated_labs, header)
 
-    % cantidad de leads artificiales que generará
+    % cantidad de leads artificiales que generarï¿½
     min_artificial_leads = 3;
 
 %     lreferences = length(time_serie);
@@ -46,6 +46,8 @@ function artificial_annotations = combine_anns(time_serie, estimated_labs, heade
     aux_seq = (start_sample+win_size):win_size:end_sample;
     
     if( isempty(aux_seq) )
+        str_aux = disp_string_framed(0, 'Recording too short for combining detections'  );
+        fprintf(2, '\n%s\n', str_aux);
         return
     end
     
