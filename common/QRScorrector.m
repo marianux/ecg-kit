@@ -675,7 +675,7 @@ function ann_output = QRScorrector(varargin)
         axes_hdl( RRserie_zoom_axes_k, 1:2) = [RRserie_zoom_axes_hdl, fig_hdl]; 
         
         set(annotation_list_control, 'Value', 1);
-        set(leads_control, 'Value', 1);
+%         set(leads_control, 'Value', 1);
 
     end
 
@@ -1115,28 +1115,28 @@ function ann_output = QRScorrector(varargin)
 
             aux_str = repmat( ' - ', length(recording_indexes),1);
 
-            recordings_control = uicontrol( ... 
-                          'style','listbox', ...
-                          'units','normalized', ...
-                          'string', [ char(cellstr(num2str(colvec(recording_indexes)))) aux_str num2str(round(recording_ratios*1000)) aux_str char(rec_names.name) ] , ...
-                          'position', [0.865 0.75 0.13 0.2] , ...
-                          'min', 1, ...
-                          'max', 1, ...
-                          'Value', rec_idx, ...
-                          'callback', @ChangeRecordingSelected);
-
-            uicontrol( ...
-                          'style','text', ...
-                          'string', 'Available Recordings', ...
-                          'units','normalized', ...
-                          'position', [0.865 0.96 0.13 0.025] );  
+%             recordings_control = uicontrol( ... 
+%                           'style','listbox', ...
+%                           'units','normalized', ...
+%                           'string', [ char(cellstr(num2str(colvec(recording_indexes)))) aux_str num2str(round(recording_ratios*1000)) aux_str char(rec_names.name) ] , ...
+%                           'position', [0.865 0.75 0.13 0.2] , ...
+%                           'min', 1, ...
+%                           'max', 1, ...
+%                           'Value', rec_idx, ...
+%                           'callback', @ChangeRecordingSelected);
+% 
+%             uicontrol( ...
+%                           'style','text', ...
+%                           'string', 'Available Recordings', ...
+%                           'units','normalized', ...
+%                           'position', [0.865 0.96 0.13 0.025] );  
 
             %% Signal list
             leads_control = uicontrol( ... 
                           'style','listbox', ...
                           'units','normalized', ...
                           'string', [ char(cellstr(num2str((1:ECG_struct.header.nsig)'))) repmat( ' - ',ECG_struct.header.nsig,1) ECG_struct.header.desc ] , ...
-                          'position', [0.865 0.4 0.13 0.3] , ...
+                          'position', [0.865 0.65 0.13 0.3] , ...
                           'min', 2, ...
                           'max', 4, ...
                           'Value', lead_idx, ...
@@ -1146,7 +1146,7 @@ function ann_output = QRScorrector(varargin)
                           'style','text', ...
                           'string', 'Available signals', ...
                           'units','normalized', ...
-                          'position', [0.865 0.71 0.13 0.025] );        
+                          'position', [0.865 0.96 0.13 0.025] );        
 
             %% Annotation list
 
@@ -1171,7 +1171,7 @@ function ann_output = QRScorrector(varargin)
                           'style','listbox', ...
                           'units','normalized', ...
                           'string', aux_str, ...
-                          'position', [0.865 0.11 0.13 0.18] , ...
+                          'position', [0.865 0.11 0.13 0.4] , ...
                           'min', 2, ...
                           'max', 4, ...
                           'callback', @ChangeAnnotationsSelected);
@@ -1180,13 +1180,13 @@ function ann_output = QRScorrector(varargin)
                           'style','text', ...
                           'string', 'Annotations available', ...
                           'units','normalized', ...
-                          'position', [0.865 0.30 0.13 0.025] );
+                          'position', [0.865 0.52 0.13 0.025] );
 
             annotation_under_edition_label = uicontrol( ...
                           'style','text', ...
                           'string', aux_label_str, ...
                           'units','normalized', ...
-                          'position', [0.865 0.35 0.13 0.05] );
+                          'position', [0.865 0.57 0.13 0.05] );
 
             uicontrol( ... 
                             'style','pushbutton', ...
@@ -1908,7 +1908,7 @@ function ann_output = QRScorrector(varargin)
                         rec_idx = 1;
                     end
 
-                    set(recordings_control, 'Value', rec_idx );
+%                     set(recordings_control, 'Value', rec_idx );
 
                     DoRecording();                
 
@@ -1947,7 +1947,7 @@ function ann_output = QRScorrector(varargin)
                         rec_idx = length(recording_indexes);
                     end
 
-                    set(recordings_control, 'Value', rec_idx );
+%                     set(recordings_control, 'Value', rec_idx );
 
                     DoRecording();                
 
@@ -3395,56 +3395,56 @@ function ann_output = QRScorrector(varargin)
             
     end
 
-    function ChangeRecordingSelected(obj,event_obj) 
-
-
-        if (strcmp(get(fig_hdl,'SelectionType'),'open'))
-            %Double click        
-
-        else
-            %Single click
-
-            rec_selected = get(obj, 'Value');
-
-            if( rec_selected ~= rec_idx )
-                % change of annotation
-
-                if(bRecEdited)
-
-                    update_annotations();
-
-                    if( bLoadECG )
-                        update_title_efimero('Saving data ...', 5 );
-                        save(rec_path, '-struct', 'ECG_struct');        
-                        update_title_efimero(['Saved ' rec_path], 5 );
-                    else
-
-                        if( isfield(ECG_struct, 'series_quality' ) ) 
-                            anns_struct.series_quality = ECG_struct.series_quality;
-                        end
-                        for ii = 1:size(AnnNames,1)
-                            anns_struct.(AnnNames{ii,1}) = ECG_struct.(AnnNames{ii,1});
-                        end
-                        assignin( 'caller', OutputVarName, anns_struct );
-                        update_title_efimero(sprintf('Saving ''%s'' variable in caller workspace', OutputVarName), 5 );
-
-                        bAnnsEdited = false;
-                        bRecEdited = false;
-
-                    end
-                end
-
-                rec_idx = get(recordings_control, 'Value' );
-
-                DoRecording();
-
-
-            end
-
-        end
-
-    end
-    
+%     function ChangeRecordingSelected(obj,event_obj) 
+% 
+% 
+%         if (strcmp(get(fig_hdl,'SelectionType'),'open'))
+%             %Double click        
+% 
+%         else
+%             %Single click
+% 
+%             rec_selected = get(obj, 'Value');
+% 
+%             if( rec_selected ~= rec_idx )
+%                 % change of annotation
+% 
+%                 if(bRecEdited)
+% 
+%                     update_annotations();
+% 
+%                     if( bLoadECG )
+%                         update_title_efimero('Saving data ...', 5 );
+%                         save(rec_path, '-struct', 'ECG_struct');        
+%                         update_title_efimero(['Saved ' rec_path], 5 );
+%                     else
+% 
+%                         if( isfield(ECG_struct, 'series_quality' ) ) 
+%                             anns_struct.series_quality = ECG_struct.series_quality;
+%                         end
+%                         for ii = 1:size(AnnNames,1)
+%                             anns_struct.(AnnNames{ii,1}) = ECG_struct.(AnnNames{ii,1});
+%                         end
+%                         assignin( 'caller', OutputVarName, anns_struct );
+%                         update_title_efimero(sprintf('Saving ''%s'' variable in caller workspace', OutputVarName), 5 );
+% 
+%                         bAnnsEdited = false;
+%                         bRecEdited = false;
+% 
+%                     end
+%                 end
+% 
+%                 rec_idx = get(recordings_control, 'Value' );
+% 
+%                 DoRecording();
+% 
+% 
+%             end
+% 
+%         end
+% 
+%     end
+%     
     function ChangeLeadsSelected(obj,event_obj) 
 
         if (strcmp(get(fig_hdl,'SelectionType'),'open'))

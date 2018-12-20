@@ -1,7 +1,10 @@
 %% Create an artificial set of QRS detections, based on multilead QRS detections created with wavedet algorithm.
 % This is an auxiliar function for the ECGtask_QRS_detections_post_process.
-% This function creates an artificial set of QRS detections, based on single
-% lead detections, as described in [add reference].
+% *wavedetMix* use the output of wavedet algorithm to perform a  multilead
+% composition. The result of this algorithm is a new set of detections
+% based on the concatenation of the ""best"" detections found for each
+% 20-seconds window in a recording. So, this algorithm generates *new* QRS
+% detection series, as described in [add reference]. 
 % 
 % 
 %   all_detections = wavedetMix(struct_in, ECG_header, start_end_this_segment )
@@ -42,7 +45,7 @@
 %     ECG_w.ECGtaskHandle.CalculatePerformance = true;
 %     ECG_w.Run;
 % 
-% See also ECGtask_QRS_detections_post_process, calculate_artificial_QRS_detections
+% See also ECGtask_QRS_detections_post_process, mixartif, best_m_lead, qrs_detection_and_correction
 % 
 % Author: Mariano Llamedo Soria llamedom@electron.frba.utn.edu.ar
 % Version: 0.1 beta

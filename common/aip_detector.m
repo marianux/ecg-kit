@@ -165,8 +165,10 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
         initial_thr = 30; % percentil
 
         actual_thr = prctile(rise_detector, initial_thr);
-        
-        [~, max_values ] = modmax(rise_detector, 1, actual_thr, 0, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
+
+% this time restriction is not important here, and could affect the estimation of the *not QRS* floor in arrhythmia or elevated heart rates recordings         
+%         [~, max_values ] = modmax(rise_detector, 1, actual_thr, 1, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
+        [~, max_values ] = modmax(rise_detector, 1, actual_thr, 1);
 
         min_grid = prctile(max_values,5);
         max_grid = prctile(max_values,95);
@@ -179,7 +181,7 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
         first_bin_idx = 2;
         
-        [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx );
+        [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 1 );
 
         % mass center of the distribution, probably the value where the
         % patterns under search are located.
@@ -202,7 +204,8 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
         actual_thr = thr_grid(thr_min_idx );
 
-        first_detection_idx = modmax(rise_detector, 1, actual_thr, 0, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
+        % here the MIN time restriction is important
+        first_detection_idx = modmax(rise_detector, 1, actual_thr, 1, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
 
         %% look for stable segments
 
@@ -239,14 +242,16 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
         pack_variance = repmat(realmax,lstable_rhythm_regions,1);
 
         % from the longest - most rhythm stable regions
-        for ii = 1: min( 2*payload_in.max_patterns_found, round(lstable_rhythm_regions/4) )
+%         for ii = 1: min( 2*payload_in.max_patterns_found, round(lstable_rhythm_regions/4) )
+        for ii = 1: round(lstable_rhythm_regions/4)
 
             jj = aux_idx(ii);
             % refinamos con el metodo de woody
             aux_idx2 = find(first_detection_idx >= stable_rhythm_regions(jj,1) & first_detection_idx <= stable_rhythm_regions(jj,2));
             avg_pack = pack_signal(ECG_matrix(:,1), first_detection_idx(aux_idx2), [ pattern_prewin pattern_prewin ], true);    
 
-            pack_variance(jj) = mean(var(squeeze(avg_pack)'));
+            % mean variance across the ensemble
+            pack_variance(jj) = nanmean(nanvar(squeeze(avg_pack), [], 2));
 
         end
         [~, aux_idx] = sort(pack_variance);
@@ -272,7 +277,13 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
         payload.series_quality.ratios = [payload.series_quality.ratios; RRserie_mean_sq_error];
         payload.series_quality.estimated_labs = [ payload.series_quality.estimated_labs; {[]} ];
 
-        aux_pat_coe = zeros(numel(pattern_coeffs),size(stable_rhythm_regions,1));
+        k_woody = 3;
+        win_limits = [ pattern_prewin (pattern_prewin+1) ];
+        extended_win_limits = k_woody * win_limits;
+        aux_offset = (extended_win_limits(1) - win_limits(1) + 1);
+        
+        aux_pat_coeff = zeros(sum(win_limits),size(stable_rhythm_regions,1));
+        
         for ii = 1:size(stable_rhythm_regions,1)
 
             % refinamos con el metodo de woody
@@ -280,8 +291,9 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
     % figure(3); avg_pack = pack_signal(ECG_matrix(:,1), first_detection_idx(aux_idx2), 10*[ pattern_prewin pattern_prewin ], true); plot_ecg_mosaic(avg_pack)
 
-            pattern_coeffs = woody_method(ECG_matrix(:,1), first_detection_idx(aux_idx2), [ pattern_prewin (pattern_prewin+1) ], 0.95);
-            aux_pat_coe(:,ii) = pattern_coeffs;
+            pattern_coeffs = woody_method(ECG_matrix(:,1), first_detection_idx(aux_idx2), extended_win_limits, 0.95);
+            % trim the pattern 
+            aux_pat_coeff(:,ii) = pattern_coeffs( aux_offset:(aux_offset+size(aux_pat_coeff,1)-1) );
 
             progress_handle.checkpoint([ pb_str_prefix 'Pattern match ' num2str(ii) ]);
 
@@ -296,7 +308,9 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
             actual_thr = prctile(rise_detector, initial_thr);
 
-            [~, max_values ] = modmax(rise_detector, 1, actual_thr, 0, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
+% this time restriction is not important here, and could affect the estimation of the *not QRS* floor in arrhythmia or elevated heart rates recordings         
+%             [~, max_values ] = modmax(rise_detector, 1, actual_thr, 1, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
+            [~, max_values ] = modmax(rise_detector, 1, actual_thr, 1);
 
             min_grid = prctile(max_values,5);
             max_grid = prctile(max_values,95);
@@ -308,7 +322,7 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
             first_bin_idx = 2;
 
-            [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx );
+            [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 1 );
 
             thr_idx_expected = floor(rowvec(thr_idx) * colvec(thr_max) *1/sum(thr_max));
 
@@ -322,7 +336,8 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
             actual_thr = thr_grid(thr_min_idx );
 
-            this_idx = modmax(rise_detector, 1, actual_thr, 0, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
+            % here the MIN time restriction is important
+            this_idx = modmax(rise_detector, 1, actual_thr, 1, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
 
 
             RRserie = RR_calculation(this_idx, ECG_header.freq);               
