@@ -162,53 +162,63 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
         progress_handle.checkpoint([ pb_str_prefix 'Peak detection first guess' ]);
 
-        initial_thr = 30; % percentil
-
-        actual_thr = prctile(rise_detector, initial_thr);
-
-% this time restriction is not important here, and could affect the estimation of the *not QRS* floor in arrhythmia or elevated heart rates recordings         
-%         [~, max_values ] = modmax(rise_detector, 1, actual_thr, 1, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
-        [~, max_values ] = modmax(rise_detector, 1, actual_thr, 1);
-
-        min_grid = prctile(max_values,5);
-        max_grid = prctile(max_values,95);
+        actual_thr = thr_calc(rise_detector);
         
-        thr_grid = linspace(min_grid, max_grid, min(40, length(max_values) ) );
-
-        thr_grid = [ min(max_values) thr_grid  max(max_values)];
+        if isnan(actual_thr)
+            cprintf('Red', '\nRecording %s, lead %s, no patterns above threshold found.(Current %f seconds). \n\n',ECG_header.recname , lead_names{this_sig_idx}, payload_in.stable_RR_time_win);
+            continue
+        end
         
-        hist_max_values = histcounts(max_values, thr_grid);
-
-        first_bin_idx = 2;
-        
-        [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 1 );
-
-        % mass center of the distribution, probably the value where the
-        % patterns under search are located.
-        thr_idx_expected = floor(rowvec(thr_idx) * colvec(thr_max) *1/sum(thr_max));
-
-        aux_seq = 1:length(thr_grid);
-
-        % MPS0018 recording from Basel VIII database forced to add the
-        % lesser or equal to aux_seq <= thr_idx_expected. Probably a
-        % recording where no clear maximum above the noise threshold were
-        % found.
-        bAux = aux_seq >= first_bin_idx & aux_seq <= thr_idx_expected;
-        min_hist_max_values = min( hist_max_values( bAux ) );
-
-        % in case several indexes match the boolean condition, the mean
-        % index is the center of all those indexes. Other criteria such as
-        % min or max can be explored
-        thr_min_idx = round(mean(find(bAux & [hist_max_values 0] == min_hist_max_values)));
-%         thr_min_idx = round(mean(find(aux_seq >= first_bin_idx & aux_seq < thr_idx_expected & hist_max_values == min_hist_max_values)));
-
-        actual_thr = thr_grid(thr_min_idx );
-
-        % here the MIN time restriction is important
+%         initial_thr = 30; % percentil
+% 
+%         actual_thr = prctile(rise_detector, initial_thr);
+% 
+% % this time restriction is not important here, and could affect the estimation of the *not QRS* floor in arrhythmia or elevated heart rates recordings         
+% %         [~, max_values ] = modmax(rise_detector, 1, actual_thr, 1, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
+%         [~, max_values ] = modmax(rise_detector, 1, actual_thr, 1);
+% 
+%         min_grid = prctile(max_values,0);
+%         max_grid = prctile(max_values,100);
+%         
+%         thr_grid = linspace(min_grid, max_grid, min(40, length(max_values) ) );
+%         
+%         hist_max_values = histcounts(max_values, thr_grid);
+% 
+%         first_bin_idx = 2;
+%         
+%         [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 1 );
+% 
+%         % mass center of the distribution, probably the value where the
+%         % patterns under search are located.
+%         thr_idx_expected = floor(rowvec(thr_idx) * colvec(thr_max) *1/sum(thr_max));
+% 
+%         aux_seq = 1:length(thr_grid);
+% 
+%         % MPS0018 recording from Basel VIII database forced to add the
+%         % lesser or equal to aux_seq <= thr_idx_expected. Probably a
+%         % recording where no clear maximum above the noise threshold were
+%         % found.
+%         bAux = aux_seq >= first_bin_idx & aux_seq <= thr_idx_expected;
+%         min_hist_max_values = min( hist_max_values( bAux ) );
+% 
+%         % in case several indexes match the boolean condition, the mean
+%         % index is the center of all those indexes. Other criteria such as
+%         % min or max can be explored
+%         thr_min_idx = round(mean(find(bAux & [hist_max_values 0] == min_hist_max_values)));
+% %         thr_min_idx = round(mean(find(aux_seq >= first_bin_idx & aux_seq < thr_idx_expected & hist_max_values == min_hist_max_values)));
+% 
+%         actual_thr = thr_grid(thr_min_idx );
+% 
+%         % here the MIN time restriction is important
+%        figure(3); plot(ECG_matrix(:,this_sig_idx) ); xlims = xlim(); ylims = ylim(); box_h = ylims + [0.01 -0.1] * diff(ylims); aux_sc = 0.8*diff(ylims)/(max(rise_detector)-min(rise_detector));aux_off = ylims(1) + 0.6*diff(ylims); hold on; plot(rise_detector * aux_sc + aux_off); plot(first_detection_idx, ECG_matrix(first_detection_idx,this_sig_idx), '*r'); hold off; ylim(ylims);
         first_detection_idx = modmax(rise_detector, 1, actual_thr, 1, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
-
+         
         %% look for stable segments
-
+        if numel(first_detection_idx) <= 1
+            cprintf('Red', '\nRecording %s, lead %s, Not enough patterns found over noise floor. \n\n',ECG_header.recname , lead_names{this_sig_idx});                    
+            continue
+        end
+        
         RRserie = RR_calculation(first_detection_idx, ECG_header.freq);               
 
         RRserie_filt = MedianFiltSequence(first_detection_idx, RRserie, round(5 * ECG_header.freq));
@@ -291,6 +301,12 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
     % figure(3); avg_pack = pack_signal(ECG_matrix(:,1), first_detection_idx(aux_idx2), 10*[ pattern_prewin pattern_prewin ], true); plot_ecg_mosaic(avg_pack)
 
+            if isempty(aux_idx2)
+                % Cannot found any stable regions to apply the woody_method
+                cprintf('Red', '\nRecording %s, lead %s, Cannot found any stable regions. \n\n',ECG_header.recname , lead_names{this_sig_idx});
+                continue
+            end
+    
             pattern_coeffs = woody_method(ECG_matrix(:,1), first_detection_idx(aux_idx2), extended_win_limits, 0.95);
             % trim the pattern 
             aux_pat_coeff(:,ii) = pattern_coeffs( aux_offset:(aux_offset+size(aux_pat_coeff,1)-1) );
@@ -306,40 +322,51 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
             progress_handle.checkpoint([ pb_str_prefix 'Peak detection pattern ' num2str(ii) ]);
 
-            actual_thr = prctile(rise_detector, initial_thr);
-
-% this time restriction is not important here, and could affect the estimation of the *not QRS* floor in arrhythmia or elevated heart rates recordings         
-%             [~, max_values ] = modmax(rise_detector, 1, actual_thr, 1, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
-            [~, max_values ] = modmax(rise_detector, 1, actual_thr, 1);
-
-            min_grid = prctile(max_values,5);
-            max_grid = prctile(max_values,95);
-
-            thr_grid = linspace(min_grid, max_grid, min(40, length(max_values) ) );
-            thr_grid = [ min(max_values) thr_grid  max(max_values)];
-
-            hist_max_values = histcounts(max_values, thr_grid);
-
-            first_bin_idx = 2;
-
-            [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 1 );
-
-            thr_idx_expected = floor(rowvec(thr_idx) * colvec(thr_max) *1/sum(thr_max));
-
-            aux_seq = 1:length(thr_grid);
-
-            bAux = aux_seq >= first_bin_idx & aux_seq <= thr_idx_expected;
-            min_hist_max_values = min( hist_max_values( bAux ) );
- 
-            thr_min_idx = round(mean(find( bAux & [hist_max_values 0] == min_hist_max_values)));
-%             thr_min_idx = round(mean(find(aux_seq >= first_bin_idx & aux_seq < thr_idx_expected & hist_max_values == min_hist_max_values)));
-
-            actual_thr = thr_grid(thr_min_idx );
-
-            % here the MIN time restriction is important
+            actual_thr = thr_calc(rise_detector);
+            
+            if isnan(actual_thr)
+                cprintf('Red', '\nRecording %s, lead %s, no patterns above threshold found.(Current %f seconds). \n\n',ECG_header.recname , lead_names{this_sig_idx}, payload_in.stable_RR_time_win);
+                continue
+            end
+%             
+%             actual_thr = prctile(rise_detector, initial_thr);
+% 
+% % this time restriction is not important here, and could affect the estimation of the *not QRS* floor in arrhythmia or elevated heart rates recordings         
+% %             [~, max_values ] = modmax(rise_detector, 1, actual_thr, 1, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
+%             [~, max_values ] = modmax(rise_detector, 1, actual_thr, 1);
+% 
+%             min_grid = prctile(max_values,5);
+%             max_grid = prctile(max_values,95);
+% 
+%             thr_grid = linspace(min_grid, max_grid, min(40, length(max_values) ) );
+%             thr_grid = [ min(max_values) thr_grid  max(max_values)];
+% 
+%             hist_max_values = histcounts(max_values, thr_grid);
+% 
+%             first_bin_idx = 2;
+% 
+%             [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 1 );
+% 
+%             thr_idx_expected = floor(rowvec(thr_idx) * colvec(thr_max) *1/sum(thr_max));
+% 
+%             aux_seq = 1:length(thr_grid);
+% 
+%             bAux = aux_seq >= first_bin_idx & aux_seq <= thr_idx_expected;
+%             min_hist_max_values = min( hist_max_values( bAux ) );
+%  
+%             thr_min_idx = round(mean(find( bAux & [hist_max_values 0] == min_hist_max_values)));
+% %             thr_min_idx = round(mean(find(aux_seq >= first_bin_idx & aux_seq < thr_idx_expected & hist_max_values == min_hist_max_values)));
+% 
+%             actual_thr = thr_grid(thr_min_idx );
+% 
+%             % here the MIN time restriction is important
             this_idx = modmax(rise_detector, 1, actual_thr, 1, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
-
-
+            
+            if numel(first_detection_idx) <= 1
+                cprintf('Red', '\nRecording %s, lead %s, Not enough patterns found over noise floor. \n\n',ECG_header.recname , lead_names{this_sig_idx});                    
+                continue
+            end
+            
             RRserie = RR_calculation(this_idx, ECG_header.freq);               
 
             this_RRserie_filt = colvec(MedianFiltSequence(this_idx, RRserie, round(5 * ECG_header.freq)));
@@ -374,4 +401,76 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
         progress_handle.end_loop();    
 
     end
+end
     
+function [actual_thr] = thr_calc(rise_detector)
+    modo_debug = false;
+    
+    if modo_debug == true
+        initial_thr = 5; % percentil
+    else
+        initial_thr = 30; % percentil
+    end
+
+    actual_thr = prctile(rise_detector, initial_thr);
+
+% this time restriction is not important here, and could affect the estimation of the *not QRS* floor in arrhythmia or elevated heart rates recordings         
+%         [~, max_values ] = modmax(rise_detector, 1, actual_thr, 1, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
+    [~, max_values ] = modmax(rise_detector, 1, actual_thr, 1);
+
+    if modo_debug == true
+        % Pruebo suavizando los maximos encontrados por modmax mediante un
+        % filtro de mediana movil (esto excluiria los casos extremos, sin
+        % agregar practicamente ningun parametro)
+        
+        % El filtro de mediana movil es aplicado a los maximos encontrados
+        % pero ordenados (pensar en los graficos que dibujaste, ahi esta la
+        % explicacion de por que esto (para mi) tiene sentido.
+        
+        % Como mucho, que la ventana del filtro tome 1/100 de la cantidad
+        % de maximos encontrados, para no "sobre-filtrar" los maximos
+        max_values = movmedian(sort(max_values), ceil(numel(max_values)/100));
+        
+        % Despues todo sigue igual
+    end
+    
+    min_grid = min(max_values);
+    max_grid = max(max_values);
+
+    if modo_debug == true
+        thr_grid = linspace(min_grid, max_grid, min(100, length(max_values) ) );
+    else
+        thr_grid = linspace(min_grid, max_grid, min(40, length(max_values) ) );
+    end
+
+    hist_max_values = histcounts(max_values, thr_grid);
+
+    first_bin_idx = 2;
+
+    [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 1 );
+
+    if( isempty(thr_max) )
+        actual_thr = nan;
+    else
+        % mass center of the distribution, probably the value where the
+        % patterns under search are located.
+        thr_idx_expected = floor(rowvec(thr_idx) * colvec(thr_max) *1/sum(thr_max));
+
+        aux_seq = 1:length(thr_grid);
+
+        % MPS0018 recording from Basel VIII database forced to add the
+        % lesser or equal to aux_seq <= thr_idx_expected. Probably a
+        % recording where no clear maximum above the noise threshold were
+        % found.
+        bAux = aux_seq >= first_bin_idx & aux_seq <= thr_idx_expected;
+        min_hist_max_values = min( hist_max_values( bAux ) );
+
+        % in case several indexes match the boolean condition, the mean
+        % index is the center of all those indexes. Other criteria such as
+        % min or max can be explored
+        thr_min_idx = round(mean(find(bAux & [hist_max_values 0] == min_hist_max_values)));
+    %         thr_min_idx = round(mean(find(aux_seq >= first_bin_idx & aux_seq < thr_idx_expected & hist_max_values == min_hist_max_values)));
+
+        actual_thr = thr_grid(thr_min_idx );
+    end
+end
