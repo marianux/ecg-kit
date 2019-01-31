@@ -1,7 +1,6 @@
 function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_start_offset, progress_handle, payload_in, interproc_data)
 % aip_detector Arbitrary impulsive pseudoperiodic detector
 %   Detailed explanation goes here
-
     payload = [];
     
     payload.series_quality.AnnNames = {};
