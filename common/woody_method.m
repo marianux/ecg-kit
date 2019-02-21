@@ -96,7 +96,7 @@ while( loop_count < MAX_LOOPS && crit(max(loop_count-1,1)) > 0.001 )
     
     %just calculate the median change in time
 %     error_sig = round(median( cross_corr_idx, 2 )) - ensemble_size ;
-    
+    %
     %do a weighted avg favoring small changes in time
     cross_corr_idx = cross_corr_idx - ensemble_size;
     err_weight = pdf('norm',cross_corr_idx,0,5); % 5 samples of refinement
