@@ -339,6 +339,12 @@ function ann_output = QRScorrector(varargin)
 
     if( ischar(lead_idx) )
         lead_idx = cellstr(lead_idx);
+    elseif isnumeric(lead_idx)
+        if isempty(lead_idx) || isnan(lead_idx)
+            lead_idx = 1;
+        end
+    else
+        lead_idx = 1;
     end
         
     if( iscellstr(lead_idx) )

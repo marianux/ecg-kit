@@ -151,7 +151,7 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
         rise_detector = filter( ones(lp_size,1)/lp_size, 1, flipud(abs(rise_detector)) );
         rise_detector = filter( ones(lp_size,1)/lp_size, 1, flipud(rise_detector) );
         
-        % figure(4); plot(rise_detector ./ max(rise_detector)); hold on; plot(ECG_matrix(:,this_sig_idx) ./ max(ECG_matrix(:,this_sig_idx)))
+        % figure(4); plot(rise_detector ./ max(rise_detector)); hold on; plot(ECG_matrix(:,this_sig_idx) ./ max(ECG_matrix(:,this_sig_idx))); legend('rise detector','ECG');
 
         % figure(3); plot(ECG_matrix(:,1) ); xlims = xlim(); ylims = ylim(); box_h = ylims + [0.01 -0.1] * diff(ylims); aux_sc = 0.8*diff(ylims)/(max(rise_detector)-min(rise_detector));aux_off = ylims(1) + 0.6*diff(ylims); hold on; plot(rise_detector * aux_sc + aux_off); hold off; ylim(ylims);
 
@@ -180,56 +180,7 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
 
         % Find the most stable regions
         RR_thr = prctile(RR_scatter, 50);
-
-        stable_rhythm_regions = get_segments_from_sequence(first_detection_idx, RR_scatter, round(payload_in.stable_RR_time_win * ECG_header.freq), RR_thr );
-
-%     figure(3); plot(first_detection_idx, [RRserie RRserie_filt] ); ylims = ylim(); ylims = ylims + [0.1 -0.1] * diff(ylims); hold on; plot( [ stable_rhythm_regions'; flipud(stable_rhythm_regions'); stable_rhythm_regions(:,1)' ],  repmat([ylims(1); ylims(1); ylims(2);ylims(2);ylims(1)],1, size(stable_rhythm_regions,1) ), 'b:' ); hold off;
-%     figure(3); plot(first_detection_idx, [RR_scatter], ':xb' ); xlims = xlim(); ylims = ylim(); ylims = ylims + [0.01 -0.1] * diff(ylims); hold on; plot(xlims, [RR_thr RR_thr], '--r'); plot( [ stable_rhythm_regions'; flipud(stable_rhythm_regions'); stable_rhythm_regions(:,1)' ],  repmat([ylims(1); ylims(1); ylims(2);ylims(2);ylims(1)],1, size(stable_rhythm_regions,1) ), 'b:' ); hold off;
-%     figure(3); plot(first_detection_idx, [RRserie RRserie_filt] ); xlims = xlim(); ylims = ylim(); ylims = ylims + [0.1 -0.1] * diff(ylims); aux_sc = 0.25*diff(ylims)/(max(RR_scatter)-min(RR_scatter));aux_off = ylims(1) + 0.65*diff(ylims); hold on; plot(first_detection_idx, (RR_scatter*aux_sc) +aux_off , ':xb' ); plot(xlims, ([RR_thr RR_thr]*aux_sc ) + aux_off, '--r'); plot( [ stable_rhythm_regions'; flipud(stable_rhythm_regions'); stable_rhythm_regions(:,1)' ],  repmat([ylims(1); ylims(1); ylims(2);ylims(2);ylims(1)],1, size(stable_rhythm_regions,1) ), 'b:' ); hold off;    
-
-        if( isempty(stable_rhythm_regions) )
-            cprintf('Red', '\nRecording %s, lead %s, no stable rhythm segments found. Consider decreasing "stable_RR_time_win" (Current %f seconds). \n\n',ECG_header.recname , lead_names{this_sig_idx}, payload_in.stable_RR_time_win);                    
-            continue
-        end
-
-        lstable_rhythm_regions = size(stable_rhythm_regions,1);
-
-        % Get the larger or more stable segments first
-        [~, aux_idx] = sort(diff(stable_rhythm_regions,1,2), 'descend');
-
-        larger_stable_rank = arrayfun(@(a)(find(a==aux_idx)), 1:lstable_rhythm_regions);
-
-        pattern_prewin = round(payload_in.trgt_width/2*ECG_header.freq); % force odd number
-
-        % Get the segments with less change in morphology
-        pack_variance = repmat(realmax,lstable_rhythm_regions,1);
-
-        % From the longest - most rhythm stable regions
-        for ii = 1: round(lstable_rhythm_regions/4)
-
-            jj = aux_idx(ii);
-            
-            % Woody method refinement
-            aux_idx2 = find(first_detection_idx >= stable_rhythm_regions(jj,1) & first_detection_idx <= stable_rhythm_regions(jj,2));
-            avg_pack = pack_signal(ECG_matrix(:,1), first_detection_idx(aux_idx2), [ pattern_prewin pattern_prewin ], true);    
-
-            % Mean variance across the ensemble
-            pack_variance(jj) = nanmean(nanvar(squeeze(avg_pack), [], 2));
-
-        end
-        [~, aux_idx] = sort(pack_variance);
-
-        morphology_rank = arrayfun(@(a)(find(a==aux_idx)), 1:lstable_rhythm_regions);
-
-        % Final rank
-        [~, aux_idx] = sort(larger_stable_rank + morphology_rank);
-
-        stable_rhythm_regions = stable_rhythm_regions(aux_idx( 1:min(payload_in.max_patterns_found , size(stable_rhythm_regions,1))), : );
-
-        % figure(3); plot(first_detection_idx, [RRserie RRserie_filt] ); xlims = xlim(); ylims = ylim(); ylims = ylims + [0.1 -0.1] * diff(ylims); aux_sc = 0.25*diff(ylims)/(max(RR_scatter)-min(RR_scatter));aux_off = ylims(1) + 0.65*diff(ylims); hold on; plot(first_detection_idx, (RR_scatter*aux_sc) +aux_off , ':xb' ); plot(xlims, ([RR_thr RR_thr]*aux_sc ) + aux_off, '--r'); plot( [ stable_rhythm_regions'; flipud(stable_rhythm_regions'); stable_rhythm_regions(:,1)' ],  repmat([ylims(1); ylims(1); ylims(2);ylims(2);ylims(1)],1, size(stable_rhythm_regions,1) ), 'b:' ); arrayfun(@(a)(text( stable_rhythm_regions(a,1), ylims(2), num2str(a))), 1:min(payload_in.max_patterns_found )); hold off;
-
-        %% save first detections as a separate time serie
-
+        
         str_aux = [ 'aip_guess' '_' lead_names{this_sig_idx} ];
         payload.(str_aux).time = first_detection_idx + ECG_start_offset - 1;
         payload.series_quality.AnnNames = [ payload.series_quality.AnnNames ; {str_aux} {'time'} ];
@@ -237,74 +188,130 @@ function [payload, interproc_data ] = aip_detector( ECG_matrix, ECG_header, ECG_
         payload.series_quality.ratios = [payload.series_quality.ratios; RRserie_mean_sq_error];
         payload.series_quality.estimated_labs = [ payload.series_quality.estimated_labs; {[]} ];
 
-        k_woody = 3;
-        win_limits = [ pattern_prewin (pattern_prewin+1) ];
-        extended_win_limits = [k_woody * win_limits(1), k_woody * win_limits(1)+1];
-        aux_offset = (extended_win_limits(1) - win_limits(1) + 1); % ???
-        
-        aux_pat_coeff = zeros(sum(win_limits),size(stable_rhythm_regions,1));
-        
-        for ii = 1:size(stable_rhythm_regions,1)
-
-            % refinamos con el metodo de woody
-            aux_idx2 = find(first_detection_idx >= stable_rhythm_regions(ii,1) & first_detection_idx <= stable_rhythm_regions(ii,2));
-
-    % figure(3); avg_pack = pack_signal(ECG_matrix(:,this_sig_idx), first_detection_idx(aux_idx2), 10*[ pattern_prewin pattern_prewin ], true); plot_ecg_mosaic(avg_pack)
-
-            if isempty(aux_idx2)
-                % Cannot found any stable regions to apply the woody_method
-                cprintf('Red', '\nRecording %s, lead %s, Cannot found any stable regions. \n\n',ECG_header.recname , lead_names{this_sig_idx});
-                continue
-            end
-    
-            pattern_coeffs = woody_method(ECG_matrix(:,this_sig_idx), first_detection_idx(aux_idx2), extended_win_limits, 0.95);
-            % trim the pattern 
-            aux_pat_coeff(:,ii) = pattern_coeffs( aux_offset:(aux_offset+size(aux_pat_coeff,1)-1) );
-            
-            % figure(5); plot(first_pattern_coeffs ./ max(abs(first_pattern_coeffs))); hold on; plot(aux_pat_coeff(:,ii) ./ max(abs(aux_pat_coeff(:,ii))))
-
-            progress_handle.checkpoint([ pb_str_prefix 'Pattern match ' num2str(ii) ]);
-
-        %         rise_detector = filter(ones(lp_size,1)/lp_size,1, abs([0; diff(double(ECG_matrix(:,ss)))]));
-        %         rise_detector = [zeros(((lp_size-1)/2)-1,1); rise_detector((lp_size-1)/2:end)];
-            rise_detector = filter( pattern_coeffs, 1, flipud(ECG_matrix(:,this_sig_idx)) );
-            rise_detector = filter( pattern_coeffs, 1, flipud(rise_detector) );
-            rise_detector = filter( ones(lp_size,1)/lp_size, 1, flipud(abs(rise_detector)) );
-            rise_detector = filter( ones(lp_size,1)/lp_size, 1, flipud(rise_detector) );
-            
-            % figure(6); plot(rise_detector ./ max(rise_detector)); hold on; plot(ECG_matrix(:,this_sig_idx) ./ max(ECG_matrix(:,this_sig_idx)))
-
-            progress_handle.checkpoint([ pb_str_prefix 'Peak detection pattern ' num2str(ii) ]);
-
-            actual_thr = thr_calc(rise_detector, payload_in.trgt_min_pattern_separation, ECG_header.freq);
-            
-            if isnan(actual_thr)
-                cprintf('Red', '\nRecording %s, lead %s, no patterns above threshold found.(Current %f seconds). \n\n',ECG_header.recname , lead_names{this_sig_idx}, payload_in.stable_RR_time_win);
-                continue
-            end
-            
-            % Here the MIN time restriction is important
-            this_idx = modmax(rise_detector, 1, actual_thr, 1, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
-            
-            if numel(first_detection_idx) <= 1
-                cprintf('Red', '\nRecording %s, lead %s, Not enough patterns found over noise floor. \n\n',ECG_header.recname , lead_names{this_sig_idx});                    
-                continue
-            end
-            
-            RRserie = RR_calculation(this_idx, ECG_header.freq);               
-
-            this_RRserie_filt = colvec(MedianFiltSequence(this_idx, RRserie, round(5 * ECG_header.freq)));
-
-            RRserie_mean_sq_error = mean((RRserie - this_RRserie_filt).^2);       
-
-            % Structure of detection loading
-            str_aux = [ 'aip_patt_' num2str(ii) '_' lead_names{this_sig_idx} ];
-            payload.(str_aux).time = this_idx + ECG_start_offset - 1;
-            payload.series_quality.AnnNames = [ payload.series_quality.AnnNames ; {str_aux} {'time'} ];
-            payload.series_quality.ratios = [payload.series_quality.ratios; RRserie_mean_sq_error];
-            payload.series_quality.estimated_labs = [ payload.series_quality.estimated_labs; {[]} ];
-
-        end
+%         stable_rhythm_regions = get_segments_from_sequence(first_detection_idx, RR_scatter, round(payload_in.stable_RR_time_win * ECG_header.freq), RR_thr );
+% 
+% %     figure(3); plot(first_detection_idx, [RRserie RRserie_filt] ); ylims = ylim(); ylims = ylims + [0.1 -0.1] * diff(ylims); hold on; plot( [ stable_rhythm_regions'; flipud(stable_rhythm_regions'); stable_rhythm_regions(:,1)' ],  repmat([ylims(1); ylims(1); ylims(2);ylims(2);ylims(1)],1, size(stable_rhythm_regions,1) ), 'b:' ); hold off;
+% %     figure(3); plot(first_detection_idx, [RR_scatter], ':xb' ); xlims = xlim(); ylims = ylim(); ylims = ylims + [0.01 -0.1] * diff(ylims); hold on; plot(xlims, [RR_thr RR_thr], '--r'); plot( [ stable_rhythm_regions'; flipud(stable_rhythm_regions'); stable_rhythm_regions(:,1)' ],  repmat([ylims(1); ylims(1); ylims(2);ylims(2);ylims(1)],1, size(stable_rhythm_regions,1) ), 'b:' ); hold off;
+% %     figure(3); plot(first_detection_idx, [RRserie RRserie_filt] ); xlims = xlim(); ylims = ylim(); ylims = ylims + [0.1 -0.1] * diff(ylims); aux_sc = 0.25*diff(ylims)/(max(RR_scatter)-min(RR_scatter));aux_off = ylims(1) + 0.65*diff(ylims); hold on; plot(first_detection_idx, (RR_scatter*aux_sc) +aux_off , ':xb' ); plot(xlims, ([RR_thr RR_thr]*aux_sc ) + aux_off, '--r'); plot( [ stable_rhythm_regions'; flipud(stable_rhythm_regions'); stable_rhythm_regions(:,1)' ],  repmat([ylims(1); ylims(1); ylims(2);ylims(2);ylims(1)],1, size(stable_rhythm_regions,1) ), 'b:' ); hold off;    
+% 
+%         if( isempty(stable_rhythm_regions) )
+%             cprintf('Red', '\nRecording %s, lead %s, no stable rhythm segments found. Consider decreasing "stable_RR_time_win" (Current %f seconds). \n\n',ECG_header.recname , lead_names{this_sig_idx}, payload_in.stable_RR_time_win);                    
+%             continue
+%         end
+% 
+%         lstable_rhythm_regions = size(stable_rhythm_regions,1);
+% 
+%         % Get the larger or more stable segments first
+%         [~, aux_idx] = sort(diff(stable_rhythm_regions,1,2), 'descend');
+% 
+%         larger_stable_rank = arrayfun(@(a)(find(a==aux_idx)), 1:lstable_rhythm_regions);
+% 
+%         pattern_prewin = round(payload_in.trgt_width/2*ECG_header.freq); % force odd number
+% 
+%         % Get the segments with less change in morphology
+%         pack_variance = repmat(realmax,lstable_rhythm_regions,1);
+% 
+%         % From the longest - most rhythm stable regions
+%         for ii = 1: round(lstable_rhythm_regions/4)
+% 
+%             jj = aux_idx(ii);
+%             
+%             % Woody method refinement
+%             aux_idx2 = find(first_detection_idx >= stable_rhythm_regions(jj,1) & first_detection_idx <= stable_rhythm_regions(jj,2));
+%             avg_pack = pack_signal(ECG_matrix(:,1), first_detection_idx(aux_idx2), [ pattern_prewin pattern_prewin ], true);    
+% 
+%             % Mean variance across the ensemble
+%             pack_variance(jj) = nanmean(nanvar(squeeze(avg_pack), [], 2));
+% 
+%         end
+%         [~, aux_idx] = sort(pack_variance);
+% 
+%         morphology_rank = arrayfun(@(a)(find(a==aux_idx)), 1:lstable_rhythm_regions);
+% 
+%         % Final rank
+%         [~, aux_idx] = sort(larger_stable_rank + morphology_rank);
+% 
+%         stable_rhythm_regions = stable_rhythm_regions(aux_idx( 1:min(payload_in.max_patterns_found , size(stable_rhythm_regions,1))), : );
+% 
+%         % figure(3); plot(first_detection_idx, [RRserie RRserie_filt] ); xlims = xlim(); ylims = ylim(); ylims = ylims + [0.1 -0.1] * diff(ylims); aux_sc = 0.25*diff(ylims)/(max(RR_scatter)-min(RR_scatter));aux_off = ylims(1) + 0.65*diff(ylims); hold on; plot(first_detection_idx, (RR_scatter*aux_sc) +aux_off , ':xb' ); plot(xlims, ([RR_thr RR_thr]*aux_sc ) + aux_off, '--r'); plot( [ stable_rhythm_regions'; flipud(stable_rhythm_regions'); stable_rhythm_regions(:,1)' ],  repmat([ylims(1); ylims(1); ylims(2);ylims(2);ylims(1)],1, size(stable_rhythm_regions,1) ), 'b:' ); arrayfun(@(a)(text( stable_rhythm_regions(a,1), ylims(2), num2str(a))), 1:min(payload_in.max_patterns_found )); hold off;
+% 
+%         %% save first detections as a separate time serie
+% 
+%         str_aux = [ 'aip_guess' '_' lead_names{this_sig_idx} ];
+%         payload.(str_aux).time = first_detection_idx + ECG_start_offset - 1;
+%         payload.series_quality.AnnNames = [ payload.series_quality.AnnNames ; {str_aux} {'time'} ];
+%         RRserie_mean_sq_error = mean((RRserie - RRserie_filt).^2);
+%         payload.series_quality.ratios = [payload.series_quality.ratios; RRserie_mean_sq_error];
+%         payload.series_quality.estimated_labs = [ payload.series_quality.estimated_labs; {[]} ];
+% 
+%         k_woody = 3;
+%         win_limits = [ pattern_prewin (pattern_prewin+1) ];
+%         extended_win_limits = [k_woody * win_limits(1), k_woody * win_limits(1)+1];
+%         aux_offset = (extended_win_limits(1) - win_limits(1) + 1); % ???
+%         
+%         aux_pat_coeff = zeros(sum(win_limits),size(stable_rhythm_regions,1));
+%         
+%         for ii = 1:size(stable_rhythm_regions,1)
+% 
+%             % refinamos con el metodo de woody
+%             aux_idx2 = find(first_detection_idx >= stable_rhythm_regions(ii,1) & first_detection_idx <= stable_rhythm_regions(ii,2));
+% 
+%     % figure(3); avg_pack = pack_signal(ECG_matrix(:,this_sig_idx), first_detection_idx(aux_idx2), 10*[ pattern_prewin pattern_prewin ], true); plot_ecg_mosaic(avg_pack)
+% 
+%             if isempty(aux_idx2)
+%                 % Cannot found any stable regions to apply the woody_method
+%                 cprintf('Red', '\nRecording %s, lead %s, Cannot found any stable regions. \n\n',ECG_header.recname , lead_names{this_sig_idx});
+%                 continue
+%             end
+%     
+%             pattern_coeffs = woody_method(ECG_matrix(:,this_sig_idx), first_detection_idx(aux_idx2), extended_win_limits, 0.95);
+%             % trim the pattern 
+%             aux_pat_coeff(:,ii) = pattern_coeffs( aux_offset:(aux_offset+size(aux_pat_coeff,1)-1) );
+%             
+%             % figure(5); plot(first_pattern_coeffs ./ max(abs(first_pattern_coeffs))); hold on; plot(aux_pat_coeff(:,ii) ./ max(abs(aux_pat_coeff(:,ii))))
+% 
+%             progress_handle.checkpoint([ pb_str_prefix 'Pattern match ' num2str(ii) ]);
+% 
+%         %         rise_detector = filter(ones(lp_size,1)/lp_size,1, abs([0; diff(double(ECG_matrix(:,ss)))]));
+%         %         rise_detector = [zeros(((lp_size-1)/2)-1,1); rise_detector((lp_size-1)/2:end)];
+%             rise_detector = filter( pattern_coeffs, 1, flipud(ECG_matrix(:,this_sig_idx)) );
+%             rise_detector = filter( pattern_coeffs, 1, flipud(rise_detector) );
+%             rise_detector = filter( ones(lp_size,1)/lp_size, 1, flipud(abs(rise_detector)) );
+%             rise_detector = filter( ones(lp_size,1)/lp_size, 1, flipud(rise_detector) );
+%             
+%             % figure(6); plot(rise_detector ./ max(rise_detector)); hold on; plot(ECG_matrix(:,this_sig_idx) ./ max(ECG_matrix(:,this_sig_idx)))
+% 
+%             progress_handle.checkpoint([ pb_str_prefix 'Peak detection pattern ' num2str(ii) ]);
+% 
+%             actual_thr = thr_calc(rise_detector, payload_in.trgt_min_pattern_separation, ECG_header.freq);
+%             
+%             if isnan(actual_thr)
+%                 cprintf('Red', '\nRecording %s, lead %s, no patterns above threshold found.(Current %f seconds). \n\n',ECG_header.recname , lead_names{this_sig_idx}, payload_in.stable_RR_time_win);
+%                 continue
+%             end
+%             
+%             % Here the MIN time restriction is important
+%             this_idx = modmax(rise_detector, 1, actual_thr, 1, round(payload_in.trgt_min_pattern_separation * ECG_header.freq));
+%             
+%             if numel(first_detection_idx) <= 1
+%                 cprintf('Red', '\nRecording %s, lead %s, Not enough patterns found over noise floor. \n\n',ECG_header.recname , lead_names{this_sig_idx});                    
+%                 continue
+%             end
+%             
+%             RRserie = RR_calculation(this_idx, ECG_header.freq);               
+% 
+%             this_RRserie_filt = colvec(MedianFiltSequence(this_idx, RRserie, round(5 * ECG_header.freq)));
+% 
+%             RRserie_mean_sq_error = mean((RRserie - this_RRserie_filt).^2);       
+% 
+%             % Structure of detection loading
+%             str_aux = [ 'aip_patt_' num2str(ii) '_' lead_names{this_sig_idx} ];
+%             payload.(str_aux).time = this_idx + ECG_start_offset - 1;
+%             payload.series_quality.AnnNames = [ payload.series_quality.AnnNames ; {str_aux} {'time'} ];
+%             payload.series_quality.ratios = [payload.series_quality.ratios; RRserie_mean_sq_error];
+%             payload.series_quality.estimated_labs = [ payload.series_quality.estimated_labs; {[]} ];
+% 
+%         end
 
         % Como el ratio se usa para rankear mediciones, hacemos un ratio
         % ficticio para cada detección por el ranking de "parsimoniosidad" que
