@@ -93,6 +93,8 @@ classdef ECGtask_QRS_corrector < ECGtask
 
             obj.started = true;
             
+            obj.leads = 1;
+            
         end
         
         function payload = Process(obj, ECG, ECG_start_offset, ECG_sample_start_end_idx, ECG_header, ECG_annotations, ECG_annotations_start_end_idx )

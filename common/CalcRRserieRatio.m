@@ -143,7 +143,10 @@ function [ ratio, estimated_labs ] = CalcRRserieRatio(time_serie, ECG_header, st
                 this_pp = sum(estimated_labs{ii} == TP_lab) / aux_val;
             end
 
-            this_q = (2*this_se + this_pp)/3;
+            % metric used for the paper experiment
+            %this_q = (2*this_se + this_pp)/3;
+            % F1 score
+            this_q = 2/(1/this_se + 1/(eps+this_pp));
             ratio(ii) = k_gaps * this_q;
             
         end

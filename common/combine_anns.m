@@ -32,6 +32,8 @@ function artificial_annotations = combine_anns(time_serie, estimated_labs, heade
 
     % cantidad de leads artificiales que generar�
     min_artificial_leads = 3;
+    win_size = 20; % seconds
+    win_size = round(win_size*header.freq); % milliseconds
 
 %     lreferences = length(time_serie);
     for ii = 1:min_artificial_leads
@@ -40,7 +42,6 @@ function artificial_annotations = combine_anns(time_serie, estimated_labs, heade
 
     start_sample = min(cell2mat(cellfun(@(a)(min(a)),time_serie, 'UniformOutput', false)));
     end_sample = max(cell2mat(cellfun(@(a)(max(a)),time_serie, 'UniformOutput', false))) + 1;
-    win_size = 20e3; % milliseconds
     
 %     aux_seq = (start_sample+win_size):round(win_size/2):end_sample;
     aux_seq = (start_sample+win_size):win_size:end_sample;
@@ -117,7 +118,10 @@ function this_q = calc_q_val(this_labs, strt_end)
         this_se = sum(this_labs == 3) / sum(this_labs == 3 | this_labs == 1) ;
         this_pp = sum(this_labs == 3) / sum(this_labs == 3 | this_labs == 2) ;
 
-        this_q = (2*this_se + this_pp)/3;
+        % paper metric
+        %this_q = (2*this_se + this_pp)/3;
+        % F1 score
+        this_q = 2/(1/this_se + 1/this_pp);
     end
     
 function new_str_end = find_disagreements(str_end, q_idx, ii, jj)
