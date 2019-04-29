@@ -14,7 +14,7 @@
 %           [numeric]: signal matrix of dimension [sig_length sig_size
 %           repetitions_size] where:
 %             - sig_length: time length in samples
-%             - sig_size: number of ECG leads or number of signals.
+%             - sig_size: number of ECG  or number of signals.
 %             - repetitions_size: number of repetitions of the same
 %             signals. Typically used when time-synchronized events, like
 %             heartbeats.  
@@ -86,7 +86,7 @@ function ann_output = QRScorrector(varargin)
     p.addParamValue('BuildArtificial', false, @(x)( islogical(x)));
     p.addParamValue('recording', [], @(x)( ischar(x)));
     p.addParamValue('recording_path', [], @(x)( ischar(x)));
-    p.addParamValue('leads', 1, @(x)( isnumeric(x) && all(x > 0) || ischar(x) || iscellstr(x) ) );
+    p.addParamValue('leads', 1, @(x)( isnumeric(x) && ~isempty(x) && all(x > 0) || ischar(x) || iscellstr(x) ) );
     p.addParamValue('recording_indexes', [], @(x)( isnumeric(x) && all(x > 0) ) );
     p.addParamValue('ECG', [], @(x)(isnumeric(x) || isa(x, 'ECGwrapper') ) );
     p.addParamValue('ECG_header', [], @(x)(isstruct(x)) );
