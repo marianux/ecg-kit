@@ -364,7 +364,7 @@ classdef progress_bar < handle
         function set.Message(obj,value)
             if( ischar(value) )
                 obj.Message = value;
-                if( obj.bUIpresent && obj.bPBcreated )
+                if( obj.bUIpresent && obj.bPBcreated && ishandle(obj.wb_handle) )
                     waitbar( obj.counter - fix(obj.counter), obj.wb_handle, obj.Message );
                 end
             else
@@ -375,7 +375,7 @@ classdef progress_bar < handle
         function set.Title(obj,value)
             if( ischar(value) )
                 obj.Title = value;
-                if( obj.bUIpresent && obj.bPBcreated )
+                if( obj.bUIpresent && obj.bPBcreated && ishandle(obj.wb_handle)  )
                     set(obj.wb_handle, 'Name', obj.Title);
                 end
             else
