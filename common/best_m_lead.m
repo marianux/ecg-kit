@@ -63,7 +63,8 @@ function all_detections = best_m_lead(struct_in, ECG_header, start_end_this_segm
     if( isfield(struct_in, 'series_quality') )
         % choose the best ranked automatic detection
         best_detections_idx = max_index(struct_in.series_quality.ratios);
-        all_detections.best_m_lead = struct_in.(struct_in.series_quality.AnnNames{best_detections_idx,1});
+        best_det_name = struct_in.series_quality.AnnNames{best_detections_idx,1};
+        all_detections.(best_det_name) = struct_in.(best_det_name);
         
     else
         disp_string_framed(2, 'Could not identify QRS detections in the input payload.');

@@ -767,10 +767,12 @@ end
 %     heasig.bdate = '01/01/0001';
 % end
 
-if(sum(heasig.btime == ':') == 2 )
-    formatIn = 'HH:MM:SS';
-elseif(sum(heasig.btime == ':') == 3 )
-    formatIn = 'HH:MM:SS:FFF';
+if(length(heasig.btime) <= 12 )
+    if(sum(heasig.btime == ':') == 2 )
+        formatIn = 'HH:MM:SS';
+    elseif(sum(heasig.btime == ':') == 3 )
+        formatIn = 'HH:MM:SS:FFF';
+    end
 else
     formatIn = [];
     if( bCalledFromWorkspace )

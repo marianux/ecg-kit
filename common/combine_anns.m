@@ -44,7 +44,7 @@ function artificial_annotations = combine_anns(time_serie, estimated_labs, heade
     end_sample = max(cell2mat(cellfun(@(a)(max(a)),time_serie, 'UniformOutput', false))) + 1;
     
 %     aux_seq = (start_sample+win_size):round(win_size/2):end_sample;
-    aux_seq = (start_sample+win_size):win_size:end_sample;
+    aux_seq = min(start_sample+win_size, end_sample):win_size:end_sample;
     
     if( isempty(aux_seq) )
         str_aux = disp_string_framed(0, 'Recording too short for combining detections'  );

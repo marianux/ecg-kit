@@ -330,43 +330,53 @@ function [actual_thr] = thr_calc(rise_detector, trgt_min_pattern_separation, fre
 
     [~, max_values ] = modmax(rise_detector, 1, actual_thr, 1, round(trgt_min_pattern_separation * freq));
     
-    prctile_grid = prctile(max_values,1:100);
-
-	grid_step = median(diff(prctile_grid));
-	
-    if grid_step == 0
-		actual_thr = nan;
-    else
-        thr_grid = actual_thr:grid_step:max(max_values);
+    if isempty(max_values)
         
-        hist_max_values = histcounts(max_values, thr_grid);
+        % possible flat recording.
+        actual_thr = nan;
+        
+    else
+        
+        prctile_grid = prctile(max_values,1:100);
 
-        first_bin_idx = 1;
+        grid_step = median(diff(prctile_grid));
 
-        [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 0, [], [] );
-
-        if( isempty(thr_max) )
+        if grid_step == 0
             actual_thr = nan;
         else
-            % Mass center of the distribution, probably the value where the
-            % patterns under search are located.
-            thr_idx_expected = floor(rowvec(thr_idx) * colvec(thr_max) *1/sum(thr_max));
+            thr_grid = actual_thr:grid_step:max(max_values);
 
-            aux_seq = 1:length(thr_grid);
+            hist_max_values = histcounts(max_values, thr_grid);
 
-            % MPS0018 recording from Basel VIII database forced to add the
-            % lesser or equal to aux_seq <= thr_idx_expected. Probably a
-            % recording where no clear maximum above the noise threshold were
-            % found.
-			min_hist_max_values = min( hist_max_values( aux_seq >= first_bin_idx & aux_seq < thr_idx_expected) );
-			
-            % In case several indexes match the boolean condition, the mean
-            % index is the center of all those indexes. Other criteria such as
-            % min or max can be explored
-            % thr_min_idx = round(mean(find(bAux & [hist_max_values 0] == min_hist_max_values)));
-			thr_min_idx = round(mean(find(aux_seq >= first_bin_idx & aux_seq < thr_idx_expected & [hist_max_values 0] == min_hist_max_values)));
-            
-            actual_thr = thr_grid(thr_min_idx);
+            first_bin_idx = 1;
+
+            [thr_idx, thr_max ] = modmax( colvec( hist_max_values ) , first_bin_idx, 0, 0, [], [] );
+
+            if( isempty(thr_max) )
+                actual_thr = nan;
+            else
+                % Mass center of the distribution, probably the value where the
+                % patterns under search are located.
+                thr_idx_expected = floor(rowvec(thr_idx) * colvec(thr_max) *1/sum(thr_max));
+
+                aux_seq = 1:length(thr_grid);
+
+                % MPS0018 recording from Basel VIII database forced to add the
+                % lesser or equal to aux_seq <= thr_idx_expected. Probably a
+                % recording where no clear maximum above the noise threshold were
+                % found.
+                min_hist_max_values = min( hist_max_values( aux_seq >= first_bin_idx & aux_seq < thr_idx_expected) );
+
+                % In case several indexes match the boolean condition, the mean
+                % index is the center of all those indexes. Other criteria such as
+                % min or max can be explored
+                % thr_min_idx = round(mean(find(bAux & [hist_max_values 0] == min_hist_max_values)));
+                thr_min_idx = round(mean(find(aux_seq >= first_bin_idx & aux_seq < thr_idx_expected & [hist_max_values 0] == min_hist_max_values)));
+
+                actual_thr = thr_grid(thr_min_idx);
+            end
         end
+        
     end
+    
 end
